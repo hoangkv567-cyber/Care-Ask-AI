@@ -1,0 +1,35 @@
+# config/config.yaml
+# LƯU Ý BẢO MẬT: KHÔNG ghi mật khẩu / API key trực tiếp vào đây nữa.
+# Tất cả secrets được nạp từ file .env (xem .env.example) qua src/config_loader.py.
+
+neo4j:
+  uri: ""        # Lấy từ NEO4J_URI trong .env
+  user: ""       # Lấy từ NEO4J_USER trong .env
+  password: ""   # Lấy từ NEO4J_PASSWORD trong .env
+
+qa:
+  llm_model: "qwen2.5:7b"
+  temperature: 0.0
+  seed: 42
+  top_p: 0.9
+
+huggingface:
+  use_cloud: false
+  token: ""      # Lấy từ HUGGINGFACE_TOKEN trong .env
+  model: "Qwen/Qwen2.5-7B-Instruct"
+
+openrouter:
+  use_cloud: false
+  api_key: ""    # Lấy từ OPENROUTER_API_KEY trong .env
+  model: "google/gemma-2-9b-it:free"
+
+siliconflow:
+  use_cloud: true
+  api_key: ""    # Lấy từ SILICONFLOW_API_KEY trong .env
+  model: "Qwen/Qwen2.5-72B-Instruct"
+
+dataset:
+  csv_path: "data/Medicine_clean.csv"  # Có thể override bằng TCM_CSV_PATH trong .env
+
+logging:
+  level: "INFO"

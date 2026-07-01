@@ -1,0 +1,24 @@
+GRAPH SCHEMA FOR TCM KNOWLEDGE GRAPH
+
+## Nodes (Nút)
+- BenhLy: Tên bệnh (Ví dụ: "Cảm mạo", "Khái thấu")
+- HoiChung: Hội chứng (Ví dụ: "Phong hàn", "Tỳ vị hư nhược")
+- TrieuChung: Triệu chứng (Ví dụ: "Đau đầu", "Sốt cao")
+- BaiThuoc: Bài thuốc (Ví dụ: "Ma hoàng thang", "Bách hợp cố kim thang")
+- ViThuoc: Vị thuốc (Ví dụ: "Cam thảo", "Ma hoàng")
+
+## Relationships (Quan hệ)
+- (BenhLy)-[:CHIA_THÀNH]->(HoiChung): Bệnh chia thành các hội chứng
+- (HoiChung)-[:CÓ_BIỂU_HIỆN]->(TrieuChung): Hội chứng có biểu hiện là triệu chứng
+- (HoiChung)-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(BaiThuoc): Hội chứng được điều trị bằng bài thuốc
+- (BaiThuoc)-[:BAO_GỒM]->(ViThuoc): Bài thuốc bao gồm các vị thuốc
+
+## Example Queries
+1. Tìm bài thuốc cho hội chứng "Tỳ vị hư nhược":
+   MATCH (h:HoiChung {name: "Tỳ vị hư nhược"})-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(p:BaiThuoc) RETURN p.name
+2. Tìm triệu chứng của hội chứng "Phong hàn":
+   MATCH (h:HoiChung {name: "Phong hàn"})-[:CÓ_BIỂU_HIỆN]->(t:TrieuChung) RETURN t.name
+3. Tìm vị thuốc trong bài thuốc "Ma hoàng thang":
+   MATCH (p:BaiThuoc {name: "Ma hoàng thang"})-[:BAO_GỒM]->(v:ViThuoc) RETURN v.name
+4. Tìm bài thuốc điều trị triệu chứng "Đau đầu":
+   MATCH (t:TrieuChung {name: "Đau đầu"})<-[:CÓ_BIỂU_HIỆN]-(h:HoiChung)-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(p:BaiThuoc) RETURN p.name

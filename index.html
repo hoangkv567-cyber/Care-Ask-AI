@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trợ lý Tham khảo Đông Y (AI) — Không thay thế bác sĩ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Thư viện marked.js để render Markdown chính xác -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Thư viện Vis-Network cho sơ đồ mạng lưới đồ thị tri thức tương tác -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Định nghĩa lại CSS hiển thị Markdown do Tailwind mặc định loại bỏ định dạng danh sách */
+        .markdown-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f766e;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 2px solid #ccfbf1;
+            padding-bottom: 0.25rem;
+        }
+        .markdown-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #115e59;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .markdown-content p {
+            margin-bottom: 0.75rem;
+            line-height: 1.625;
+            color: #334155;
+        }
+        .markdown-content ul {
+            list-style-type: disc !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+        .markdown-content ol {
+            list-style-type: decimal !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 1rem !important;
+        }
+        .markdown-content li {
+            margin-bottom: 0.35rem;
+            line-height: 1.5;
+            color: #475569;
+        }
+        .markdown-content strong {
+            color: #0d9488;
+            font-weight: 600;
+        }
+        .markdown-content code {
+            background-color: #f1f5f9;
+            color: #be123c;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        /* Bong bóng chat: gọn khoảng cách markdown bên trong */
+        .chat-bubble.markdown-content h3 { margin-top: 0.4rem; font-size: 0.95rem; }
+        .chat-bubble.markdown-content h4 { margin-top: 0.4rem; }
+        .chat-bubble.markdown-content p { margin: 0.25rem 0; }
+        .chat-bubble.markdown-content hr { margin: 0.5rem 0; border-color: #e2e8f0; }
+        .chat-bubble.markdown-content blockquote { margin: 0.4rem 0; padding-left: 0.6rem; border-left: 3px solid #f59e0b; color: #92400e; }
+        /* Hiệu ứng "đang gõ" 3 chấm */
+        @keyframes chatDot { 0%, 60%, 100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+        .chat-dot { display: inline-block; width: 6px; height: 6px; border-radius: 9999px; background: #94a3b8; margin: 0 2px; animation: chatDot 1.2s infinite; }
+        .chat-dot:nth-child(2) { animation-delay: .2s; }
+        .chat-dot:nth-child(3) { animation-delay: .4s; }
+        /* Thanh cuộn mảnh cho khu chat */
+        #chatMessages::-webkit-scrollbar { width: 6px; }
+        #chatMessages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        /* Khung chat nổi: hiệu ứng mở/thu nhỏ mượt (Messenger/Zalo style) */
+        .chat-panel { transition: opacity .22s ease, transform .22s ease; transform-origin: bottom right; }
+        .chat-panel.closed { opacity: 0; transform: translateY(12px) scale(.96); pointer-events: none; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-12">
+
+    <!-- Thanh Tiêu đề có nút bánh răng cài đặt URL API -->
+    <header class="bg-teal-700 shadow-md sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center text-white">
+            <div class="flex items-center space-x-3">
+                <div class="bg-teal-600 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">Trợ lý tham khảo Đông y (AI)</h1>
+                    <p class="text-xs text-teal-100">Hỗ trợ tham khảo Vọng chẩn & Vấn chẩn — không thay thế bác sĩ</p>
+                </div>
+            </div>
+            
+            <!-- Nút Bánh răng Cài đặt API Ngrok -->
+            <button id="settingsBtn" class="bg-teal-600 hover:bg-teal-500 p-2 rounded-lg transition-all duration-200" title="Cấu hình kết nối Ngrok">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Modal Cài đặt API Ngrok -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6">
+            <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+                <span>Cấu hình Kết nối API</span>
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">Dán liên kết Ngrok mới của bạn vào đây nếu bạn khởi động lại Ngrok và bị đổi URL.</p>
+            <div class="mt-4">
+                <label class="block text-xs font-bold text-slate-700 mb-1">API Endpoint URL</label>
+                <input type="text" id="apiUrlInput" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Ví dụ: https://xxxx.ngrok-free.dev">
+            </div>
+            <div class="mt-6 flex justify-end space-x-2">
+                <button id="closeSettings" class="px-4 py-2 text-sm text-slate-500 hover:bg-slate-100 rounded-lg">Hủy</button>
+                <button id="saveSettings" class="px-5 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg shadow-sm">Lưu cấu hình</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Khung chính Giao diện -->
+    <div class="max-w-3xl mx-auto mt-8 px-4">
+        <!-- [AN TOÀN Y TẾ] Banner miễn trừ trách nhiệm + cảnh báo cấp cứu -->
+        <div class="mb-6 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl px-4 py-3 text-sm leading-relaxed">
+            ⚠️ <strong>Công cụ tham khảo / giáo dục bằng AI — KHÔNG phải chẩn đoán y khoa và không thay thế bác sĩ.</strong>
+            Kết quả chỉ mang tính tham khảo; tuyệt đối không tự ý dùng thuốc (nhiều vị thuốc Đông y có độc tính/chống chỉ định).
+            Nếu có dấu hiệu nguy hiểm (đau ngực, khó thở, méo miệng/yếu liệt, co giật, xuất huyết…), hãy gọi
+            <strong>115</strong> hoặc đến cơ sở y tế ngay.
+        </div>
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
+            
+            <form id="diagnoseForm" class="p-6 space-y-6">
+                <!-- Vấn chẩn -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Mô tả triệu chứng của bạn (Vấn chẩn)</label>
+                    <div class="relative">
+                        <textarea id="symptoms" rows="3" class="w-full border border-slate-300 rounded-xl p-3 pb-12 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition" placeholder="Ví dụ: tôi bị ho, mệt mỏi..."></textarea>
+                        <button type="button" id="analyzeSymptomsBtn" class="absolute bottom-3 right-3 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-bold px-3 py-1.5 rounded-lg border border-teal-200 transition-all duration-200 hidden">
+                            🔍 Gợi ý triệu chứng liên quan
+                        </button>
+                    </div>
+                    <!-- Triệu chứng gợi ý sẽ hiển thị ở đây -->
+                    <div id="suggestedSymptomsContainer" class="mt-3.5 hidden">
+                        <span class="block text-xs font-bold text-slate-500 mb-2">Triệu chứng liên quan gợi ý (Bấm chọn nếu có):</span>
+                        <div id="suggestedSymptomsList" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Vọng chẩn -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition duration-200">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">📷 Tải lên ảnh Khuôn mặt</label>
+                        <input type="file" id="faceImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 w-full cursor-pointer"/>
+                        <div id="facePreview" class="mt-2 hidden">
+                            <img src="" class="h-20 mx-auto rounded border border-slate-200">
+                        </div>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition duration-200">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">👅 Tải lên ảnh Lưỡi</label>
+                        <input type="file" id="tongueImg" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 w-full cursor-pointer"/>
+                        <div id="tonguePreview" class="mt-2 hidden">
+                            <img src="" class="h-20 mx-auto rounded border border-slate-200">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 flex items-center justify-center space-x-2">
+                    <span id="btnText">Phân tích tham khảo bằng AI</span>
+                </button>
+            </form>
+
+            <!-- Khu vực hiển thị kết quả -->
+            <div id="resultArea" class="hidden bg-slate-50 border-t border-slate-200 p-6 space-y-6">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                    <span>📋</span>
+                    <span>Kết Quả Phân Tích</span>
+                </h2>
+                
+                <div class="space-y-6">
+                    <!-- Kết quả Vọng chẩn (LLaVA) -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-teal-800 text-sm mb-3 flex items-center space-x-1.5 uppercase tracking-wide border-b pb-2">
+                            <span>👁️</span>
+                            <span>Phân tích Hình ảnh (LLaVA):</span>
+                        </h3>
+                        <p id="visionResult" class="text-slate-600 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <!-- Kết quả Vấn chẩn (Neo4j) -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-teal-800 text-sm mb-3 flex items-center space-x-1.5 uppercase tracking-wide border-b pb-2">
+                            <span>💬</span>
+                            <span>Phân tích Triệu chứng (Neo4j):</span>
+                        </h3>
+                        <div id="textResult" class="markdown-content text-sm"></div>
+                    </div>
+
+                    <!-- Sơ đồ Đồ thị suy luận (Vis.js Network) -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-teal-800 text-sm mb-2 flex items-center space-x-1.5 uppercase tracking-wide border-b pb-2">
+                            <span>🕸️</span>
+                            <span>Đồ thị lập luận y lý trực quan</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mb-3">Mô tả trực quan đường đi suy luận từ Triệu chứng -> Hội chứng -> Bài thuốc điều trị.</p>
+                        <div id="graphContainer" class="h-[350px] w-full bg-slate-50/50 rounded-lg border border-slate-100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============ TRỢ LÝ ĐÔNG Y — Bong bóng chat nổi (Messenger/Zalo style) ============ -->
+    <!-- Nút bong bóng: bấm để mở/thu nhỏ khung chat -->
+    <button type="button" id="chatLauncher" title="Hỏi Trợ lý Đông y" aria-expanded="false"
+        class="fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-teal-600 to-teal-500 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center">
+        <span id="chatLauncherIcon" class="text-2xl leading-none">🩺</span>
+        <!-- Chấm mời gọi nhấp (ẩn sau lần mở đầu tiên) -->
+        <span id="chatLauncherDot" class="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-rose-500 border-2 border-white">
+            <span class="absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75 animate-ping"></span>
+        </span>
+    </button>
+
+    <!-- Khung chat nổi (ẩn mặc định — mở khi bấm bong bóng) -->
+    <div id="chatPanel"
+        class="chat-panel closed fixed z-50 bottom-24 right-5 w-[380px] max-w-[calc(100vw-2.5rem)] h-[560px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+        <!-- Header kiểu ứng dụng chat -->
+        <div class="px-4 py-3 flex items-center space-x-3 bg-gradient-to-r from-teal-600 to-teal-500 shrink-0">
+            <div class="h-9 w-9 rounded-full bg-white/20 flex items-center justify-center text-lg">🩺</div>
+            <div class="flex-1 min-w-0">
+                <h2 class="text-white font-bold text-sm leading-tight">Trợ lý Đông y</h2>
+                <p class="text-teal-50/90 text-[11px] flex items-center space-x-1">
+                    <span class="inline-block h-2 w-2 rounded-full bg-green-300"></span>
+                    <span>Hỏi nhanh về triệu chứng / bệnh lý</span>
+                </p>
+            </div>
+            <button type="button" id="chatClearBtn" title="Xoá hội thoại"
+                class="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </button>
+            <button type="button" id="chatCloseBtn" title="Thu nhỏ"
+                class="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Khu vực tin nhắn -->
+        <div id="chatMessages" class="flex-1 overflow-y-auto px-3.5 py-3.5 space-y-3 bg-slate-50"></div>
+
+        <!-- Thanh nhập tin nhắn -->
+        <form id="askForm" class="border-t border-slate-100 p-2.5 flex items-end space-x-2 bg-white shrink-0">
+            <textarea id="askQuestion" rows="1" maxlength="1000"
+                class="flex-1 resize-none border border-slate-300 rounded-2xl px-3.5 py-2 max-h-28 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition text-sm leading-relaxed"
+                placeholder="Nhập câu hỏi... (Enter để gửi, Shift+Enter xuống dòng)"></textarea>
+            <button type="submit" id="askBtn" title="Gửi"
+                class="shrink-0 h-10 w-10 rounded-full bg-teal-600 hover:bg-teal-700 disabled:opacity-40 disabled:cursor-not-allowed text-white flex items-center justify-center transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3.4 20.4l17.45-7.48a1 1 0 000-1.84L3.4 3.6a.993.993 0 00-1.39.91L2 9.12c0 .5.37.93.87.99L17 12 2.87 13.88c-.5.07-.87.5-.87 1l.01 4.61c0 .71.73 1.2 1.39.91z"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Cấu hình URL mặc định: Tự động trỏ thẳng về link Ngrok đang hoạt động của bạn!
+        const DEFAULT_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
+        const STORAGE_KEY = "healthwatch_api_base_url";
+        
+        // Ưu tiên đọc cấu hình lưu trong trình duyệt trước, nếu không có sẽ tự nhận link Ngrok mặc định của bạn
+        let apiBaseUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_API_URL;
+
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const saveSettings = document.getElementById('saveSettings');
+        const apiUrlInput = document.getElementById('apiUrlInput');
+
+        apiUrlInput.value = apiBaseUrl;
+
+        settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
+        closeSettings.addEventListener('click', () => settingsModal.classList.add('hidden'));
+        
+        saveSettings.addEventListener('click', () => {
+            let url = apiUrlInput.value.trim();
+            if (url.endsWith('/')) {
+                url = url.slice(0, -1);
+            }
+            if (url) {
+                apiBaseUrl = url;
+                localStorage.setItem(STORAGE_KEY, url);
+                alert("Đã lưu kết nối API Endpoint: " + url);
+                settingsModal.classList.add('hidden');
+            }
+        });
+
+        // Hàm xem trước tệp ảnh khi tải lên
+        function registerPreview(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const img = preview.querySelector('img');
+
+            input.addEventListener('change', () => {
+                const file = input.files[0];
+                if (file) {
+                    const r = new FileReader();
+                    r.onload = (e) => {
+                        img.src = e.target.result;
+                        preview.classList.remove('hidden');
+                    };
+                    r.readAsDataURL(file);
+                } else {
+                    preview.classList.add('hidden');
+                }
+            });
+        }
+        registerPreview('faceImg', 'facePreview');
+        registerPreview('tongueImg', 'tonguePreview');
+
+        // ============ Chat hỏi nhanh trên Knowledge Graph (Q&A tự do) ============
+        const chatMessages = document.getElementById('chatMessages');
+        const askForm = document.getElementById('askForm');
+        const askQuestion = document.getElementById('askQuestion');
+        const askBtn = document.getElementById('askBtn');
+        const chatClearBtn = document.getElementById('chatClearBtn');
+
+        const CHAT_GREETING = "Xin chào 👋 Mình là **trợ lý tham khảo Đông y**. Bạn có thể hỏi theo 2 kiểu:\n\n• **Theo triệu chứng** — ví dụ: *\"ho khan mãi không hết là bệnh gì?\"*\n• **Tổng quan một bệnh lý** — ví dụ: *\"bệnh ách nghịch gồm những hội chứng và bài thuốc nào?\"*\n\n_Lưu ý: đây là công cụ tra cứu/tham khảo, không thay thế bác sĩ._";
+
+        function scrollChatBottom() { chatMessages.scrollTop = chatMessages.scrollHeight; }
+
+        // Bong bóng người dùng (bên phải). Dùng textContent -> an toàn XSS với nội dung người nhập.
+        function appendUserMessage(text) {
+            const wrap = document.createElement('div');
+            wrap.className = 'flex justify-end';
+            const bubble = document.createElement('div');
+            bubble.className = 'max-w-[82%] bg-teal-600 text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm shadow-sm whitespace-pre-wrap break-words';
+            bubble.textContent = text;
+            wrap.appendChild(bubble);
+            chatMessages.appendChild(wrap);
+            scrollChatBottom();
+        }
+
+        // Bong bóng AI (bên trái) có avatar. html là chuỗi đã render (markdown do server sinh).
+        function appendAIMessage(html) {
+            const wrap = document.createElement('div');
+            wrap.className = 'flex items-start space-x-2';
+            const avatar = document.createElement('div');
+            avatar.className = 'shrink-0 h-8 w-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-base';
+            avatar.textContent = '🩺';
+            const bubble = document.createElement('div');
+            bubble.className = 'chat-bubble markdown-content max-w-[82%] bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm shadow-sm break-words';
+            bubble.innerHTML = html;
+            wrap.appendChild(avatar);
+            wrap.appendChild(bubble);
+            chatMessages.appendChild(wrap);
+            scrollChatBottom();
+        }
+
+        function showTyping() {
+            const wrap = document.createElement('div');
+            wrap.className = 'flex items-start space-x-2';
+            wrap.id = 'typingIndicator';
+            wrap.innerHTML = '<div class="shrink-0 h-8 w-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-base">🩺</div>'
+                + '<div class="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">'
+                + '<span class="chat-dot"></span><span class="chat-dot"></span><span class="chat-dot"></span></div>';
+            chatMessages.appendChild(wrap);
+            scrollChatBottom();
+        }
+        function hideTyping() { const t = document.getElementById('typingIndicator'); if (t) t.remove(); }
+
+        function resetChat() {
+            chatMessages.innerHTML = '';
+            appendAIMessage(marked.parse(CHAT_GREETING));
+        }
+        resetChat(); // lời chào khởi tạo
+        chatClearBtn.addEventListener('click', resetChat);
+
+        // ---- Mở / thu nhỏ khung chat nổi (bong bóng) ----
+        const chatLauncher = document.getElementById('chatLauncher');
+        const chatLauncherIcon = document.getElementById('chatLauncherIcon');
+        const chatLauncherDot = document.getElementById('chatLauncherDot');
+        const chatPanel = document.getElementById('chatPanel');
+        const chatCloseBtn = document.getElementById('chatCloseBtn');
+
+        function openChat() {
+            chatPanel.classList.remove('closed');
+            chatLauncher.setAttribute('aria-expanded', 'true');
+            chatLauncherIcon.textContent = '✕';
+            if (chatLauncherDot) chatLauncherDot.classList.add('hidden'); // hết mời gọi sau khi mở
+            scrollChatBottom();
+            setTimeout(() => askQuestion.focus(), 180);
+        }
+        function closeChat() {
+            chatPanel.classList.add('closed');
+            chatLauncher.setAttribute('aria-expanded', 'false');
+            chatLauncherIcon.textContent = '🩺';
+        }
+        function toggleChat() {
+            if (chatPanel.classList.contains('closed')) openChat();
+            else closeChat();
+        }
+        chatLauncher.addEventListener('click', toggleChat);
+        chatCloseBtn.addEventListener('click', closeChat);
+        // Nhấn Esc để thu nhỏ khung chat
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !chatPanel.classList.contains('closed')) closeChat();
+        });
+
+        // Tự giãn chiều cao ô nhập theo nội dung
+        function autoGrow() {
+            askQuestion.style.height = 'auto';
+            askQuestion.style.height = Math.min(askQuestion.scrollHeight, 128) + 'px';
+        }
+        askQuestion.addEventListener('input', autoGrow);
+
+        // Enter để gửi, Shift+Enter xuống dòng
+        askQuestion.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                askForm.requestSubmit();
+            }
+        });
+
+        let chatBusy = false;
+        askForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = askQuestion.value.trim();
+            if (!question || chatBusy) return;
+
+            chatBusy = true;
+            askBtn.disabled = true;
+            appendUserMessage(question);
+            askQuestion.value = '';
+            autoGrow();
+            showTyping();
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/ask`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
+                hideTyping();
+                if (!response.ok) {
+                    let detail = "Đã xảy ra lỗi khi xử lý câu hỏi.";
+                    try { const err = await response.json(); if (err && err.detail) detail = err.detail; } catch (_) {}
+                    appendAIMessage(`<span class="text-red-500">${escapeHtml(detail)}</span>`);
+                    return;
+                }
+                const json = await response.json();
+                const answer = json && json.data && json.data.answer ? json.data.answer : "";
+                // answer là markdown do server sinh (KG + disclaimer cố định) -> render qua marked
+                appendAIMessage(answer
+                    ? marked.parse(answer)
+                    : "<span class='text-slate-400 italic'>Không tìm thấy thông tin phù hợp.</span>");
+            } catch (err) {
+                hideTyping();
+                appendAIMessage("<span class='text-red-500'>Không kết nối được máy chủ AI. Vui lòng kiểm tra lại cấu hình kết nối.</span>");
+            } finally {
+                chatBusy = false;
+                askBtn.disabled = false;
+                askQuestion.focus();
+            }
+        });
+
+        // Logic phân tích triệu chứng gợi ý liên quan
+        let selectedSuggestedSymptoms = [];
+        const symptomsInput = document.getElementById('symptoms');
+        const analyzeBtn = document.getElementById('analyzeSymptomsBtn');
+        const suggestionsContainer = document.getElementById('suggestedSymptomsContainer');
+        const suggestionsList = document.getElementById('suggestedSymptomsList');
+        
+        symptomsInput.addEventListener('input', () => {
+            if(symptomsInput.value.trim().length > 0) {
+                analyzeBtn.classList.remove('hidden');
+            } else {
+                analyzeBtn.classList.add('hidden');
+                suggestionsContainer.classList.add('hidden');
+                selectedSuggestedSymptoms = [];
+                suggestionsList.innerHTML = "";
+            }
+        });
+
+        analyzeBtn.addEventListener('click', async () => {
+            const currentSymptomsText = symptomsInput.value.trim();
+            if(!currentSymptomsText) return;
+            
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerText = "⏳ Đang phân tích...";
+            
+            try {
+                const response = await fetch(`${apiBaseUrl}/api/related-symptoms`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ symptoms: currentSymptomsText })
+                });
+                
+                const json = await response.json();
+                
+                if (response.ok && json.data && json.data.length > 0) {
+                    suggestionsList.innerHTML = "";
+                    selectedSuggestedSymptoms = [];
+                    
+                    json.data.forEach(symptom => {
+                        const tag = document.createElement('button');
+                        tag.type = "button";
+                        tag.className = "px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-full border border-slate-200 transition cursor-pointer";
+                        tag.innerText = symptom;
+                        
+                        tag.addEventListener('click', () => {
+                            const index = selectedSuggestedSymptoms.indexOf(symptom);
+                            if (index > -1) {
+                                // Bỏ chọn
+                                selectedSuggestedSymptoms.splice(index, 1);
+                                tag.classList.remove('bg-teal-500', 'text-white', 'border-teal-600', 'hover:bg-teal-600');
+                                tag.classList.add('bg-slate-100', 'text-slate-700', 'border-slate-200', 'hover:bg-slate-200');
+                            } else {
+                                // Chọn
+                                selectedSuggestedSymptoms.push(symptom);
+                                tag.classList.remove('bg-slate-100', 'text-slate-700', 'border-slate-200', 'hover:bg-slate-200');
+                                tag.classList.add('bg-teal-500', 'text-white', 'border-teal-600', 'hover:bg-teal-600');
+                            }
+                        });
+                        
+                        suggestionsList.appendChild(tag);
+                    });
+                    
+                    suggestionsContainer.classList.remove('hidden');
+                } else {
+                    suggestionsContainer.classList.add('hidden');
+                    alert("Không tìm thấy triệu chứng liên quan nào phù hợp trong hệ thống.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi: Không thể kết nối tới máy chủ để lấy triệu chứng gợi ý.");
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerText = "🔍 Gợi ý triệu chứng liên quan";
+            }
+        });
+
+        // Gửi Form chẩn đoán
+        document.getElementById('diagnoseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const resultArea = document.getElementById('resultArea');
+            const textResult = document.getElementById('textResult');
+            const visionResult = document.getElementById('visionResult');
+
+            const symptoms = document.getElementById('symptoms').value;
+            const faceFile = document.getElementById('faceImg').files[0];
+            const tongueFile = document.getElementById('tongueImg').files[0];
+
+            if (!symptoms.trim() && !faceFile && !tongueFile) {
+                alert("Vui lòng cung cấp triệu chứng bằng văn bản hoặc tải lên ít nhất một hình ảnh (ảnh khuôn mặt hoặc ảnh lưỡi) để tiến hành chẩn đoán!");
+                return;
+            }
+
+            // Ghép triệu chứng nhập tay với các triệu chứng liên quan đã chọn
+            let combinedSymptoms = symptoms.trim();
+            if (selectedSuggestedSymptoms.length > 0) {
+                combinedSymptoms += (combinedSymptoms ? ", " : "") + selectedSuggestedSymptoms.join(", ");
+            }
+
+            const formData = new FormData();
+            formData.append('symptoms', combinedSymptoms);
+            if(faceFile) formData.append('face_img', faceFile);
+            if(tongueFile) formData.append('tongue_img', tongueFile);
+
+            // Bật trạng thái loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Hệ thống đang lập luận y lý (15-30s)...</span>
+            `;
+            resultArea.classList.add('hidden');
+
+            try {
+                // Gọi API Backend qua Endpoint kết nối
+                const response = await fetch(`${apiBaseUrl}/api/diagnose`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const json = await response.json();
+
+                if(response.ok) {
+                    const data = json.data;
+                    
+                    // 1. Hiển thị chẩn đoán (đã qua marked.js sửa lỗi dính chữ)
+                    if(data.diagnosis_result && data.diagnosis_result.answer) {
+                        const formattedHTML = marked.parse(data.diagnosis_result.answer);
+                        
+                        let warningHTML = "";
+                        if (data.has_makeup) {
+                            warningHTML = `
+                                <div class="mb-4 text-xs bg-amber-50 p-4 rounded-xl text-amber-800 border border-amber-200 flex items-start space-x-2.5 shadow-sm">
+                                    <span class="text-base leading-none">⚠️</span>
+                                    <div>
+                                        <strong class="font-bold block mb-0.5">Cảnh báo nhiễu Vọng chẩn (Có trang điểm):</strong>
+                                        Hệ thống phát hiện sắc diện khuôn mặt có dấu hiệu sử dụng mỹ phẩm (trang điểm, son môi, kẻ mắt...). Độ đỏ má, đỏ môi và sắc diện da có thể bị ảnh hưởng. Hệ thống đã tự động giảm bớt trọng số các đặc sắc màu sắc và ưu tiên các dấu hiệu cấu trúc (như quầng thâm mắt). Khuyến nghị sử dụng ảnh mặt mộc để có chẩn đoán Đông y chính xác nhất.
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        let questionsHTML = "";
+                        if (data.status === "pending_questions" && data.questions && data.questions.length > 0) {
+                            questionsHTML = `
+                                <div class="mt-6 p-5 bg-amber-50 border border-amber-200 rounded-2xl shadow-sm">
+                                    <h4 class="text-amber-950 font-bold text-sm mb-3 flex items-center space-x-2">
+                                        <span>💬 AI đề xuất hỏi thêm lâm sàng để xác định chính xác bài thuốc:</span>
+                                    </h4>
+                                    <div class="space-y-4" id="fallbackQuestionsContainer">
+                            `;
+                            
+                            data.questions.forEach((q, qIdx) => {
+                                questionsHTML += `
+                                    <div class="question-block mb-4">
+                                        <p class="text-xs font-bold text-amber-900 mb-2">${qIdx + 1}. ${escapeHtml(q.question)}</p>
+                                        <div class="space-y-2">
+                                `;
+                                q.options.forEach((opt, oIdx) => {
+                                    // Hỗ trợ cả cấu trúc object {label, value} mới và chuỗi dạng cũ
+                                    const optLabel = (typeof opt === 'object' && opt !== null) ? opt.label : opt;
+                                    const optValue = (typeof opt === 'object' && opt !== null) ? opt.value : opt;
+                                    
+                                    questionsHTML += `
+                                        <label class="flex items-center space-x-2.5 p-2 bg-white hover:bg-amber-100 rounded-lg cursor-pointer border border-amber-100 transition-all text-xs text-amber-950">
+                                            <input type="radio" name="q_${qIdx}" value="${escapeHtml(optValue)}" class="text-amber-700 focus:ring-amber-500">
+                                            <span class="ml-2">${escapeHtml(optLabel)}</span>
+                                        </label>
+                                    `;
+                                });
+                                questionsHTML += `
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            
+                            questionsHTML += `
+                                    </div>
+                                    <button type="button" id="submitAnswersBtn" class="mt-4 w-full bg-amber-700 hover:bg-amber-800 text-white font-bold py-2 rounded-xl text-xs transition-all flex justify-center items-center space-x-2">
+                                        <span>Gửi câu trả lời bổ sung</span>
+                                    </button>
+                                </div>
+                            `;
+                        }
+
+                        textResult.innerHTML = `
+                            ${warningHTML}
+                            <div class="mb-4 text-xs bg-teal-50 p-3 rounded-lg text-teal-800 border border-teal-100">
+                                <strong>Chuỗi triệu chứng đã gộp:</strong> ${escapeHtml(data.input_fusion)}
+                            </div>
+                            <div>
+                                ${formattedHTML}
+                            </div>
+                            ${questionsHTML}
+                        `;
+
+                        // Tự động gán sự kiện cho nút gửi câu trả lời
+                        if (data.status === "pending_questions" && data.questions) {
+                            setTimeout(() => {
+                                const btn = document.getElementById('submitAnswersBtn');
+                                if (btn) {
+                                    btn.addEventListener('click', () => {
+                                        const selectedAnswers = [];
+                                        data.questions.forEach((q, qIdx) => {
+                                            const selectedOption = document.querySelector(`input[name="q_${qIdx}"]:checked`);
+                                            // Chỉ lấy các giá trị thực tế khác rỗng (phương án có bệnh lý dương tính)
+                                            if (selectedOption && selectedOption.value && selectedOption.value.trim() !== "") {
+                                                selectedAnswers.push(selectedOption.value);
+                                            }
+                                        });
+                                        
+                                        // Gộp câu trả lời vào trường text triệu chứng
+                                        const symptomsInput = document.getElementById('symptoms');
+                                        let currentVal = symptomsInput.value.trim();
+                                        
+                                        // Gỡ bỏ các cờ hiệu cũ nếu có để tránh trùng lặp
+                                        currentVal = currentVal.replace(/,?\s*đã vấn chẩn/gi, "");
+                                        
+                                        selectedAnswers.forEach(ans => {
+                                            currentVal += (currentVal ? ", " : "") + ans;
+                                        });
+                                        
+                                        // Luôn thêm cờ đã vấn chẩn để tránh lặp vô hạn câu hỏi
+                                        currentVal += (currentVal ? ", " : "") + "đã vấn chẩn";
+                                        symptomsInput.value = currentVal;
+                                        
+                                        // Cuộn lên đầu và kích hoạt chẩn đoán lại
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        document.getElementById('diagnoseForm').dispatchEvent(new Event('submit'));
+                                    });
+                                }
+                            }, 100);
+                        }
+                    } else {
+                        textResult.innerHTML = "<span class='text-slate-400 italic'>Hệ thống chưa tìm thấy bệnh lý phù hợp.</span>";
+                    }
+
+                    // 2. Hiển thị kết quả Vọng chẩn (LLaVA)
+                    if(data.vision_details) {
+                        let htmlContent = "";
+                        
+                        // Hiển thị mô tả chi tiết lưỡi
+                        if(data.vision_details.tongue_description_vi) {
+                            htmlContent += `
+                                <div class="mb-3.5">
+                                    <strong class="text-teal-700 text-xs uppercase block mb-1">👅 Phân tích lưỡi:</strong>
+                                    <p class="text-slate-700 font-medium text-sm">${escapeHtml(data.vision_details.tongue_description_vi)}</p>
+                                </div>
+                            `;
+                        }
+                        
+                        // Hiển thị mô tả chi tiết khuôn mặt
+                        if(data.vision_details.face_description_vi) {
+                            htmlContent += `
+                                <div class="mb-3.5">
+                                    <strong class="text-teal-700 text-xs uppercase block mb-1">📷 Phân tích sắc mặt:</strong>
+                                    <p class="text-slate-700 font-medium text-sm">${escapeHtml(data.vision_details.face_description_vi)}</p>
+                                </div>
+                            `;
+                        }
+                        
+                        // Hiển thị các triệu chứng chuẩn khớp được
+                        if(data.vision_details.analysis) {
+                            htmlContent += `
+                                <div class="mt-3 pt-2.5 border-t border-slate-100">
+                                    <strong class="text-teal-700 text-xs uppercase block mb-1">🔍 Triệu chứng đã khớp:</strong>
+                                    <span class="inline-block bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs font-bold border border-blue-100">${escapeHtml(data.vision_details.analysis)}</span>
+                                </div>
+                            `;
+                        }
+                        
+                        if(htmlContent) {
+                            visionResult.innerHTML = htmlContent;
+                        } else {
+                            visionResult.innerHTML = "<span class='text-slate-400 italic'>AI chưa phát hiện được triệu chứng bất thường qua ảnh.</span>";
+                        }
+                    } else {
+                        visionResult.innerHTML = "<span class='text-slate-400 italic'>AI chưa phát hiện được triệu chứng bất thường qua ảnh.</span>";
+                    }
+
+                    resultArea.classList.remove('hidden');
+
+                    // 3. Trực quan hóa Đồ thị mạng lưới liên kết Vis-Network
+                    buildNetworkGraph(data);
+                } else {
+                    alert("Gặp lỗi từ API: " + json.detail);
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi: Không thể kết nối tới Backend.\nHướng dẫn: Hãy chắc chắn máy tính cá nhân của bạn đã mở uvicorn và ngrok thành công!");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Phân tích tham khảo bằng AI</span>';
+            }
+        });
+
+        // [BẢO MẬT] Escape dữ liệu từ LLM/Neo4j trước khi chèn vào HTML để tránh XSS
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return "";
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        // Hàm vẽ mạng lưới đồ thị tri thức thông minh
+        function buildNetworkGraph(data) {
+            const container = document.getElementById('graphContainer');
+            const nodes = [];
+            const edges = [];
+
+            // Gốc: Bệnh nhân
+            nodes.push({ id: 'patient', label: 'Bệnh Nhân', color: '#0d9488', font: { color: '#ffffff', size: 14, bold: true }, shape: 'circle' });
+
+            // Bóc tách danh sách triệu chứng (gồm cả triệu chứng nhập text và ảnh)
+            let symptoms = [];
+            if(data.input_fusion) {
+                symptoms = data.input_fusion.split(',').map(s => s.trim());
+            } else if(data.vision_details && data.vision_details.analysis) {
+                symptoms = data.vision_details.analysis.split(',').map(s => s.trim());
+            }
+
+            symptoms.forEach((sym, index) => {
+                const symId = `sym_${index}`;
+                nodes.push({
+                    id: symId,
+                    label: sym,
+                    color: { background: '#fee2e2', border: '#fca5a5' },
+                    font: { color: '#991b1b', size: 12 },
+                    shape: 'box'
+                });
+                edges.push({ from: 'patient', to: symId, label: 'có biểu hiện', color: '#fca5a5', font: { size: 9 } });
+            });
+
+            // Lập bản đồ cho Hội chứng & Bài thuốc lấy từ kết quả chẩn đoán chính xác Neo4j
+            if(data.diagnosis_result && data.diagnosis_result.data) {
+                data.diagnosis_result.data.forEach((synData, synIdx) => {
+                    const synId = `syn_${synIdx}`;
+
+                    // Node Hội chứng
+                    nodes.push({
+                        id: synId,
+                        label: synData.syndrome,
+                        color: { background: '#fef9c3', border: '#fef08a' },
+                        font: { color: '#854d0e', size: 12, bold: true },
+                        shape: 'ellipse'
+                    });
+
+                    // Kết nối các triệu chứng tương ứng đến hội chứng
+                    symptoms.forEach((sym, sIdx) => {
+                        edges.push({ from: `sym_${sIdx}`, to: synId, color: '#fef08a', style: 'dashed' });
+                    });
+
+                    // Duyệt qua các bài thuốc điều trị được trả về cho hội chứng này
+                    const treatments = synData.treatments_by_disease || [];
+                    treatments.forEach((treat, treatIdx) => {
+                        const pId = `pres_${synIdx}_${treatIdx}`;
+
+                        // Node Bài thuốc (gắn kèm tên Bệnh để bác sĩ dễ theo dõi)
+                        nodes.push({
+                            id: pId,
+                            label: `${treat.bai_thuoc}\n(Trị ${treat.disease})`,
+                            color: { background: '#dcfce7', border: '#bbf7d0' },
+                            font: { color: '#166534', size: 11, bold: true },
+                            shape: 'hexagon'
+                        });
+
+                        edges.push({ from: synId, to: pId, label: 'trị bằng', color: '#bbf7d0', font: { size: 9 } });
+
+                        // Tạo Node Vị thuốc (Chỉ lấy tối đa 6 vị thuốc tiêu biểu để đồ thị sạch đẹp)
+                        if(treat.vi_thuoc) {
+                            let herbsList = [];
+                            if (Array.isArray(treat.vi_thuoc)) {
+                                herbsList = treat.vi_thuoc;
+                            } else if (typeof treat.vi_thuoc === 'string') {
+                                herbsList = treat.vi_thuoc.split(',').map(v => v.trim());
+                            }
+                            
+                            herbsList.slice(0, 6).forEach((vi, vIdx) => {
+                                const herbId = `herb_${synIdx}_${treatIdx}_${vIdx}`;
+                                nodes.push({
+                                    id: herbId,
+                                    label: vi,
+                                    color: { background: '#e0f2fe', border: '#bae6fd' },
+                                    font: { color: '#075985', size: 10 },
+                                    shape: 'ellipse'
+                                });
+                                edges.push({ from: pId, to: herbId, label: 'chứa', color: '#bae6fd', font: { size: 8 } });
+                            });
+                        }
+                    });
+                });
+            }
+
+            const visNodes = new vis.DataSet(nodes);
+            const visEdges = new vis.DataSet(edges);
+
+            const options = {
+                nodes: { borderWidth: 2, shadow: true },
+                edges: { width: 2, shadow: true, arrows: { to: { enabled: true, scaleFactor: 0.8 } } },
+                physics: {
+                    forceAtlas2Based: { gravitationalConstant: -26, centralGravity: 0.005, springLength: 120, springStrength: 0.08 },
+                    solver: 'forceAtlas2Based',
+                    stabilization: { iterations: 100 }
+                }
+            };
+
+            new vis.Network(container, { nodes: visNodes, edges: visEdges }, options);
+        }
+    </script>
+</body>
+</html>

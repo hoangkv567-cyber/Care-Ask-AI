@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# Logs
+logs/
+*.log
+
+# Project specific
+temp_uploads/
+*.jpg
+*.png
+*.jpeg
+
+.vercel
+
+# Secrets: chặn .env thật, NHƯNG giữ lại file mẫu .env.example để commit
+.env*
+!.env.example
+
+# File debug/nháp tạm ở gốc dự án
+scratch_*.txt
