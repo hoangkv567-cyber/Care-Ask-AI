@@ -1,0 +1,54 @@
+
+======================================================================
+TỔNG QUAN SỐ LƯỢNG NODE
+======================================================================
+  BenhLy     : 194
+  HoiChung   : 440
+  TrieuChung : 3319
+  BaiThuoc   : 823
+  ViThuoc    : 1102
+
+======================================================================
+HoiChung TRÙNG TÊN (cùng name, >1 node) — ứng viên gộp
+======================================================================
+  (Không có HoiChung trùng tên — tốt)
+
+======================================================================
+HoiChung 'BẨN' (tên nghi rác NLP) — ứng viên làm sạch
+======================================================================
+  Số node nghi bẩn: 7
+    - 'Ung thư dạ dày, đau thượng vị, ăn kém, ợ hơi, gầy sút'
+    - 'Phòng tái phát (bổ can thận khu phong trừ thấp)'
+    - 'Thể mãn tính - Can kinh thấp nhiệt (đợt cấp)'
+    - 'Biến chứng - Đau ngực (Hung tý)'
+    - 'Cổ trướng do (Thấp) nhiệt uất huyết ứ'
+    - 'Kinh nghiệm (mới hoặc lâu khó cử động)'
+    - 'Thể mãn tính - Thận hư (âm hư hỏa viêm)'
+
+======================================================================
+HoiChung MỒ CÔI (không có cạnh nào) — rác treo
+======================================================================
+  Số HoiChung không có bất kỳ quan hệ nào: 0
+
+======================================================================
+CẠNH CÓ_BIỂU_HIỆN thiếu benh_ly (NULL) — nguồn khớp tràn
+======================================================================
+  CÓ_BIỂU_HIỆN: 5893 cạnh, trong đó 84 thiếu benh_ly (1.4%)
+
+======================================================================
+BaiThuoc thiếu benh_ly / hoi_chung — khó truy hồi nhất quán
+======================================================================
+  BaiThuoc: 823 node | thiếu benh_ly: 0 | thiếu hoi_chung: 0
+
+======================================================================
+HoiChung KHÔNG có bài thuốc điều trị — pháp trị sẽ rỗng
+======================================================================
+  Số hội chứng (theo name) chưa có ĐƯỢC_ĐIỀU_TRỊ_BẰNG: 0
+
+======================================================================
+BaiThuoc.hoi_chung KHÔNG khớp HoiChung.name — bài thuốc sẽ 'biến mất' khỏi truy vấn
+======================================================================
+  Số BaiThuoc có hoi_chung lệch tên HoiChung nối tới: 0
+
+>>> Xong chẩn đoán (chỉ đọc). Dùng số liệu trên để quyết định bước --apply.
+

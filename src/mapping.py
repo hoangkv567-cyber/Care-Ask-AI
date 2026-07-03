@@ -35,6 +35,10 @@ class SymptomToSyndromeMapper:
         for symptom in symptom_list:
             if symptom in self.mapping:
                 syndromes.update(self.mapping[symptom])
+            elif len(str(symptom).split()) > 8:
+                # Đoạn mô tả tự do từ VLM (cả câu văn) — không phải key triệu chứng chuẩn,
+                # việc khớp do LLM matcher trong fusion_pipeline đảm nhận, không cần cảnh báo
+                logger.debug(f"Bỏ qua mapping keyword cho mô tả tự do: {str(symptom)[:60]}...")
             else:
                 logger.warning(f"Chưa có mapping cho: {symptom}")
         return list(syndromes)

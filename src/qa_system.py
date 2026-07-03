@@ -469,9 +469,14 @@ class TCMQA:
     def get_treatments_for_syndrome(self, syndrome: str, diseases: list = None) -> list:
         """Trả về [{disease, bai_thuoc, vi_thuoc}] NHẤT QUÁN: mỗi bệnh đi kèm ĐÚNG bài thuốc của nó
         (ràng buộc p.benh_ly = b.name AND p.hoi_chung = h.name). Nếu diseases=None thì lấy mọi bệnh."""
+        # [FIX CASE-INSENSITIVE] KG có ~24 nhóm HoiChung trùng tên chỉ khác hoa/thường
+        # ('Tỳ Thận Dương hư' vs 'Tỳ thận dương hư') làm exact-match trượt bài thuốc oan.
+        # Khớp toLower để gom đủ mọi biến thể; ràng buộc p.hoi_chung = h.name vẫn giữ per-node
+        # nên mỗi biến thể chỉ trả đúng bài thuốc của chính nó (không khớp tràn).
         cypher = """
-        MATCH (b:BenhLy)-[:CHIA_THÀNH]->(h:HoiChung {name: $syn})
-        WHERE $diseases IS NULL OR b.name IN $diseases
+        MATCH (b:BenhLy)-[:CHIA_THÀNH]->(h:HoiChung)
+        WHERE toLower(h.name) = toLower($syn)
+          AND ($diseases IS NULL OR b.name IN $diseases)
         OPTIONAL MATCH (h)-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(p:BaiThuoc)
           WHERE p.benh_ly = b.name AND p.hoi_chung = h.name
         OPTIONAL MATCH (p)-[:BAO_GỒM]->(v:ViThuoc)
@@ -575,6 +580,94 @@ class TCMQA:
             return max(matched, key=len)             # bệnh 1 chữ: cần có ngữ cảnh hỏi-bệnh
         return None
 
+    @staticmethod
+    def _norm_ws(s: str) -> str:
+        """Chuẩn hoá khoảng trắng để HIỂN THỊ: bỏ tab/space thừa đầu-cuối và gộp khoảng trắng lặp
+        (một số tên node trong graph còn dính tab/space bẩn từ lúc import, vd '\\tĐầu thống')."""
+        return re.sub(r"\s+", " ", (s or "")).strip()
+
+    # ====================================================================
+    # [TÍNH NĂNG] HỎI "HỘI CHỨNG X GỒM NHỮNG BỆNH LÝ GÌ" (HoiChung -> danh sách BenhLy + triệu chứng)
+    # ====================================================================
+    def _get_all_syndrome_names(self) -> list:
+        """Lấy toàn bộ tên HoiChung (bỏ node bẩn có số/ngoặc/gắn cờ) để dò trong câu hỏi."""
+        try:
+            with self.driver.session() as session:
+                return [rec["name"] for rec in session.run(
+                    "MATCH (h:HoiChung) WHERE h.name IS NOT NULL AND NOT h.name =~ '.*[0-9(].*' "
+                    "AND NOT coalesce(h._flagged_dirty, false) RETURN h.name AS name")]
+        except Exception as e:
+            logger.error(f"Lỗi lấy danh sách hội chứng: {e}")
+            return []
+
+    @staticmethod
+    def _is_syndrome_to_diseases_intent(text: str) -> bool:
+        """True nếu câu hỏi kiểu 'hội chứng X gồm/có những bệnh (lý) nào/gì' (hội chứng -> liệt kê bệnh)."""
+        t = (text or "").lower()
+        has_syn_ref = ("hội chứng" in t) or ("thể bệnh" in t)
+        wants_diseases = any(c in t for c in (
+            "bệnh gì", "bệnh nào", "bệnh lý gì", "bệnh lý nào", "những bệnh", "các bệnh",
+            "gồm bệnh", "có ở bệnh", "ở bệnh nào", "thuộc bệnh", "bệnh lý gồm", "bệnh lý liên quan",
+        ))
+        return has_syn_ref and wants_diseases
+
+    def _match_syndrome_in_question(self, text: str):
+        """Trả về TÊN HỘI CHỨNG (đúng như DB) xuất hiện trong câu hỏi (longest-match), ngược lại None."""
+        if not text:
+            return None
+        names = self._get_all_syndrome_names()
+        if not names:
+            return None
+        text_lower = text.lower()
+        names_sorted = sorted(set(n for n in names if n), key=len, reverse=True)  # dài trước
+        for name in names_sorted:
+            nl = name.lower().strip()
+            if len(nl) < 2:
+                continue
+            pattern = rf'(?<!\w){re.escape(nl)}(?!\w)'
+            if re.search(pattern, text_lower):
+                return name
+        return None
+
+    def get_diseases_by_syndrome_overview(self, syndrome_name: str) -> dict:
+        """Truy vấn TẤT ĐỊNH: hội chứng -> các BỆNH LÝ mang hội chứng đó, kèm TRIỆU CHỨNG của từng bệnh
+        (ràng buộc r.benh_ly=b.name để triệu chứng đúng ngữ cảnh của từng bệnh). Read-only, tham số hoá."""
+        # [FIX CASE-INSENSITIVE] gom mọi biến thể hoa/thường của cùng hội chứng
+        cypher = """
+        MATCH (b:BenhLy)-[:CHIA_THÀNH]->(h:HoiChung)
+        WHERE toLower(h.name) = toLower($syn)
+        OPTIONAL MATCH (h)-[r:CÓ_BIỂU_HIỆN]->(t:TrieuChung) WHERE r.benh_ly = b.name
+        WITH b, collect(DISTINCT t.name) AS symptoms
+        RETURN b.name AS disease, symptoms
+        ORDER BY disease
+        """
+        rows = []
+        try:
+            with self.driver.session() as session:
+                rows = session.execute_read(
+                    lambda tx: [dict(rec) for rec in tx.run(cypher, syn=syndrome_name)])
+        except Exception as e:
+            logger.error(f"Lỗi get_diseases_by_syndrome_overview ('{syndrome_name}'): {e}")
+
+        if not rows:
+            answer = (f"### 🩺 Hội chứng: **{syndrome_name}**\n\n"
+                      f"Hệ tri thức chưa ghi nhận bệnh lý nào mang hội chứng này.")
+            return {"question": "", "answer": answer, "data": []}
+
+        syn_disp = self._norm_ws(syndrome_name)
+        parts = [f"### 🩺 Hội chứng: **{syn_disp}**",
+                 f"Trong hệ tri thức, hội chứng **{syn_disp}** xuất hiện ở **{len(rows)} bệnh lý**:\n"]
+        for i, r in enumerate(rows, 1):
+            parts.append(f"**{i}. {self._norm_ws(r['disease'])}**")
+            syms = [self._norm_ws(s) for s in (r.get("symptoms") or []) if s and s.strip()]
+            if syms:
+                parts.append(f"- **Triệu chứng:** {', '.join(syms)}")
+            else:
+                parts.append("- **Triệu chứng:** _(chưa có trong dữ liệu)_")
+            parts.append("")  # dòng trống ngăn cách
+        answer = "\n".join(parts)
+        return {"question": "", "answer": answer, "data": rows}
+
     def get_disease_overview(self, disease_name: str) -> dict:
         """Truy vấn TẤT ĐỊNH tổng quan 1 bệnh: mỗi Hội chứng kèm Triệu chứng đặc trưng,
         Bài thuốc điều trị và Vị thuốc trong bài. Ràng buộc r.benh_ly=b.name & p.benh_ly=b.name
@@ -601,30 +694,31 @@ class TCMQA:
             logger.error(f"Lỗi get_disease_overview ('{disease_name}'): {e}")
 
         # ------- Dựng câu trả lời Markdown -------
+        disease_disp = self._norm_ws(disease_name)
         if not rows:
-            answer = (f"### 🩺 Bệnh lý: **{disease_name}**\n\n"
+            answer = (f"### 🩺 Bệnh lý: **{disease_disp}**\n\n"
                       f"Hệ tri thức chưa có dữ liệu hội chứng/bài thuốc cho bệnh này.")
             return {"question": "", "answer": answer, "data": []}
 
         n_syn = len(rows)
         n_formula = sum(len(r.get("formulas") or []) for r in rows)
-        parts = [f"### 🩺 Tổng quan bệnh lý: **{disease_name}**",
-                 f"Trong hệ tri thức, bệnh **{disease_name}** được chia thành **{n_syn} hội chứng** "
+        parts = [f"### 🩺 Tổng quan bệnh lý: **{disease_disp}**",
+                 f"Trong hệ tri thức, bệnh **{disease_disp}** được chia thành **{n_syn} hội chứng** "
                  f"(thể bệnh){f', với tổng cộng {n_formula} bài thuốc điều trị' if n_formula else ''}:\n"]
         for i, r in enumerate(rows, 1):
-            parts.append(f"**{i}. {r['syndrome']}**")
-            syms = [s for s in (r.get("symptoms") or []) if s]
+            parts.append(f"**{i}. {self._norm_ws(r['syndrome'])}**")
+            syms = [self._norm_ws(s) for s in (r.get("symptoms") or []) if s and s.strip()]
             if syms:
                 parts.append(f"- **Triệu chứng đặc trưng:** {', '.join(syms)}")
             forms = [f for f in (r.get("formulas") or []) if f and f.get("bai_thuoc")]
             if forms:
                 parts.append("- **Bài thuốc điều trị:**")
                 for f in forms:
-                    herbs = [h for h in (f.get("vi_thuoc") or []) if h]
+                    herbs = [self._norm_ws(h) for h in (f.get("vi_thuoc") or []) if h and h.strip()]
                     if herbs:
-                        parts.append(f"    - *{f['bai_thuoc']}* — gồm: {', '.join(herbs)}")
+                        parts.append(f"    - *{self._norm_ws(f['bai_thuoc'])}* — gồm: {', '.join(herbs)}")
                     else:
-                        parts.append(f"    - *{f['bai_thuoc']}*")
+                        parts.append(f"    - *{self._norm_ws(f['bai_thuoc'])}*")
             else:
                 parts.append("- **Bài thuốc:** _(chưa có trong dữ liệu)_")
             parts.append("")  # dòng trống ngăn cách hội chứng
@@ -633,6 +727,19 @@ class TCMQA:
 
     def execute_and_answer(self, user_question: str, read_only: bool = False) -> dict:
         # read_only=True: luồng web — chặn Cypher ghi + KHÔNG lộ Cypher/stacktrace ra client.
+        # Bước 0-A: Câu hỏi kiểu "hội chứng X gồm những bệnh lý gì" -> liệt kê BỆNH LÝ + triệu chứng
+        # từng bệnh. CHẠY TRƯỚC dò bệnh vì có tên (vd "Khí hư") vừa là BenhLy vừa là HoiChung.
+        try:
+            if self._is_syndrome_to_diseases_intent(user_question):
+                syndrome = self._match_syndrome_in_question(user_question)
+                if syndrome:
+                    syn_overview = self.get_diseases_by_syndrome_overview(syndrome)
+                    if syn_overview.get("data"):
+                        syn_overview["question"] = user_question
+                        return syn_overview
+        except Exception as e:
+            logger.error(f"Lỗi xử lý intent hội chứng->bệnh lý: {e}")
+
         # Bước 0: Nếu câu hỏi hướng về 1 BỆNH LÝ -> trả TỔNG QUAN bệnh (tất định, không cần LLM).
         try:
             disease = self._match_disease_in_question(user_question)
@@ -764,8 +871,17 @@ class TCMQA:
 
     def get_syndrome_metadata(self, syndrome: str) -> dict:
         """Lấy thông tin Tạng Phủ và Bát Cương liên quan đến Hội chứng"""
+        # [FIX CASE-INSENSITIVE] khớp không phân biệt hoa/thường. Nhưng nếu tồn tại node khớp ĐÚNG
+        # hoa/thường thì CHỈ lấy node đó (tránh trộn tag Bát Cương của các biến thể trùng tên có thể
+        # gắn nhãn lệch nhau -> reintroduce 'Thực' lạ kích 'Bản Hư Tiêu Thực'). Chỉ khi không có
+        # node khớp đúng casing mới gom mọi biến thể (đảm bảo vẫn tra được khi tên gọi lệch casing).
         cypher = """
-        MATCH (h:HoiChung {name: $syn})
+        MATCH (h:HoiChung)
+        WHERE toLower(h.name) = toLower($syn)
+        WITH collect(h) AS hs
+        WITH hs, [x IN hs WHERE x.name = $syn] AS exact
+        WITH CASE WHEN size(exact) > 0 THEN exact ELSE hs END AS chosen
+        UNWIND chosen AS h
         OPTIONAL MATCH (h)-[:THUỘC_TẠNG]->(tp:TangPhu)
         OPTIONAL MATCH (h)-[:CÓ_TÍNH_CHẤT|TRẠNG_THÁI|VỊ_TRÍ]->(bc:BatCuong)
         RETURN collect(DISTINCT tp.name) AS organs, collect(DISTINCT bc.name) AS bat_cuong

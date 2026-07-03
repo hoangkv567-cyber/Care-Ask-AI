@@ -50,3 +50,6 @@ temp_uploads/
 
 # File debug/nháp tạm ở gốc dự án
 scratch_*.txt
+
+.vercel
+.env*

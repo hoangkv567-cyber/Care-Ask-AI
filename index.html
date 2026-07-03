@@ -193,11 +193,11 @@
                 </h2>
                 
                 <div class="space-y-6">
-                    <!-- Kết quả Vọng chẩn (LLaVA) -->
+                    <!-- Kết quả Vọng chẩn (AI Vision) -->
                     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
                         <h3 class="font-bold text-teal-800 text-sm mb-3 flex items-center space-x-1.5 uppercase tracking-wide border-b pb-2">
                             <span>👁️</span>
-                            <span>Phân tích Hình ảnh (LLaVA):</span>
+                            <span>Phân tích Hình ảnh (AI Vision):</span>
                         </h3>
                         <p id="visionResult" class="text-slate-600 text-sm leading-relaxed"></p>
                     </div>
@@ -282,11 +282,16 @@
     </div>
 
     <script>
-        // Cấu hình URL mặc định: Tự động trỏ thẳng về link Ngrok đang hoạt động của bạn!
-        const DEFAULT_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
+        // Cấu hình URL mặc định: chạy cục bộ (file/localhost) -> localhost:8000;
+        // khi deploy (Vercel) -> trỏ THẲNG về backend qua ngrok (đã cố định).
+        // Đổi ngrok? Sửa hằng NGROK_API_URL rồi deploy lại, HOẶC bấm ⚙️ dán URL mới trên trang.
+        const NGROK_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
+        const DEFAULT_API_URL = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? "http://localhost:8000"
+            : NGROK_API_URL;
         const STORAGE_KEY = "healthwatch_api_base_url";
         
-        // Ưu tiên đọc cấu hình lưu trong trình duyệt trước, nếu không có sẽ tự nhận link Ngrok mặc định của bạn
+        // Ưu tiên đọc cấu hình lưu trong trình duyệt trước, nếu không có sẽ tự nhận link mặc định
         let apiBaseUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_API_URL;
 
         const settingsBtn = document.getElementById('settingsBtn');
@@ -456,7 +461,7 @@
             try {
                 const response = await fetch(`${apiBaseUrl}/api/ask`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                     body: JSON.stringify({ question })
                 });
                 hideTyping();
@@ -511,7 +516,8 @@
                 const response = await fetch(`${apiBaseUrl}/api/related-symptoms`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
                     },
                     body: JSON.stringify({ symptoms: currentSymptomsText })
                 });
@@ -605,6 +611,7 @@
                 // Gọi API Backend qua Endpoint kết nối
                 const response = await fetch(`${apiBaseUrl}/api/diagnose`, {
                     method: 'POST',
+                    headers: { 'ngrok-skip-browser-warning': 'true' },
                     body: formData
                 });
 
@@ -725,7 +732,7 @@
                         textResult.innerHTML = "<span class='text-slate-400 italic'>Hệ thống chưa tìm thấy bệnh lý phù hợp.</span>";
                     }
 
-                    // 2. Hiển thị kết quả Vọng chẩn (LLaVA)
+                    // 2. Hiển thị kết quả Vọng chẩn (AI Vision)
                     if(data.vision_details) {
                         let htmlContent = "";
                         

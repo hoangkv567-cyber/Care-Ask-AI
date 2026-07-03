@@ -17,12 +17,51 @@ Output ONLY the syndrome name as a JSON string. Example: "Tỳ vị hư nhược
 """
 
 FACE_PROMPT_TEMPLATE = """
-Act as a TCM face diagnosis expert. Describe the patient's face objectively based on these exact questions:
-1. What is the complexion/skin color? (e.g., pale/white, sallow, yellowish-pale, dull, flushed red, or normal/healthy pink). Note: Pay close attention to lighting. If the skin is naturally pale/white but appears slightly yellow due to warm indoor lighting or warm background colors, you must describe it as pale/white, NOT sallow/yellowish.
-2. Are there wrinkles, lines, or creases on the forehead or between the eyebrows (Ấn Đường)? (Describe them if present).
-3. Are there any small moles, spots, or marks on the chin, cheeks, forehead, or neck? (Describe where they are).
-4. What are the eyebrows like? (e.g., sparse, thick, symmetrical, or asymmetrical).
-5. Are there dark circles, puffiness under the eyes, or visible laugh lines?
+Act as a TCM face diagnosis expert. Look at this face photo and describe ONLY what you can clearly see, focusing on:
+1. Overall complexion color (e.g., pale/white, sallow/yellowish, flushed red, greenish, darkish, or normal/healthy pink). Note: Pay close attention to lighting. If the skin is naturally pale/white but appears slightly yellow due to warm indoor lighting or warm background colors, you must describe it as pale/white, NOT sallow/yellowish.
+2. Skin luster: bright and moist, or dull and dry.
+3. Redness concentrated in a specific area (e.g., flushed cheeks), rashes, or red patches — only if clearly visible.
+4. Facial puffiness/swelling, dark circles, or puffiness under the eyes — only if clearly visible.
 
-Write a concise, factual description in English (2-3 sentences) combining these details. Do not use healthy/smooth/rosy templates unless they actually apply. Be highly realistic and objective.
+5. Clearly visible makeup (lipstick, blush, foundation, eyeliner) — mention it ONLY if clearly present, because makeup can mask the true complexion. If there is no makeup, do not mention makeup at all.
+
+IMPORTANT RULES:
+- Only describe a feature if you can clearly see it in the photo. If a feature is absent or you are unsure, do not mention it at all. Never guess or invent details.
+- Do not comment on anything outside the list above (hair, eyebrows, moles, spots, wrinkles, jewelry, background).
+- Do not use healthy/smooth/rosy template phrases unless they actually apply.
+
+Write a concise, factual description in English (2-3 sentences).
+"""
+
+# ============================================================================
+# Bản prompt TIẾNG VIỆT — dùng cho VLM cloud (Qwen3-VL qua SiliconFlow).
+# Model mô tả thẳng bằng tiếng Việt nên pipeline bỏ qua được bước dịch Anh->Việt
+# (nguồn gốc lỗi lặp từ và dịch sai thin/thick của Qwen).
+# LLaVA local vẫn dùng bản tiếng Anh ở trên vì tiếng Việt của LLaVA rất yếu.
+# ============================================================================
+
+TONGUE_PROMPT_TEMPLATE_VI = """
+Bạn là chuyên gia Đông y với 20 năm kinh nghiệm vọng chẩn (xem lưỡi).
+Quan sát kỹ ảnh lưỡi và mô tả khách quan các đặc điểm sau:
+1. Màu sắc thân lưỡi (ví dụ: nhợt, hồng nhạt, đỏ, đỏ sẫm, tím...). Chú ý ánh sáng: nếu lưỡi hồng nhạt/bình thường nhưng ánh sáng ấm làm trông hơi đỏ, hãy mô tả là hồng nhạt; chỉ nói đỏ/đỏ sẫm khi thấy rõ.
+2. Màu sắc và kết cấu rêu lưỡi (rêu trắng hay vàng, mỏng hay dày, nhờn/dính, khô, bong tróc, hay không có rêu...).
+3. Hình thể lưỡi: chú ý kỹ hai mép lưỡi. Vết lõm gợn sóng ở mép lưỡi CHÍNH LÀ dấu răng — nếu thấy dù chỉ nhẹ, hãy kết luận rõ "có dấu răng nhẹ"; chỉ kết luận "không có dấu răng" khi mép lưỡi hoàn toàn trơn nhẵn. TUYỆT ĐỐI không vừa mô tả vết lõm gợn sóng vừa nói không có dấu răng (mâu thuẫn). Ngoài ra xem bề mặt lưỡi có vết nứt không.
+
+Viết mô tả ngắn gọn, khách quan 1-2 câu bằng tiếng Việt. Không dùng JSON hay gạch đầu dòng, chỉ viết đoạn văn mô tả.
+"""
+
+FACE_PROMPT_TEMPLATE_VI = """
+Bạn là chuyên gia vọng chẩn Đông y. Quan sát ảnh khuôn mặt và CHỈ mô tả những gì thấy rõ, tập trung vào:
+1. Màu sắc tổng thể của sắc mặt (ví dụ: trắng nhợt, vàng úa, đỏ bừng, xanh xao, sạm tối, hoặc hồng hào bình thường). Chú ý ánh sáng: nếu da vốn trắng nhợt nhưng hơi ngả vàng do ánh đèn ấm trong nhà hoặc nền ảnh màu ấm, phải mô tả là trắng nhợt, KHÔNG được nói vàng úa.
+2. Độ tươi nhuận của da: sáng và ẩm mượt, hay khô xỉn thiếu sức sống.
+3. Vùng đỏ tập trung (ví dụ: hai gò má đỏ), ban hoặc mảng đỏ — chỉ nêu khi thấy rõ.
+4. Mặt phù/sưng, quầng thâm hay bọng mắt — chỉ nêu khi thấy rõ.
+5. Trang điểm rõ (son môi, phấn má, kẻ mắt...) — CHỈ nêu khi thấy rõ là có, vì trang điểm che mất sắc mặt thật. Nếu không có trang điểm thì tuyệt đối không nhắc gì đến trang điểm.
+
+QUY TẮC BẮT BUỘC:
+- Chỉ mô tả đặc điểm thấy rõ trong ảnh. Nếu không có hoặc không chắc chắn, tuyệt đối KHÔNG nhắc đến. Không đoán, không bịa.
+- Không bình luận về bất cứ thứ gì ngoài danh sách trên (tóc, lông mày, nốt ruồi, đốm, nếp nhăn, trang sức, hậu cảnh).
+- Không dùng câu khuôn mẫu kiểu "khỏe mạnh/mịn màng/hồng hào" nếu không đúng thực tế.
+
+Viết mô tả ngắn gọn, khách quan 2-3 câu bằng tiếng Việt.
 """

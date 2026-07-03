@@ -67,6 +67,44 @@ class OllamaTCMClient:
             logger.error(f"Lỗi khi gọi LLaVA: {e}")
             return []
 
+    def verify_image_modality(self, image_path: str) -> str:
+        """Phân loại THÔ ảnh trước khi phân tích: trả 'tongue' | 'face' | 'other' | None (lỗi).
+        Dùng để chặn trường hợp người dùng tải nhầm ảnh vào sai ô (vd ảnh LƯỠI vào ô KHUÔN MẶT)
+        khiến LLaVA bị prompt ép và BỊA ra đặc điểm không có. Phân biệt lưỡi-cận-cảnh vs khuôn-mặt
+        là việc THÔ, LLaVA 7B làm được (khác việc tả màu/rêu tinh vi)."""
+        prompt = (
+            "Look at this image and classify what it PRIMARILY shows. "
+            "Answer with EXACTLY ONE WORD, nothing else:\n"
+            "- TONGUE : a close-up of a human tongue stuck out of the mouth\n"
+            "- FACE   : a human face / head portrait (whole face visible)\n"
+            "- OTHER  : anything else (hand, object, body part, unclear photo)\n"
+            "Your answer (one word only):"
+        )
+        try:
+            response = self.client.chat(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": "You are a strict image classifier. Reply with exactly one word: TONGUE, FACE, or OTHER."},
+                    {"role": "user", "content": prompt, "images": [image_path]}
+                ],
+                options={"temperature": 0.0, "top_p": self.top_p, "seed": self.seed}
+            )
+            txt = (response['message']['content'] or "").strip().lower()
+            logger.info(f"Phân loại ảnh ({image_path}): '{txt[:40]}'")
+            first = txt.split()[0].strip(".,:;\"'") if txt.split() else ""
+            for key in ("tongue", "face", "other"):
+                if first == key:
+                    return key
+            # fallback: ưu tiên 'tongue' (từ khoá đặc hiệu hơn 'face') rồi 'face'
+            if "tongue" in txt:
+                return "tongue"
+            if "face" in txt or "portrait" in txt:
+                return "face"
+            return "other"
+        except Exception as e:
+            logger.error(f"Lỗi phân loại ảnh (verify_image_modality): {e}")
+            return None   # lỗi -> fail-open, không chặn
+
     def set_symptom_list(self, symptom_list: list, modality: str = "tongue"):
         """Cập nhật danh sách triệu chứng"""
         if modality == "tongue":
