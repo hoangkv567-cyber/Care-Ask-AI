@@ -699,11 +699,69 @@ class TCMFusionPipeline:
             # Lưới an toàn deterministic: LLM matcher hay bắt/bỏ thất thường vài dấu hiệu lưỡi
             # tùy cách diễn đạt của VLM -> chốt bằng code để mọi lần chạy cho cùng kết quả
             valid_mapped = self._force_add_tongue_signs(valid_mapped, description, candidate_symptoms)
+            # Lưới an toàn deterministic: chặn triệu chứng bị map từ câu PHỦ ĐỊNH
+            # ('không khô xỉn' -> Da khô) mà prompt NEGATION RULES thỉnh thoảng vẫn để lọt
+            valid_mapped = self._drop_negated_signs(valid_mapped, description)
             # Lưới an toàn deterministic: LLM 7B hay bỏ qua luật ngoại cảnh trong prompt
             return self._filter_external_attributions(valid_mapped, description)
         except Exception as e:
             logger.error(f"Lỗi mapping triệu chứng bằng LLM: {e}")
             return []
+
+    # (từ khóa nhận diện triệu chứng đã map, các từ gốc đặc trưng của nó trong mô tả VLM)
+    _NEGATION_GUARDS = [
+        (("da khô", "khô xỉn"), ("khô",)),
+        (("quầng thâm", "quầng đen"), ("quầng",)),
+        (("mặt phù", "sưng phù", "phù ở"), ("phù nề", "sưng", "húp", "mọng")),
+        (("có ban", "ban đỏ", "xuất huyết"), ("ban đỏ", "mẩn", "xuất huyết")),
+        (("vết nứt", "lưỡi nứt"), ("nứt",)),
+        (("bong tróc",), ("bong tróc", "bong")),
+        (("bọng mắt",), ("bọng",)),
+        (("mặt đỏ", "vùng đỏ", "gò má đỏ", "đỏ bừng"), ("đỏ",)),
+        (("nhớt", "nhờn"), ("nhớt", "nhờn", "dính")),
+        (("lưỡi khô", "rêu khô"), ("khô",)),
+    ]
+    # Cụm chứa từ gốc nhưng KHÔNG phải dấu hiệu bệnh ('da phù HỢP', 'ban ĐÊM') -> xóa trước khi soi.
+    _NEG_FALSE_FRIENDS = ("phù hợp", "ban đêm", "ban ngày", "ban đầu")
+    _NEG_MARK = r"(?:không|chẳng|chưa|ko|no|not|without)"
+
+    def _drop_negated_signs(self, mapped: list, description: str) -> list:
+        """[CHỐNG MATCH TỪ CÂU PHỦ ĐỊNH] LLM matcher thỉnh thoảng map triệu chứng từ đặc điểm mà mô tả
+        đã PHỦ ĐỊNH ('da không khô xỉn, ẩm mượt' -> Da khô). Chỉ LOẠI khi từ gốc bị phủ định ngay
+        trước (trong ~2 từ) và KHÔNG có lần nào được khẳng định. Nếu mô tả KHÔNG nhắc tới từ gốc
+        (matcher dùng đồng nghĩa/tiếng Anh: 'flushed cheeks' -> Gò má đỏ) thì TIN matcher, GIỮ lại —
+        bản cũ đòi từ gốc literal dương tính nên xóa oan mọi ánh xạ đồng nghĩa và toàn bộ path tiếng Anh."""
+        desc_l = (description or "").lower()
+        for ff in self._NEG_FALSE_FRIENDS:
+            desc_l = desc_l.replace(ff, " ")
+
+        def _root_status(roots):
+            """'pos' nếu có lần xuất hiện KHÔNG bị phủ định ngay trước; 'neg' nếu MỌI lần đều bị phủ
+            định; 'absent' nếu không nhắc tới -> caller sẽ GIỮ (tin matcher)."""
+            found = False
+            for root in roots:
+                # \b hai đầu: 'khô' KHÔNG được dính trong 'không' (bẫy âm tiết tiếng Việt kinh điển)
+                for mt in re.finditer(r"\b" + re.escape(root) + r"\b", desc_l):
+                    found = True
+                    pre = desc_l[max(0, mt.start() - 28):mt.start()]
+                    # phủ định phải đứng ngay trước (tối đa 2 âm tiết chen giữa: 'không thấy', 'không có')
+                    if not re.search(self._NEG_MARK + r"(?:\s+\S+){0,2}\s*$", pre):
+                        return "pos"
+            return "neg" if found else "absent"
+
+        kept = []
+        for s in mapped:
+            s_l = s.lower()
+            dropped = False
+            for keys, roots in self._NEGATION_GUARDS:
+                if any(k in s_l for k in keys):
+                    if _root_status(roots) == "neg":
+                        logger.info(f"[CHỐNG PHỦ ĐỊNH] Loại '{s}': từ gốc chỉ xuất hiện ở dạng bị phủ định")
+                        dropped = True
+                    break
+            if not dropped:
+                kept.append(s)
+        return kept
 
     # Nhóm triệu chứng lưỡi ĐỒNG NGHĨA -> gom về MỘT tên canonical (phần tử đầu nhóm) để mọi lần
     # chạy cho cùng tên node, điểm hội chứng không dao động theo cách LLM chọn biến thể tên.
@@ -902,6 +960,53 @@ class TCMFusionPipeline:
                                                      "sùi bọt mép", "ngã lăn", "mất ý thức", "hôn mê", "cứng người"]):
                 return False
 
+        # 0b. [CỔNG CHỦ CHỨNG BỆNH DANH] Bệnh danh ĐỒNG NGHĨA với một triệu chứng chủ đạo
+        # (Bất mị = mất ngủ, Phúc thống = đau bụng...) chỉ hợp lệ khi bệnh nhân THỰC SỰ có triệu
+        # chứng đó. Chống ca kiểu 'Bất mị thể Tỳ vị bất hòa': row CSV toàn triệu chứng tiêu hóa
+        # (ợ hơi, bụng đau, khó chịu) mà KHÔNG chứa chữ mất ngủ vì tên bệnh đã hàm ý — khớp ratio
+        # cao rồi gán nhãn mất ngủ cho bệnh nhân chỉ đau bụng ợ hơi. Khớp keyword theo ranh giới
+        # từ (regex \b) để từ ngắn như 'ho' không dính nhầm 'hoa mắt'.
+        _DEFINING_SYMPTOM_RULES = [
+            (("bất mị", "thất miên", "mất ngủ"),
+             ("mất ngủ", "khó ngủ", "không ngủ", "ngủ không", "thất miên", "khó vào giấc", "dễ tỉnh",
+              "trằn trọc", "ngủ kém", "ngủ chập chờn", "chập chờn", "tỉnh giấc", "thức giấc", "mộng nhiều",
+              "mơ nhiều", "hay mơ", "ngủ hay mơ", "khó đi vào giấc", "khó vào giấc ngủ")),
+            (("đầu thống",), ("đau đầu", "nhức đầu", "đầu thống", "đau nửa đầu")),
+            (("huyễn vựng",), ("chóng mặt", "hoa mắt", "choáng váng", "váng đầu", "huyễn vựng", "xây xẩm")),
+            (("phúc thống",), ("đau bụng", "bụng đau", "phúc thống", "đau quặn bụng", "đau vùng bụng", "bụng dưới đau")),
+            (("vị quản thống",),
+             ("đau thượng vị", "đau vùng thượng vị", "đau dạ dày", "đau bao tử", "đau bụng", "vị quản thống", "bụng đau")),
+            (("tiết tả", "tiêu chảy"), ("tiêu chảy", "đại tiện lỏng", "phân lỏng", "phân nát", "ỉa chảy", "đi lỏng", "tiết tả")),
+            (("ẩu thổ", "nôn mửa"), ("nôn", "buồn nôn", "ói", "ẩu thổ")),
+            (("táo bón", "tiện bí"), ("táo bón", "đại tiện táo", "khó đại tiện", "phân khô", "tiện bí")),
+            (("hiếp thống", "hiếp gian"),
+             ("đau sườn", "đau hạ sườn", "đau mạng sườn", "tức sườn", "đau hông sườn", "sườn trướng", "đau liên sườn", "hiếp thống")),
+            (("yêu thống",), ("đau lưng", "mỏi lưng", "đau thắt lưng", "yêu thống")),
+            (("khái thấu",), ("ho", "khái thấu")),
+            (("hư lao",),
+             ("mệt mỏi", "suy nhược", "gầy sút", "vô lực", "đuối sức", "uể oải", "sụt cân", "người yếu", "hư lao", "bệnh lâu ngày")),
+            (("cổ trướng",), ("bụng to", "bụng căng", "bụng trướng to", "báng bụng", "cổ trướng")),
+            # Bệnh thực thể gan: nhãn nặng, cấm gán khi không có dấu chỉ điểm gan
+            # (row 'Xơ gan|Tỳ thận dương hư' chỉ cần đau lưng + lưỡi bệu + rêu trắng là vượt ngưỡng khớp)
+            (("xơ gan", "viêm gan", "gan nhiễm mỡ"),
+             ("vùng gan", "gan to", "men gan", "viêm gan", "xơ gan", "vàng da", "da vàng", "mắt vàng",
+              "vàng mắt", "cổ trướng", "bụng to", "bụng căng", "đau sườn", "hạ sườn", "tức sườn",
+              "sườn đau", "nôn ra máu", "chảy máu cam")),
+            # Bệnh chẩn đoán bằng ĐO LƯỜNG: phải có bệnh nhân tự khai chỉ số, không suy từ chóng mặt/đau đầu
+            (("huyết áp thấp", "huyết áp cao", "cao huyết áp", "tăng huyết áp"),
+             ("huyết áp", "tụt huyết áp", "hạ áp", "tụt áp", "tăng áp")),
+            # bỏ 'lao' trần vì dính 'lao lực'/'lao động' (làm cổng mất tác dụng chặn) — đòi dấu chỉ điểm thật
+            (("lao phổi", "phế lao"), ("ho", "ho ra máu", "sốt về chiều", "gầy sút", "lao phổi", "phế lao")),
+            (("cao chỉ huyết", "cao huyết chỉ", "chỉ huyết cao"), ("cholesterol", "mỡ máu", "máu nhiễm mỡ", "lipid")),
+            (("uất chứng",), ("căng thẳng", "uất ức", "buồn phiền", "trầm cảm", "lo âu", "stress", "tinh thần không", "hay thở dài", "cáu gắt", "tức giận")),
+            (("tào tạp", "thôn toan"), ("cồn cào", "ợ chua", "nóng rát", "thôn toan", "tào tạp")),
+        ]
+        for _names, _required in _DEFINING_SYMPTOM_RULES:
+            if any(n in disease_lower for n in _names):
+                if not any(re.search(r'\b' + re.escape(kw) + r'\b', symptoms_str) for kw in _required):
+                    return False
+                break
+
         # 1. Bệnh Trĩ
         if "trĩ" in disease_lower:
             keywords = ["trĩ", "hậu môn", "đại tiện ra máu", "tiêu ra máu", "đi ngoài ra máu", "ỉa ra máu", "sa búi", "búi trĩ"]
@@ -985,7 +1090,9 @@ class TCMFusionPipeline:
                 return False
 
         # 14. Bệnh lý Ung thư / Khối u (Ái = Ung thư trong Đông y: Thực quản ái, Phế ái, Vị ái...)
-        if any(x in disease_lower for x in ["ái", "ung thư", "u ác", "khối u", "nhục lựu"]):
+        #     "ái" phải khớp như ÂM TIẾT ĐỘC LẬP (\bái\b): check substring cũ dính nhầm chữ "khái"
+        #     trong "Khái thấu" (ho) và "đái" trong bệnh tiết niệu -> loại oan hàng loạt bệnh thường.
+        if re.search(r'\bái\b', disease_lower) or any(x in disease_lower for x in ["ung thư", "u ác", "khối u", "nhục lựu"]):
             keywords = ["khối u", "sụt cân", "nuốt nghẹn", "ho ra máu", "u bướu", "sưng hạch", "di căn", "ung thư"]
             if not any(kw in symptoms_str for kw in keywords):
                 return False
@@ -1001,10 +1108,10 @@ class TCMFusionPipeline:
         #     Nếu không, các bệnh này khớp nhầm cho bệnh nhân chỉ có triệu chứng CHUNG (mệt mỏi, mặt nhợt,
         #     mặt vàng, rêu lưỡi...) do dùng chung hội chứng generic (vd Dương nuy có HC "Tâm tỳ hư" khớp
         #     lan sang ca hô hấp/khí huyết hư) -> bệnh danh vô lý về lâm sàng.
-        if any(x in disease_lower for x in ["dương nuy", "liệt dương", "di tinh", "tảo tiết", "hoạt tinh", "dương sự", "mộng tinh"]):
+        if any(x in disease_lower for x in ["dương nuy", "liệt dương", "di tinh", "tảo tiết", "hoạt tinh", "dương sự", "mộng tinh", "âm hành", "cao hoàn", "âm nang"]):
             keywords = ["liệt dương", "dương nuy", "di tinh", "mộng tinh", "tảo tiết", "hoạt tinh",
                         "xuất tinh", "dương vật", "rối loạn cương", "cương dương", "yếu sinh lý",
-                        "sinh lý", "tình dục"]
+                        "sinh lý", "tình dục", "âm hành", "cao hoàn", "âm nang", "bìu"]
             if not any(kw in symptoms_str for kw in keywords):
                 return False
 
@@ -1886,6 +1993,35 @@ class TCMFusionPipeline:
             logger.error(f"Lỗi LLM filter: {e}")
             return candidate_syndromes
 
+    # Từ điển giải thích y lý dự phòng cho triệu chứng Thực chứng — dùng chung cho
+    # _patch_missing_symptoms (vá triệu chứng sót) và _sync_tieu_thuc_with_bat_cuong (đồng bộ Mục 4).
+    _THUC_TEMPLATES = {
+        "nốt mụn đỏ": "Nốt mụn đỏ xuất hiện do nhiệt độc hoặc thấp nhiệt uẩn kết ở kinh lạc bốc lên bề mặt da.",
+        "tiếng nấc nhanh mà không liên tục": "Tiếng nấc nhanh mà không liên tục là do Vị khí thượng nghịch, khí của Vị bốc ngược lên trên gây ra nấc.",
+        "tiếng nấc": "Tiếng nấc là do Vị khí thượng nghịch, khí của Vị bốc ngược lên trên gây ra nấc.",
+        "nấc": "Tiếng nấc là do Vị khí thượng nghịch, khí của Vị bốc ngược lên trên gây ra nấc.",
+        "rêu lưỡi trắng dày": "Rêu lưỡi trắng dày phản ánh tình trạng đàm thấp hoặc thủy thấp tích tụ ở trung tiêu.",
+        "rêu trắng dày": "Rêu lưỡi trắng dày phản ánh tình trạng đàm thấp hoặc thủy thấp tích tụ ở trung tiêu.",
+        "tiêu chảy": "Tỳ dương hư, không vận hóa được thủy thấp, thanh trọc không phân, gây ra đại tiện lỏng, tiêu chảy.",
+        "buồn nôn": "Vị khí nghịch lên, Tỳ vị thất hòa không thể giáng trọc khí gây ra buồn nôn.",
+        "ăn kém": "Tỳ khí hư, chức năng vận hóa suy giảm, vị không thụ nạp được thức ăn gây ra ăn uống kém.",
+        "đổ mồ hôi": "Vệ dương hư suy, không đủ sức cố nhiếp tân dịch, mồ hôi tự ra (tự hãn) do vệ khí bất cố."
+    }
+
+    @staticmethod
+    def _muc4_denies_tieu_thuc(body_l: str) -> bool:
+        """Thân Mục 4 có PHẢI câu phủ nhận Tiêu Thực không? Chỉ True khi:
+          - chứa cụm 'không có tiêu thực' (bắt cả biến thể có tiền tố: 'Hiện tại/Nhìn chung không có Tiêu Thực...'), HOẶC
+          - là câu cụt 'Không có.' đứng một mình.
+        KHÔNG tính câu phân tích Thực hợp lệ mở đầu bằng 'Không có ngoại tà xâm nhập, song đàm trọc...'
+        (điều kiện cũ startswith('không có') nuốt nhầm cả câu này rồi xóa mất giải thích triệu chứng)."""
+        body_l = (body_l or "").lower().strip().lstrip("-*• ").strip()
+        if re.search(r"không\s+có\s+tiêu\s+thực", body_l):
+            return True
+        if re.fullmatch(r"không\s+có[\s.]*", body_l):
+            return True
+        return False
+
     def _patch_missing_symptoms(self, llm_text: str, symptoms_str: str) -> str:
         """
         Hậu xử lý deterministic: Kiểm tra xem LLM có bỏ sót triệu chứng nào không.
@@ -1912,18 +2048,7 @@ class TCMFusionPipeline:
         }
 
         # Từ điển giải thích y lý dự phòng cho các triệu chứng Thực chứng (Tiêu Thực / Triệu chứng cấp)
-        thuc_templates = {
-            "nốt mụn đỏ": "Nốt mụn đỏ xuất hiện do nhiệt độc hoặc thấp nhiệt uẩn kết ở kinh lạc bốc lên bề mặt da.",
-            "tiếng nấc nhanh mà không liên tục": "Tiếng nấc nhanh mà không liên tục là do Vị khí thượng nghịch, khí của Vị bốc ngược lên trên gây ra nấc.",
-            "tiếng nấc": "Tiếng nấc là do Vị khí thượng nghịch, khí của Vị bốc ngược lên trên gây ra nấc.",
-            "nấc": "Tiếng nấc là do Vị khí thượng nghịch, khí của Vị bốc ngược lên trên gây ra nấc.",
-            "rêu lưỡi trắng dày": "Rêu lưỡi trắng dày phản ánh tình trạng đàm thấp hoặc thủy thấp tích tụ ở trung tiêu.",
-            "rêu trắng dày": "Rêu lưỡi trắng dày phản ánh tình trạng đàm thấp hoặc thủy thấp tích tụ ở trung tiêu.",
-            "tiêu chảy": "Tỳ dương hư, không vận hóa được thủy thấp, thanh trọc không phân, gây ra đại tiện lỏng, tiêu chảy.",
-            "buồn nôn": "Vị khí nghịch lên, Tỳ vị thất hòa không thể giáng trọc khí gây ra buồn nôn.",
-            "ăn kém": "Tỳ khí hư, chức năng vận hóa suy giảm, vị không thụ nạp được thức ăn gây ra ăn uống kém.",
-            "đổ mồ hôi": "Vệ dương hư suy, không đủ sức cố nhiếp tân dịch, mồ hôi tự ra (tự hãn) do vệ khí bất cố."
-        }
+        thuc_templates = self._THUC_TEMPLATES
 
         # Tách danh sách triệu chứng từ chuỗi đầu vào
         symptom_list = [s.strip().lower() for s in symptoms_str.split(",") if s.strip()]
@@ -1987,13 +2112,93 @@ class TCMFusionPipeline:
                 
         # Áp dụng chèn Tiêu Thực
         if missing_thuc_patches:
-            # Nếu mục 4 đang ở chế độ "Không có Tiêu Thực..." thì ghi đè câu đó
-            if "không có tiêu thực" in part3.lower() or "không có" in part3.lower():
+            # Chỉ GHI ĐÈ khi thân mục 4 thực sự là câu phủ nhận Tiêu Thực (kể cả biến thể có tiền tố
+            # 'Hiện tại không có Tiêu Thực...'); nếu là phân tích hợp lệ thì APPEND để không nuốt nội dung.
+            # startswith('không có') cũ vừa bỏ sót biến thể có tiền tố (-> nối template sau câu chối,
+            # tự mâu thuẫn) vừa nuke nhầm câu 'Không có ngoại tà..., song...'.
+            _p3_body = part3[len(tieu_thuc_marker):].strip().lstrip("-*• ").strip().lower()
+            if self._muc4_denies_tieu_thuc(_p3_body):
                 part3 = tieu_thuc_marker + "\n- " + " ".join(missing_thuc_patches) + "\n"
             else:
                 part3 = part3.rstrip() + " " + " ".join(missing_thuc_patches) + "\n"
                 
         return part1 + part2 + part3
+
+    def _sync_tieu_thuc_with_bat_cuong(self, llm_text: str, bat_cuong_hint: str, symptoms_str: str) -> str:
+        """[ĐỒNG BỘ BÁT CƯƠNG <-> MỤC 4] Bát Cương ở Mục 2 là kết quả deterministic (đồ thị + từ khóa)
+        còn thân Mục 4 do LLM viết, nên hai bên thỉnh thoảng vênh nhau theo cả 2 chiều:
+          - Bát Cương thuần Hư mà Mục 4 vẫn có phân tích Tà khí (LLM bịa hoặc bị patch chèn vào).
+          - Bát Cương có 'Bản Hư Tiêu Thực'/'Thực' mà Mục 4 lại chốt 'Không có Tiêu Thực'.
+        Chốt bằng code sau mọi bước hậu xử lý: Mục 4 phải nói cùng chiều với Bát Cương đã hiển thị."""
+        m = re.search(r"### 4\.[^\n]*", llm_text)
+        if not m:
+            return llm_text
+        marker, idx = m.group(0), m.start()
+        head, body = llm_text[:idx], llm_text[idx + len(marker):]
+
+        hint_l = (bat_cuong_hint or "").lower()
+        # \b để 'hư' không dính trong 'chưa rõ' ('c-hư-a')
+        hint_has_hu = bool(re.search(r"\bhư\b", hint_l))
+        hint_has_thuc = bool(re.search(r"\bthực\b", hint_l))
+        body_stripped = body.strip().lstrip("-*• ").strip()
+        body_l = body_stripped.lower()
+        if body_l.startswith("không xác định"):
+            return llm_text  # fallback lỗi LLM, không có gì để đồng bộ
+        body_says_none = self._muc4_denies_tieu_thuc(body_l)
+
+        # Chiều 1: Bát Cương thuần Hư nhưng Mục 4 có nội dung -> dồn nội dung về Mục 3
+        # (giữ luật phủ lấp 100% triệu chứng) rồi trả Mục 4 về câu chuẩn thuần Hư.
+        if hint_has_hu and not hint_has_thuc and body_stripped and not body_says_none:
+            prose = re.sub(r"\s+", " ", re.sub(r"^[\s\-\*•]+", "", body, flags=re.MULTILINE)).strip()
+            logger.info("[ĐỒNG BỘ MỤC 4] Bát Cương thuần Hư nhưng Mục 4 có phân tích -> dồn về Mục 3.")
+            head = self._append_prose_to_muc3(head, prose)
+            return head.rstrip() + "\n\n" + marker + "\n- Không có Tiêu Thực, đây là bệnh lý Hư chứng thuần túy.\n"
+
+        # Chiều 2: Bát Cương khẳng định có Thực nhưng Mục 4 chối 'Không có' -> dựng lại thân
+        # Mục 4 deterministic từ template Thực chứng khớp với triệu chứng thực sự có mặt.
+        if hint_has_thuc and body_says_none:
+            symptoms_l = (symptoms_str or "").lower()
+            # Khớp key template; bỏ key CON nằm trong key dài hơn ('tiếng nấc' ⊂ 'tiếng nấc nhanh
+            # mà không liên tục') để không chèn 2 câu gần trùng cho cùng một triệu chứng.
+            matched = [(k, t) for k, t in self._THUC_TEMPLATES.items() if k in symptoms_l]
+            matched = [(k, t) for k, t in matched
+                       if not any(k != k2 and k in k2 for k2, _ in matched)]
+            parts, seen = [], set()
+            for _k, tmpl in matched:
+                if tmpl not in seen:
+                    parts.append(tmpl)
+                    seen.add(tmpl)
+            if not parts:
+                # Không khớp template nào -> câu chung chung, nhưng KHÔNG khẳng định 'Bản Hư' nếu
+                # Bát Cương là Thực thuần túy (không có chữ Hư) — tránh mâu thuẫn với Mục 3.
+                if hint_has_hu:
+                    parts = ["Trên nền chính khí hư suy (Bản Hư), định vị Bát Cương cho thấy còn tồn tại "
+                             "yếu tố Thực (tà khí/đàm thấp ứ trệ) chưa được giải quyết; các biểu hiện "
+                             "liên quan đã được biện giải ở phần trên."]
+                else:
+                    parts = ["Định vị Bát Cương cho thấy còn yếu tố Thực (tà khí/đàm thấp ứ trệ) "
+                             "chi phối bệnh cảnh; các biểu hiện liên quan đã được biện giải ở phần trên."]
+            logger.info("[ĐỒNG BỘ MỤC 4] Bát Cương có Thực nhưng Mục 4 ghi 'Không có' -> dựng lại từ template.")
+            return head.rstrip() + "\n\n" + marker + "\n- " + " ".join(parts) + "\n"
+
+        return llm_text
+
+    @staticmethod
+    def _append_prose_to_muc3(head: str, prose: str) -> str:
+        """Đưa prose (nội dung Thực bị đặt nhầm ở Mục 4) vào Mục 3. Nếu thân Mục 3 rỗng hoặc chỉ là
+        câu stub ('Không có Bản Hư...', 'Không xác định') thì THAY luôn thân bằng prose; nếu đã có
+        phân tích thật thì nối tiếp — TUYỆT ĐỐI không dán prose vào dòng tiêu đề '### 3.' (bug cũ
+        head.rstrip()+prose biến cả đoạn thành một H3 khổng lồ khi thân Mục 3 rỗng)."""
+        m3 = re.search(r"### 3\.[^\n]*", head)
+        if not m3:  # không thấy Mục 3 -> nối an toàn ở cuối (không có heading để hỏng)
+            return head.rstrip() + f"\n- {prose}\n"
+        pre3, marker3 = head[:m3.start()], m3.group(0)
+        body3 = head[m3.end():]
+        body3_l = body3.strip().lstrip("-*• ").strip().lower()
+        is_stub = (not body3_l) or body3_l.startswith("không có bản hư") or body3_l.startswith("không xác định")
+        if is_stub:
+            return pre3 + marker3 + "\n- " + prose + "\n"
+        return pre3 + marker3 + body3.rstrip() + " Ngoài ra, " + prose + "\n"
 
     def _filter_hierarchical_redundancies(self, syndromes: list) -> list:
         redundancy_map = {
@@ -2282,9 +2487,20 @@ class TCMFusionPipeline:
 
         hu_kws = ["nhợt", "nhợt nhạt", "mệt mỏi", "chóng mặt", "hoa mắt", "tế", "hư", "vô lực", "đau lưng", "mỏi gối", "khô miệng", "họng ráo"]
         thuc_kws = ["mụn đỏ", "nốt mụn đỏ", "tiếng nấc", "nấc", "rêu lưỡi trắng dày", "rêu trắng dày", "rêu dày", "khạc đờm", "ho", "sốt", "thực", "hữu lực"]
-        
-        has_hu = any(kw in symptoms_lower_all for kw in hu_kws)
-        has_thuc = any(kw in symptoms_lower_all for kw in thuc_kws)
+
+        # Khớp theo RANH GIỚI TỪ (\b): check substring cũ khiến 'ho' dính trong 'hoa mắt' (triệu chứng
+        # Hư kinh điển) -> has_thuc bật sai -> Bát Cương thành 'Bản Hư Tiêu Thực' trong khi Mục 4
+        # (đúng luật thuần Hư) ghi 'Không có Tiêu Thực' -> hai mục mâu thuẫn nhau.
+        # \b của Python là ranh giới KÝ TỰ, còn tiếng Việt tách âm tiết bằng dấu cách -> keyword đơn
+        # âm đa nghĩa vẫn dính cụm vô hại ('sốt' trong 'sốt ruột', 'thực' trong 'thực sự'). Xóa các cụm
+        # bạn hữu đã biết trước khi khớp để không bịa Tiêu Thực cho ca thuần Hư (sync sau đó khuếch đại).
+        _false_friends = ["thực sự", "quả thực", "thực ra", "thực phẩm", "sốt ruột", "sốt sắng", "nôn nóng"]
+        _kw_text = symptoms_lower_all
+        for _ff in _false_friends:
+            _kw_text = _kw_text.replace(_ff, " ")
+        _kw_hit = lambda kws: any(re.search(r"\b" + re.escape(k) + r"\b", _kw_text) for k in kws)
+        has_hu = _kw_hit(hu_kws)
+        has_thuc = _kw_hit(thuc_kws)
         has_huthuc_conflict = has_hu and has_thuc
 
         # Check if the case is related to Hiccup (Ách nghịch / Nấc)
@@ -2447,9 +2663,11 @@ class TCMFusionPipeline:
            - Chất lưỡi đạm đỏ (lưỡi đỏ nhạt/nhạt đỏ): Phải giải thích do khí huyết suy kém không vinh nhuận đầy đủ lên thân lưỡi.
            - Lưỡi có vết nứt (nứt lưỡi): Phải giải thích do âm huyết hư tổn/tân dịch khuy tổn làm mất sự nuôi dưỡng trên bề mặt lưỡi.
         14. TÔN TRỌNG VÀ BIỆN GIẢI ĐÚNG VỀ RÊU TRẮNG MỎNG (Cập nhật):
-           - Rêu trắng mỏng là ranh giới giữa Sinh lý và Bệnh lý (mới phát ở Biểu).
-           - Nếu bệnh nhân có rêu trắng mỏng đi kèm các triệu chứng như sợ gió, đau đầu, bạn BẮT BUỘC phải giải thích đây là biểu hiện của Ngoại cảm phong hàn (Tà khí mới xâm nhập đang ở phần Biểu nông) hoặc Chính khí chưa suy kiệt / Tà khí chưa hóa nhiệt.
+           - Rêu trắng mỏng là ranh giới giữa Sinh lý và Bệnh lý.
+           - CHỈ KHI bệnh nhân có dấu ngoại cảm thực sự (sợ gió, sợ lạnh, phát sốt, hắt hơi, sổ mũi, ngạt mũi) VÀ Bát Cương có chữ "Biểu": rêu trắng mỏng mới được giải thích là Ngoại cảm phong hàn (Tà khí mới xâm nhập đang ở phần Biểu nông).
+           - Nếu KHÔNG có dấu ngoại cảm hoặc Bát Cương đã chốt là "Lý": TUYỆT ĐỐI CẤM (PROHIBITED) nhắc đến "tà khí xâm nhập", "Biểu nông" hay "ngoại cảm" khi bàn về rêu trắng mỏng — mâu thuẫn trực tiếp với định vị Lý chứng. Khi đó chỉ được nhận định: rêu trắng mỏng cho thấy vị khí còn tốt, chính khí chưa suy kiệt, bệnh còn ở mức độ nhẹ.
            - TUYỆT ĐỐI CẤM (PROHIBITED) giải thích rêu trắng mỏng là do Đàm ẩm, Thủy thấp ứ đọng hay Huyết ứ (vì khi đã có Thủy thấp/Đàm trọc tích tụ thì rêu lưỡi bắt buộc phải dày, nhớt hoặc trơn).
+           - CẤM tự nâng cấp mô tả rêu: nếu danh sách triệu chứng chỉ có "rêu trắng mỏng" và/hoặc "rêu trắng nhớt" thì TUYỆT ĐỐI KHÔNG được viết thành "rêu dày" hay "rêu trắng dày" (nhớt ≠ dày; rêu mỏng hơi nhớt chỉ là thấp trệ NHẸ mới hình thành).
            - Với các từ khóa như 'lưỡi hồng', 'mạch hoãn', 'mạch bình thường', hãy nhận định đây là dấu hiệu sinh lý bình thường (vị khí còn tốt, chính khí chưa suy).
         15. CẤM TỰ BIÊN TỰ DIỄN HỘI CHỨNG MỚI (MỚI):
            - Bạn TUYỆT ĐỐI KHÔNG ĐƯỢC tự ý lôi kéo các hội chứng tạng phủ suy nhược khác không được chốt ở Bước 1 vào lập luận. Ví dụ: Nếu chẩn đoán cốt lõi và hội chứng kèm theo ở Bước 1 ({final_primary}, {final_concurrent}) KHÔNG có 'Thận âm hư', 'Tỳ dương hư' hay 'Can âm hư', bạn TUYỆT ĐỐI CẤM (PROHIBITED) sử dụng các thuật ngữ đó làm nguyên nhân gây hư hỏa hay bốc hỏa ở Mục 3 và Mục 4. Hãy giải thích cơ chế bốc hỏa/đỏ mặt dựa trên chính khí huyết hư (Ví dụ: huyết hư bất năng nhiếp dương, khiến hư hỏa/hư dương nổi lên trên) để đảm bảo tính nhất quán tuyệt đối giữa các bước chẩn đoán.
@@ -2476,6 +2694,9 @@ class TCMFusionPipeline:
 
         # [FIX] Bổ sung hậu xử lý: phát hiện và chèn triệu chứng bị LLM bỏ sót
         llm_explanation = self._patch_missing_symptoms(llm_explanation, symptoms_str)
+        # [ĐỒNG BỘ] Ép Mục 4 nói cùng chiều với Bát Cương đã chốt ở Mục 2 (chạy CUỐI,
+        # sau patch triệu chứng sót — patch có thể vừa chèn nội dung Thực vào Mục 4)
+        llm_explanation = self._sync_tieu_thuc_with_bat_cuong(llm_explanation, bat_cuong_hint, symptoms_str)
 
         final_markdown += f"{llm_explanation}\n\n"
 
@@ -2670,16 +2891,42 @@ class TCMFusionPipeline:
         }
 
     def _detect_makeup(self, face_desc: str) -> bool:
-        """Phát hiện khuôn mặt CÓ trang điểm từ mô tả của VLM, có xử lý phủ định.
-        VLM (nhất là bản prompt tiếng Việt) hay chốt câu 'Không có dấu hiệu trang điểm' —
-        check substring thô sẽ bật cờ sai gần như mọi lần. Xét theo từng mệnh đề:
-        từ khóa trang điểm chỉ tính khi mệnh đề đó không chứa từ phủ định."""
+        """Phát hiện khuôn mặt CÓ trang điểm từ mô tả của VLM, có xử lý phủ định + PHỦ ĐỊNH LIỆT KÊ.
+        VLM hay chốt kiểu 'Không có trang điểm rõ (không thấy son môi, phấn má, kẻ mắt)' — nếu chỉ
+        tách mệnh đề theo dấu phẩy thì 'phấn má'/'kẻ mắt' rơi vào mệnh đề không còn chữ 'không' và
+        bật cờ sai. Quy tắc: trong MỘT CÂU, sau khi đã gặp từ phủ định, các mệnh đề sau kế thừa
+        phủ định — trừ khi mệnh đề đó tự khẳng định lại ('..., có son môi đỏ')."""
         makeup_keywords = ["makeup", "lipstick", "eyeliner", "blush", "mascara", "foundation", "eyeshadow", "trang điểm", "son môi", "má hồng", "kẻ mắt", "phấn má", "phấn nền"]
         negation_markers = ["không", "chưa", "no ", "not ", "without", "n't"]
+        # dấu hiệu ĐÃ trang điểm: khi mệnh đề sau phủ định vẫn nêu keyword kèm mô tả có/màu/độ đậm
+        # ('son môi đỏ nhạt') -> là khẳng định thật, không phải mục liệt kê bị phủ định ('phấn má','kẻ mắt').
+        descriptor_re = r"(đỏ|hồng|nâu|cam|tím|nhạt|đậm|dày|tô|thoa|đánh|nhẹ|rõ|\bcó\b|visible|wearing|has)"
         import re as _re
-        for clause in _re.split(r"[.;,:]|\bnhưng\b|\btuy nhiên\b|\bbut\b|\bhowever\b", face_desc.lower()):
-            if any(kw in clause for kw in makeup_keywords) and not any(neg in clause for neg in negation_markers):
-                return True
+        for sentence in _re.split(r"[.;]", (face_desc or "").lower()):
+            # Từ tương phản ('nhưng', 'tuy nhiên', 'but') RESET kế thừa phủ định: 'không son môi
+            # NHƯNG phấn nền dày' -> vế sau là khẳng định, không kế thừa phủ định của vế trước.
+            for segment in _re.split(r"\bnhưng\b|\btuy nhiên\b|\bbut\b|\bhowever\b", sentence):
+                neg_seen = False
+                for clause in _re.split(r"[,:()]", segment):
+                    has_neg = any(neg in clause for neg in negation_markers)
+                    has_kw = any(kw in clause for kw in makeup_keywords)
+                    if has_kw:
+                        if has_neg:
+                            # mệnh đề phủ định VỀ trang điểm -> kế thừa cho các mục liệt kê phía sau
+                            # ('không thấy son môi, phấn má, kẻ mắt')
+                            neg_seen = True
+                            continue
+                        if neg_seen:
+                            # đã ở trong ngữ cảnh phủ định trang điểm: chỉ tính là CÓ trang điểm khi
+                            # mệnh đề tự mô tả sự hiện diện (màu/độ đậm) NGOÀI phần tên keyword
+                            residual = clause
+                            for kw in makeup_keywords:
+                                residual = residual.replace(kw, " ")
+                            if not _re.search(descriptor_re, residual):
+                                continue
+                        return True
+                    # Mệnh đề phủ định về đặc điểm KHÁC ('không có mụn') KHÔNG kế thừa sang mệnh đề
+                    # trang điểm dương tính sau nó -> chỉ makeup-negation mới set neg_seen (ở nhánh trên).
         return False
 
     def run_diagnosis(self, user_symptoms: str = "", face_img_path: str = None, tongue_img_path: str = None) -> dict:
