@@ -756,7 +756,7 @@ class TCMFusionPipeline:
     _NEGATION_GUARDS = [
         (("da khô", "khô xỉn"), ("khô",)),
         (("quầng thâm", "quầng đen"), ("quầng",)),
-        (("mặt phù", "sưng phù", "phù ở"), ("phù nề", "sưng", "húp", "mọng")),
+        (("mặt phù", "sưng phù", "phù ở"), ("phù", "phù nề", "sưng", "húp", "mọng")),
         (("có ban", "ban đỏ", "xuất huyết"), ("ban đỏ", "mẩn", "xuất huyết")),
         (("vết nứt", "lưỡi nứt"), ("nứt",)),
         (("bong tróc",), ("bong tróc", "bong")),
@@ -856,12 +856,18 @@ class TCMFusionPipeline:
         if _re.search(r"rêu( lưỡi)?\s+(rất |hơi |khá )?ít|gần như không có rêu|không thấy rêu", desc_l):
             _add(["rêu ít", "rêu lưỡi ít", "ít rêu"])
 
+        # Duyệt theo MỆNH ĐỀ, bỏ mệnh đề có phủ định — vì 'không có mặt phù'/'không có ... gò má'
+        # có từ chen giữa nên lookbehind cố định (?<!không ) KHÔNG bắt được (đã bịa 'mặt phù' cho ca
+        # mô tả 'không có mặt phù'). Tách câu rồi loại mệnh đề chứa không/chưa/no/not.
+        _pos_clauses_fa = [_cl for _cl in _re.split(r'[,.;]', desc_l)
+                           if not _re.search(r'\b(không|chưa|chẳng|no|not|without)\b', _cl)]
+
         # 6. Gò má ửng đỏ/đỏ (mô tả mặt; gated theo danh sách ứng viên nên vô hại với lưỡi)
-        if _re.search(r"(?<!không )gò má[^,.;]{0,14}(ửng\s+)?đỏ", desc_l):
+        if any(_re.search(r"gò má[^,.;]{0,14}(ửng\s+)?đỏ", _cl) for _cl in _pos_clauses_fa):
             _add(["hai gò má đỏ", "gò má đỏ", "2 gò má đỏ"])
 
         # 7. Mặt phù/sưng nề (cả mặt) -> Mặt phù ('mặt hơi phù nề' không chứa nguyên cụm 'mặt phù')
-        if _re.search(r"(?<!không )mặt[^,.;]{0,10}(phù|sưng húp|sưng nề)", desc_l):
+        if any(_re.search(r"mặt[^,.;]{0,10}(phù|sưng húp|sưng nề)", _cl) for _cl in _pos_clauses_fa):
             _add(["mặt phù"])
 
         # 5. Chuẩn hóa đồng nghĩa: mỗi nhóm chỉ giữ MỘT tên canonical (ưu tiên phần tử đầu nhóm
@@ -3674,11 +3680,18 @@ class TCMFusionPipeline:
         if _grounded and len(_grounded) > 1:
             _txt_hc = (user_symptoms + " " + combined_query).lower()
             _cold_only = self._kw_hit_clean(_txt_hc, ["sợ lạnh", "úy hàn", "rét run", "lạnh run"])
+            # Sắc mặt TRẮNG NHỢT là dấu Hư/Hàn, nghịch hẳn với Nhiệt. Trên bệnh cảnh KHÔNG một dấu
+            # nhiệt nào, nó đủ để loại companion NHIỆT THỰC THUẦN (Phong nhiệt...) leo hạng nhờ triệu
+            # chứng dùng chung (chảy mũi/hắt hơi) rồi rò 'Nhiệt' vào Bát Cương cho ca mặt trắng nhợt.
+            # CHỈ dùng cho nhánh loại-Nhiệt, KHÔNG đưa vào nhánh đối xứng loại-Hàn (mặt nhợt không
+            # phải bằng chứng nhiệt).
+            _pale_cold_face = self._kw_hit_clean(_txt_hc, ["mặt nhợt", "mặt nhợt nhạt", "sắc mặt trắng",
+                                                           "mặt trắng", "trắng nhợt", "trắng bệch", "sắc mặt nhợt"])
             _heat_only = self._kw_hit_clean(_txt_hc, ["sốt", "phát nhiệt", "khát nước", "đỏ bừng",
                                                       "mạch sác", "tế sác", "rêu vàng", "tiểu vàng",
                                                       "họng đỏ", "đờm vàng", "mũi vàng", "vàng đục"])
             _drop_kw = None
-            if _cold_only and not _heat_only:
+            if (_cold_only or _pale_cold_face) and not _heat_only:
                 _drop_kw = ("nhiệt", "hỏa", "hoả")
             elif _heat_only and not _cold_only:
                 _drop_kw = ("hàn",)
