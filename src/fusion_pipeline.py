@@ -1,12 +1,23 @@
 # src/fusion_pipeline.py
 import logging
 import re
+import unicodedata
 from src.pipeline import TCMTonguePipeline
 from src.qa_system import TCMQA
 
 from src.utils import normalize_symptoms_text
 
 logger = logging.getLogger(__name__)
+
+
+def _fold_vn(s: str) -> str:
+    """Bỏ dấu thanh + hạ hoa-thường để so khớp tên hội chứng bất kể biến thể chính tả cũ/mới
+    ('Can Hoả Phạm Phế' == 'Can hỏa phạm phế' — dấu thanh đặt trên nguyên âm khác nhau). Đổi đ->d,
+    gộp khoảng trắng. CHỈ dùng cho so khớp trùng tên (không dùng để hiển thị)."""
+    s = (s or "").lower().strip().replace("đ", "d")
+    s = unicodedata.normalize("NFD", s)
+    s = "".join(ch for ch in s if unicodedata.category(ch) != "Mn")
+    return re.sub(r"\s+", " ", s).strip()
 
 class TCMFusionPipeline:
     def __init__(self, config: dict = None):
@@ -713,6 +724,8 @@ class TCMFusionPipeline:
             # Lưới an toàn deterministic: chặn triệu chứng bị map từ câu PHỦ ĐỊNH
             # ('không khô xỉn' -> Da khô) mà prompt NEGATION RULES thỉnh thoảng vẫn để lọt
             valid_mapped = self._drop_negated_signs(valid_mapped, description)
+            # Lưới an toàn deterministic: chặn ĐẢO CỰC (mô tả 'môi nhợt' bị map thành 'môi thâm')
+            valid_mapped = self._drop_polarity_conflicts(valid_mapped, description)
             # Lưới an toàn deterministic: LLM 7B hay bỏ qua luật ngoại cảnh trong prompt
             return self._filter_external_attributions(valid_mapped, description)
         except Exception as e:
@@ -723,10 +736,46 @@ class TCMFusionPipeline:
             fallback = self._map_desc_fallback_dict(description, candidate_symptoms)
             fallback = self._force_add_tongue_signs(fallback, description, candidate_symptoms)
             fallback = self._drop_negated_signs(fallback, description)
+            fallback = self._drop_polarity_conflicts(fallback, description)
             fallback = self._filter_external_attributions(fallback, description)
             if fallback:
                 logger.info(f"[FALLBACK VỌNG CHẨN] Khớp từ điển tất định: {fallback}")
             return fallback
+
+    # [CHỐNG ĐẢO CỰC VỌNG CHẨN] Cặp (tập tên triệu chứng "cực NÀY", regex mô tả "cực ĐỐI LẬP",
+    # regex mô tả "cực của chính nó"). LLM matcher đôi khi map mô tả 'môi nhợt' -> 'môi thâm' khi
+    # danh sách ứng viên thiếu tên đúng cực -> đưa vào chẩn đoán một dấu hiệu NGƯỢC HƯỚNG (môi thâm
+    # = huyết ứ/hàn, đối nghịch huyết hư). Chỉ LOẠI khi mô tả nêu RÕ cực đối lập và KHÔNG nêu cực
+    # của chính triệu chứng đã map (giữ đúng ca 'môi tím tái' -> môi thâm là hợp lệ).
+    _POLARITY_GUARDS = [
+        # môi sẫm/tím bị map trong khi mô tả nói môi NHỢT/NHẠT (và không nói môi thâm/tím/tái)
+        (("môi thâm", "môi tím", "môi tái", "môi bầm", "môi thâm tím", "môi tím tái", "môi thâm đen",
+          "môi tía", "môi sẫm"),
+         r"môi[^.,;\n]{0,24}(nhợt|nhạt|trắng)",
+         r"môi[^.,;\n]{0,24}(thâm|tím|tái|bầm|sẫm|đen|tía)"),
+        # môi nhợt bị map trong khi mô tả nói môi THÂM/TÍM (và không nói môi nhợt/nhạt)
+        (("môi nhợt", "môi nhợt nhạt", "môi nhạt"),
+         r"môi[^.,;\n]{0,24}(thâm|tím|tái|bầm|sẫm|tía)",
+         r"môi[^.,;\n]{0,24}(nhợt|nhạt|trắng)"),
+    ]
+
+    def _drop_polarity_conflicts(self, mapped: list, description: str) -> list:
+        desc_l = (description or "").lower()
+        if not desc_l:
+            return mapped
+        kept = []
+        for s in mapped:
+            s_l = s.lower().strip()
+            dropped = False
+            for names, opposite_re, own_re in self._POLARITY_GUARDS:
+                if s_l in names:
+                    if re.search(opposite_re, desc_l) and not re.search(own_re, desc_l):
+                        logger.info(f"[CHỐNG ĐẢO CỰC] Loại '{s}': mô tả nêu cực đối lập, không nêu cực của nó")
+                        dropped = True
+                    break
+            if not dropped:
+                kept.append(s)
+        return kept
 
     def _map_desc_fallback_dict(self, description: str, candidate_symptoms: list) -> list:
         """Khớp trực tiếp tên triệu chứng chuẩn nằm TRONG mô tả VLM theo biên từ — chỉ dùng làm
@@ -1093,9 +1142,56 @@ class TCMFusionPipeline:
              ("mề đay", "mày đay", "mẩn", "ngứa", "sẩn", "ban đỏ", "nổi ban", "phát ban", "ẩn chẩn")),
             # Bệnh sa tạng (khí hư hạ hãm thể NẶNG có khối sa thực thể): cấm gán chỉ vì khớp
             # hội chứng khí hư + vài dấu lưỡi (đã xảy ra thật: 'Tử cung hạ sa' cho ca mệt mỏi + khó thở).
-            (("tử cung hạ sa", "sa tử cung", "âm đĩnh", "thoát giang", "sa trực tràng", "sa dạ dày", "vị hạ thùy"),
+            (("tử cung hạ sa", "sa tử cung", "âm đĩnh", "thoát giang", "sa trực tràng", "sa dạ dày",
+              "vị hạ thùy", "vị hạ sa", "hạ sa"),
              ("sa tử cung", "tử cung sa", "khối sa", "sa xuống", "trằn nặng", "sa dạ con",
-              "âm đĩnh", "lòi dom", "thoát giang", "sa trực tràng", "sa nội tạng", "sa dạ dày")),
+              "âm đĩnh", "lòi dom", "thoát giang", "sa trực tràng", "sa nội tạng", "sa dạ dày", "dạ dày sa")),
+            # Tiêu khát (đái tháo đường): bệnh danh ĐỊNH NGHĨA bằng "tam đa nhất thiểu" (uống nhiều,
+            # ăn nhiều mau đói, tiểu nhiều, gầy sút). Cấm gán cho ca chỉ có họng khô / tiểu đêm hàn
+            # chứng (đã xảy ra thật: 'Tiêu khát' cho ca thận âm hư chỉ họng khô, và ca thận dương hư
+            # chỉ tiểu đêm). 'tiểu đêm nhiều lần' (nocturia) KHÔNG phải đa niệu tiêu khát nên không kê.
+            (("tiêu khát",),
+             ("khát nước", "khát nhiều", "uống nhiều", "uống nước nhiều", "đa niệu", "tiểu nhiều",
+              "đái nhiều", "tiểu tiện nhiều", "ăn nhiều", "mau đói", "chóng đói", "đói nhanh",
+              "gầy sút", "sụt cân", "sút cân", "gầy nhiều", "tiêu khát", "đường huyết", "tiểu đường",
+              "đái tháo")),
+            # Bệnh tim mạch thực thể (mạch vành, xơ cứng động mạch vành, nhồi máu cơ tim): nhãn NẶNG,
+            # cấm gán khi không có dấu chỉ điểm tim/ngực (đã xảy ra thật: 'Xơ cứng động mạch vành'
+            # cho ca thận âm hư chỉ đau lưng ù tai, KHÔNG hề đau ngực/hồi hộp/khó thở).
+            (("mạch vành", "động mạch vành", "nhồi máu", "thiếu máu cơ tim", "xơ cứng động mạch",
+              "xơ vữa"),
+             ("đau ngực", "đau thắt ngực", "tức ngực", "đau vùng tim", "đau trước tim", "vùng tim",
+              "ngực", "vùng ngực", "nghẹt thở", "hồi hộp", "trống ngực", "đánh trống ngực", "tâm quý",
+              "khó thở", "đau lan", "mạch vành", "nhồi máu")),
+            # Tỵ nục / nục huyết (chảy máu cam): bệnh danh xuất huyết, phải có chảy máu thật
+            # (đã xảy ra thật: 'Tỵ nục' cho ca vị nhiệt KHÔNG hề chảy máu, rồi Mục 5 kê bài chỉ huyết).
+            (("tỵ nục", "nục huyết", "chảy máu cam", "chảy máu mũi"),
+             ("chảy máu cam", "chảy máu mũi", "máu cam", "máu mũi", "chảy máu", "xuất huyết",
+              "nục huyết", "tỵ nục", "ra máu", "huyết ra", "ra đằng mũi", "đằng mũi", "sắc huyết")),
+            # Bệnh danh mù/lòa (Bạo manh, Thanh manh, Dạ manh, Sắc manh): phải có MẤT/GIẢM THỊ LỰC
+            # thật. Cấm gán cho ca chỉ 'chóng mặt hoa mắt' (đã xảy ra thật: 'Bạo manh' cho ca huyết
+            # hư). 'hoa mắt' là choáng váng, KHÔNG phải mù nên không tính.
+            (("bạo manh", "thanh manh", "dạ manh", "sắc manh"),
+             ("mù", "lòa", "quáng gà", "mù màu", "mù lòa", "mất thị lực", "giảm thị lực", "thị lực giảm",
+              "thị lực", "không nhìn thấy", "nhìn không rõ", "mờ mắt", "mắt mờ", "mắt kém", "màu sắc",
+              "nhận biết màu", "sắc giác", "mắt có màng", "màng nổi", "đáy mắt", "mắt đau", "mắt tức",
+              "bạo manh", "thanh manh", "dạ manh", "sắc manh")),
+            # Cước căn thống (đau gót chân): bệnh danh khu trú bàn chân, phải có đau gót/chân
+            # (đã xảy ra thật: 'Cước căn thống' cho ca đau ngực huyết ứ — lọt vì là bệnh duy nhất có
+            # bài thuốc dưới hội chứng Huyết ứ).
+            (("cước căn thống", "cước căn"),
+             ("gót chân", "đau gót", "gót", "cước căn", "đau bàn chân", "đau chân")),
+            # Nuy chứng (chứng teo/yếu liệt cơ): bệnh danh ĐỊNH NGHĨA bằng teo cơ/yếu liệt chi. Cấm
+            # gán cho ca chỉ có da khô/khát (đã xảy ra thật: 'Nuy chứng' cho ca vị nhiệt). Không dùng
+            # 'vô lực' trần (dễ trùng mệt mỏi hư chứng) — đòi dấu yếu/teo/liệt khu trú ở chi/cơ.
+            (("nuy chứng",),
+             ("teo cơ", "teo", "liệt", "yếu chi", "chi yếu", "tay chân yếu", "chân tay yếu",
+              "yếu hai chân", "yếu cơ", "nhược cơ", "bại liệt", "đi lại khó", "đi đứng khó",
+              "mềm nhũn", "mềm yếu", "không cử động", "yếu liệt", "nuy chứng")),
+            # Dương nuy (liệt dương): bệnh danh nam khoa, phải có rối loạn cương/sinh lý.
+            (("dương nuy",),
+             ("liệt dương", "dương nuy", "rối loạn cương", "yếu sinh lý", "bất lực", "xuất tinh",
+              "di tinh", "tinh trùng")),
             # Bệnh MẮT / MI MẮT (Châm nhãn=lẹo/chắp, viêm kết mạc, cam nhãn, mạch nhãn, cận thị):
             # bệnh danh nhãn khoa — bắt buộc có dấu MẮT/MI MẮT thật. Row 'Châm nhãn' chứa triệu chứng
             # kèm chung chung 'sợ gió, đau đầu, rêu trắng mỏng' -> ca mệt mỏi + dấu lưỡi bị gán 'Châm
@@ -2671,9 +2767,13 @@ class TCMFusionPipeline:
         # 'Khí hư') — hiển thị cặp đó là lặp cùng một ý chẩn đoán. Lấy ứng viên khác họ đầu tiên.
         final_concurrent = "Không có"
         _fp_l = final_primary.lower().strip()
+        _fp_fold = _fold_vn(final_primary)
         for _cand in all_syndromes[1:]:
             _cl = _cand.lower().strip()
-            if _cl in _fp_l or _fp_l in _cl:
+            _cl_fold = _fold_vn(_cand)
+            # Trùng cùng ý cốt lõi: khớp theo chuỗi thường HOẶC theo bản bỏ dấu (chặn cặp chỉ khác
+            # cách đặt dấu thanh như 'Can Hoả Phạm Phế' vs 'Can hỏa phạm phế' — vốn lọt lưới cũ).
+            if (_cl in _fp_l or _fp_l in _cl or _cl_fold in _fp_fold or _fp_fold in _cl_fold):
                 continue
             final_concurrent = _cand
             break
@@ -2725,7 +2825,7 @@ class TCMFusionPipeline:
                 ]
                 filtered_matches = filtered_matches[:3]
 
-                disease_names = list(dict.fromkeys([m["benh_ly"] for m in filtered_matches]))
+                disease_names = list(dict.fromkeys([m["benh_ly"].strip() for m in filtered_matches]))
                 if disease_grounded:
                     final_markdown += f"- **Bệnh danh:** {', '.join(disease_names)}\n"
                 else:
@@ -3244,7 +3344,35 @@ class TCMFusionPipeline:
             llm_explanation = self._post_process_hallucinations(llm_explanation, symptoms_str)
         except Exception as e:
             logger.error(f"Lỗi gọi LLM giải thích y lý Bát Cương: {e}")
-            llm_explanation = "### 2. Định vị Bát Cương\n- Không xác định\n\n### 3. Phân tích Cơ chế Gốc (Bản Hư)\n- Không xác định\n\n### 4. Phân tích Cơ chế Ngọn (Tiêu Thực)\n- Không xác định"
+            # [SUY GIẢM MỀM KHI LLM LỖI] Không bỏ trắng Mục 2-4 nữa. Bát Cương (Mục 2) đã được suy
+            # ĐỊNH TÍNH từ graph (bat_cuong_hint) nên vẫn hiển thị đúng; Mục 3/4 dựng khung xác định
+            # theo trạng thái Hư/Thực đã chốt + nêu rõ phần biện luận chi tiết tạm khuyết do lỗi kết
+            # nối AI (tránh vừa 'Không xác định' vừa vẫn kê đơn — người dùng phải biết vì sao thiếu).
+            _bc_l = (bat_cuong_hint or "").lower()
+            _has_hu = "hư" in _bc_l
+            _has_thuc = "thực" in _bc_l or "thác tạp" in _bc_l
+            _note = ("_(Phần biện luận cơ chế chi tiết tạm thời chưa tạo được do lỗi kết nối máy chủ AI. "
+                     "Định vị Bát Cương và hội chứng dưới đây được suy trực tiếp từ cơ sở tri thức Neo4j "
+                     "nên vẫn tin cậy; vui lòng thử lại để có phần phân tích y lý đầy đủ.)_")
+            if _has_hu and not _has_thuc:
+                _m3 = (f"- Hội chứng cốt lõi **{final_primary}** thuộc Hư chứng: chính khí (khí/huyết/"
+                       f"âm/dương) suy yếu, tạng phủ mất sự nuôi dưỡng và ôn hóa, sinh ra các triệu chứng "
+                       f"nền: {symptoms_str}.\n{_note}")
+                _m4 = "- Không có Tiêu Thực, đây là bệnh lý Hư chứng thuần túy."
+            elif _has_thuc and not _has_hu:
+                _m3 = "- Không có Bản Hư, đây là bệnh lý Thực chứng thuần túy."
+                _m4 = (f"- Hội chứng cốt lõi **{final_primary}** thuộc Thực chứng: tà khí (phong/hàn/"
+                       f"nhiệt/thấp/đàm/ứ) ứ trệ gây ra các biểu hiện: {symptoms_str}.\n{_note}")
+            else:
+                _m3 = (f"- Bệnh mang tính chất Bản Hư Tiêu Thực (vừa có gốc hư vừa có tà thực). Gốc bệnh "
+                       f"là sự suy yếu của chính khí ở hội chứng cốt lõi **{final_primary}**.\n{_note}")
+                _m4 = ("- Phần tà khí/triệu chứng cấp (Tiêu Thực) tạm thời chưa biện luận chi tiết được "
+                       "do lỗi kết nối máy chủ AI; vui lòng thử lại.")
+            llm_explanation = (
+                f"### 2. Định vị Bát Cương\n- **Thuộc chứng:** {bat_cuong_hint}\n\n"
+                f"### 3. Phân tích Cơ chế Gốc (Bản Hư)\n{_m3}\n\n"
+                f"### 4. Phân tích Cơ chế Ngọn (Tiêu Thực / Triệu chứng cấp)\n{_m4}"
+            )
 
         # [FIX] Bổ sung hậu xử lý: phát hiện và chèn triệu chứng bị LLM bỏ sót
         llm_explanation = self._patch_missing_symptoms(llm_explanation, symptoms_str)
@@ -3895,7 +4023,7 @@ class TCMFusionPipeline:
                     if m["ratio"] >= max_ratio - 0.15 and m["ratio"] >= 0.30
                 ]
                 filtered_matches = filtered_matches[:3]
-                disease_names = list(dict.fromkeys([m["benh_ly"] for m in filtered_matches]))
+                disease_names = list(dict.fromkeys([m["benh_ly"].strip() for m in filtered_matches]))
             
         # Danh sách triệu chứng HIỂN THỊ (tính sớm để đồ thị dùng cùng nhãn với input_fusion)
         _display_terms0 = self.qa_pipeline._preprocess_question(user_symptoms) if user_symptoms else []
