@@ -1,0 +1,147 @@
+[
+ {
+  "syn": "Khí uất thương âm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Kinh mạch ứ trệ",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Nhiệt thương tân dịch",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Thấp nhiệt phong đàm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Nhiệt độc thượng công",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Phong táo thương phế",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Phế nhiệt tân thương",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Đàm hỏa thượng nhiễu",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Tâm hoả thượng khang",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Khí kết thương âm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Huyết ứ",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Thương thực",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Hỏa thương âm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Ngoại thương huyết ứ",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Phong hoả nội động",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Táo Nhiệt Thương Phế",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Phế nhiệt",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Đờm nhiệt",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Ứ huyết",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Nhiệt độc thương âm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Nhiệt vị thương âm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Nhiệt độc thương doanh",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Khí hư",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Chứng não hải bất túc",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Chứng tỳ thận lưỡng hư",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Can thận hư",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Khí huyết hư",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Thận dương hư",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Khí hư thủ túc xuất hãn",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ }
+]

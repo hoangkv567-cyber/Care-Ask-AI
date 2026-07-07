@@ -1,15 +1,15 @@
-AUDIT ĐỘ BẨN — data/Medicine_clean.csv  (992 dòng)
+AUDIT ĐỘ BẨN — data/Medicine_clean.csv  (1038 dòng)
 CHỈ ĐỌC — không sửa CSV, không chạm DB.
 
 ==============================================================================
 1. CỘT triệu_chứng
 ==============================================================================
-Tổng field (tách theo ','): 7870
+Tổng field (tách theo ','): 8225
   - run-on ('.'/';'): 493
   - mash mạch+lưỡi/rêu: 133
-  - prose >=8 từ:      751
-  - field có ngoặc:    216  (trong đó ngoặc LỆCH cặp: 62)
-  - số DÒNG có >=1 field bẩn: 427 / 992
+  - prose >=8 từ:      758
+  - field có ngoặc:    217  (trong đó ngoặc LỆCH cặp: 62)
+  - số DÒNG có >=1 field bẩn: 434 / 1038
   ví dụ [run-on]:
     dòng79: mạch Huyền Sác. (Nếu can hỏa phạm vị: mau đói
     dòng118: ngại cử động. Về sau: khô da cứng toàn bộ hoặc từng vùng
@@ -78,9 +78,9 @@ Số DÒNG mà việc tách LÀM TĂNG ngưỡng matched tối thiểu (nguy cơ
 ==============================================================================
 3. CỘT hội_chứng
 ==============================================================================
-992 ô có giá trị | 555 tên distinct
+1038 ô có giá trị | 579 tên distinct
 
-  [CLEAN] : 496
+  [CLEAN] : 512
     - Bàng quang nhiệt
     - Bàng quang thấp nhiệt
     - Bội thực
@@ -91,14 +91,16 @@ Số DÒNG mà việc tách LÀM TĂNG ngưỡng matched tối thiểu (nguy cơ
     - Can Thận Hư Tổn
     - Can Thận Âm Hư
     - Can Thận Âm Hư kèm Đờm Trệ
+    - Can Thận Âm hư
     - Can Thận âm hư
-    - Can Uất Khí Trệ
-    ... +484 nữa
+    ... +500 nữa
 
-  [NGOẶC chú thích (normalize-names xử lý được phần lớn)] : 23
+  [NGOẶC chú thích (normalize-names xử lý được phần lớn)] : 27
     - Can vị bất hòa (can khí uất trệ)
+    - Cấp (Phong nhiệt)
     - Cấp hoàng (nhiệt độc thịnh)
     - Cổ trướng do (Thấp) nhiệt uất huyết ứ
+    - Huyết ứ (do chấn thương)
     - Hàn háo (Hàn đàm phục phế)
     - Hàn sán (hàn ngưng can mạch)
     - Hư hỏa (thận âm hư)
@@ -106,25 +108,24 @@ Số DÒNG mà việc tách LÀM TĂNG ngưỡng matched tối thiểu (nguy cơ
     - Khí sán (can uất khí trệ)
     - Kinh nghiệm (mới hoặc lâu khó cử động)
     - Lao lâm (Tỳ Thận lưỡng hư, lao quyện tức phát)
-    - Nhiệt háo (Đàm nhiệt ủng phế)
-    - Nhiệt lâm (Bàng quang thấp nhiệt)
-    ... +11 nữa
+    ... +15 nữa
 
-  [DẤU ' - ' (cần phân loại tay)] : 12
+  [DẤU ' - ' (cần phân loại tay)] : 15
     - Cam tích (thể vừa) - Tỳ hư tích trệ
     - Dương hoàng - Nhiệt trọng ư thấp
     - Dương hoàng - Thấp trọng ư nhiệt
     - Dương khí hư yếu - tiên thiên bất túc
     - Kiến hình kỳ (thời kỳ toàn phát/ra ban - phế vị nhiệt thịnh, độc tà ngoại thấu)
     - Ma độc bế phế (thể nghịch chứng - độc tà nội hãm, bế trở phế khí)
+    - Người lớn - Khí hư
     - Nhiệt độc công hầu (thể nghịch chứng - độc tà công xung yết hầu)
     - Thu một kỳ (thời kỳ ban lặn/hồi phục - âm tân hao tổn, dư nhiệt vị thanh)
+    - Trẻ em - Do hàn
+    - Trẻ em - Do nhiệt
     - Tỳ hư thấp trệ - đờm hoả quấy động phong
-    - Âm hoàng - Hàn thấp trở át
-    - Âm hoàng - Tỳ hư thấp trệ
-    - Ứ tắc não lạc - Can phong
+    ... +3 nữa
 
-  [GHÉP HỢP LỆ (giữ)] : 11
+  [GHÉP HỢP LỆ (giữ)] : 12
     - Cam khí (thể nhẹ) - Tỳ vị bất hòa
     - Can cam / Cam khô (thể nặng) - Khí huyết lưỡng hư, Tỳ vị hư suy
     - Can huyết hư - Can thận âm hư
@@ -133,6 +134,7 @@ Số DÒNG mà việc tách LÀM TĂNG ngưỡng matched tối thiểu (nguy cơ
     - Huyết lâm (thực chứng - Hạ tiêu thấp nhiệt, nhiệt thịnh bức huyết; hư chứng - Âm
     - Khí huyết đều hư - kinh mạch ứ trệ
     - Khí lâm (thực chứng - Khí trệ; hư chứng - Trung khí hạ hãm)
+    - Người lớn - Dương hư
     - Thạch lâm (Sỏi tiết niệu - thấp nhiệt kết tụ, sa thạch nội trở)
     - Thận âm hư - Âm hư can vượng
     - Thận âm hư - Âm hư nội nhiệt

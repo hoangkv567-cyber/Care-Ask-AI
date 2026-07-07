@@ -1,0 +1,127 @@
+[
+ {
+  "syn": "Huyền ẩm",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Huyền ẩm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Khí huyết đều thiếu",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Khí huyết đều thiếu",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Hư"
+ },
+ {
+  "syn": "Thủy ẩm",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Thủy ẩm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Đàm quyết",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Đàm quyết",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Đàm trọc bế trở",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Đàm trọc bế trở",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Đàm trọc trung trở",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Đàm trọc trung trở",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Đàm ẩm",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Đàm ẩm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Đờm Trọc Ngăn Trở",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Đờm Trọc Ngăn Trở",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Đờm hoả",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Đờm hoả",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Đờm hoả",
+  "rt": "CÓ_TÍNH_CHẤT",
+  "tag": "Nhiệt"
+ },
+ {
+  "syn": "Đờm trọc",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Đờm trọc",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Ứ huyết trở lạc",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Ứ huyết trở lạc",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ },
+ {
+  "syn": "Ứ đờm",
+  "rt": "VỊ_TRÍ",
+  "tag": "Lý"
+ },
+ {
+  "syn": "Ứ đờm",
+  "rt": "TRẠNG_THÁI",
+  "tag": "Thực"
+ }
+]

@@ -1,0 +1,4605 @@
+[
+ {
+  "old": "mạch Tế Sác vô lực nhưng sợ lạnh tay chân lạnh",
+  "deg": 1,
+  "fragments": [
+   "mạch Tế Sác vô lực",
+   "sợ lạnh tay chân lạnh"
+  ]
+ },
+ {
+  "old": "lưỡi đỏ (đầu lưỡi đỏ)",
+  "deg": 1,
+  "fragments": [
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch Huyền Sác. (Nếu can hỏa phạm vị: mau đói",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền Sác"
+  ]
+ },
+ {
+  "old": "ăn nhiều)",
+  "deg": 1,
+  "fragments": [
+   "ăn nhiều"
+  ]
+ },
+ {
+  "old": "lưỡi đỏ...",
+  "deg": 1,
+  "fragments": [
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "Sốt cao (có thể 39-40°C",
+  "deg": 1,
+  "fragments": [
+   "Sốt cao"
+  ]
+ },
+ {
+  "old": "kèm rét run)",
+  "deg": 1,
+  "fragments": [
+   "rét run"
+  ]
+ },
+ {
+  "old": "Có kinh muộn (sau 18 tuổi) hoặc có kinh vài lần rồi mất luôn",
+  "deg": 1,
+  "fragments": [
+   "Có kinh muộn hoặc có kinh vài lần rồi mất luôn"
+  ]
+ },
+ {
+  "old": "giãn bàng quang đái vặt...",
+  "deg": 1,
+  "fragments": [
+   "giãn bàng quang đái vặt"
+  ]
+ },
+ {
+  "old": "tiểu nhiều...",
+  "deg": 1,
+  "fragments": [
+   "tiểu nhiều"
+  ]
+ },
+ {
+  "old": "ngại cử động. Về sau: khô da cứng toàn bộ hoặc từng vùng",
+  "deg": 1,
+  "fragments": [
+   "ngại cử động"
+  ]
+ },
+ {
+  "old": "khớp khó co duỗi. Nặng: nuốt nước bọt khó",
+  "deg": 1,
+  "fragments": [
+   "khớp khó co duỗi"
+  ]
+ },
+ {
+  "old": "các cơ bị liệt (thường chi dưới)",
+  "deg": 1,
+  "fragments": [
+   "các cơ bị liệt"
+  ]
+ },
+ {
+  "old": "đóng vảy (thể ướt chảy dịch nhiều hơn)",
+  "deg": 1,
+  "fragments": [
+   "đóng vảy"
+  ]
+ },
+ {
+  "old": "Thuốc dùng ngoài (ngâm rửa)",
+  "deg": 1,
+  "fragments": [
+   "Thuốc dùng ngoài"
+  ]
+ },
+ {
+  "old": "mạch phù. (Nếu kèm thấp: đau người",
+  "deg": 1,
+  "fragments": [
+   "mạch phù"
+  ]
+ },
+ {
+  "old": "đau khớp xương)",
+  "deg": 1,
+  "fragments": [
+   "đau khớp xương"
+  ]
+ },
+ {
+  "old": "Đầu các ngón bị lạnh và đau buốt kịch liệt (do hàn thịnh huyết ngưng)",
+  "deg": 1,
+  "fragments": [
+   "Đầu các ngón bị lạnh và đau buốt kịch liệt"
+  ]
+ },
+ {
+  "old": "kiêm sợ lạnh mệt mỏi (tỳ thận dương hư)",
+  "deg": 1,
+  "fragments": [
+   "kiêm sợ lạnh mệt mỏi"
+  ]
+ },
+ {
+  "old": "hoặc khi duỗi chân vươn vai. Tỳ âm hư",
+  "deg": 1,
+  "fragments": [
+   "Tỳ âm hư"
+  ]
+ },
+ {
+  "old": "bắp thịt không nhuận gây co rút đau.",
+  "deg": 1,
+  "fragments": [
+   "bắp thịt không nhuận gây co rút đau"
+  ]
+ },
+ {
+  "old": "vận động đỡ)",
+  "deg": 1,
+  "fragments": [
+   "vận động đỡ"
+  ]
+ },
+ {
+  "old": "tay chân run (nhất là lúc ngủ và ban đêm)",
+  "deg": 1,
+  "fragments": [
+   "tay chân run"
+  ]
+ },
+ {
+  "old": "mạch Huyền. (Do ngoại thương tổn não",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền"
+  ]
+ },
+ {
+  "old": "thanh không bị nhiễu loạn)",
+  "deg": 1,
+  "fragments": [
+   "thanh không bị nhiễu loạn"
+  ]
+ },
+ {
+  "old": "mất ngủ (di chứng sau chấn thương sọ não)",
+  "deg": 1,
+  "fragments": [
+   "mất ngủ"
+  ]
+ },
+ {
+  "old": "người hơi béo (thường gặp ở người có tuổi)",
+  "deg": 1,
+  "fragments": [
+   "người hơi béo"
+  ]
+ },
+ {
+  "old": "mạch huyền (hay gặp ở nữ)",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền"
+  ]
+ },
+ {
+  "old": "mạch hoạt (hay gặp ở người béo bệu)",
+  "deg": 1,
+  "fragments": [
+   "mạch Hoạt"
+  ]
+ },
+ {
+  "old": "Các chứng trạng tại khớp xương khá rõ ràng (sưng",
+  "deg": 1,
+  "fragments": [
+   "Các chứng trạng tại khớp xương khá rõ ràng"
+  ]
+ },
+ {
+  "old": "hạn chế vận động nhiều hơn)",
+  "deg": 1,
+  "fragments": [
+   "hạn chế vận động nhiều hơn"
+  ]
+ },
+ {
+  "old": "mạch tế sác (hoặc nếu âm hư nhiều có hoả: mất ngủ",
+  "deg": 1,
+  "fragments": [
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "đạo hãn)",
+  "deg": 1,
+  "fragments": [
+   "đạo hãn"
+  ]
+ },
+ {
+  "old": "Đột nhiên đau quặn bụng dưới dữ dội (đau như cắt/xé/dao đâm)",
+  "deg": 1,
+  "fragments": [
+   "Đột nhiên đau quặn bụng dưới dữ dội"
+  ]
+ },
+ {
+  "old": "tiểu ra máu. Đau đứng ngồi không yên.",
+  "deg": 1,
+  "fragments": [
+   "Tiểu ra máu",
+   "Đau đứng ngồi không yên"
+  ]
+ },
+ {
+  "old": "mũi ráo. Nặng thì răng lung lay",
+  "deg": 1,
+  "fragments": [
+   "mũi ráo"
+  ]
+ },
+ {
+  "old": "táo bón. Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "táo bón",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "miệng khát tâm phiền.",
+  "deg": 2,
+  "fragments": [
+   "miệng khát tâm phiền"
+  ]
+ },
+ {
+  "old": "mặt mắt đỏ.",
+  "deg": 1,
+  "fragments": [
+   "mặt mắt đỏ"
+  ]
+ },
+ {
+  "old": "miệng đắng khô họng.",
+  "deg": 1,
+  "fragments": [
+   "miệng đắng khô họng"
+  ]
+ },
+ {
+  "old": "lưng gối đau mỏi.",
+  "deg": 1,
+  "fragments": [
+   "lưng gối đau mỏi"
+  ]
+ },
+ {
+  "old": "hồi hộp mất ngủ.",
+  "deg": 1,
+  "fragments": [
+   "hồi hộp mất ngủ"
+  ]
+ },
+ {
+  "old": "hoặc sau khi ốm bị chảy máu cam.",
+  "deg": 1,
+  "fragments": [
+   "sau khi ốm bị chảy máu cam"
+  ]
+ },
+ {
+  "old": "Đau sau xương ức đột ngột (khi gắng sức",
+  "deg": 1,
+  "fragments": [
+   "Đau sau xương ức đột ngột"
+  ]
+ },
+ {
+  "old": "trời lạnh...)",
+  "deg": 1,
+  "fragments": [
+   "trời lạnh"
+  ]
+ },
+ {
+  "old": "mạch Trầm Tế Sác. Cơn không điển hình: chỉ tức sau xương ức",
+  "deg": 1,
+  "fragments": [
+   "mạch trầm tế sác",
+   "Cơn không điển hình: chỉ tức sau xương ức"
+  ]
+ },
+ {
+  "old": "thượng vị...",
+  "deg": 1,
+  "fragments": [
+   "thượng vị"
+  ]
+ },
+ {
+  "old": "Nước mắt tự nhiên chảy ra (chảy nước mắt sống)",
+  "deg": 1,
+  "fragments": [
+   "Nước mắt tự nhiên chảy ra"
+  ]
+ },
+ {
+  "old": "kéo dài (nhất là 2 mắt cá chân)",
+  "deg": 1,
+  "fragments": [
+   "kéo dài"
+  ]
+ },
+ {
+  "old": "mạch huyền sác (hay gặp ở người viêm cầu thận mãn kèm cao huyết áp)",
+  "deg": 2,
+  "fragments": [
+   "mạch Huyền Sác"
+  ]
+ },
+ {
+  "old": "nứt nẻ (nặng hơn vào mùa đông và hanh khô",
+  "deg": 1,
+  "fragments": [
+   "nứt nẻ"
+  ]
+ },
+ {
+  "old": "đau căng đầu (vào sáng sớm hoặc suốt buổi sáng)",
+  "deg": 2,
+  "fragments": [
+   "đau căng đầu"
+  ]
+ },
+ {
+  "old": "đau nhiều vùng thái dương (cáu giận bệnh tăng)",
+  "deg": 3,
+  "fragments": [
+   "đau nhiều vùng thái dương"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhờn (nếu vàng là thấp đờm hoá nhiệt)",
+  "deg": 3,
+  "fragments": [
+   "rêu lưỡi trắng nhờn"
+  ]
+ },
+ {
+  "old": "đau nhiều về buổi sáng hoặc khi mới ngủ dậy (buổi chiều nhẹ dần)",
+  "deg": 2,
+  "fragments": [
+   "đau nhiều về buổi sáng hoặc khi mới ngủ dậy"
+  ]
+ },
+ {
+  "old": "mạch khẩn. (Gân đau cổ cứng",
+  "deg": 1,
+  "fragments": [
+   "mạch khẩn"
+  ]
+ },
+ {
+  "old": "sưng đau)",
+  "deg": 1,
+  "fragments": [
+   "sưng đau"
+  ]
+ },
+ {
+  "old": "Ù tai (nặng nhẹ theo tình cảm)",
+  "deg": 2,
+  "fragments": [
+   "ù tai"
+  ]
+ },
+ {
+  "old": "lưng gối mỏi (suy từ thể bệnh và thuốc)",
+  "deg": 1,
+  "fragments": [
+   "lưng gối mỏi"
+  ]
+ },
+ {
+  "old": "tay chân không ấm (do thận dương hư yếu",
+  "deg": 1,
+  "fragments": [
+   "tay chân không ấm"
+  ]
+ },
+ {
+  "old": "huyết lưu hành bị trở ngại)",
+  "deg": 1,
+  "fragments": [
+   "huyết lưu hành bị trở ngại"
+  ]
+ },
+ {
+  "old": "đại tiện bí kết (thường gặp trong viêm gan",
+  "deg": 1,
+  "fragments": [
+   "Đại tiện bí kết"
+  ]
+ },
+ {
+  "old": "mật)",
+  "deg": 1,
+  "fragments": [
+   "mật"
+  ]
+ },
+ {
+  "old": "mạch huyền tế (nếu âm hư mạch huyền sác)",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền Tế"
+  ]
+ },
+ {
+  "old": "đau căng đầu (sáng sớm hoặc suốt buổi sáng)",
+  "deg": 1,
+  "fragments": [
+   "đau căng đầu"
+  ]
+ },
+ {
+  "old": "mạch tế vô lực. (Đau nhiều về buổi sáng hoặc khi mới ngủ dậy",
+  "deg": 1,
+  "fragments": [
+   "mạch tế vô lực"
+  ]
+ },
+ {
+  "old": "tinh thần mệt mỏi)",
+  "deg": 1,
+  "fragments": [
+   "tinh thần mệt mỏi"
+  ]
+ },
+ {
+  "old": "mạch tế sác. (Hoặc tiểu tiện sẻn đỏ lẫn máu",
+  "deg": 1,
+  "fragments": [
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "mạch tế sác…)",
+  "deg": 1,
+  "fragments": [
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "mất ngủ (do âm hư dương thịnh)",
+  "deg": 1,
+  "fragments": [
+   "mất ngủ"
+  ]
+ },
+ {
+  "old": "ngực khó chịu (do đờm ứ kiêm phong tà)",
+  "deg": 1,
+  "fragments": [
+   "ngực khó chịu"
+  ]
+ },
+ {
+  "old": "băng lậu (do thận hư)",
+  "deg": 1,
+  "fragments": [
+   "băng lậu"
+  ]
+ },
+ {
+  "old": "mạch Huyền Sác (nếu đờm nhiệt ngăn trở kinh mạch: chóng mặt",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền Sác"
+  ]
+ },
+ {
+  "old": "mạch Huyền Hoạt Sác)",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền Hoạt Sác"
+  ]
+ },
+ {
+  "old": "mạch Khẩn (nếu hàn đờm ngăn trở kinh lạc: mặt tê dại",
+  "deg": 1,
+  "fragments": [
+   "mạch khẩn"
+  ]
+ },
+ {
+  "old": "mạch Nhu Hoạt Khẩn)",
+  "deg": 1,
+  "fragments": [
+   "mạch Nhu Hoạt Khẩn"
+  ]
+ },
+ {
+  "old": "mạch huyền hoạt (thường gặp ở giai đoạn sớm)",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền Hoạt"
+  ]
+ },
+ {
+  "old": "Đột ngột khớp ngón cái (hoặc các khớp nhỏ khác) sưng nóng đỏ đau",
+  "deg": 1,
+  "fragments": [
+   "Đột ngột khớp ngón cái sưng nóng đỏ đau"
+  ]
+ },
+ {
+  "old": "Đau nhiều do huyết ứ (đau như dao đâm",
+  "deg": 1,
+  "fragments": [
+   "Đau nhiều do huyết ứ"
+  ]
+ },
+ {
+  "old": "lưỡi tím bầm)",
+  "deg": 1,
+  "fragments": [
+   "lưỡi tím bầm"
+  ]
+ },
+ {
+  "old": "nói chung lưỡi và mạch bình thường hoặc mạch thấy Hư Sắc. (Nếu kiêm đờm nhiệt: tâm hồi hộp mà phiền",
+  "deg": 1,
+  "fragments": [
+   "nói chung lưỡi và mạch bình thường hoặc mạch thấy Hư Sắc"
+  ]
+ },
+ {
+  "old": "mạch Hoạt Sắc)",
+  "deg": 1,
+  "fragments": [
+   "mạch Hoạt Sắc"
+  ]
+ },
+ {
+  "old": "mạch Tế. (Nếu mạch Kết Đại: uống Chích Cam Thảo Thang gia giảm)",
+  "deg": 1,
+  "fragments": [
+   "mạch tế"
+  ]
+ },
+ {
+  "old": "mạch Tế Sác. (Nếu âm hư mà hỏa không vượng",
+  "deg": 1,
+  "fragments": [
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "có thể bị ngất. Phụ nữ thường kinh nguyệt không đều",
+  "deg": 1,
+  "fragments": [
+   "Phụ nữ thường kinh nguyệt không đều"
+  ]
+ },
+ {
+  "old": "Ỉa nhiều lần trong ngày (có thể trên 10 lần)",
+  "deg": 1,
+  "fragments": [
+   "Ỉa nhiều lần trong ngày"
+  ]
+ },
+ {
+  "old": "hoặc sau khi giao hợp xong dương vật vẫn cứng. Dương vật thâm đỏ",
+  "deg": 2,
+  "fragments": [
+   "sau khi giao hợp xong dương vật vẫn cứng",
+   "Dương vật thâm đỏ"
+  ]
+ },
+ {
+  "old": "Giống cơn động kinh điển hình (đột ngột ngã lăn quay",
+  "deg": 1,
+  "fragments": [
+   "Giống cơn động kinh điển hình"
+  ]
+ },
+ {
+  "old": "hôn mê)",
+  "deg": 1,
+  "fragments": [
+   "hôn mê"
+  ]
+ },
+ {
+  "old": "hoặc trước khi phát bệnh hông ngực đầy tức buồn bực",
+  "deg": 1,
+  "fragments": [
+   "trước khi phát bệnh hông ngực đầy tức buồn bực"
+  ]
+ },
+ {
+  "old": "kèm theo các triệu chứng của thể tâm thận tỳ hư",
+  "deg": 1,
+  "fragments": [
+   "các triệu chứng của thể tâm thận tỳ hư"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhờn hoặc vàng (nếu hóa nhiệt)",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhờn hoặc vàng"
+  ]
+ },
+ {
+  "old": "sổ mũi. 1-2 ngày sau da nổi ban đỏ từ đầu mặt xuống thân",
+  "deg": 1,
+  "fragments": [
+   "sổ mũi",
+   "1-2 ngày sau da nổi ban đỏ từ đầu mặt xuống thân"
+  ]
+ },
+ {
+  "old": "Mắt có màng nổi như đá (mã não ế)",
+  "deg": 1,
+  "fragments": [
+   "Mắt có màng nổi như đá"
+  ]
+ },
+ {
+  "old": "Sắc ban đen sẫm (Can ban)",
+  "deg": 1,
+  "fragments": [
+   "Sắc ban đen sẫm"
+  ]
+ },
+ {
+  "old": "sốt có chu kỳ (1 ngày 1 cơn",
+  "deg": 1,
+  "fragments": [
+   "sốt có chu kỳ"
+  ]
+ },
+ {
+  "old": "3 ngày 1 cơn)",
+  "deg": 1,
+  "fragments": [
+   "3 ngày 1 cơn"
+  ]
+ },
+ {
+  "old": "ợ hơi (thường gặp ở người già",
+  "deg": 1,
+  "fragments": [
+   "ợ hơi"
+  ]
+ },
+ {
+  "old": "phụ nữ sau đẻ nhiều)",
+  "deg": 1,
+  "fragments": [
+   "phụ nữ sau đẻ nhiều"
+  ]
+ },
+ {
+  "old": "ưa ấm ưa trườm (thường gặp ở người cao tuổi",
+  "deg": 1,
+  "fragments": [
+   "ưa ấm ưa trườm"
+  ]
+ },
+ {
+  "old": "người bệnh nằm lâu)",
+  "deg": 1,
+  "fragments": [
+   "người bệnh nằm lâu"
+  ]
+ },
+ {
+  "old": "có phúc thủy (cổ chướng)",
+  "deg": 1,
+  "fragments": [
+   "có phúc thủy"
+  ]
+ },
+ {
+  "old": "Nhũ tịch (u vú) do can uất đờm ngưng",
+  "deg": 1,
+  "fragments": [
+   "Nhũ tịch do can uất đờm ngưng"
+  ]
+ },
+ {
+  "old": "Nhũ tịch (u vú) do đờm ngưng khí trệ",
+  "deg": 1,
+  "fragments": [
+   "Nhũ tịch do đờm ngưng khí trệ"
+  ]
+ },
+ {
+  "old": "Khối u thận tế bào ác tính đã cắt bỏ nhưng miệng lỗ vết cắt lâu ngày không khỏi",
+  "deg": 1,
+  "fragments": [
+   "Khối u thận tế bào ác tính đã cắt bỏ",
+   "miệng lỗ vết cắt lâu ngày không khỏi"
+  ]
+ },
+ {
+  "old": "có một ít sau khi có kinh và sau khi sinh mới phát. Toàn thân nổi lên những vết ban mọc thành đám",
+  "deg": 1,
+  "fragments": [
+   "có một ít sau khi có kinh và sau khi sinh mới phát",
+   "Toàn thân nổi lên những vết ban mọc thành đám"
+  ]
+ },
+ {
+  "old": "lúc mới phát có những vết xuất huyết. Toàn thân hơi ngứa",
+  "deg": 1,
+  "fragments": [
+   "lúc mới phát có những vết xuất huyết",
+   "Toàn thân hơi ngứa"
+  ]
+ },
+ {
+  "old": "mạch Huyền Tế Sác. Nặng: chóng mặt tăng",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền Tế Sác"
+  ]
+ },
+ {
+  "old": "có thể kèm mùi hôi; kèm miệng khát thích uống nước mát",
+  "deg": 1,
+  "fragments": [
+   "miệng khát thích uống nước mát"
+  ]
+ },
+ {
+  "old": "đại tiện táo. Chất lưỡi đỏ",
+  "deg": 4,
+  "fragments": [
+   "đại tiện táo",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng. Mạch hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "khi ra cục thì đau giảm; kèm bụng dưới đau cự án",
+  "deg": 1,
+  "fragments": [
+   "bụng dưới đau cự án"
+  ]
+ },
+ {
+  "old": "ứ cục xuống thì bớt đau. Chất lưỡi tím tối hoặc có điểm ứ huyết ở rìa lưỡi",
+  "deg": 1,
+  "fragments": [
+   "ứ cục xuống thì bớt đau",
+   "Chất lưỡi tím tối hoặc có điểm ứ huyết ở rìa lưỡi"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng. Mạch huyền sáp hoặc trầm sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch Huyền Sáp hoặc Trầm Sáp"
+  ]
+ },
+ {
+  "old": "chất trong loãng; kèm sắc mặt tối xám",
+  "deg": 1,
+  "fragments": [
+   "chất trong loãng",
+   "sắc mặt tối xám"
+  ]
+ },
+ {
+  "old": "tinh thần mệt mỏi. Chất lưỡi nhạt bệu",
+  "deg": 1,
+  "fragments": [
+   "tinh thần mệt mỏi",
+   "chất lưỡi nhạt bệu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng. Mạch trầm nhược hoặc trầm trì.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "Mạch trầm nhược hoặc trầm trì"
+  ]
+ },
+ {
+  "old": "chất hơi đặc; kèm đầu váng tai ù",
+  "deg": 1,
+  "fragments": [
+   "chất hơi đặc",
+   "đầu váng tai ù"
+  ]
+ },
+ {
+  "old": "họng khô miệng ráo. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "họng khô miệng ráo",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi ít hoặc không rêu. Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi ít hoặc không rêu",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "chất loãng; kèm sắc mặt trắng bệch hoặc vàng úa",
+  "deg": 1,
+  "fragments": [
+   "chất loãng",
+   "sắc mặt trắng bệch hoặc vàng úa"
+  ]
+ },
+ {
+  "old": "chân tay không ấm. Chất lưỡi nhạt bệu",
+  "deg": 1,
+  "fragments": [
+   "chân tay không ấm",
+   "chất lưỡi nhạt bệu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng. Mạch tế nhược hoặc hoãn nhược.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "Mạch tế nhược hoặc hoãn nhược"
+  ]
+ },
+ {
+  "old": "chán ăn; lưỡi đỏ nhạt rêu trắng mỏng",
+  "deg": 1,
+  "fragments": [
+   "chán ăn",
+   "lưỡi đỏ nhạt rêu trắng mỏng"
+  ]
+ },
+ {
+  "old": "mạch huyền.",
+  "deg": 2,
+  "fragments": [
+   "mạch Huyền"
+  ]
+ },
+ {
+  "old": "đại tiện táo hoặc lỏng nát; lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo hoặc lỏng nát",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch sác (hoạt sác).",
+  "deg": 1,
+  "fragments": [
+   "mạch Sác"
+  ]
+ },
+ {
+  "old": "đại tiện lỏng nát; lưỡi nhợt bệu có hằn răng rêu trắng mỏng",
+  "deg": 1,
+  "fragments": [
+   "đại tiện lỏng nát",
+   "lưỡi nhợt bệu có hằn răng rêu trắng mỏng"
+  ]
+ },
+ {
+  "old": "mạch tế nhược.",
+  "deg": 4,
+  "fragments": [
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "đại tiện táo kết; lưỡi đỏ ít tân dịch",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo kết",
+   "lưỡi đỏ ít tân dịch"
+  ]
+ },
+ {
+  "old": "rêu ít hoặc bong mảng (lưỡi bóng đỏ)",
+  "deg": 1,
+  "fragments": [
+   "rêu ít hoặc bong mảng"
+  ]
+ },
+ {
+  "old": "mạch tế sác.",
+  "deg": 4,
+  "fragments": [
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "miệng nhạt nhớt; lưỡi bệu rêu trắng nhớt",
+  "deg": 1,
+  "fragments": [
+   "miệng nhạt nhớt",
+   "lưỡi bệu rêu trắng nhớt"
+  ]
+ },
+ {
+  "old": "mạch nhu hoạt (huyền hoạt).",
+  "deg": 1,
+  "fragments": [
+   "mạch Nhu Hoạt"
+  ]
+ },
+ {
+  "old": "đại tiện bất sảng hoặc phân thối khẳm; lưỡi rêu dày nhớt (cấu nị)",
+  "deg": 1,
+  "fragments": [
+   "đại tiện bất sảng hoặc phân thối khẳm",
+   "lưỡi rêu dày nhớt"
+  ]
+ },
+ {
+  "old": "mạch hoạt.",
+  "deg": 1,
+  "fragments": [
+   "mạch Hoạt"
+  ]
+ },
+ {
+  "old": "ngứa tăng khi nóng hoặc ra mồ hôi; tổn thương lan rộng theo kiểu vòng cung",
+  "deg": 1,
+  "fragments": [
+   "ngứa tăng khi nóng hoặc ra mồ hôi",
+   "tổn thương lan rộng theo kiểu vòng cung"
+  ]
+ },
+ {
+  "old": "da hơi phù nề rớm dịch nhẹ. Rêu lưỡi trắng nhớt",
+  "deg": 1,
+  "fragments": [
+   "da hơi phù nề rớm dịch nhẹ",
+   "rêu lưỡi trắng nhớt"
+  ]
+ },
+ {
+  "old": "chất lưỡi hồng nhạt; mạch phù hoãn hoặc nhu.",
+  "deg": 1,
+  "fragments": [
+   "chất lưỡi hồng nhạt",
+   "mạch phù hoãn hoặc nhu"
+  ]
+ },
+ {
+  "old": "kèm cảm giác nóng; miệng đắng khát",
+  "deg": 1,
+  "fragments": [
+   "cảm giác nóng",
+   "miệng đắng khát"
+  ]
+ },
+ {
+  "old": "đại tiện dính. Rêu lưỡi vàng nhớt",
+  "deg": 1,
+  "fragments": [
+   "đại tiện dính",
+   "rêu lưỡi vàng nhớt"
+  ]
+ },
+ {
+  "old": "chất lưỡi đỏ; mạch hoạt sác hoặc nhu sác.",
+  "deg": 1,
+  "fragments": [
+   "chất lưỡi đỏ",
+   "mạch hoạt sác hoặc nhu sác"
+  ]
+ },
+ {
+  "old": "tức giận; mắt trướng đau",
+  "deg": 1,
+  "fragments": [
+   "tức giận",
+   "mắt trướng đau"
+  ]
+ },
+ {
+  "old": "miệng đắng họng khô. Lưỡi hồng",
+  "deg": 1,
+  "fragments": [
+   "miệng đắng họng khô",
+   "lưỡi hồng"
+  ]
+ },
+ {
+  "old": "rêu mỏng vàng. Mạch huyền.",
+  "deg": 1,
+  "fragments": [
+   "rêu mỏng vàng",
+   "mạch Huyền"
+  ]
+ },
+ {
+  "old": "hay hoa mắt; kèm sắc mặt trắng nhợt hoặc vàng úa",
+  "deg": 1,
+  "fragments": [
+   "hay hoa mắt",
+   "sắc mặt trắng nhợt hoặc vàng úa"
+  ]
+ },
+ {
+  "old": "chân tay rã rời. Lưỡi nhợt bệu",
+  "deg": 1,
+  "fragments": [
+   "chân tay rã rời",
+   "lưỡi nhợt bệu"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng. Mạch tế nhược.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "xuất huyết; kèm ngực sườn đầy tức",
+  "deg": 1,
+  "fragments": [
+   "xuất huyết",
+   "ngực sườn đầy tức"
+  ]
+ },
+ {
+  "old": "tâm phiền. Lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "tâm phiền",
+   "Lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu mỏng. Mạch huyền sáp hoặc tế sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu mỏng",
+   "Mạch huyền sáp hoặc tế sáp"
+  ]
+ },
+ {
+  "old": "sợ ánh sáng; kèm đầu váng tai ù",
+  "deg": 1,
+  "fragments": [
+   "sợ ánh sáng",
+   "đầu váng tai ù"
+  ]
+ },
+ {
+  "old": "di tinh. Lưỡi hồng ít rêu hoặc rêu khô ít tân dịch. Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "di tinh",
+   "Lưỡi hồng ít rêu hoặc rêu khô ít tân dịch",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "ngủ không yên. Lưỡi chất hồng nhạt",
+  "deg": 1,
+  "fragments": [
+   "Ngủ không yên",
+   "Lưỡi chất hồng nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hơi nhớt. Mạch tế hoạt",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hơi nhớt",
+   "mạch tế hoạt"
+  ]
+ },
+ {
+  "old": "chỉ văn (vân tay) sắc hồng nhạt.",
+  "deg": 1,
+  "fragments": [
+   "chỉ văn sắc hồng nhạt"
+  ]
+ },
+ {
+  "old": "ăn kém hoặc ăn dở (thích ăn vật lạ như đất",
+  "deg": 1,
+  "fragments": [
+   "ăn kém hoặc ăn dở"
+  ]
+ },
+ {
+  "old": "gạo sống)",
+  "deg": 1,
+  "fragments": [
+   "gạo sống"
+  ]
+ },
+ {
+  "old": "ngủ không yên nghiến răng. Lưỡi chất nhạt",
+  "deg": 1,
+  "fragments": [
+   "ngủ không yên nghiến răng",
+   "Lưỡi chất nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi nhớt bẩn (nê nị). Mạch tế hoạt hoặc tế nhược",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi nhớt bẩn",
+   "Mạch tế hoạt hoặc tế nhược"
+  ]
+ },
+ {
+  "old": "chỉ văn tím trệ.",
+  "deg": 1,
+  "fragments": [
+   "chỉ văn tím trệ"
+  ]
+ },
+ {
+  "old": "Người gầy đét trơ xương (da bọc xương)",
+  "deg": 1,
+  "fragments": [
+   "Người gầy đét trơ xương"
+  ]
+ },
+ {
+  "old": "có thể phù nhẹ. Lưỡi chất nhạt bệu hoặc hồng khô ít tân dịch",
+  "deg": 1,
+  "fragments": [
+   "Lưỡi chất nhạt bệu hoặc hồng khô ít tân dịch"
+  ]
+ },
+ {
+  "old": "rêu lưỡi ít hoặc bong tróc (quang bác). Mạch tế nhược vô lực",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi ít hoặc bong tróc",
+   "Mạch tế nhược vô lực"
+  ]
+ },
+ {
+  "old": "chỉ văn nhạt mờ ẩn.",
+  "deg": 1,
+  "fragments": [
+   "chỉ văn nhạt mờ ẩn"
+  ]
+ },
+ {
+  "old": "sờ đau chói; mi mắt phù nề",
+  "deg": 1,
+  "fragments": [
+   "sờ đau chói",
+   "mi mắt phù nề"
+  ]
+ },
+ {
+  "old": "chảy nước mắt; kèm sốt",
+  "deg": 1,
+  "fragments": [
+   "chảy nước mắt",
+   "sốt"
+  ]
+ },
+ {
+  "old": "tiểu vàng. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng; mạch sác hoặc hồng sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng",
+   "mạch sác hoặc hồng sác"
+  ]
+ },
+ {
+  "old": "cộm xốn khó chịu; kèm ngứa",
+  "deg": 1,
+  "fragments": [
+   "cộm xốn khó chịu",
+   "ngứa"
+  ]
+ },
+ {
+  "old": "sợ gió; có thể sốt nhẹ",
+  "deg": 1,
+  "fragments": [
+   "sợ gió"
+  ]
+ },
+ {
+  "old": "mũi ngạt. Lưỡi đỏ nhạt",
+  "deg": 1,
+  "fragments": [
+   "mũi ngạt",
+   "lưỡi đỏ nhạt"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng hoặc hơi vàng; mạch phù sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng hoặc hơi vàng",
+   "mạch phù sác"
+  ]
+ },
+ {
+  "old": "mi mắt hơi đỏ cộm; kèm ăn nhiều dễ đói hoặc ăn kém",
+  "deg": 1,
+  "fragments": [
+   "mi mắt hơi đỏ cộm",
+   "ăn nhiều dễ đói hoặc ăn kém"
+  ]
+ },
+ {
+  "old": "thích ăn đồ béo ngọt cay nóng. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "thích ăn đồ béo ngọt cay nóng",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng khô hoặc vàng nhớt; mạch hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng khô hoặc vàng nhớt",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "Đau tức vùng hạ sườn (thường bên phải hoặc cả hai bên)",
+  "deg": 1,
+  "fragments": [
+   "Đau tức vùng hạ sườn"
+  ]
+ },
+ {
+  "old": "bụng đầy trướng. Lưỡi chất hồng nhạt",
+  "deg": 1,
+  "fragments": [
+   "bụng đầy trướng",
+   "Lưỡi chất hồng nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng. Mạch huyền.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "mạch Huyền"
+  ]
+ },
+ {
+  "old": "Đau tức âm ỉ vùng hạ sườn (ẩn thống",
+  "deg": 1,
+  "fragments": [
+   "Đau tức âm ỉ vùng hạ sườn"
+  ]
+ },
+ {
+  "old": "đau liên miên không dứt)",
+  "deg": 1,
+  "fragments": [
+   "đau liên miên không dứt"
+  ]
+ },
+ {
+  "old": "mất ngủ. Lưỡi chất đỏ",
+  "deg": 1,
+  "fragments": [
+   "mất ngủ",
+   "Lưỡi chất đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi ít hoặc không rêu. Mạch huyền tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi ít hoặc không rêu",
+   "mạch Huyền Tế Sác"
+  ]
+ },
+ {
+  "old": "mắt và da vàng (hoàng đản). Lưỡi chất đỏ",
+  "deg": 1,
+  "fragments": [
+   "mắt và da vàng",
+   "Lưỡi chất đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nị). Mạch huyền sác hoặc huyền hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch huyền sác hoặc huyền hoạt"
+  ]
+ },
+ {
+  "old": "Đau tức vùng hạ sườn đau như kim châm (thích thống)",
+  "deg": 1,
+  "fragments": [
+   "Đau tức vùng hạ sườn đau như kim châm"
+  ]
+ },
+ {
+  "old": "ấn vào đau tăng (cự án)",
+  "deg": 1,
+  "fragments": [
+   "ấn vào đau tăng"
+  ]
+ },
+ {
+  "old": "sắc mặt sạm tối. Lưỡi chất tím tối hoặc có điểm ứ huyết (ban ứ)",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt sạm tối",
+   "Lưỡi chất tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng. Mạch huyền sáp (trầm sáp).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch huyền sáp"
+  ]
+ },
+ {
+  "old": "tiểu tiện ít đỏ sẫm. Chất lưỡi đỏ tía (giáng)",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện ít đỏ sẫm",
+   "chất lưỡi đỏ tía"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng khô hoặc vàng đen. Mạch huyền sác hoặc hồng đại.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng khô hoặc vàng đen",
+   "Mạch huyền sác hoặc hồng đại"
+  ]
+ },
+ {
+  "old": "miệng đắng khô. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "miệng đắng khô",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớp (hoàng nhị). Mạch huyền sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớp",
+   "mạch Huyền Sác hoặc Hoạt Sác"
+  ]
+ },
+ {
+  "old": "Da và mắt vàng nhưng không tươi bằng thể nhiệt trọng",
+  "deg": 1,
+  "fragments": [
+   "Da và mắt vàng",
+   "không tươi bằng thể nhiệt trọng"
+  ]
+ },
+ {
+  "old": "tiểu tiện vàng đục và ít. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện vàng đục và ít",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi dày nhớp hơi vàng. Mạch nhu hoãn hoặc nhu sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi dày nhớp hơi vàng",
+   "Mạch nhu hoãn hoặc nhu sác"
+  ]
+ },
+ {
+  "old": "Da và mắt vàng xỉn tối như màu khói ám (vàng ám không tươi)",
+  "deg": 1,
+  "fragments": [
+   "Da và mắt vàng xỉn tối như màu khói ám"
+  ]
+ },
+ {
+  "old": "sợ lạnh. Chất lưỡi nhợt bệu",
+  "deg": 1,
+  "fragments": [
+   "Sợ lạnh",
+   "Chất lưỡi nhợt bệu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhớp. Mạch nhu hoãn hoặc trầm trì.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhớp",
+   "Mạch nhu hoãn hoặc trầm trì"
+  ]
+ },
+ {
+  "old": "có thể phù nhẹ. Chất lưỡi nhợt bệu có hằn răng",
+  "deg": 1,
+  "fragments": [
+   "Chất lưỡi nhợt bệu có hằn răng"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng nhớp. Mạch nhu nhược hoặc trầm tế vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng nhớp",
+   "Mạch nhu nhược hoặc trầm tế vô lực"
+  ]
+ },
+ {
+  "old": "thở gấp. Chất lưỡi nhợt",
+  "deg": 1,
+  "fragments": [
+   "thở gấp",
+   "chất lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "rêu trắng trơn; mạch trầm khẩn hoặc trầm tế.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng trơn",
+   "mạch trầm khẩn hoặc trầm tế"
+  ]
+ },
+ {
+  "old": "ợ hơi. Chất lưỡi hồng nhạt",
+  "deg": 1,
+  "fragments": [
+   "ợ hơi",
+   "chất lưỡi hồng nhạt"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch huyền.",
+  "deg": 2,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch Huyền"
+  ]
+ },
+ {
+  "old": "tự hãn (ra mồ hôi)",
+  "deg": 1,
+  "fragments": [
+   "tự hãn"
+  ]
+ },
+ {
+  "old": "miệng khô. Chất lưỡi hồng nhạt bệu có vết răng",
+  "deg": 1,
+  "fragments": [
+   "miệng khô",
+   "Chất lưỡi hồng nhạt bệu có vết răng"
+  ]
+ },
+ {
+  "old": "rêu ít; mạch tế nhược hoặc kết đại.",
+  "deg": 1,
+  "fragments": [
+   "rêu ít",
+   "mạch tế nhược hoặc kết đại"
+  ]
+ },
+ {
+  "old": "Đau vùng ngực (tâm hung) như dao đâm",
+  "deg": 1,
+  "fragments": [
+   "Đau vùng ngực như dao đâm"
+  ]
+ },
+ {
+  "old": "tâm quý (hồi hộp trống ngực)",
+  "deg": 1,
+  "fragments": [
+   "tâm quý"
+  ]
+ },
+ {
+  "old": "môi và móng tay tím. Chất lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "môi và móng tay tím",
+   "Chất lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu mỏng; mạch trầm sáp hoặc kết đại.",
+  "deg": 1,
+  "fragments": [
+   "rêu mỏng",
+   "mạch trầm sáp hoặc kết đại"
+  ]
+ },
+ {
+  "old": "tinh thần mệt mỏi. Chất lưỡi nhợt bệu hoặc tím tối",
+  "deg": 1,
+  "fragments": [
+   "tinh thần mệt mỏi",
+   "Chất lưỡi nhợt bệu hoặc tím tối"
+  ]
+ },
+ {
+  "old": "rêu trắng trơn; mạch trầm tế vô lực hoặc trầm trì kết đại.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng trơn",
+   "mạch trầm tế vô lực hoặc trầm trì kết đại"
+  ]
+ },
+ {
+  "old": "buồn nôn. Chất lưỡi bệu",
+  "deg": 1,
+  "fragments": [
+   "buồn nôn",
+   "chất lưỡi bệu"
+  ]
+ },
+ {
+  "old": "rêu trắng nhớt (bạch nhị) hoặc vàng nhớt; mạch hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng nhớt hoặc vàng nhớt",
+   "mạch Hoạt"
+  ]
+ },
+ {
+  "old": "tiếng nói ngậm hột (giọng đục)",
+  "deg": 1,
+  "fragments": [
+   "tiếng nói ngậm hột"
+  ]
+ },
+ {
+  "old": "chảy nhiều nước dãi; sốt cao",
+  "deg": 1,
+  "fragments": [
+   "chảy nhiều nước dãi",
+   "Sốt cao"
+  ]
+ },
+ {
+  "old": "tiểu vàng đỏ; khám thấy khối sưng căng bóng",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng đỏ",
+   "khám thấy khối sưng căng bóng"
+  ]
+ },
+ {
+  "old": "mềm khi đã thành mủ. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "mềm khi đã thành mủ",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng dày. Mạch hồng sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng dày",
+   "Mạch hồng sác hoặc hoạt sác"
+  ]
+ },
+ {
+  "old": "miệng khô; khám thấy vùng amidan/quanh amidan sưng đỏ. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "miệng khô",
+   "khám thấy vùng amidan/quanh amidan sưng đỏ",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng hoặc hơi vàng. Mạch phù sác.",
+  "deg": 2,
+  "fragments": [
+   "rêu trắng mỏng hoặc hơi vàng",
+   "mạch phù sác"
+  ]
+ },
+ {
+  "old": "cơ nhục khó mọc (sinh cơ chậm); kèm sắc mặt trắng bệch hoặc vàng úa",
+  "deg": 1,
+  "fragments": [
+   "cơ nhục khó mọc",
+   "sắc mặt trắng bệch hoặc vàng úa"
+  ]
+ },
+ {
+  "old": "đại tiện lỏng nát. Chất lưỡi nhợt",
+  "deg": 1,
+  "fragments": [
+   "đại tiện lỏng nát",
+   "chất lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "thể lưỡi bệu có hằn răng. Mạch tế nhược (hư nhược vô lực).",
+  "deg": 1,
+  "fragments": [
+   "thể lưỡi bệu có hằn răng",
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "lỗ rò tiết dịch không dứt; kèm hậu môn nóng rát nặng trệ",
+  "deg": 1,
+  "fragments": [
+   "lỗ rò tiết dịch không dứt",
+   "hậu môn nóng rát nặng trệ"
+  ]
+ },
+ {
+  "old": "có thể sốt. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nhị). Mạch hoạt sác hoặc nhu sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "Mạch hoạt sác hoặc nhu sác"
+  ]
+ },
+ {
+  "old": "miệng lỗ rò sắc nhợt hoặc âm ỉ; kèm triều nhiệt về chiều",
+  "deg": 1,
+  "fragments": [
+   "miệng lỗ rò sắc nhợt hoặc âm ỉ",
+   "triều nhiệt về chiều"
+  ]
+ },
+ {
+  "old": "đạo hãn (mồ hôi trộm)",
+  "deg": 1,
+  "fragments": [
+   "đạo hãn"
+  ]
+ },
+ {
+  "old": "lòng bàn tay bàn chân nóng (ngũ tâm phiền nhiệt)",
+  "deg": 1,
+  "fragments": [
+   "lòng bàn tay bàn chân nóng"
+  ]
+ },
+ {
+  "old": "có thể ho khan (kèm lao). Chất lưỡi đỏ ít rêu hoặc rêu ít mà khô. Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "Chất lưỡi đỏ ít rêu hoặc rêu ít mà khô",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "mấy ngày mới đi một lần; khi đại tiện hậu môn đau rát dữ dội",
+  "deg": 1,
+  "fragments": [
+   "mấy ngày mới đi một lần"
+  ]
+ },
+ {
+  "old": "có máu tươi nhỏ giọt hoặc dính trên phân; kèm miệng khô họng ráo",
+  "deg": 1,
+  "fragments": [
+   "có máu tươi nhỏ giọt hoặc dính trên phân",
+   "miệng khô họng ráo"
+  ]
+ },
+ {
+  "old": "hôi miệng. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "hôi miệng",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng khô (hoặc vàng dày). Mạch hoạt sác (hoặc huyền sác).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng khô",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "có da thừa (bì thùy) sinh ra ngoài; khi đại tiện đau chói kéo dài như dao cắt",
+  "deg": 1,
+  "fragments": [
+   "có da thừa sinh ra ngoài"
+  ]
+ },
+ {
+  "old": "kéo dài hàng giờ; ra máu sắc tối",
+  "deg": 1,
+  "fragments": [
+   "kéo dài hàng giờ",
+   "ra máu sắc tối"
+  ]
+ },
+ {
+  "old": "lượng ít; kèm hậu môn co thắt",
+  "deg": 1,
+  "fragments": [
+   "lượng ít",
+   "hậu môn co thắt"
+  ]
+ },
+ {
+  "old": "tức trướng. Chất lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "tức trướng",
+   "Chất lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng hoặc mỏng vàng. Mạch huyền sáp (hoặc huyền tế).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng hoặc mỏng vàng",
+   "mạch huyền sáp"
+  ]
+ },
+ {
+  "old": "nứt kẽ lâu ngày khó liền miệng; đại tiện ra máu tươi lượng ít; kèm ngũ tâm phiền nhiệt",
+  "deg": 1,
+  "fragments": [
+   "nứt kẽ lâu ngày khó liền miệng",
+   "đại tiện ra máu tươi lượng ít",
+   "ngũ tâm phiền nhiệt"
+  ]
+ },
+ {
+  "old": "chóng mặt ù tai. Chất lưỡi đỏ ít tân dịch",
+  "deg": 1,
+  "fragments": [
+   "chóng mặt ù tai",
+   "Chất lưỡi đỏ ít tân dịch"
+  ]
+ },
+ {
+  "old": "rêu lưỡi ít hoặc bóc mai (không rêu). Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi ít hoặc bóc mai",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "cơn ho tăng khi tức giận; miệng đắng họng khô. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "cơn ho tăng khi tức giận",
+   "miệng đắng họng khô",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng ít tân. Mạch huyền sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng ít tân",
+   "mạch Huyền Sác"
+  ]
+ },
+ {
+  "old": "hắt hơi; có thể sốt nhẹ sợ lạnh",
+  "deg": 1,
+  "fragments": [
+   "Hắt hơi"
+  ]
+ },
+ {
+  "old": "người đau mỏi. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "người đau mỏi",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng. Mạch phù hoặc phù khẩn.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "Mạch phù hoặc phù khẩn"
+  ]
+ },
+ {
+  "old": "miệng khát; kèm phát sốt",
+  "deg": 1,
+  "fragments": [
+   "miệng khát",
+   "Phát sốt"
+  ]
+ },
+ {
+  "old": "ra mồ hôi. Chất lưỡi đỏ đầu lưỡi",
+  "deg": 1,
+  "fragments": [
+   "ra mồ hôi",
+   "Chất lưỡi đỏ đầu lưỡi"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng. Mạch phù sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng",
+   "mạch phù sác"
+  ]
+ },
+ {
+  "old": "có thể lẫn tia máu; mũi họng khô",
+  "deg": 1,
+  "fragments": [
+   "mũi họng khô"
+  ]
+ },
+ {
+  "old": "ho lâu không dứt; kèm sốt nhẹ sợ gió",
+  "deg": 1,
+  "fragments": [
+   "ho lâu không dứt",
+   "sốt nhẹ sợ gió"
+  ]
+ },
+ {
+  "old": "đau đầu. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "Đau đầu",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hoặc vàng mỏng mà khô. Mạch phù sác hoặc phù.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hoặc vàng mỏng mà khô",
+   "Mạch phù sác hoặc phù"
+  ]
+ },
+ {
+  "old": "tiếng ho ngắn yếu; họng khô miệng ráo",
+  "deg": 1,
+  "fragments": [
+   "tiếng ho ngắn yếu",
+   "họng khô miệng ráo"
+  ]
+ },
+ {
+  "old": "đạo hãn (ra mồ hôi trộm)",
+  "deg": 2,
+  "fragments": [
+   "đạo hãn"
+  ]
+ },
+ {
+  "old": "người gầy mệt. Chất lưỡi đỏ ít tân",
+  "deg": 1,
+  "fragments": [
+   "người gầy mệt",
+   "Chất lưỡi đỏ ít tân"
+  ]
+ },
+ {
+  "old": "ít rêu hoặc không rêu. Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "ít rêu hoặc không rêu",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "hoặc đờm có mùi tanh; ngực tức",
+  "deg": 1,
+  "fragments": [
+   "đờm có mùi tanh",
+   "ngực tức"
+  ]
+ },
+ {
+  "old": "họng khô. Chất lưỡi đỏ",
+  "deg": 2,
+  "fragments": [
+   "họng khô",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt. Mạch hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "sáng sớm và sau ăn ho nặng hơn; ngực bụng đầy tức",
+  "deg": 1,
+  "fragments": [
+   "sáng sớm và sau ăn ho nặng hơn",
+   "ngực bụng đầy tức"
+  ]
+ },
+ {
+  "old": "đại tiện nhão. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "đại tiện nhão",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhớt (bạch nhị). Mạch nhu hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhớt",
+   "mạch Nhu Hoạt"
+  ]
+ },
+ {
+  "old": "ăn uống nóng rát khó chịu; kèm miệng khô khát muốn uống nước lạnh",
+  "deg": 1,
+  "fragments": [
+   "ăn uống nóng rát khó chịu",
+   "miệng khô khát muốn uống nước lạnh"
+  ]
+ },
+ {
+  "old": "đại tiện táo kết; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo kết",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng khô; mạch sác hữu lực (hoạt sác).",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng khô",
+   "mạch Sác hữu lực"
+  ]
+ },
+ {
+  "old": "lâu lành; kèm sắc mặt vàng úa hoặc trắng bệch",
+  "deg": 1,
+  "fragments": [
+   "lâu lành",
+   "sắc mặt vàng úa hoặc trắng bệch"
+  ]
+ },
+ {
+  "old": "miệng nhạt dính không khát; chất lưỡi nhợt bệu",
+  "deg": 1,
+  "fragments": [
+   "miệng nhạt dính không khát",
+   "chất lưỡi nhợt bệu"
+  ]
+ },
+ {
+  "old": "rêu trắng nhớt (bạch nị); mạch nhu hoãn hoặc tế nhược.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng nhớt",
+   "mạch nhu hoãn hoặc tế nhược"
+  ]
+ },
+ {
+  "old": "đau nhẹ về đêm; kèm miệng họng khô",
+  "deg": 1,
+  "fragments": [
+   "đau nhẹ về đêm",
+   "miệng họng khô"
+  ]
+ },
+ {
+  "old": "tiểu vàng ít; chất lưỡi đỏ ít tân dịch",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng ít",
+   "chất lưỡi đỏ ít tân dịch"
+  ]
+ },
+ {
+  "old": "rêu ít hoặc không rêu (lưỡi đỏ bóng); mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu ít hoặc không rêu",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "đại tiện táo. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng nhớt (hoàng nhị)",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng nhớt"
+  ]
+ },
+ {
+  "old": "mạch sác hoặc nhu sác.",
+  "deg": 1,
+  "fragments": [
+   "mạch sác hoặc nhu sác"
+  ]
+ },
+ {
+  "old": "hay thở dài. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "hay thở dài",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "đại tiện táo kết. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo kết",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch sác.",
+  "deg": 1,
+  "fragments": [
+   "mạch Sác"
+  ]
+ },
+ {
+  "old": "lưng gối lạnh mỏi vô lực. Lưỡi nhạt bệu",
+  "deg": 1,
+  "fragments": [
+   "lưng gối lạnh mỏi vô lực",
+   "Lưỡi nhạt bệu"
+  ]
+ },
+ {
+  "old": "mạch trầm tế vô lực (nhất là mạch xích).",
+  "deg": 1,
+  "fragments": [
+   "mạch trầm tế vô lực"
+  ]
+ },
+ {
+  "old": "bụng dưới trướng đầy đau tức. Lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "bụng dưới trướng đầy đau tức",
+   "Lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "mạch sáp.",
+  "deg": 1,
+  "fragments": [
+   "mạch Sáp"
+  ]
+ },
+ {
+  "old": "sắc mặt trắng bệch. Lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "Sắc mặt trắng bệch",
+   "lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "có thể lẫn máu hoặc chất nhầy. Thể thực: chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "Thể thực: chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch nhu sác hoặc hoạt sác. Thể hư: tiểu đục kéo dài",
+  "deg": 1,
+  "fragments": [
+   "mạch Nhu Sác hoặc Hoạt Sác",
+   "Thể hư: tiểu đục kéo dài"
+  ]
+ },
+ {
+  "old": "đầu váng tai ù; chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "đầu váng tai ù",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "bụng dưới đau tức. Thể thực: chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "bụng dưới đau tức",
+   "Thể thực: chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch hoạt sác. Thể hư (âm hư): tiểu ra máu tái đi tái lại kèm sốt về chiều",
+  "deg": 1,
+  "fragments": [
+   "mạch hoạt sác",
+   "Thể hư : tiểu ra máu tái đi tái lại kèm sốt về chiều"
+  ]
+ },
+ {
+  "old": "lưng gối mỏi yếu; chất lưỡi đỏ ít rêu",
+  "deg": 1,
+  "fragments": [
+   "lưng gối mỏi yếu",
+   "chất lưỡi đỏ ít rêu"
+  ]
+ },
+ {
+  "old": "tinh thần uất ức; chất lưỡi hồng",
+  "deg": 1,
+  "fragments": [
+   "tinh thần uất ức",
+   "chất lưỡi hồng"
+  ]
+ },
+ {
+  "old": "mạch huyền. Thể hư: tiểu són không dứt",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền",
+   "Thể hư: tiểu són không dứt"
+  ]
+ },
+ {
+  "old": "mệt mỏi đoản hơi; chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "mệt mỏi đoản hơi",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "lưng gối mỏi yếu. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "lưng gối mỏi yếu",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch tế nhược (hư nhược).",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt; mạch sác (nhanh) hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch sác hoặc hoạt sác"
+  ]
+ },
+ {
+  "old": "nước tiểu vàng đục hoặc lẫn máu. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "nước tiểu vàng đục hoặc lẫn máu",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt; mạch huyền sác hoặc huyền khẩn.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch huyền sác hoặc huyền khẩn"
+  ]
+ },
+ {
+  "old": "ban dày; kèm phiền khát",
+  "deg": 1,
+  "fragments": [
+   "ban dày",
+   "phiền khát"
+  ]
+ },
+ {
+  "old": "tinh thần bứt rứt hoặc lơ mơ; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tinh thần bứt rứt hoặc lơ mơ",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng; mạch hồng sác (sác hữu lực).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng",
+   "Mạch hồng sác"
+  ]
+ },
+ {
+  "old": "ban chẩn mọc không thấu hoặc đột ngột lặn/sắc tím tối; khát nước",
+  "deg": 1,
+  "fragments": [
+   "ban chẩn mọc không thấu hoặc đột ngột lặn/sắc tím tối",
+   "khát nước"
+  ]
+ },
+ {
+  "old": "tiểu vàng sẫm; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng sẫm",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt; mạch sác hữu lực (hoạt sác).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch Sác hữu lực"
+  ]
+ },
+ {
+  "old": "đờm nhiều dính; phiền táo bất an",
+  "deg": 1,
+  "fragments": [
+   "đờm nhiều dính",
+   "phiền táo bất an"
+  ]
+ },
+ {
+  "old": "mặt đỏ; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "mặt đỏ",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng dày; mạch hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng dày",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "kém ăn; niêm mạc má trong xuất hiện nốt Koplik (ban chẩn nội) trắng xám quanh viền đỏ; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "kém ăn",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hoặc hơi vàng; mạch phù sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hoặc hơi vàng",
+   "mạch phù sác"
+  ]
+ },
+ {
+  "old": "đại tiện khô; chất lưỡi đỏ ít tân dịch",
+  "deg": 1,
+  "fragments": [
+   "đại tiện khô",
+   "chất lưỡi đỏ ít tân dịch"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng ít hoặc bóc rêu; mạch tế sác vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng ít hoặc bóc rêu",
+   "mạch tế sác vô lực"
+  ]
+ },
+ {
+  "old": "xung quanh niêm mạc đỏ nhạt không tươi; trẻ thể chất gầy yếu",
+  "deg": 1,
+  "fragments": [
+   "xung quanh niêm mạc đỏ nhạt không tươi",
+   "trẻ thể chất gầy yếu"
+  ]
+ },
+ {
+  "old": "tiểu vàng ít. Lưỡi đỏ (chất hồng)",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng ít",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu ít hoặc không rêu; mạch Tế Sác",
+  "deg": 1,
+  "fragments": [
+   "rêu ít hoặc không rêu",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "chỉ văn nhạt.",
+  "deg": 1,
+  "fragments": [
+   "chỉ văn nhạt"
+  ]
+ },
+ {
+  "old": "môi má; trẻ quấy khóc",
+  "deg": 1,
+  "fragments": [
+   "môi má",
+   "trẻ quấy khóc"
+  ]
+ },
+ {
+  "old": "đại tiện táo kết hoặc phân khô hôi. Lưỡi đỏ (chất hồng)",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo kết hoặc phân khô hôi",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng hoặc phủ mảng trắng dày; mạch Hoạt Sác",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng hoặc phủ mảng trắng dày",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "chỉ văn tím trệ (đối với trẻ nhỏ).",
+  "deg": 1,
+  "fragments": [
+   "chỉ văn tím trệ"
+  ]
+ },
+ {
+  "old": "tình chí uất ức. Kèm phiền táo dễ giận",
+  "deg": 1,
+  "fragments": [
+   "tình chí uất ức",
+   "phiền táo dễ giận"
+  ]
+ },
+ {
+  "old": "tiểu vàng táo bón. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng táo bón",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng. Mạch huyền sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng",
+   "mạch Huyền Sác"
+  ]
+ },
+ {
+  "old": "cứng như da trâu (lichen hóa)",
+  "deg": 1,
+  "fragments": [
+   "cứng như da trâu"
+  ]
+ },
+ {
+  "old": "gãi không chảy nước. Kèm sắc mặt kém tươi",
+  "deg": 1,
+  "fragments": [
+   "gãi không chảy nước",
+   "sắc mặt kém tươi"
+  ]
+ },
+ {
+  "old": "mệt mỏi. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "mệt mỏi",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng. Mạch trầm tế hoặc tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch Trầm Tế hoặc Tế Sác"
+  ]
+ },
+ {
+  "old": "đóng vảy; thường gặp ở cổ",
+  "deg": 1,
+  "fragments": [
+   "đóng vảy",
+   "thường gặp ở cổ"
+  ]
+ },
+ {
+  "old": "khoeo chân. Kèm miệng đắng",
+  "deg": 1,
+  "fragments": [
+   "khoeo chân",
+   "miệng đắng"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nhị). Mạch hoạt sác hoặc huyền sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch hoạt sác hoặc huyền sác"
+  ]
+ },
+ {
+  "old": "họng khô. Lưỡi đỏ ít rêu hoặc rêu ít. Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "họng khô",
+   "Lưỡi đỏ ít rêu hoặc rêu ít",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "miệng khát. Lưỡi đỏ ở rìa và đầu lưỡi",
+  "deg": 1,
+  "fragments": [
+   "miệng khát",
+   "Lưỡi đỏ ở rìa và đầu lưỡi"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hoặc hơi vàng. Mạch phù sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hoặc hơi vàng",
+   "mạch phù sác"
+  ]
+ },
+ {
+  "old": "nước tiểu vàng. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "nước tiểu vàng",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng khô. Mạch hoạt sác hoặc hồng sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng khô",
+   "Mạch hoạt sác hoặc hồng sác"
+  ]
+ },
+ {
+  "old": "phiền táo dễ cáu giận. Chất lưỡi hồng",
+  "deg": 1,
+  "fragments": [
+   "phiền táo dễ cáu giận",
+   "Chất lưỡi hồng"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng. Mạch huyền hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng",
+   "mạch Huyền Hoạt"
+  ]
+ },
+ {
+  "old": "miệng nhạt. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "miệng nhạt",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng. Mạch hoãn hoạt vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "Mạch hoãn hoạt vô lực"
+  ]
+ },
+ {
+  "old": "cơ thể vốn béo bệu nhiều đờm. Chất lưỡi nhạt bệu",
+  "deg": 1,
+  "fragments": [
+   "cơ thể vốn béo bệu nhiều đờm",
+   "chất lưỡi nhạt bệu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhớt (bạch nhị). Mạch hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhớt",
+   "mạch Hoạt"
+  ]
+ },
+ {
+  "old": "lâu không liền miệng; kèm sắc mặt trắng bệch hoặc vàng úa",
+  "deg": 1,
+  "fragments": [
+   "lâu không liền miệng",
+   "sắc mặt trắng bệch hoặc vàng úa"
+  ]
+ },
+ {
+  "old": "chóng mặt hồi hộp. Chất lưỡi nhạt bệu",
+  "deg": 1,
+  "fragments": [
+   "chóng mặt hồi hộp",
+   "chất lưỡi nhạt bệu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng; mạch tế nhược (hư nhược).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "vú xuất hiện khối cứng (hạch) một hoặc nhiều cục",
+  "deg": 1,
+  "fragments": [
+   "vú xuất hiện khối cứng một hoặc nhiều cục"
+  ]
+ },
+ {
+  "old": "khối lâu ngày không tan; kèm ngực sườn đầy tức",
+  "deg": 1,
+  "fragments": [
+   "khối lâu ngày không tan",
+   "ngực sườn đầy tức"
+  ]
+ },
+ {
+  "old": "ăn kém; toàn thân chưa có triệu chứng rõ. Chất lưỡi nhạt hoặc lưỡi hồng",
+  "deg": 1,
+  "fragments": [
+   "ăn kém",
+   "toàn thân chưa có triệu chứng rõ",
+   "Chất lưỡi nhạt hoặc lưỡi hồng"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hoặc trắng nhớt; mạch huyền hoạt hoặc huyền tế.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hoặc trắng nhớt",
+   "mạch huyền hoạt hoặc huyền tế"
+  ]
+ },
+ {
+  "old": "hình thành lỗ rò; kèm triều nhiệt về chiều",
+  "deg": 1,
+  "fragments": [
+   "hình thành lỗ rò",
+   "triều nhiệt về chiều"
+  ]
+ },
+ {
+  "old": "người gầy sút. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "người gầy sút",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "ít rêu hoặc rêu vàng mỏng; mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "ít rêu hoặc rêu vàng mỏng",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "không đau hoặc đau tức nhẹ; khối cục có thể sưng to lên theo cảm xúc tinh thần",
+  "deg": 1,
+  "fragments": [
+   "không đau hoặc đau tức nhẹ",
+   "khối cục có thể sưng to lên theo cảm xúc tinh thần"
+  ]
+ },
+ {
+  "old": "hông sườn trướng đau. Chất lưỡi hồng nhạt hoặc rêu trắng mỏng nhớt",
+  "deg": 1,
+  "fragments": [
+   "hông sườn trướng đau",
+   "Chất lưỡi hồng nhạt hoặc rêu trắng mỏng nhớt"
+  ]
+ },
+ {
+  "old": "mạch huyền hoạt.",
+  "deg": 1,
+  "fragments": [
+   "mạch Huyền Hoạt"
+  ]
+ },
+ {
+  "old": "sau kỳ kinh giảm nhẹ; khối cục mềm",
+  "deg": 1,
+  "fragments": [
+   "sau kỳ kinh giảm nhẹ",
+   "khối cục mềm"
+  ]
+ },
+ {
+  "old": "sờ có cảm giác lổn nhổn; kèm kinh nguyệt không đều",
+  "deg": 1,
+  "fragments": [
+   "sờ có cảm giác lổn nhổn",
+   "kinh nguyệt không đều"
+  ]
+ },
+ {
+  "old": "có thể sạm da vùng mặt. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "mạch trầm tế hoặc tế nhược.",
+  "deg": 1,
+  "fragments": [
+   "mạch trầm tế hoặc tế nhược"
+  ]
+ },
+ {
+  "old": "đứng đi khó khăn; kèm chóng mặt ù tai",
+  "deg": 1,
+  "fragments": [
+   "đứng đi khó khăn",
+   "chóng mặt ù tai"
+  ]
+ },
+ {
+  "old": "di tinh hoạt tinh (nam) hoặc kinh nguyệt không đều (nữ)",
+  "deg": 1,
+  "fragments": [
+   "di tinh hoạt tinh hoặc kinh nguyệt không đều"
+  ]
+ },
+ {
+  "old": "ngũ tâm phiền nhiệt. Chất lưỡi đỏ ít rêu",
+  "deg": 1,
+  "fragments": [
+   "ngũ tâm phiền nhiệt",
+   "chất lưỡi đỏ ít rêu"
+  ]
+ },
+ {
+  "old": "có thể đau nhức cố định một chỗ; sắc mặt tối xám. Chất lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt tối xám",
+   "Chất lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "mạch tế sáp (tế trì mà sáp).",
+  "deg": 1,
+  "fragments": [
+   "mạch Tế Sáp"
+  ]
+ },
+ {
+  "old": "hoặc trong lúc sốt thấy chân tay mềm yếu không cử động được; da khô nóng",
+  "deg": 1,
+  "fragments": [
+   "trong lúc sốt thấy chân tay mềm yếu không cử động được",
+   "da khô nóng"
+  ]
+ },
+ {
+  "old": "hoặc phù nhẹ; ngực bụng đầy tức",
+  "deg": 1,
+  "fragments": [
+   "phù nhẹ",
+   "ngực bụng đầy tức"
+  ]
+ },
+ {
+  "old": "phát sốt về chiều. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "phát sốt về chiều",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nị)",
+  "deg": 2,
+  "fragments": [
+   "rêu lưỡi vàng nhớt"
+  ]
+ },
+ {
+  "old": "mạch nhu sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "mạch Nhu Sác hoặc Hoạt Sác"
+  ]
+ },
+ {
+  "old": "hoạt động càng lúc càng kém; ăn kém",
+  "deg": 1,
+  "fragments": [
+   "hoạt động càng lúc càng kém",
+   "ăn kém"
+  ]
+ },
+ {
+  "old": "gầy sút. Chất lưỡi nhợt",
+  "deg": 1,
+  "fragments": [
+   "gầy sút",
+   "chất lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "mạch tế nhược (hư nhược).",
+  "deg": 1,
+  "fragments": [
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "ngứa rát; kèm sốt",
+  "deg": 1,
+  "fragments": [
+   "ngứa rát",
+   "sốt"
+  ]
+ },
+ {
+  "old": "người bứt rứt; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "người bứt rứt",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "ít đỏ nóng; kèm sắc mặt vàng bủng",
+  "deg": 1,
+  "fragments": [
+   "ít đỏ nóng",
+   "sắc mặt vàng bủng"
+  ]
+ },
+ {
+  "old": "đại tiện nhão; chất lưỡi nhợt bệu có hằn răng",
+  "deg": 1,
+  "fragments": [
+   "đại tiện nhão",
+   "chất lưỡi nhợt bệu có hằn răng"
+  ]
+ },
+ {
+  "old": "mạch hoãn nhược (nhu hoãn).",
+  "deg": 1,
+  "fragments": [
+   "mạch Hoãn nhược"
+  ]
+ },
+ {
+  "old": "Sốt mà lại muốn mặc thêm áo ấm (nhiệt giả nhưng ố hàn)",
+  "deg": 1,
+  "fragments": [
+   "Sốt mà lại muốn mặc thêm áo ấm"
+  ]
+ },
+ {
+  "old": "tiểu tiện trong dài. Lưỡi nhợt bệu",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện trong dài",
+   "lưỡi nhợt bệu"
+  ]
+ },
+ {
+  "old": "rêu trắng nhuận; mạch trầm tế vô lực hoặc phù đại vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng nhuận",
+   "mạch trầm tế vô lực hoặc phù đại vô lực"
+  ]
+ },
+ {
+  "old": "phụ nữ kinh nguyệt lượng ít sắc nhạt. Lưỡi nhợt",
+  "deg": 1,
+  "fragments": [
+   "phụ nữ kinh nguyệt lượng ít sắc nhạt",
+   "lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch tế nhược hoặc hư sác vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch tế nhược hoặc hư sác vô lực"
+  ]
+ },
+ {
+  "old": "có thể có khối tích. Lưỡi tím tối hoặc có điểm ứ huyết ban ứ; mạch huyền sáp hoặc trầm sáp.",
+  "deg": 1,
+  "fragments": [
+   "Lưỡi tím tối hoặc có điểm ứ huyết ban ứ",
+   "mạch Huyền Sáp hoặc Trầm Sáp"
+  ]
+ },
+ {
+  "old": "đại tiện lỏng nhão. Lưỡi nhợt bệu",
+  "deg": 1,
+  "fragments": [
+   "đại tiện lỏng nhão",
+   "lưỡi nhợt bệu"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch tế nhược hoặc hư đại vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch tế nhược hoặc hư đại vô lực"
+  ]
+ },
+ {
+  "old": "hay gặp lúc uất ức tức giận; tinh thần uất ức hoặc dễ cáu gắt",
+  "deg": 1,
+  "fragments": [
+   "hay gặp lúc uất ức tức giận",
+   "tinh thần uất ức hoặc dễ cáu gắt"
+  ]
+ },
+ {
+  "old": "vú căng tức. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "vú căng tức",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng mỏng; mạch huyền sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng mỏng",
+   "mạch Huyền Sác"
+  ]
+ },
+ {
+  "old": "ngũ tâm phiền nhiệt (lòng bàn tay bàn chân nóng và bứt rứt vùng ngực)",
+  "deg": 1,
+  "fragments": [
+   "ngũ tâm phiền nhiệt"
+  ]
+ },
+ {
+  "old": "nước tiểu vàng ít. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "nước tiểu vàng ít",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "có thể lưỡi nứt; mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "mũi; nốt sẩn nhỏ màu đỏ",
+  "deg": 1,
+  "fragments": [
+   "mũi",
+   "nốt sẩn nhỏ màu đỏ"
+  ]
+ },
+ {
+  "old": "đầu mụn có nhân đen (comedon)",
+  "deg": 1,
+  "fragments": [
+   "đầu mụn có nhân đen"
+  ]
+ },
+ {
+  "old": "da mặt bóng dầu; kèm miệng khô",
+  "deg": 1,
+  "fragments": [
+   "da mặt bóng dầu",
+   "miệng khô"
+  ]
+ },
+ {
+  "old": "đại tiện hơi táo. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "đại tiện hơi táo",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng; mạch phù sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng",
+   "mạch phù sác"
+  ]
+ },
+ {
+  "old": "lưng; da nhờn nhiều",
+  "deg": 1,
+  "fragments": [
+   "lưng",
+   "da nhờn nhiều"
+  ]
+ },
+ {
+  "old": "có thể vỡ mủ; kèm miệng hôi",
+  "deg": 1,
+  "fragments": [
+   "miệng hôi"
+  ]
+ },
+ {
+  "old": "nước tiểu vàng. Chất lưỡi đỏ",
+  "deg": 2,
+  "fragments": [
+   "nước tiểu vàng",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nị); mạch hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "quanh miệng và hai bên gò má; kèm kinh nguyệt không đều",
+  "deg": 1,
+  "fragments": [
+   "quanh miệng và hai bên gò má",
+   "kinh nguyệt không đều"
+  ]
+ },
+ {
+  "old": "tâm phiền dễ cáu. Chất lưỡi đỏ hoặc tối",
+  "deg": 1,
+  "fragments": [
+   "tâm phiền dễ cáu",
+   "Chất lưỡi đỏ hoặc tối"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng; mạch huyền hoặc huyền tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch huyền hoặc huyền tế sác"
+  ]
+ },
+ {
+  "old": "dễ để lại sẹo lõm và vết thâm; bệnh dai dẳng khó lành; kèm người nặng nề",
+  "deg": 1,
+  "fragments": [
+   "dễ để lại sẹo lõm và vết thâm",
+   "bệnh dai dẳng khó lành",
+   "người nặng nề"
+  ]
+ },
+ {
+  "old": "có thể đại tiện nhão. Chất lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "Chất lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhớt hoặc vàng nhớt; mạch hoạt hoặc sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhớt hoặc vàng nhớt",
+   "mạch hoạt hoặc sáp"
+  ]
+ },
+ {
+  "old": "gặp lạnh thì bệnh phát hoặc nặng thêm; chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "gặp lạnh thì bệnh phát hoặc nặng thêm",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhớt (bạch nhị); mạch huyền khẩn hoặc phù khẩn.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhớt",
+   "mạch huyền khẩn hoặc phù khẩn"
+  ]
+ },
+ {
+  "old": "có thể sốt; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nhị); mạch hoạt sác.",
+  "deg": 2,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch hoạt sác"
+  ]
+ },
+ {
+  "old": "người đau mỏi; chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "người đau mỏi",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng (bạch bạc); mạch phù khẩn.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "mạch phù khẩn"
+  ]
+ },
+ {
+  "old": "sắc mặt trắng nhợt; chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt trắng nhợt",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng; mạch nhược hoặc hư nhuyễn.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "mạch nhược hoặc hư nhuyễn"
+  ]
+ },
+ {
+  "old": "có thể phù chân; chất lưỡi nhạt bệu",
+  "deg": 1,
+  "fragments": [
+   "chất lưỡi nhạt bệu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng; mạch trầm tế vô lực (xích mạch yếu).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng",
+   "mạch trầm tế vô lực"
+  ]
+ },
+ {
+  "old": "tiểu tiện vàng đỏ; chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện vàng đỏ",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "gặp ấm đau giảm; bìu co rút",
+  "deg": 1,
+  "fragments": [
+   "gặp ấm đau giảm",
+   "bìu co rút"
+  ]
+ },
+ {
+  "old": "sợ lạnh. Chất lưỡi nhợt",
+  "deg": 1,
+  "fragments": [
+   "Sợ lạnh",
+   "chất lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "rêu trắng trơn; mạch trầm huyền hoặc trầm khẩn.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng trơn",
+   "mạch trầm huyền hoặc trầm khẩn"
+  ]
+ },
+ {
+  "old": "nằm nghỉ hoặc lấy tay đẩy lên thì thu nhỏ hoặc mất; kèm mệt mỏi",
+  "deg": 1,
+  "fragments": [
+   "nằm nghỉ hoặc lấy tay đẩy lên thì thu nhỏ hoặc mất",
+   "mệt mỏi"
+  ]
+ },
+ {
+  "old": "người gầy yếu. Chất lưỡi nhợt",
+  "deg": 1,
+  "fragments": [
+   "người gầy yếu",
+   "chất lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch hư nhược hoặc trầm tế.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch hư nhược hoặc trầm tế"
+  ]
+ },
+ {
+  "old": "thường thay đổi theo tình chí; ngực sườn đầy tức",
+  "deg": 1,
+  "fragments": [
+   "thường thay đổi theo tình chí",
+   "ngực sườn đầy tức"
+  ]
+ },
+ {
+  "old": "hay thở dài. Chất lưỡi hồng nhạt",
+  "deg": 1,
+  "fragments": [
+   "hay thở dài",
+   "chất lưỡi hồng nhạt"
+  ]
+ },
+ {
+  "old": "mùi hôi thối; kèm miệng khô muốn uống",
+  "deg": 1,
+  "fragments": [
+   "mùi hôi thối",
+   "miệng khô muốn uống"
+  ]
+ },
+ {
+  "old": "tinh thần bứt rứt; nặng thì sốt cao không lui",
+  "deg": 1,
+  "fragments": [
+   "Tinh thần bứt rứt"
+  ]
+ },
+ {
+  "old": "phát ban chẩn. Chất lưỡi đỏ (nặng thì đỏ giáng)",
+  "deg": 1,
+  "fragments": [
+   "phát ban chẩn",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng khô; mạch huyền sác hoặc hoạt sác có lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng khô",
+   "mạch huyền sác hoặc hoạt sác có lực"
+  ]
+ },
+ {
+  "old": "tay chân tê mỏi. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "tay chân tê mỏi",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch hư vi tế sác vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch hư vi tế sác vô lực"
+  ]
+ },
+ {
+  "old": "có cục huyết khối; kèm miệng khô không muốn uống",
+  "deg": 1,
+  "fragments": [
+   "có cục huyết khối",
+   "miệng khô không muốn uống"
+  ]
+ },
+ {
+  "old": "ngực bụng đầy tức. Chất lưỡi tím tối hoặc có điểm ứ huyết ở rìa lưỡi",
+  "deg": 1,
+  "fragments": [
+   "ngực bụng đầy tức",
+   "Chất lưỡi tím tối hoặc có điểm ứ huyết ở rìa lưỡi"
+  ]
+ },
+ {
+  "old": "rêu mỏng; mạch huyền sáp hoặc trầm sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu mỏng",
+   "mạch Huyền Sáp hoặc Trầm Sáp"
+  ]
+ },
+ {
+  "old": "không mồ hôi hoặc ra mồ hôi mà sốt không lui; sản dịch",
+  "deg": 1,
+  "fragments": [
+   "không mồ hôi hoặc ra mồ hôi mà sốt không lui",
+   "sản dịch"
+  ]
+ },
+ {
+  "old": "bụng dưới bình thường. Chất lưỡi hồng nhạt",
+  "deg": 1,
+  "fragments": [
+   "bụng dưới bình thường",
+   "chất lưỡi hồng nhạt"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch phù hoặc phù khẩn.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch phù hoặc phù khẩn"
+  ]
+ },
+ {
+  "old": "thích xoa nắn và chườm ấm (đau kiểu hư",
+  "deg": 1,
+  "fragments": [
+   "thích xoa nắn và chườm ấm"
+  ]
+ },
+ {
+  "old": "ưa án)",
+  "deg": 1,
+  "fragments": [
+   "ưa án"
+  ]
+ },
+ {
+  "old": "sắc mặt nhợt nhạt không tươi. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt nhợt nhạt không tươi",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng; mạch tế nhược (hoặc hư tế).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "đau cự án (không cho xoa nắn)",
+  "deg": 1,
+  "fragments": [
+   "đau cự án"
+  ]
+ },
+ {
+  "old": "khi cục huyết ra được thì đau giảm; kèm ngực sườn đầy tức",
+  "deg": 1,
+  "fragments": [
+   "ngực sườn đầy tức"
+  ]
+ },
+ {
+  "old": "có thể sợ lạnh chân tay lạnh. Chất lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "Chất lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng; mạch huyền sáp (hoặc trầm sáp).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch huyền sáp"
+  ]
+ },
+ {
+  "old": "ấn lõm; kèm sốt",
+  "deg": 1,
+  "fragments": [
+   "ấn lõm",
+   "sốt"
+  ]
+ },
+ {
+  "old": "tiểu ít. Nếu thiên phong hàn thì rêu lưỡi trắng mỏng",
+  "deg": 1,
+  "fragments": [
+   "tiểu ít"
+  ]
+ },
+ {
+  "old": "mạch phù khẩn; nếu thiên phong nhiệt thì họng sưng đỏ đau",
+  "deg": 1,
+  "fragments": [
+   "mạch phù khẩn"
+  ]
+ },
+ {
+  "old": "mạch phù sác. Chất lưỡi hồng nhạt.",
+  "deg": 1,
+  "fragments": [
+   "mạch phù sác",
+   "chất lưỡi hồng nhạt"
+  ]
+ },
+ {
+  "old": "bí bách khó chịu; phiền nhiệt khát nước",
+  "deg": 1,
+  "fragments": [
+   "bí bách khó chịu",
+   "phiền nhiệt khát nước"
+  ]
+ },
+ {
+  "old": "đại tiện táo kết. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo kết",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nhị)",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt"
+  ]
+ },
+ {
+  "old": "mạch trầm sác hoặc nhu sác.",
+  "deg": 1,
+  "fragments": [
+   "mạch trầm sác hoặc nhu sác"
+  ]
+ },
+ {
+  "old": "ấn lõm; trên da đầu mặt hoặc tay chân nổi mụn nhọt",
+  "deg": 1,
+  "fragments": [
+   "ấn lõm",
+   "trên da đầu mặt hoặc tay chân nổi mụn nhọt"
+  ]
+ },
+ {
+  "old": "đinh sang hoặc thấp chẩn (chốc lở",
+  "deg": 1,
+  "fragments": [
+   "đinh sang hoặc thấp chẩn"
+  ]
+ },
+ {
+  "old": "ghẻ lở)",
+  "deg": 1,
+  "fragments": [
+   "ghẻ lở"
+  ]
+ },
+ {
+  "old": "có khi mưng mủ; tiểu ít",
+  "deg": 1,
+  "fragments": [
+   "tiểu ít"
+  ]
+ },
+ {
+  "old": "mệt mỏi. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "mệt mỏi",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch phù sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "mạch Phù Sác hoặc Hoạt Sác"
+  ]
+ },
+ {
+  "old": "có thể kèm cổ trướng; sắc mặt xám tối hoặc trắng bệch",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt xám tối hoặc trắng bệch"
+  ]
+ },
+ {
+  "old": "có thể hồi hộp khó thở. Chất lưỡi nhợt bệu",
+  "deg": 1,
+  "fragments": [
+   "Chất lưỡi nhợt bệu"
+  ]
+ },
+ {
+  "old": "mạch trầm tế vô lực hoặc trầm trì.",
+  "deg": 1,
+  "fragments": [
+   "mạch trầm tế vô lực hoặc trầm trì"
+  ]
+ },
+ {
+  "old": "kéo dài dai dẳng; người nặng nề mệt mỏi",
+  "deg": 1,
+  "fragments": [
+   "kéo dài dai dẳng",
+   "người nặng nề mệt mỏi"
+  ]
+ },
+ {
+  "old": "không khát hoặc khát mà không muốn uống. Chất lưỡi bệu",
+  "deg": 1,
+  "fragments": [
+   "không khát hoặc khát mà không muốn uống",
+   "chất lưỡi bệu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhớt (bạch nhị)",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhớt"
+  ]
+ },
+ {
+  "old": "mạch trầm hoãn hoặc trầm hoạt.",
+  "deg": 1,
+  "fragments": [
+   "mạch trầm hoãn hoặc trầm hoạt"
+  ]
+ },
+ {
+  "old": "ấn lõm khó phục hồi; sắc mặt vàng bủng hoặc trắng bệch",
+  "deg": 1,
+  "fragments": [
+   "ấn lõm khó phục hồi",
+   "sắc mặt vàng bủng hoặc trắng bệch"
+  ]
+ },
+ {
+  "old": "tiểu tiện ít. Chất lưỡi nhợt bệu có hằn răng",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện ít",
+   "Chất lưỡi nhợt bệu có hằn răng"
+  ]
+ },
+ {
+  "old": "mạch trầm hoãn hoặc trầm nhược vô lực.",
+  "deg": 1,
+  "fragments": [
+   "mạch trầm hoãn hoặc trầm nhược vô lực"
+  ]
+ },
+ {
+  "old": "người mệt; nốt phỏng nước mọc rải rác",
+  "deg": 1,
+  "fragments": [
+   "người mệt",
+   "nốt phỏng nước mọc rải rác"
+  ]
+ },
+ {
+  "old": "ngứa; ăn uống bình thường",
+  "deg": 1,
+  "fragments": [
+   "ngứa",
+   "ăn uống bình thường"
+  ]
+ },
+ {
+  "old": "tiểu vàng nhẹ. Lưỡi hồng",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng nhẹ",
+   "lưỡi hồng"
+  ]
+ },
+ {
+  "old": "mặt đỏ môi hồng; nốt phỏng nước mọc dày",
+  "deg": 1,
+  "fragments": [
+   "mặt đỏ môi hồng",
+   "nốt phỏng nước mọc dày"
+  ]
+ },
+ {
+  "old": "có thể kèm nốt xuất huyết; miệng khô",
+  "deg": 1,
+  "fragments": [
+   "miệng khô"
+  ]
+ },
+ {
+  "old": "đại tiện táo. Lưỡi đỏ (hồng giáng)",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng dày hoặc vàng nhớt. Mạch hồng sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng dày hoặc vàng nhớt",
+   "Mạch hồng sác hoặc hoạt sác"
+  ]
+ },
+ {
+  "old": "sắc mặt không tươi nhuận. Chất lưỡi nhạt đỏ",
+  "deg": 1,
+  "fragments": [
+   "Sắc mặt không tươi nhuận",
+   "Chất lưỡi nhạt đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng; mạch hoãn (trầm hoãn vô lực).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "mạch hoãn"
+  ]
+ },
+ {
+  "old": "Trẻ vừa tự ra mồ hôi vừa ra mồ hôi trộm (đạo hãn)",
+  "deg": 1,
+  "fragments": [
+   "Trẻ vừa tự ra mồ hôi vừa ra mồ hôi trộm"
+  ]
+ },
+ {
+  "old": "đại tiện táo. Chất lưỡi đỏ ít tân dịch hoặc lưỡi đỏ nhạt ít rêu",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo",
+   "Chất lưỡi đỏ ít tân dịch hoặc lưỡi đỏ nhạt ít rêu"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng bong; mạch tế nhược hoặc tế sác vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng bong",
+   "mạch tế nhược hoặc tế sác vô lực"
+  ]
+ },
+ {
+  "old": "Trẻ tự ra mồ hôi (tự hãn) là chính",
+  "deg": 1,
+  "fragments": [
+   "Trẻ tự ra mồ hôi là chính"
+  ]
+ },
+ {
+  "old": "hễ động (vận động",
+  "deg": 1,
+  "fragments": [
+   "hễ động"
+  ]
+ },
+ {
+  "old": "khóc) thì mồ hôi càng nhiều; sắc mặt trắng nhợt kém tươi",
+  "deg": 1,
+  "fragments": [
+   "khóc thì mồ hôi càng nhiều",
+   "sắc mặt trắng nhợt kém tươi"
+  ]
+ },
+ {
+  "old": "tay chân không ấm. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "tay chân không ấm",
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng; mạch tế nhược (trẻ nhỏ chỉ vân đạm nhạt).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "mạch Tế Nhược"
+  ]
+ },
+ {
+  "old": "có thể co giật liên tục; sắc mặt đỏ hoặc tím tái",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt đỏ hoặc tím tái"
+  ]
+ },
+ {
+  "old": "đại tiện táo. Chất lưỡi đỏ (hồng)",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng dày nhớt (hoàng nhị nhớt). Mạch phù sác hoạt hoặc huyền sác; chỉ văn (vân tay) tía tím hiện rõ",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng dày nhớt",
+   "Mạch phù sác hoạt hoặc huyền sác",
+   "chỉ văn tía tím hiện rõ"
+  ]
+ },
+ {
+  "old": "thấu quan.",
+  "deg": 1,
+  "fragments": [
+   "thấu quan"
+  ]
+ },
+ {
+  "old": "kéo dài; tinh thần mệt mỏi ủ rũ",
+  "deg": 1,
+  "fragments": [
+   "kéo dài",
+   "tinh thần mệt mỏi ủ rũ"
+  ]
+ },
+ {
+  "old": "ngủ mắt nhắm không kín (lộ tình)",
+  "deg": 1,
+  "fragments": [
+   "ngủ mắt nhắm không kín"
+  ]
+ },
+ {
+  "old": "gân cơ mềm nhũn vô lực; ăn kém",
+  "deg": 1,
+  "fragments": [
+   "gân cơ mềm nhũn vô lực",
+   "ăn kém"
+  ]
+ },
+ {
+  "old": "tứ chi lạnh. Chất lưỡi nhợt (đạm)",
+  "deg": 1,
+  "fragments": [
+   "tứ chi lạnh",
+   "chất lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hoặc ít rêu. Mạch trầm nhược vô lực (trầm hoãn/tế nhược); chỉ văn nhạt màu",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hoặc ít rêu",
+   "Mạch trầm nhược vô lực",
+   "chỉ văn nhạt màu"
+  ]
+ },
+ {
+  "old": "mờ trầm.",
+  "deg": 1,
+  "fragments": [
+   "mờ trầm"
+  ]
+ },
+ {
+  "old": "đau chướng không dời chỗ (cố định)",
+  "deg": 1,
+  "fragments": [
+   "đau chướng không dời chỗ"
+  ]
+ },
+ {
+  "old": "sờ được khối rắn; kinh nguyệt không đều",
+  "deg": 1,
+  "fragments": [
+   "sờ được khối rắn",
+   "kinh nguyệt không đều"
+  ]
+ },
+ {
+  "old": "hành kinh đau bụng; tinh thần uất ức",
+  "deg": 1,
+  "fragments": [
+   "hành kinh đau bụng",
+   "tinh thần uất ức"
+  ]
+ },
+ {
+  "old": "hay thở dài; sắc mặt tối sạm",
+  "deg": 1,
+  "fragments": [
+   "hay thở dài",
+   "sắc mặt tối sạm"
+  ]
+ },
+ {
+  "old": "môi tối. Lưỡi tím tối hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "môi tối",
+   "Lưỡi tím tối hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu mỏng; mạch trầm huyền hoặc trầm sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu mỏng",
+   "mạch trầm huyền hoặc trầm sáp"
+  ]
+ },
+ {
+  "old": "có thể sốt nhẹ; đới hạ lượng nhiều sắc vàng đặc",
+  "deg": 1,
+  "fragments": [
+   "đới hạ lượng nhiều sắc vàng đặc"
+  ]
+ },
+ {
+  "old": "hôi tanh; kinh nguyệt lượng nhiều hoặc rong huyết sắc đỏ tối có khối",
+  "deg": 1,
+  "fragments": [
+   "hôi tanh",
+   "kinh nguyệt lượng nhiều hoặc rong huyết sắc đỏ tối có khối"
+  ]
+ },
+ {
+  "old": "hành kinh đau bụng; miệng đắng họng khô",
+  "deg": 1,
+  "fragments": [
+   "hành kinh đau bụng",
+   "miệng đắng họng khô"
+  ]
+ },
+ {
+  "old": "đại tiện táo hoặc dính. Chất lưỡi đỏ tối hoặc có điểm ứ",
+  "deg": 1,
+  "fragments": [
+   "đại tiện táo hoặc dính",
+   "Chất lưỡi đỏ tối hoặc có điểm ứ"
+  ]
+ },
+ {
+  "old": "rêu vàng nhớt; mạch huyền hoạt sác hoặc nhu sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng nhớt",
+   "mạch Huyền Hoạt Sác hoặc Nhu Sác"
+  ]
+ },
+ {
+  "old": "bệnh lâu ngày dai dẳng; lưng gối mỏi yếu",
+  "deg": 1,
+  "fragments": [
+   "bệnh lâu ngày dai dẳng",
+   "lưng gối mỏi yếu"
+  ]
+ },
+ {
+  "old": "tiểu đêm nhiều; kinh nguyệt không đều",
+  "deg": 1,
+  "fragments": [
+   "tiểu đêm nhiều",
+   "kinh nguyệt không đều"
+  ]
+ },
+ {
+  "old": "có thể hiếm muộn (bất dựng); sắc mặt tối sạm hốc mắt thâm",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt tối sạm hốc mắt thâm"
+  ]
+ },
+ {
+  "old": "tinh thần mệt mỏi. Chất lưỡi tối nhạt hoặc có điểm ứ",
+  "deg": 1,
+  "fragments": [
+   "tinh thần mệt mỏi",
+   "Chất lưỡi tối nhạt hoặc có điểm ứ"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng; mạch trầm tế mà sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch trầm tế mà sáp"
+  ]
+ },
+ {
+  "old": "ấn không đau nhiều hoặc đau âm ỉ; thân thể béo bệu",
+  "deg": 1,
+  "fragments": [
+   "ấn không đau nhiều hoặc đau âm ỉ",
+   "thân thể béo bệu"
+  ]
+ },
+ {
+  "old": "đờm nhiều; kinh nguyệt ra muộn",
+  "deg": 1,
+  "fragments": [
+   "đờm nhiều",
+   "kinh nguyệt ra muộn"
+  ]
+ },
+ {
+  "old": "đới hạ nhiều sắc trắng dính; mệt mỏi nặng nề",
+  "deg": 1,
+  "fragments": [
+   "đới hạ nhiều sắc trắng dính",
+   "mệt mỏi nặng nề"
+  ]
+ },
+ {
+  "old": "ăn kém. Chất lưỡi bệu tối hoặc có điểm ứ",
+  "deg": 1,
+  "fragments": [
+   "ăn kém",
+   "Chất lưỡi bệu tối hoặc có điểm ứ"
+  ]
+ },
+ {
+  "old": "rêu trắng nhớt (bạch nhị); mạch huyền hoạt hoặc trầm hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng nhớt",
+   "mạch huyền hoạt hoặc trầm hoạt"
+  ]
+ },
+ {
+  "old": "tiểu vàng sẫm; trường hợp nặng có thể phiền táo",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng sẫm"
+  ]
+ },
+ {
+  "old": "thần hôn. Chất lưỡi đỏ giáng",
+  "deg": 1,
+  "fragments": [
+   "thần hôn",
+   "Chất lưỡi đỏ giáng"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng khô hoặc vàng dày nhớt; mạch hồng sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng khô hoặc vàng dày nhớt",
+   "mạch hồng sác hoặc hoạt sác"
+  ]
+ },
+ {
+  "old": "cơ bụng căng cứng (phản ứng thành bụng)",
+  "deg": 1,
+  "fragments": [
+   "cơ bụng căng cứng"
+  ]
+ },
+ {
+  "old": "tiểu tiện vàng đỏ. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện vàng đỏ",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nị); mạch huyền sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch Huyền Sác hoặc Hoạt Sác"
+  ]
+ },
+ {
+  "old": "đại tiện bình thường hoặc táo nhẹ. Chất lưỡi hồng hoặc hồng nhợt",
+  "deg": 1,
+  "fragments": [
+   "đại tiện bình thường hoặc táo nhẹ",
+   "Chất lưỡi hồng hoặc hồng nhợt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hoặc trắng nhớt; mạch huyền khẩn hoặc huyền hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hoặc trắng nhớt",
+   "mạch huyền khẩn hoặc huyền hoạt"
+  ]
+ },
+ {
+  "old": "Tào tạp (cồn cào ruột)",
+  "deg": 1,
+  "fragments": [
+   "Tào tạp"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng hoặc vàng nhớt; mạch huyền sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng hoặc vàng nhớt",
+   "mạch Huyền Sác"
+  ]
+ },
+ {
+  "old": "có thể nôn ra nước trong. Chất lưỡi nhạt",
+  "deg": 1,
+  "fragments": [
+   "chất lưỡi nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng hoặc trắng nhớt; mạch huyền khẩn.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng hoặc trắng nhớt",
+   "mạch Huyền khẩn"
+  ]
+ },
+ {
+  "old": "thượng vị đau ẩm ỉ thích xoa nắn (thiện án)",
+  "deg": 1,
+  "fragments": [
+   "thượng vị đau ẩm ỉ thích xoa nắn"
+  ]
+ },
+ {
+  "old": "đại tiện nhão. Chất lưỡi nhạt bệu có hằn răng",
+  "deg": 1,
+  "fragments": [
+   "đại tiện nhão",
+   "Chất lưỡi nhạt bệu có hằn răng"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng nhuận; mạch tế nhược hoặc trầm trì.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng nhuận",
+   "mạch tế nhược hoặc trầm trì"
+  ]
+ },
+ {
+  "old": "ăn kém; chất lưỡi hồng nhạt",
+  "deg": 1,
+  "fragments": [
+   "ăn kém",
+   "chất lưỡi hồng nhạt"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng mỏng; mạch Huyền.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng mỏng",
+   "mạch Huyền"
+  ]
+ },
+ {
+  "old": "phụ nữ kinh bế; chất lưỡi tím nhạt hoặc nhợt bệu có vết ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "phụ nữ kinh bế",
+   "chất lưỡi tím nhạt hoặc nhợt bệu có vết ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu lưỡi ít; mạch Tế Sáp hoặc Hư mà vô lực.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi ít",
+   "mạch Tế Sáp hoặc Hư mà vô lực"
+  ]
+ },
+ {
+  "old": "ăn kém; chất lưỡi tím hoặc có điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "ăn kém",
+   "chất lưỡi tím hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng; mạch Huyền hoặc Sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch Huyền hoặc Sáp"
+  ]
+ },
+ {
+  "old": "lồng ngực bĩ tức; chất lưỡi hồng",
+  "deg": 1,
+  "fragments": [
+   "lồng ngực bĩ tức",
+   "chất lưỡi hồng"
+  ]
+ },
+ {
+  "old": "rêu lưỡi trắng nhớt (bạch nị); mạch Huyền Hoạt.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi trắng nhớt",
+   "mạch Huyền Hoạt"
+  ]
+ },
+ {
+  "old": "phụ nữ có thể kinh nguyệt không đều hoặc bế kinh; chất lưỡi tím tối hoặc có ban điểm ứ huyết",
+  "deg": 1,
+  "fragments": [
+   "phụ nữ có thể kinh nguyệt không đều hoặc bế kinh",
+   "chất lưỡi tím tối hoặc có ban điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng; mạch Tế Sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch Tế Sáp"
+  ]
+ },
+ {
+  "old": "Thai phụ (thường vào cuối kỳ thai hoặc trong khi sinh",
+  "deg": 1,
+  "fragments": [
+   "Thai phụ"
+  ]
+ },
+ {
+  "old": "sau khi sinh) đột nhiên đầu váng đau đầu dữ dội",
+  "deg": 1,
+  "fragments": [
+   "sau khi sinh đột nhiên đầu váng đau đầu dữ dội"
+  ]
+ },
+ {
+  "old": "gáy cứng lưng ưỡn (giác cung phản trương)",
+  "deg": 1,
+  "fragments": [
+   "gáy cứng lưng ưỡn"
+  ]
+ },
+ {
+  "old": "huyết áp cao; cơn qua thì tỉnh",
+  "deg": 1,
+  "fragments": [
+   "huyết áp cao",
+   "cơn qua thì tỉnh"
+  ]
+ },
+ {
+  "old": "tỉnh rồi lại lên cơn. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tỉnh rồi lại lên cơn",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng hoặc vàng nhớt. Mạch huyền hoạt mà sác (huyền kính hữu lực).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng hoặc vàng nhớt",
+   "Mạch huyền hoạt mà sác"
+  ]
+ },
+ {
+  "old": "tay chân run rẩy máy động; nặng thì đột ngột hôn mê co giật nhẹ",
+  "deg": 1,
+  "fragments": [
+   "tay chân run rẩy máy động"
+  ]
+ },
+ {
+  "old": "chóng mặt ù tai. Chất lưỡi đỏ hồng (đỏ ít rêu) hoặc lưỡi đỏ khô",
+  "deg": 1,
+  "fragments": [
+   "chóng mặt ù tai",
+   "Chất lưỡi đỏ hồng hoặc lưỡi đỏ khô"
+  ]
+ },
+ {
+  "old": "rêu lưỡi ít hoặc không rêu. Mạch huyền tế mà sác (tế sác vô lực).",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi ít hoặc không rêu",
+   "Mạch huyền tế mà sác"
+  ]
+ },
+ {
+  "old": "trong họng đờm dãi kéo lên khò khè (đờm nhiều",
+  "deg": 1,
+  "fragments": [
+   "trong họng đờm dãi kéo lên khò khè"
+  ]
+ },
+ {
+  "old": "tiếng đờm sôi ục ục)",
+  "deg": 1,
+  "fragments": [
+   "tiếng đờm sôi ục ục"
+  ]
+ },
+ {
+  "old": "đầu váng nặng nề; có thể sốt",
+  "deg": 1,
+  "fragments": [
+   "đầu váng nặng nề"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng dày nhớt (hoàng nhị). Mạch huyền hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng dày nhớt",
+   "mạch Huyền Hoạt Sác"
+  ]
+ },
+ {
+  "old": "da mũi tăng sinh gồ ghề (tỵ chuế)",
+  "deg": 1,
+  "fragments": [
+   "da mũi tăng sinh gồ ghề"
+  ]
+ },
+ {
+  "old": "sờ vào cứng; ít cảm giác nóng rát cấp tính. Chất lưỡi tím thẫm hoặc có điểm ứ huyết (ứ ban",
+  "deg": 1,
+  "fragments": [
+   "sờ vào cứng",
+   "ít cảm giác nóng rát cấp tính",
+   "Chất lưỡi tím thẫm hoặc có điểm ứ huyết"
+  ]
+ },
+ {
+  "old": "ứ điểm)",
+  "deg": 1,
+  "fragments": [
+   "ứ điểm"
+  ]
+ },
+ {
+  "old": "rêu lưỡi mỏng; mạch huyền sáp hoặc trầm sáp.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi mỏng",
+   "mạch Huyền Sáp hoặc Trầm Sáp"
+  ]
+ },
+ {
+  "old": "tại chỗ nóng rát; kèm phiền nhiệt",
+  "deg": 1,
+  "fragments": [
+   "tại chỗ nóng rát",
+   "phiền nhiệt"
+  ]
+ },
+ {
+  "old": "tiểu tiện vàng đỏ. Chất lưỡi đỏ hoặc đỏ thẫm",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện vàng đỏ",
+   "Chất lưỡi đỏ hoặc đỏ thẫm"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng nhớt (hoàng nị); mạch hoạt sác hoặc huyền sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng nhớt",
+   "mạch hoạt sác hoặc huyền sác"
+  ]
+ },
+ {
+  "old": "cảm giác nóng rát; thường kèm miệng khô khát muốn uống nước mát",
+  "deg": 1,
+  "fragments": [
+   "cảm giác nóng rát",
+   "thường kèm miệng khô khát muốn uống nước mát"
+  ]
+ },
+ {
+  "old": "tiểu vàng. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu vàng",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu lưỡi vàng mỏng hoặc vàng khô; mạch huyền sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu lưỡi vàng mỏng hoặc vàng khô",
+   "mạch Huyền Sác hoặc Hoạt Sác"
+  ]
+ },
+ {
+  "old": "niêm mạc mũi nhợt nhạt phù nề; kèm sợ gió sợ lạnh",
+  "deg": 1,
+  "fragments": [
+   "niêm mạc mũi nhợt nhạt phù nề",
+   "sợ gió sợ lạnh"
+  ]
+ },
+ {
+  "old": "tiếng nói nhỏ yếu. Chất lưỡi nhợt",
+  "deg": 1,
+  "fragments": [
+   "tiếng nói nhỏ yếu",
+   "chất lưỡi nhợt"
+  ]
+ },
+ {
+  "old": "mạch hư nhược (phù hư vô lực).",
+  "deg": 1,
+  "fragments": [
+   "mạch Hư Nhược"
+  ]
+ },
+ {
+  "old": "chảy nước mũi (lúc trong lúc đục dính)",
+  "deg": 1,
+  "fragments": [
+   "chảy nước mũi"
+  ]
+ },
+ {
+  "old": "phát bệnh nhiều khi gặp nóng; kèm miệng khô họng ráo",
+  "deg": 1,
+  "fragments": [
+   "phát bệnh nhiều khi gặp nóng",
+   "miệng khô họng ráo"
+  ]
+ },
+ {
+  "old": "tiểu tiện vàng. Chất lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện vàng",
+   "chất lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "mạch sác (huyền sác hoặc hoạt sác).",
+  "deg": 1,
+  "fragments": [
+   "mạch Sác"
+  ]
+ },
+ {
+  "old": "bệnh dai dẳng lâu năm; kèm sợ lạnh chân tay lạnh",
+  "deg": 1,
+  "fragments": [
+   "bệnh dai dẳng lâu năm",
+   "sợ lạnh chân tay lạnh"
+  ]
+ },
+ {
+  "old": "tinh thần uể oải. Chất lưỡi nhợt bệu",
+  "deg": 1,
+  "fragments": [
+   "tinh thần uể oải",
+   "Chất lưỡi nhợt bệu"
+  ]
+ },
+ {
+  "old": "mạch trầm tế nhược (nhược ở bộ xích).",
+  "deg": 1,
+  "fragments": [
+   "mạch Trầm Tế Nhược"
+  ]
+ },
+ {
+  "old": "niêm mạc mũi sưng nhợt (sắc trắng hoặc xám nhạt); kèm ăn kém",
+  "deg": 1,
+  "fragments": [
+   "niêm mạc mũi sưng nhợt",
+   "ăn kém"
+  ]
+ },
+ {
+  "old": "sắc mặt vàng úa. Chất lưỡi nhợt bệu có hằn răng",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt vàng úa",
+   "Chất lưỡi nhợt bệu có hằn răng"
+  ]
+ },
+ {
+  "old": "mạch nhu nhược (tế nhược vô lực).",
+  "deg": 1,
+  "fragments": [
+   "mạch nhu nhược"
+  ]
+ },
+ {
+  "old": "nhìn thức ăn không thèm; ăn ít nhưng tinh thần vẫn tương đối tốt",
+  "deg": 1,
+  "fragments": [
+   "nhìn thức ăn không thèm",
+   "ăn ít",
+   "tinh thần vẫn tương đối tốt"
+  ]
+ },
+ {
+  "old": "sắc mặt bình thường hoặc hơi kém tươi; đôi khi bụng đầy",
+  "deg": 1,
+  "fragments": [
+   "sắc mặt bình thường hoặc hơi kém tươi"
+  ]
+ },
+ {
+  "old": "phân khi lỏng khi táo. Lưỡi hồng nhạt",
+  "deg": 1,
+  "fragments": [
+   "phân khi lỏng khi táo",
+   "lưỡi hồng nhạt"
+  ]
+ },
+ {
+  "old": "rêu mỏng hơi nhớt (trắng mỏng nhớt). Mạch hoãn hoặc nhu.",
+  "deg": 1,
+  "fragments": [
+   "rêu mỏng hơi nhớt",
+   "Mạch hoãn hoặc nhu"
+  ]
+ },
+ {
+  "old": "ăn vào bụng đầy trướng; sắc mặt vàng úa kém tươi",
+  "deg": 1,
+  "fragments": [
+   "ăn vào bụng đầy trướng",
+   "sắc mặt vàng úa kém tươi"
+  ]
+ },
+ {
+  "old": "cơ nhục nhẽo; đại tiện phân lỏng nát",
+  "deg": 1,
+  "fragments": [
+   "cơ nhục nhẽo",
+   "đại tiện phân lỏng nát"
+  ]
+ },
+ {
+  "old": "dễ ra mồ hôi. Lưỡi nhạt bệu",
+  "deg": 1,
+  "fragments": [
+   "dễ ra mồ hôi",
+   "Lưỡi nhạt bệu"
+  ]
+ },
+ {
+  "old": "rêu trắng mỏng. Mạch hoãn vô lực (tế nhược).",
+  "deg": 1,
+  "fragments": [
+   "rêu trắng mỏng",
+   "mạch Hoãn vô lực"
+  ]
+ },
+ {
+  "old": "miệng khô họng khát thích uống nước mát; da khô kém nhuận",
+  "deg": 1,
+  "fragments": [
+   "miệng khô họng khát thích uống nước mát",
+   "da khô kém nhuận"
+  ]
+ },
+ {
+  "old": "tiểu tiện vàng ít; lòng bàn tay bàn chân nóng",
+  "deg": 1,
+  "fragments": [
+   "tiểu tiện vàng ít",
+   "lòng bàn tay bàn chân nóng"
+  ]
+ },
+ {
+  "old": "hay quấy khóc bứt rứt. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "hay quấy khóc bứt rứt",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu ít hoặc bong tróc (lưỡi bóng không rêu). Mạch tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu ít hoặc bong tróc",
+   "mạch tế sác"
+  ]
+ },
+ {
+  "old": "đầu mưng mủ; kèm sốt cao",
+  "deg": 1,
+  "fragments": [
+   "đầu mưng mủ",
+   "Sốt cao"
+  ]
+ },
+ {
+  "old": "có thể mê sảng. Lưỡi đỏ (hồng giáng)",
+  "deg": 1,
+  "fragments": [
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng khô hoặc vàng dày. Mạch hồng sác hoặc hoạt sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng khô hoặc vàng dày",
+   "Mạch hồng sác hoặc hoạt sác"
+  ]
+ },
+ {
+  "old": "đau nhức; kèm phát sốt nhẹ",
+  "deg": 1,
+  "fragments": [
+   "đau nhức",
+   "phát sốt nhẹ"
+  ]
+ },
+ {
+  "old": "miệng khô. Lưỡi đỏ",
+  "deg": 1,
+  "fragments": [
+   "miệng khô",
+   "lưỡi đỏ"
+  ]
+ },
+ {
+  "old": "rêu vàng mỏng. Mạch sác (hoặc phù sác).",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng mỏng",
+   "mạch Sác"
+  ]
+ },
+ {
+  "old": "buồn nôn nôn mửa. Lưỡi hồng giáng",
+  "deg": 1,
+  "fragments": [
+   "buồn nôn nôn mửa",
+   "Lưỡi hồng giáng"
+  ]
+ },
+ {
+  "old": "rêu vàng khô hoặc rêu xám đen. Mạch hồng sác hoặc tế sác.",
+  "deg": 1,
+  "fragments": [
+   "rêu vàng khô hoặc rêu xám đen",
+   "Mạch hồng sác hoặc tế sác"
+  ]
+ },
+ {
+  "old": "đêm ngủ đái dầm (dùng cho người già)",
+  "deg": 1,
+  "fragments": [
+   "đêm ngủ đái dầm"
+  ]
+ }
+]

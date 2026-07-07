@@ -803,109 +803,144 @@
                 .replace(/'/g, "&#39;");
         }
 
-        // Hàm vẽ mạng lưới đồ thị tri thức thông minh
+        // Hàm vẽ đồ thị lập luận: phân TẦNG trái->phải (Triệu chứng -> Hội chứng -> Bài thuốc -> Vị thuốc).
+        // - Chỉ nối triệu chứng THẬT SỰ khớp với từng hội chứng (backend trả matching_symptoms riêng).
+        // - Hội chứng ĐƯỢC CHỌN (cốt lõi + kèm theo, 2 mục đầu) nổi bật; ứng viên khác chỉ vẽ khi
+        //   có bài thuốc (để khớp với Mục 5) và được làm mờ, dán nhãn "ứng viên".
         function buildNetworkGraph(data) {
             const container = document.getElementById('graphContainer');
+            // Chú giải màu (chèn 1 lần ngay trên khung đồ thị)
+            if (!document.getElementById('graphLegend')) {
+                const legend = document.createElement('div');
+                legend.id = 'graphLegend';
+                legend.className = 'flex flex-wrap gap-3 text-xs text-slate-600 mb-2';
+                legend.innerHTML = `
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#fee2e2;border:1px solid #fca5a5;border-radius:2px;margin-right:4px"></span>Triệu chứng</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#fde047;border:1px solid #ca8a04;border-radius:50%;margin-right:4px"></span>Hội chứng (đã chốt)</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#fefce8;border:1px dashed #d6d3d1;border-radius:50%;margin-right:4px"></span>Hội chứng ứng viên</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#dcfce7;border:1px solid #86efac;margin-right:4px"></span>Bài thuốc</span>
+                    <span><span style="display:inline-block;width:10px;height:10px;background:#e0f2fe;border:1px solid #bae6fd;border-radius:50%;margin-right:4px"></span>Vị thuốc</span>`;
+                container.parentNode.insertBefore(legend, container);
+            }
+
             const nodes = [];
             const edges = [];
 
-            // Gốc: Bệnh nhân
-            nodes.push({ id: 'patient', label: 'Bệnh Nhân', color: '#0d9488', font: { color: '#ffffff', size: 14, bold: true }, shape: 'circle' });
-
-            // Bóc tách danh sách triệu chứng (gồm cả triệu chứng nhập text và ảnh)
             let symptoms = [];
             if(data.input_fusion) {
-                symptoms = data.input_fusion.split(',').map(s => s.trim());
+                symptoms = data.input_fusion.split(',').map(s => s.trim()).filter(Boolean);
             } else if(data.vision_details && data.vision_details.analysis) {
-                symptoms = data.vision_details.analysis.split(',').map(s => s.trim());
+                symptoms = data.vision_details.analysis.split(',').map(s => s.trim()).filter(Boolean);
             }
-
+            const symIndex = {};   // lower(triệu chứng) -> node id
             symptoms.forEach((sym, index) => {
                 const symId = `sym_${index}`;
+                symIndex[sym.toLowerCase()] = symId;
                 nodes.push({
-                    id: symId,
-                    label: sym,
+                    id: symId, label: sym, level: 0, shape: 'box',
                     color: { background: '#fee2e2', border: '#fca5a5' },
-                    font: { color: '#991b1b', size: 12 },
-                    shape: 'box'
+                    font: { color: '#991b1b', size: 13 }
                 });
-                edges.push({ from: 'patient', to: symId, label: 'có biểu hiện', color: '#fca5a5', font: { size: 9 } });
             });
 
-            // Lập bản đồ cho Hội chứng & Bài thuốc lấy từ kết quả chẩn đoán chính xác Neo4j
+            // Tên hội chứng ĐÃ CHỐT lấy từ chính answer (cốt lõi + kèm theo) — không đoán theo
+            // thứ tự mảng vì hội chứng kèm theo có thể không phải phần tử thứ 2.
+            const chosenNames = new Set();
+            const ansText = (data.diagnosis_result && data.diagnosis_result.answer) || '';
+            const mCore = ansText.match(/Hội chứng cốt lõi:\*\*\s*([^\n*]+)/);
+            const mConc = ansText.match(/kèm theo \(nếu có\):\*\*\s*([^\n*]+)/);
+            if (mCore) chosenNames.add(mCore[1].trim().toLowerCase());
+            if (mConc && !/^không có/i.test(mConc[1].trim())) chosenNames.add(mConc[1].trim().toLowerCase());
+
             if(data.diagnosis_result && data.diagnosis_result.data) {
                 data.diagnosis_result.data.forEach((synData, synIdx) => {
-                    const synId = `syn_${synIdx}`;
-
-                    // Node Hội chứng
-                    nodes.push({
-                        id: synId,
-                        label: synData.syndrome,
-                        color: { background: '#fef9c3', border: '#fef08a' },
-                        font: { color: '#854d0e', size: 12, bold: true },
-                        shape: 'ellipse'
-                    });
-
-                    // Kết nối các triệu chứng tương ứng đến hội chứng
-                    symptoms.forEach((sym, sIdx) => {
-                        edges.push({ from: `sym_${sIdx}`, to: synId, color: '#fef08a', style: 'dashed' });
-                    });
-
-                    // Duyệt qua các bài thuốc điều trị được trả về cho hội chứng này
+                    const isChosen = chosenNames.size > 0
+                        ? chosenNames.has(String(synData.syndrome).trim().toLowerCase())
+                        : synIdx < 2; // fallback khi không parse được answer
                     const treatments = synData.treatments_by_disease || [];
+                    // Ứng viên không được chọn và không có bài thuốc -> bỏ khỏi hình cho sạch
+                    if (!isChosen && treatments.length === 0) return;
+
+                    const synId = `syn_${synIdx}`;
+                    nodes.push({
+                        id: synId, level: 1, shape: 'ellipse',
+                        label: isChosen ? synData.syndrome : `${synData.syndrome}\n(ứng viên)`,
+                        color: isChosen
+                            ? { background: '#fde047', border: '#ca8a04' }
+                            : { background: '#fefce8', border: '#d6d3d1' },
+                        font: { color: isChosen ? '#713f12' : '#a8a29e', size: isChosen ? 15 : 11, bold: isChosen },
+                        borderWidth: isChosen ? 3 : 1,
+                        shapeProperties: isChosen ? {} : { borderDashes: [4, 4] }
+                    });
+
+                    // CHỈ nối triệu chứng thật sự khớp (matching_symptoms per hội chứng).
+                    // Server cũ không có trường này -> bỏ cạnh thay vì nối bừa tất cả.
+                    const matched = (synData.matching_symptoms || []).map(s => String(s).toLowerCase());
+                    matched.forEach(m => {
+                        if (symIndex[m] !== undefined) {
+                            edges.push({
+                                from: symIndex[m], to: synId,
+                                color: { color: isChosen ? '#eab308' : '#e7e5e4', opacity: isChosen ? 0.9 : 0.45 },
+                                width: isChosen ? 2 : 1, dashes: !isChosen
+                            });
+                        }
+                    });
+
                     treatments.forEach((treat, treatIdx) => {
                         const pId = `pres_${synIdx}_${treatIdx}`;
-
-                        // Node Bài thuốc (gắn kèm tên Bệnh để bác sĩ dễ theo dõi)
                         nodes.push({
-                            id: pId,
+                            id: pId, level: 2, shape: 'box',
                             label: `${treat.bai_thuoc}\n(Trị ${treat.disease})`,
-                            color: { background: '#dcfce7', border: '#bbf7d0' },
-                            font: { color: '#166534', size: 11, bold: true },
-                            shape: 'hexagon'
+                            color: { background: '#dcfce7', border: '#86efac' },
+                            font: { color: '#166534', size: 13, bold: true },
+                            margin: 8
                         });
+                        edges.push({ from: synId, to: pId, label: 'trị bằng',
+                                     color: '#86efac', width: 2, font: { size: 10, color: '#166534' } });
 
-                        edges.push({ from: synId, to: pId, label: 'trị bằng', color: '#bbf7d0', font: { size: 9 } });
-
-                        // Tạo Node Vị thuốc (Chỉ lấy tối đa 6 vị thuốc tiêu biểu để đồ thị sạch đẹp)
-                        if(treat.vi_thuoc) {
-                            let herbsList = [];
-                            if (Array.isArray(treat.vi_thuoc)) {
-                                herbsList = treat.vi_thuoc;
-                            } else if (typeof treat.vi_thuoc === 'string') {
-                                herbsList = treat.vi_thuoc.split(',').map(v => v.trim());
-                            }
-                            
-                            herbsList.slice(0, 6).forEach((vi, vIdx) => {
-                                const herbId = `herb_${synIdx}_${treatIdx}_${vIdx}`;
-                                nodes.push({
-                                    id: herbId,
-                                    label: vi,
-                                    color: { background: '#e0f2fe', border: '#bae6fd' },
-                                    font: { color: '#075985', size: 10 },
-                                    shape: 'ellipse'
-                                });
-                                edges.push({ from: pId, to: herbId, label: 'chứa', color: '#bae6fd', font: { size: 8 } });
+                        let herbsList = [];
+                        if (Array.isArray(treat.vi_thuoc)) herbsList = treat.vi_thuoc;
+                        else if (typeof treat.vi_thuoc === 'string') herbsList = treat.vi_thuoc.split(',').map(v => v.trim());
+                        const shown = herbsList.slice(0, 6);
+                        shown.forEach((vi, vIdx) => {
+                            const herbId = `herb_${synIdx}_${treatIdx}_${vIdx}`;
+                            nodes.push({
+                                id: herbId, label: vi, level: 3, shape: 'ellipse',
+                                color: { background: '#e0f2fe', border: '#bae6fd' },
+                                font: { color: '#075985', size: 11 }
                             });
+                            edges.push({ from: pId, to: herbId, color: '#bae6fd', width: 1 });
+                        });
+                        if (herbsList.length > shown.length) {
+                            const moreId = `herbmore_${synIdx}_${treatIdx}`;
+                            nodes.push({
+                                id: moreId, label: `+${herbsList.length - shown.length} vị khác`, level: 3,
+                                shape: 'ellipse', color: { background: '#f1f5f9', border: '#cbd5e1' },
+                                font: { color: '#64748b', size: 10, ital: true }
+                            });
+                            edges.push({ from: pId, to: moreId, color: '#cbd5e1', width: 1, dashes: true });
                         }
                     });
                 });
             }
 
-            const visNodes = new vis.DataSet(nodes);
-            const visEdges = new vis.DataSet(edges);
-
             const options = {
-                nodes: { borderWidth: 2, shadow: true },
-                edges: { width: 2, shadow: true, arrows: { to: { enabled: true, scaleFactor: 0.8 } } },
-                physics: {
-                    forceAtlas2Based: { gravitationalConstant: -26, centralGravity: 0.005, springLength: 120, springStrength: 0.08 },
-                    solver: 'forceAtlas2Based',
-                    stabilization: { iterations: 100 }
-                }
+                nodes: { borderWidth: 2, shadow: { enabled: true, size: 4, x: 1, y: 1 } },
+                edges: {
+                    arrows: { to: { enabled: true, scaleFactor: 0.6 } },
+                    smooth: { enabled: true, type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.45 }
+                },
+                layout: {
+                    hierarchical: {
+                        enabled: true, direction: 'LR', sortMethod: 'directed',
+                        levelSeparation: 230, nodeSpacing: 55, treeSpacing: 70
+                    }
+                },
+                physics: false,
+                interaction: { hover: true, zoomView: true, dragView: true }
             };
 
-            new vis.Network(container, { nodes: visNodes, edges: visEdges }, options);
+            new vis.Network(container, { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) }, options);
         }
     </script>
 </body>

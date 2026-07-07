@@ -620,6 +620,496 @@ def add_phoi_ngu(driver, args):
 
 
 # ---------------------------------------------------------------------------
+# clean-bat-cuong: dọn tag Bát Cương nhiễu trên HoiChung
+# ---------------------------------------------------------------------------
+def clean_bat_cuong(driver, args):
+    """Dọn quan hệ (HoiChung)-[:CÓ_TÍNH_CHẤT|TRẠNG_THÁI|VỊ_TRÍ]->(BatCuong) NHIỄU.
+
+    Tag Bát Cương được gộp theo ngữ cảnh bệnh khi build graph nên node hội chứng THUẦN HƯ vẫn
+    dính tag 'Thực' (vd 'Khí hư' mang ['Hư','Thực']) — khiến nhãn Bát Cương của app đổi theo
+    hội chứng kèm theo. App đã có lá chắn code-side (fusion_pipeline, luật CHỐNG NHIỄU METADATA);
+    lệnh này dọn tận gốc dữ liệu. Luật (đồng bộ classifier tên với fusion_pipeline):
+      R1: tên THUẦN HƯ (có hư/suy/bất túc/nhược/khuy/tổn, KHÔNG có tà-khí-thực) -> gỡ tag 'Thực'
+      R2: tên THỰC THUẦN (theo _syndrome_is_thuc_pure)                          -> gỡ tag 'Hư'
+      R3: tên thuần DƯƠNG HƯ (thuần hư + 'dương', không 'âm')  [nội hàn]        -> gỡ tag 'Nhiệt'
+      R4: tên thuần ÂM HƯ   (thuần hư + 'âm', không 'dương')   [nội nhiệt]      -> gỡ tag 'Hàn'
+    Tên hỗn hợp ('Khí hư huyết ứ', 'Tỳ hư thấp trệ', 'Âm dương lưỡng hư'...) KHÔNG bị đụng.
+    --apply ghi file rollback JSON cạnh script; --rollback FILE tạo lại đúng các quan hệ đã xóa.
+    """
+    import json
+    from datetime import datetime
+    from src.fusion_pipeline import TCMFusionPipeline as F
+
+    _REL_TYPES = ("CÓ_TÍNH_CHẤT", "TRẠNG_THÁI", "VỊ_TRÍ")
+
+    # --- rollback mode ---
+    if getattr(args, "rollback", None):
+        with open(args.rollback, "r", encoding="utf-8") as f:
+            entries = json.load(f)
+        restored = 0
+        with driver.session() as s:
+            for e in entries:
+                if e["rt"] not in _REL_TYPES:   # whitelist vì rel-type không tham số hóa được
+                    print(f"  BỎ QUA rel-type lạ: {e}")
+                    continue
+                res = s.execute_write(lambda tx, e=e: tx.run(
+                    "MATCH (h:HoiChung {name:$syn}) "
+                    "MERGE (bc:BatCuong {name:$tag}) "
+                    "MERGE (h)-[:" + e["rt"] + "]->(bc)",
+                    syn=e["syn"], tag=e["tag"]).consume())
+                restored += res.counters.relationships_created
+        print(f"Đã khôi phục {restored} quan hệ từ {args.rollback} (MERGE nên chạy lại không nhân bản).")
+        return
+
+    # Regex tà-khí-thực — GIỮ ĐỒNG BỘ với fusion_pipeline._syndrome_is_thuc_pure (ranh giới từ)
+    _THUC_TA = re.compile(r'\b(đàm|đờm|trọc|ẩm|hỏa|hoả|nhiệt|ứ|trệ|uất|kết|ngưng|tích|thực|độc|nghịch|phong|hàn|thấp|thử|táo)\b')
+
+    def _pure_hu(name_l):
+        return F._syndrome_is_hu(name_l) and not _THUC_TA.search(name_l)
+
+    with driver.session() as s:
+        rows = list(s.run(
+            "MATCH (h:HoiChung)-[r:CÓ_TÍNH_CHẤT|TRẠNG_THÁI|VỊ_TRÍ]->(bc:BatCuong) "
+            "RETURN h.name AS syn, type(r) AS rt, bc.name AS tag"))
+
+    plan = []  # (rule, syn, rt, tag)
+    for r in rows:
+        syn, rt, tag = r["syn"], r["rt"], (r["tag"] or "").strip()
+        nl, tl = (syn or "").lower(), tag.lower()
+        # Tên GHÉP nhiều mẫu hình (có dấu phẩy, vd 'Can khí uất kết, tỳ thất kiện vận') hoặc chứa
+        # thành tố hư-chức-năng ('thất kiện vận' = mất kiện vận) hoặc NỘI TÁO do huyết hư ('huyết
+        # táo') -> tag hai cực đều có cơ sở, KHÔNG đụng.
+        # 'thượng cang' (Can dương thượng cang): giáo khoa xếp THƯỢNG THỊNH HẠ HƯ (can thận âm hư
+        # ở dưới, dương cang ở trên) — tag 'Hư' có cơ sở bản-hư, giữ nguyên (kết luận hội đồng
+        # thẩm định y lý khi dọn đợt 2026-07).
+        # 'thấp trệ' (hàn-thấp đình trệ) trong tên ghép kiểu 'Tỳ hư thấp trệ - đờm hoả quấy động
+        # phong': thành tố hàn-thấp có thật -> tag 'Hàn' có cơ sở, không đụng (R5).
+        if "," in nl or "thất kiện" in nl or "huyết táo" in nl or "thượng cang" in nl or "thấp trệ" in nl:
+            continue
+        if _pure_hu(nl):
+            if tl == "thực":
+                plan.append(("R1", syn, rt, tag))
+            elif tl == "nhiệt" and "dương" in nl and "âm" not in nl:
+                plan.append(("R3", syn, rt, tag))
+            elif tl == "hàn" and "âm" in nl and "dương" not in nl:
+                plan.append(("R4", syn, rt, tag))
+        elif F._syndrome_is_thuc_pure(nl) and tl == "hư":
+            plan.append(("R2", syn, rt, tag))
+        # Trục HÀN-NHIỆT theo TÊN (độc lập trục Hư/Thực): chứng có 'nhiệt/hỏa' trong tên mà KHÔNG
+        # có 'hàn' thì tag 'Hàn' là phi lý theo định nghĩa (vd 'Thấp nhiệt hạ trú' -> tag 'Hàn'),
+        # và ngược lại. Tên chứa cả hai cực ('Hàn nhiệt thác tạp'...) không bị đụng.
+        _has_han_tok = re.search(r'\bhàn\b', nl)
+        _has_nhiet_tok = re.search(r'\b(nhiệt|hỏa|hoả)\b', nl)
+        if tl == "hàn" and _has_nhiet_tok and not _has_han_tok:
+            plan.append(("R5", syn, rt, tag))
+        elif tl == "nhiệt" and _has_han_tok and not _has_nhiet_tok:
+            plan.append(("R6", syn, rt, tag))
+
+    if not plan:
+        print("Không phát hiện tag Bát Cương nhiễu theo 4 luật. Không có gì để làm.")
+        return
+
+    from collections import Counter
+    cnt = Counter(rule for rule, *_ in plan)
+    print(f"Phát hiện {len(plan)} quan hệ tag nhiễu / {len(rows)} tổng quan hệ Bát Cương:")
+    print("  " + ", ".join(f"{k}={v}" for k, v in sorted(cnt.items())))
+    for rule, syn, rt, tag in sorted(plan):
+        print(f"  [{rule}] ({syn}) -[:{rt}]-> ({tag})")
+
+    if not getattr(args, "apply", False):
+        print("\nDRY-RUN — chưa xóa gì. Chạy lại với --apply để thực thi (sẽ ghi file rollback).")
+        return
+
+    rollback_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        f"batcuong_rollback_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+    with open(rollback_path, "w", encoding="utf-8") as f:
+        json.dump([{"syn": syn, "rt": rt, "tag": tag} for _, syn, rt, tag in plan],
+                  f, ensure_ascii=False, indent=1)
+    print(f"\nĐã ghi rollback: {rollback_path}")
+
+    deleted = 0
+    with driver.session() as s:
+        for _, syn, rt, tag in plan:
+            res = s.execute_write(lambda tx, syn=syn, rt=rt, tag=tag: tx.run(
+                "MATCH (h:HoiChung {name:$syn})-[r]->(bc:BatCuong {name:$tag}) "
+                "WHERE type(r) = $rt DELETE r",
+                syn=syn, rt=rt, tag=tag).consume())
+            deleted += res.counters.relationships_deleted
+    print(f"Đã xóa {deleted} quan hệ tag nhiễu.")
+    print(f"Khôi phục nếu cần: python scripts/kg_maintenance.py clean-bat-cuong --rollback \"{rollback_path}\"")
+
+
+# ---------------------------------------------------------------------------
+# dedupe-casefold: gộp HoiChung trùng tên KHÁC HOA/THƯỜNG
+# ---------------------------------------------------------------------------
+def dedupe_casefold(driver, args):
+    """Gộp các node HoiChung trùng tên khác hoa/thường ('Can Thận Âm hư' x4 biến thể...).
+
+    Tác hại nếu để nguyên: bằng chứng triệu chứng của CÙNG một hội chứng bị xé lẻ qua các node
+    biến thể -> mỗi biến thể khớp ít triệu chứng hơn -> cả hội chứng bị grounded-scoring xếp
+    hạng thấp oan. Node CHÍNH TẮC = biến thể nhiều quan hệ nhất (ORDER BY deg DESC trước collect;
+    apoc.refactor.mergeNodes giữ properties node đầu với 'discard').
+    Dùng mergeRels:false để KHÔNG trộn thuộc tính quan hệ (r.benh_ly phải giữ dạng scalar cho
+    query `r.benh_ly = b.name` của app); quan hệ trùng TUYỆT ĐỐI (cùng type + đầu mút + properties)
+    được dọn ở bước hậu kỳ riêng. --apply ghi file backup JSON mô tả đầy đủ quan hệ các node bị gộp.
+    """
+    import json
+    from datetime import datetime
+
+    groups = run_read(driver, """
+        MATCH (h:HoiChung)
+        WITH toLower(h.name) AS key, collect(h.name) AS names
+        WHERE size(names) > 1
+        RETURN key, names ORDER BY size(names) DESC, key
+    """)
+    if not groups:
+        print("Không có nhóm HoiChung trùng tên khác hoa/thường. Không cần làm gì.")
+        return
+    print(f"Có {len(groups)} nhóm trùng tên khác hoa/thường:")
+    for g in groups:
+        print(f"  {g['names']}")
+
+    if not getattr(args, "apply", False):
+        print("\nDRY-RUN — chưa gộp gì. Thêm --apply để gộp (node chính tắc = biến thể nhiều quan hệ nhất).")
+        return
+
+    if not has_apoc(driver):
+        print("LỖI: cần APOC (apoc.refactor.mergeNodes). Neo4j Aura có sẵn APOC Core.")
+        return
+
+    # Backup đầy đủ quan hệ của mọi node thuộc nhóm trùng (để khôi phục thủ công nếu cần)
+    backup = run_read(driver, """
+        MATCH (h:HoiChung)
+        WITH toLower(h.name) AS key, collect(h) AS nodes
+        WHERE size(nodes) > 1
+        UNWIND nodes AS h
+        OPTIONAL MATCH (h)-[r]->(x)
+        WITH key, h, collect({dir:'out', rt:type(r), props:properties(r),
+                              other_label:head(labels(x)), other_name:x.name}) AS outs
+        OPTIONAL MATCH (y)-[r2]->(h)
+        RETURN key, h.name AS name, properties(h) AS props, outs,
+               collect({dir:'in', rt:type(r2), props:properties(r2),
+                        other_label:head(labels(y)), other_name:y.name}) AS ins
+    """)
+    backup_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        f"dedupe_casefold_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+    with open(backup_path, "w", encoding="utf-8") as f:
+        json.dump([dict(r) for r in backup], f, ensure_ascii=False, indent=1, default=str)
+    print(f"\nĐã ghi backup quan hệ: {backup_path}")
+
+    summary = run_write(driver, """
+        MATCH (h:HoiChung)
+        OPTIONAL MATCH (h)-[r]-()
+        WITH h, count(r) AS deg
+        ORDER BY deg DESC, h.name
+        WITH toLower(h.name) AS key, collect(h) AS nodes
+        WHERE size(nodes) > 1
+        CALL apoc.refactor.mergeNodes(nodes, {properties:'discard', mergeRels:false}) YIELD node
+        RETURN count(*) AS merged
+    """)
+    print(f"Đã gộp {len(groups)} nhóm (nodes deleted: {summary.counters.nodes_deleted}).")
+
+    # Hậu kỳ: dọn quan hệ trùng TUYỆT ĐỐI sinh ra do gộp (cùng type, đầu mút, properties y hệt)
+    s1 = run_write(driver, """
+        MATCH (h:HoiChung)-[r]->(x)
+        WITH h, x, type(r) AS rt, apoc.convert.toJson(properties(r)) AS ps, collect(r) AS rs
+        WHERE size(rs) > 1
+        FOREACH (d IN rs[1..] | DELETE d)
+    """)
+    s2 = run_write(driver, """
+        MATCH (y)-[r]->(h:HoiChung)
+        WITH y, h, type(r) AS rt, apoc.convert.toJson(properties(r)) AS ps, collect(r) AS rs
+        WHERE size(rs) > 1
+        FOREACH (d IN rs[1..] | DELETE d)
+    """)
+    print(f"Đã dọn {s1.counters.relationships_deleted + s2.counters.relationships_deleted} "
+          f"quan hệ trùng tuyệt đối sau gộp.")
+
+    # Hậu kỳ 2: đồng bộ chuỗi BaiThuoc.hoi_chung theo tên node chính tắc. Các query pháp trị ràng
+    # buộc EXACT `p.hoi_chung = h.name` (get_treatments_for_syndrome, get_disease_overview...) —
+    # sau gộp, node giữ casing của biến thể nhiều quan hệ nhất nên bài thuốc mang casing biến thể
+    # cũ sẽ "tàng hình" khỏi Mục 5 nếu không đồng bộ lại.
+    s3 = run_write(driver, """
+        MATCH (h:HoiChung)-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(p:BaiThuoc)
+        WHERE p.hoi_chung IS NOT NULL
+          AND toLower(p.hoi_chung) = toLower(h.name)
+          AND p.hoi_chung <> h.name
+        SET p.hoi_chung = h.name
+    """)
+    print(f"Đã đồng bộ {s3.counters.properties_set} chuỗi BaiThuoc.hoi_chung theo tên node chính tắc.")
+    print("Gợi ý: chạy lại `diagnose` và bộ test scoring để xác nhận.")
+
+
+# ---------------------------------------------------------------------------
+# enrich-bat-cuong: bổ sung tag Bát Cương cho HoiChung chưa có tag nào
+# ---------------------------------------------------------------------------
+def enrich_bat_cuong(driver, args):
+    """Bổ sung tag Bát Cương (suy từ TÊN, cùng bộ classifier với fusion_pipeline) cho các node
+    HoiChung KHÔNG có tag nào — thuần ADDITIVE (chỉ MERGE quan hệ mới, không xóa/sửa gì).
+    Quy ước rel-type theo dữ liệu hiện có: VỊ_TRÍ->Biểu/Lý, TRẠNG_THÁI->Hư/Thực, CÓ_TÍNH_CHẤT->Hàn/Nhiệt.
+    --apply ghi rollback JSON; --rollback FILE xóa đúng các quan hệ đã tạo."""
+    import json
+    from datetime import datetime
+    from src.fusion_pipeline import TCMFusionPipeline as F
+
+    _REL_WHITELIST = ("VỊ_TRÍ", "TRẠNG_THÁI", "CÓ_TÍNH_CHẤT")
+
+    if getattr(args, "rollback", None):
+        with open(args.rollback, "r", encoding="utf-8") as f:
+            entries = json.load(f)
+        deleted = 0
+        with driver.session() as s:
+            for e in entries:
+                if e["rt"] not in _REL_WHITELIST:
+                    continue
+                res = s.execute_write(lambda tx, e=e: tx.run(
+                    "MATCH (h:HoiChung {name:$syn})-[r]->(bc:BatCuong {name:$tag}) "
+                    "WHERE type(r) = $rt DELETE r", syn=e["syn"], rt=e["rt"], tag=e["tag"]).consume())
+                deleted += res.counters.relationships_deleted
+        print(f"Đã gỡ {deleted} quan hệ tag đã enrich (theo {args.rollback}).")
+        return
+
+    _THUC_TA = re.compile(r'\b(đàm|đờm|trọc|ẩm|hỏa|hoả|nhiệt|ứ|trệ|uất|kết|ngưng|tích|thực|độc|nghịch|phong|hàn|thấp|thử|táo)\b')
+
+    def _derive(nl):
+        tags = []
+        ext = F._syndrome_is_exterior_wind(nl)
+        if ext or re.search(r'\bbiểu\b', nl):
+            tags.append(("VỊ_TRÍ", "Biểu"))
+        else:
+            tags.append(("VỊ_TRÍ", "Lý"))
+        if F._syndrome_is_hu(nl):
+            tags.append(("TRẠNG_THÁI", "Hư"))
+        if _THUC_TA.search(nl):
+            tags.append(("TRẠNG_THÁI", "Thực"))
+        has_han = re.search(r'\bhàn\b', nl)
+        has_nhiet = re.search(r'\b(nhiệt|hỏa|hoả)\b', nl)
+        if has_han and not has_nhiet:
+            tags.append(("CÓ_TÍNH_CHẤT", "Hàn"))
+        elif has_nhiet and not has_han:
+            tags.append(("CÓ_TÍNH_CHẤT", "Nhiệt"))
+        elif not has_han and not has_nhiet and F._syndrome_is_hu(nl):
+            if re.search(r'\bdương\b', nl) and "âm" not in nl:
+                tags.append(("CÓ_TÍNH_CHẤT", "Hàn"))     # dương hư sinh nội hàn
+            elif re.search(r'\bâm\b', nl) and "dương" not in nl:
+                tags.append(("CÓ_TÍNH_CHẤT", "Nhiệt"))   # âm hư sinh nội nhiệt
+        return tags
+
+    rows = run_read(driver, """
+        MATCH (h:HoiChung)
+        WHERE NOT (h)-[:CÓ_TÍNH_CHẤT|TRẠNG_THÁI|VỊ_TRÍ]->(:BatCuong)
+        RETURN h.name AS name ORDER BY name
+    """)
+    if not rows:
+        print("Mọi HoiChung đều đã có tag Bát Cương. Không cần làm gì.")
+        return
+    plan = []
+    skipped = []
+    for r in rows:
+        syn = r["name"]
+        tags = _derive((syn or "").lower())
+        # CHỈ enrich khi tên có tín hiệu biện chứng thật (Hư/Thực/Hàn/Nhiệt/Biểu). Node chỉ nhận
+        # mỗi tag mặc định 'Lý' đa phần là RÁC import ('Thể nhẹ', 'Giai đoạn đầu', 'Kinh nghiệm
+        # dân gian', tên bài thuốc...) — gắn tag là hợp pháp hóa rác; để dành cho clean-dirty.
+        if tags == [("VỊ_TRÍ", "Lý")]:
+            skipped.append(syn)
+            continue
+        for rt, tag in tags:
+            plan.append((syn, rt, tag))
+    if skipped:
+        print(f"BỎ QUA {len(skipped)} node không có tín hiệu biện chứng trong tên (nghi rác import,"
+              f" xử lý bằng clean-dirty):")
+        for s_ in skipped:
+            print(f"    - {s_!r}")
+    print(f"\nĐề xuất tạo {len(plan)} quan hệ tag:")
+    for syn, rt, tag in plan:
+        print(f"  ({syn}) -[:{rt}]-> ({tag})")
+
+    if not getattr(args, "apply", False):
+        print("\nDRY-RUN — chưa tạo gì. Thêm --apply để thực thi (sẽ ghi file rollback).")
+        return
+
+    rollback_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        f"enrich_batcuong_rollback_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+    with open(rollback_path, "w", encoding="utf-8") as f:
+        json.dump([{"syn": s, "rt": rt, "tag": t} for s, rt, t in plan], f, ensure_ascii=False, indent=1)
+    print(f"\nĐã ghi rollback: {rollback_path}")
+
+    created = 0
+    with driver.session() as s:
+        for syn, rt, tag in plan:
+            if rt not in _REL_WHITELIST:
+                continue
+            res = s.execute_write(lambda tx, syn=syn, rt=rt, tag=tag: tx.run(
+                "MATCH (h:HoiChung {name:$syn}) MERGE (bc:BatCuong {name:$tag}) "
+                "MERGE (h)-[:" + rt + "]->(bc)", syn=syn, tag=tag).consume())
+            created += res.counters.relationships_created
+    print(f"Đã tạo {created} quan hệ tag mới (MERGE nên chạy lại không nhân bản).")
+    print(f"Gỡ lại nếu cần: python scripts/kg_maintenance.py enrich-bat-cuong --rollback \"{rollback_path}\"")
+
+
+# ---------------------------------------------------------------------------
+# split-dirty-trieuchung: tách node TrieuChung dạng câu thành triệu chứng nguyên tử
+# ---------------------------------------------------------------------------
+_TC_DIRTY_WHERE = ("t.name CONTAINS ';' OR t.name CONTAINS '.' OR t.name CONTAINS ')' "
+                   "OR t.name CONTAINS '(' OR size(t.name) > 45")
+
+
+def _split_tc_name(name):
+    """Tách tên node triệu chứng dạng câu thành các fragment nguyên tử.
+    - Bóc chú thích trong ngoặc '(...)' (kể cả ngoặc lửng cuối chuỗi) — là ghi chú/điều kiện.
+    - Tách trên ; . … và ' nhưng '.
+    - Cắt liên từ đầu fragment (hoặc/và/kèm); BỎ fragment điều kiện/tiến triển (nếu/khi/về sau/
+      nặng/giai đoạn...) vì tách khỏi ngữ cảnh sẽ thành khẳng định sai.
+    - Giữ 3..60 ký tự. Trả [] nếu không còn gì hợp lệ (caller phải GIỮ node gốc)."""
+    base = re.sub(r'\([^)]*\)', ' ', name)      # (chú thích) đủ cặp
+    base = re.sub(r'\([^)]*$', ' ', base)       # ngoặc lửng cuối
+    base = base.replace(')', ' ')
+    parts = re.split(r'[;.…]|\.\.\.|\s+nhưng\s+', base)
+    out = []
+    for p in parts:
+        p = re.sub(r'\s+', ' ', p).strip().strip('()[]"\'-–—:, ').strip()
+        p = re.sub(r'(?i)^(hoặc|và|kèm theo|kèm|rồi|thì)\s+', '', p).strip()
+        if not p or len(p) < 3 or len(p) > 60:
+            continue
+        if re.match(r'(?i)^(nếu|khi|về sau|nặng|nhẹ|giai đoạn|trường hợp|có thể|đôi khi|có khi|lâu ngày)\b', p):
+            continue
+        if p.lower() not in [x.lower() for x in out]:
+            out.append(p)
+    return out
+
+
+def split_dirty_trieuchung(driver, args):
+    """Tách 668 node TrieuChung dạng câu ('rêu trắng mỏng; mạch huyền.') thành node nguyên tử,
+    re-point toàn bộ cạnh (giữ nguyên type + properties như r.benh_ly), rồi xóa node câu.
+    Fragment trùng node có sẵn (so không phân biệt hoa/thường) thì TÁI DÙNG node đó.
+    Dry-run ghi kế hoạch JSON để duyệt; --apply [--plan FILE] thực thi (FILE = kế hoạch đã
+    duyệt/sửa tay — mỗi entry có thể bị xóa hoặc sửa 'fragments'); --apply ghi backup cạnh."""
+    import json
+    from datetime import datetime
+
+    _here = os.path.dirname(os.path.abspath(__file__))
+
+    if getattr(args, "plan", None):
+        with open(args.plan, "r", encoding="utf-8") as f:
+            plan = json.load(f)
+        print(f"Đã nạp kế hoạch từ {args.plan}: {len(plan)} node.")
+    else:
+        rows = run_read(driver, f"""
+            MATCH (t:TrieuChung) WHERE {_TC_DIRTY_WHERE}
+            OPTIONAL MATCH (t)-[r]-()
+            RETURN t.name AS name, count(r) AS deg
+        """)
+        # Map tên thường -> tên thật của TOÀN BỘ TrieuChung để tái dùng node có sẵn
+        all_tc = run_read(driver, "MATCH (t:TrieuChung) RETURN t.name AS n")
+        lower_map = {}
+        for r in all_tc:
+            lower_map.setdefault(r["n"].lower(), r["n"])
+        dirty_names = {r["name"].lower() for r in rows}
+        plan = []
+        for r in rows:
+            frs = _split_tc_name(r["name"])
+            # Tái dùng node sạch có sẵn; không map fragment về một node BẨN khác
+            frs2 = []
+            for fnm in frs:
+                hit = lower_map.get(fnm.lower())
+                if hit and hit.lower() in dirty_names and hit != r["name"]:
+                    hit = None
+                frs2.append(hit if hit else fnm)
+            if not frs2:
+                continue  # không tách được gì hợp lệ -> giữ nguyên node
+            if len(frs2) == 1 and frs2[0] == r["name"]:
+                continue  # tách ra chính nó -> bỏ qua
+            plan.append({"old": r["name"], "deg": r["deg"], "fragments": frs2})
+
+    if not plan:
+        print("Không có node nào cần tách.")
+        return
+
+    n_new = sum(1 for e in plan for f in e["fragments"])
+    print(f"Kế hoạch: tách {len(plan)} node ({sum(e['deg'] for e in plan)} cạnh) -> {n_new} fragment.")
+    for e in plan[:10]:
+        print(f"  {e['old']!r} -> {e['fragments']}")
+    print("  ...")
+
+    if not getattr(args, "apply", False):
+        plan_path = os.path.join(_here, f"split_tc_plan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+        with open(plan_path, "w", encoding="utf-8") as f:
+            json.dump(plan, f, ensure_ascii=False, indent=1)
+        print(f"\nDRY-RUN — đã ghi kế hoạch: {plan_path}")
+        print("Duyệt/sửa file đó rồi chạy: python scripts/kg_maintenance.py split-dirty-trieuchung --apply --plan \"<file>\"")
+        return
+
+    # Backup đầy đủ cạnh của các node sắp xóa
+    olds = [e["old"] for e in plan]
+    backup = run_read(driver, """
+        UNWIND $names AS nm
+        MATCH (t:TrieuChung {name: nm})
+        OPTIONAL MATCH (x)-[r]->(t)
+        WITH nm, collect({dir:'in', rt:type(r), props:properties(r),
+                          other_label:head(labels(x)), other_name:x.name}) AS ins
+        OPTIONAL MATCH (t2:TrieuChung {name: nm})-[r2]->(y)
+        RETURN nm AS name, ins,
+               collect({dir:'out', rt:type(r2), props:properties(r2),
+                        other_label:head(labels(y)), other_name:y.name}) AS outs
+    """, names=olds)
+    backup_path = os.path.join(_here, f"split_tc_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
+    with open(backup_path, "w", encoding="utf-8") as f:
+        json.dump([dict(r) for r in backup], f, ensure_ascii=False, indent=1, default=str)
+    print(f"Đã ghi backup cạnh: {backup_path}")
+
+    # Thực thi từng node: MERGE fragment, re-point cạnh 2 chiều (APOC giữ type+props), xóa node cũ
+    done_nodes = 0
+    created_rels = 0
+    with driver.session() as s:
+        for e in plan:
+            if e.get("deg", 1) == 0:
+                # Node mồ côi (không cạnh nào): xóa thẳng, KHÔNG tạo fragment mồ côi mới
+                s.execute_write(lambda tx, e=e: tx.run(
+                    "MATCH (t:TrieuChung {name: $old}) DETACH DELETE t", old=e["old"]).consume())
+                done_nodes += 1
+                continue
+            res = s.execute_write(lambda tx, e=e: tx.run("""
+                MATCH (t:TrieuChung {name: $old})
+                UNWIND $frs AS fname
+                MERGE (f:TrieuChung {name: fname})
+                WITH t, collect(DISTINCT f) AS fs
+                CALL {
+                    WITH t, fs
+                    MATCH (x)-[r]->(t)
+                    UNWIND fs AS f
+                    CALL apoc.create.relationship(x, type(r), properties(r), f) YIELD rel
+                    RETURN count(rel) AS c1
+                }
+                CALL {
+                    WITH t, fs
+                    MATCH (t)-[r]->(y)
+                    UNWIND fs AS f
+                    CALL apoc.create.relationship(f, type(r), properties(r), y) YIELD rel
+                    RETURN count(rel) AS c2
+                }
+                DETACH DELETE t
+                RETURN c1 + c2 AS created
+            """, old=e["old"], frs=e["fragments"]).consume())
+            done_nodes += 1
+            created_rels += res.counters.relationships_created
+    print(f"Đã tách {done_nodes} node, tạo {created_rels} cạnh mới.")
+
+    # Dọn cạnh trùng tuyệt đối quanh TrieuChung (re-point có thể trùng với cạnh sẵn có)
+    s1 = run_write(driver, """
+        MATCH (x)-[r]->(t:TrieuChung)
+        WITH x, t, type(r) AS rt, apoc.convert.toJson(properties(r)) AS ps, collect(r) AS rs
+        WHERE size(rs) > 1
+        FOREACH (d IN rs[1..] | DELETE d)
+    """)
+    print(f"Đã dọn {s1.counters.relationships_deleted} cạnh trùng tuyệt đối.")
+    print("Gợi ý: chạy lại `diagnose` + bộ test scoring để xác nhận.")
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 def main():
@@ -644,6 +1134,21 @@ def main():
     sp = sub.add_parser("add-phoi-ngu", help="Thêm quan hệ Tương phản/Tương úy cổ điển")
     sp.add_argument("--apply", action="store_true", help="Thực thi (mặc định dry-run)")
 
+    sp = sub.add_parser("clean-bat-cuong", help="Dọn tag Bát Cương nhiễu trên HoiChung (Hư dính Thực...)")
+    sp.add_argument("--apply", action="store_true", help="Thực thi (mặc định dry-run, apply ghi rollback)")
+    sp.add_argument("--rollback", metavar="FILE", help="Khôi phục các quan hệ đã xóa từ file rollback JSON")
+
+    sp = sub.add_parser("dedupe-casefold", help="Gộp HoiChung trùng tên khác hoa/thường (cần APOC)")
+    sp.add_argument("--apply", action="store_true", help="Thực thi (mặc định dry-run, apply ghi backup)")
+
+    sp = sub.add_parser("enrich-bat-cuong", help="Bổ sung tag Bát Cương cho HoiChung chưa có tag (additive)")
+    sp.add_argument("--apply", action="store_true", help="Thực thi (mặc định dry-run, apply ghi rollback)")
+    sp.add_argument("--rollback", metavar="FILE", help="Gỡ các quan hệ đã enrich từ file rollback JSON")
+
+    sp = sub.add_parser("split-dirty-trieuchung", help="Tách node TrieuChung dạng câu thành triệu chứng nguyên tử (cần APOC)")
+    sp.add_argument("--apply", action="store_true", help="Thực thi (mặc định dry-run ghi kế hoạch JSON)")
+    sp.add_argument("--plan", metavar="FILE", help="Kế hoạch JSON đã duyệt (dùng kèm --apply)")
+
     args = p.parse_args()
     driver = get_driver()
     try:
@@ -654,6 +1159,10 @@ def main():
             "normalize-names": normalize_names,
             "normalize-source": normalize_source,
             "add-phoi-ngu": add_phoi_ngu,
+            "clean-bat-cuong": clean_bat_cuong,
+            "dedupe-casefold": dedupe_casefold,
+            "enrich-bat-cuong": enrich_bat_cuong,
+            "split-dirty-trieuchung": split_dirty_trieuchung,
         }[args.cmd](driver, args)
     finally:
         driver.close()
