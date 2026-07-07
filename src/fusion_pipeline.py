@@ -2614,9 +2614,23 @@ class TCMFusionPipeline:
         # Loại trừ khi có dấu HƯ MẠN (đồng bộ _chronic_hu_signs của run_diagnosis): 'mệt mỏi lâu
         # ngày + đoản khí + sợ lạnh + sổ mũi' là HƯ NHÂN CẢM MẠO — không được ép thành phong hàn
         # thuần biểu (mất hội chứng hư nền, Mục 3 nói 'không có Bản Hư' sai với bệnh cảnh).
+        # [PHÂN BIỆT PHONG HÀN vs PHONG NHIỆT] 'Sợ gió/sợ lạnh' lúc mới cảm có ở CẢ hai thể ngoại
+        # cảm; yếu tố phân định là DẤU NHIỆT. Ca có khát nước, họng đau/đỏ/sưng, nước mũi\đờm VÀNG
+        # đặc, rêu VÀNG, chất lưỡi ĐỎ... là PHONG NHIỆT phạm biểu — TUYỆT ĐỐI không được ép thành
+        # 'Phong hàn phạm biểu' (kéo theo pháp trị tân ôn giải biểu ngược chứng, và dán nhãn Bát
+        # Cương 'Hàn' hoặc 'Hàn Nhiệt Thác Tạp' giả). Phong hàn thật: nước mũi TRONG, không khát,
+        # rêu TRẮNG, không đau họng.
+        _phong_nhiet_signs = [
+            "khát nước", "khát", "họng đau", "đau họng", "rát họng", "đau rát họng", "hầu thống",
+            "họng đỏ", "họng sưng", "sưng họng", "viêm họng", "yết hầu sưng",
+            "nước mũi vàng", "mũi vàng", "đờm vàng", "rêu vàng", "rêu lưỡi vàng",
+            "lưỡi đỏ", "rìa lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "biên lưỡi hồng đỏ",
+        ]
+        has_phong_nhiet_sign = self._kw_hit_clean(symptoms_lower, _phong_nhiet_signs)
         is_ngoai_cam_phong_han_case = (
             any((x in symptoms_lower if x != "ho" else bool(re.search(r'\bho\b', symptoms_lower))) for x in ["sổ mũi", "chảy nước mũi", "ngạt mũi", "hắt hơi", "ho"]) and
             any(x in symptoms_lower for x in ["sợ lạnh", "sợ gió", "rét run"]) and
+            not has_phong_nhiet_sign and
             not any(x in symptoms_lower for x in ["bệnh lâu ngày", "mãn tính", "lâu ngày", "đau lưng mỏi gối",
                                                   "mạch vi nhược", "tiểu đêm", "đoản khí", "hụt hơi",
                                                   "hay cảm", "dễ cảm", "tái phát", "gầy sút", "tự hãn"])
@@ -2842,6 +2856,14 @@ class TCMFusionPipeline:
 
         has_cold_indicator = self._kw_hit_clean(symptoms_lower_all, cold_kws)
         has_heat_pulse_indicator = self._kw_hit_clean(symptoms_lower_all, heat_kws)
+        # [GÁC NGOẠI CẢM] Với cốt lõi ngoại cảm biểu, 'sợ gió/sợ lạnh/rét run' là Ố HÀN phần biểu
+        # bình thường (chính-tà giao tranh ở biểu, có ở CẢ phong hàn lẫn phong nhiệt lúc mới cảm),
+        # KHÔNG phản ánh nội hàn -> loại khỏi việc xét xung đột Hàn-Nhiệt. Nếu không, ca phong NHIỆT
+        # phạm biểu (sốt + sợ gió + rêu vàng + lưỡi đỏ) bị dựng nhãn 'Hàn Nhiệt Thác Tạp' giả. Chỉ
+        # dấu hàn NỘI thực sự (tay chân lạnh, rêu trắng dày/nhớt, mạch trì) mới tính ở ca ngoại cảm.
+        if self._syndrome_is_exterior_wind(final_primary):
+            _interior_cold_kws = [k for k in cold_kws if k not in ("sợ lạnh", "sợ gió", "úy hàn", "rét run")]
+            has_cold_indicator = self._kw_hit_clean(symptoms_lower_all, _interior_cold_kws)
         has_yinyang_conflict = has_cold_indicator and has_heat_pulse_indicator
 
         hu_kws = ["nhợt", "nhợt nhạt", "mệt mỏi", "chóng mặt", "hoa mắt", "tế", "hư", "vô lực", "đau lưng", "mỏi gối", "khô miệng", "họng ráo"]
@@ -2915,6 +2937,32 @@ class TCMFusionPipeline:
                     all_bat_cuong.add("Hàn")
                 elif re.search(r'\b(nhiệt|ôn)\b', _fp_l):
                     all_bat_cuong.add("Nhiệt")
+
+        # [NỘI HÀN DO DƯƠNG HƯ] Hội chứng dương hư / hư hàn nội thương (Tỳ/Thận dương hư, Tỳ vị hư
+        # hàn...) bản chất sinh NỘI HÀN vì dương khí suy không ôn ấm được cơ thể — nhưng node KG lắm
+        # khi chỉ gắn tag 'Hư, Lý' mà thiếu 'Hàn', khiến Bát Cương cụt (Lý-Hư) không phản ánh được
+        # tính hàn của bệnh. Khi cốt lõi NỘI THƯƠNG là dương hư/hư hàn VÀ có dấu hàn thật (tay chân
+        # lạnh, sợ lạnh, bụng lạnh, đại tiện lỏng...) mà KHÔNG có dấu nhiệt -> bổ sung 'Hàn'.
+        _fp_low = final_primary.lower()
+        _core_is_cold_def = (
+            (re.search(r'\bdương\b', _fp_low) and self._syndrome_is_hu(final_primary) and 'âm' not in _fp_low)
+            or 'hư hàn' in _fp_low or re.search(r'\bhàn\b', _fp_low)
+        )
+        if (not self._syndrome_is_exterior_wind(final_primary) and _core_is_cold_def
+                and has_cold_indicator and not has_heat_pulse_indicator):
+            all_bat_cuong.add("Hàn")
+
+        # [NHIỆT THEO BẰNG CHỨNG] Nội thương có dấu NHIỆT RÕ (rêu vàng, lưỡi đỏ, mắt/mặt đỏ, khát,
+        # họng đỏ, đờm\mũi\tiểu vàng...) mà KHÔNG có dấu hàn -> Bát Cương PHẢI có 'Nhiệt', kể cả khi
+        # node hội chứng cốt lõi mang tag Hư/Lý và tên không chứa chữ nhiệt/hỏa (vd 'Can dương thượng
+        # kháng' — Can hỏa thực nhiệt nhưng node tag Hư/Lý), tránh để Nhiệt phụ thuộc LLM (bất ổn).
+        _strong_heat_kws = ["rêu vàng", "rêu lưỡi vàng", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ",
+                            "rìa lưỡi đỏ", "mắt đỏ", "mặt đỏ", "đỏ bừng", "khát nước", "họng đỏ",
+                            "đờm vàng", "mũi vàng", "vàng đục", "tiểu vàng", "mụn đỏ", "nốt mụn đỏ", "sốt"]
+        has_strong_heat = self._kw_hit_clean(symptoms_lower_all, _strong_heat_kws)
+        if (not self._syndrome_is_exterior_wind(final_primary)
+                and has_strong_heat and not has_cold_indicator):
+            all_bat_cuong.add("Nhiệt")
 
         # [BỔ SUNG LÝ] Không có bất kỳ dấu BIỂU CHỨNG nào -> bệnh thuộc Lý theo phép loại trừ Bát
         # Cương (nội thương tạng phủ), bất kể node metadata có tag 'Lý' hay không — tránh nhãn cụt
