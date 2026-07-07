@@ -717,7 +717,40 @@ class TCMFusionPipeline:
             return self._filter_external_attributions(valid_mapped, description)
         except Exception as e:
             logger.error(f"Lỗi mapping triệu chứng bằng LLM: {e}")
+            # [FALLBACK VỌNG CHẨN TẤT ĐỊNH] LLM matcher không gọi được (hết quota/mất mạng)
+            # -> khớp từ điển theo biên từ để dấu lưỡi/mặt KHÔNG rơi trắng trong chế độ suy
+            # giảm; vẫn đi qua đủ lưới an toàn tất định (chốt dấu lưỡi, phủ định, ngoại cảnh).
+            fallback = self._map_desc_fallback_dict(description, candidate_symptoms)
+            fallback = self._force_add_tongue_signs(fallback, description, candidate_symptoms)
+            fallback = self._drop_negated_signs(fallback, description)
+            fallback = self._filter_external_attributions(fallback, description)
+            if fallback:
+                logger.info(f"[FALLBACK VỌNG CHẨN] Khớp từ điển tất định: {fallback}")
+            return fallback
+
+    def _map_desc_fallback_dict(self, description: str, candidate_symptoms: list) -> list:
+        """Khớp trực tiếp tên triệu chứng chuẩn nằm TRONG mô tả VLM theo biên từ — chỉ dùng làm
+        fallback khi LLM matcher lỗi. Bảo thủ: ứng viên >= 6 ký tự, bỏ mệnh đề chứa phủ định,
+        khử cụm-con (giữ cụm dài đặc hiệu hơn khi cả hai cùng khớp)."""
+        desc_l = (description or "").lower()
+        if not desc_l:
             return []
+        clauses = [cl for cl in re.split(r'[,.;\n]', desc_l) if cl.strip()]
+        # Bỏ mệnh đề phủ định VÀ mệnh đề tả trạng thái sinh lý ('chất lưỡi hồng bình thường'
+        # không phải triệu chứng — tương ứng luật NORMAL TONGUE COLOR của LLM matcher)
+        pos_clauses = [cl for cl in clauses
+                       if not re.search(r'\b(không|chưa|hết|no|not|without'
+                                        r'|bình thường|khỏe mạnh|normal|healthy)\b', cl)]
+        hits = []
+        for cand in candidate_symptoms:
+            c_l = (cand or "").lower().strip()
+            if len(c_l) < 6:
+                continue
+            if any(self._kw_hit_clean(cl, [c_l]) for cl in pos_clauses) and cand not in hits:
+                hits.append(cand)
+        return [h for h in hits
+                if not any(h != o and re.search(r"\b" + re.escape(h.lower()) + r"\b", o.lower())
+                           for o in hits)]
 
     # (từ khóa nhận diện triệu chứng đã map, các từ gốc đặc trưng của nó trong mô tả VLM)
     _NEGATION_GUARDS = [
@@ -801,7 +834,7 @@ class TCMFusionPipeline:
                     return
 
         # 1. Rêu nhờn/nhớt/dính (kể cả 'hơi nhờn') -> rêu trắng nhớt (khi rêu trắng, không phủ định)
-        greasy = _re.search(r"(?<!không )(?<!không thấy )(nhờn|nhớt|dính)", desc_l)
+        greasy = _re.search(r"(?<!không )(?<!không có )(?<!không thấy )(nhờn|nhớt|dính)", desc_l)
         if greasy and "trắng" in desc_l and "vàng" not in desc_l:
             _add(["rêu lưỡi trắng nhớt", "rêu trắng nhớt"])
 
@@ -810,12 +843,26 @@ class TCMFusionPipeline:
             _add(["lưỡi bệu", "thân lưỡi bệu", "chất lưỡi bệu"])
 
         # 3. Dấu răng/vết lõm gợn sóng ở mép -> rìa lưỡi có vết răng
-        if _re.search(r"(?<!không )(?<!không thấy )(dấu răng|hằn răng|vết răng|lõm gợn sóng)", desc_l):
+        # (lookbehind phải phủ cả 'không CÓ dấu răng' — bản cũ chỉ chặn 'không dấu răng')
+        if _re.search(r"(?<!không )(?<!không có )(?<!không thấy )(dấu răng|hằn răng|vết răng|lõm gợn sóng)", desc_l):
             _add(["rìa lưỡi có vết răng", "rìa lưỡi có hằn răng", "lưỡi bệu có dấu răng"])
 
         # 4. Thân lưỡi hồng nhạt (màu nhạt bệnh lý nhẹ) -> lưỡi hồng nhạt
         if _re.search(r"(?<!không )(màu\s+)?hồng nhạt", desc_l):
             _add(["lưỡi hồng nhạt", "chất lưỡi hồng nhạt"])
+
+        # 5. Rêu rất ít/gần như không rêu -> rêu ít (dấu âm hư quan trọng; 'rêu rất ít' không chứa
+        # nguyên cụm 'rêu ít' nên khớp từ điển bỏ sót)
+        if _re.search(r"rêu( lưỡi)?\s+(rất |hơi |khá )?ít|gần như không có rêu|không thấy rêu", desc_l):
+            _add(["rêu ít", "rêu lưỡi ít", "ít rêu"])
+
+        # 6. Gò má ửng đỏ/đỏ (mô tả mặt; gated theo danh sách ứng viên nên vô hại với lưỡi)
+        if _re.search(r"(?<!không )gò má[^,.;]{0,14}(ửng\s+)?đỏ", desc_l):
+            _add(["hai gò má đỏ", "gò má đỏ", "2 gò má đỏ"])
+
+        # 7. Mặt phù/sưng nề (cả mặt) -> Mặt phù ('mặt hơi phù nề' không chứa nguyên cụm 'mặt phù')
+        if _re.search(r"(?<!không )mặt[^,.;]{0,10}(phù|sưng húp|sưng nề)", desc_l):
+            _add(["mặt phù"])
 
         # 5. Chuẩn hóa đồng nghĩa: mỗi nhóm chỉ giữ MỘT tên canonical (ưu tiên phần tử đầu nhóm
         # nếu nó có trong danh sách ứng viên; nếu không giữ biến thể đã map đầu tiên)
@@ -3628,7 +3675,12 @@ class TCMFusionPipeline:
         has_cold_indicator = self._kw_hit_clean(symptoms_lower_all, ["sợ lạnh", "úy hàn", "sợ gió", "rét run"])
         has_heat_pulse_indicator = self._kw_hit_clean(
             symptoms_lower_all, ["mạch sác", "tế sác", "sác", "mạch trầm sác", "khát nước", "sốt", "đỏ bừng", "khô miệng"])
-        if has_cold_indicator and has_heat_pulse_indicator:
+        # [GÁC NGOẠI CẢM BIỂU] Ca ngoại cảm cấp (Phong hàn/Phong nhiệt phạm biểu): SỐT + SỢ GIÓ/SỢ
+        # LẠNH đồng thời là biểu hiện BIỂU CHỨNG kinh điển (chính-tà giao tranh ở biểu), TUYỆT ĐỐI
+        # không phải hàn-nhiệt thác tạp nội thương → không được cưỡng bức 'Âm Dương Lưỡng Hư' (một
+        # chứng hư tổn nội thương sâu) lên cốt lõi. Chỉ chặn khi hội chứng dẫn đầu đang là ngoại cảm biểu.
+        _top_is_exterior = bool(final_syndromes) and self._syndrome_is_exterior_wind(final_syndromes[0])
+        if has_cold_indicator and has_heat_pulse_indicator and not _top_is_exterior:
             final_syndromes = [s for s in final_syndromes if s.lower().strip() not in ["âm dương lưỡng hư", "âm dương đều hư", "âm dương câu hư"]]
             final_syndromes.insert(0, "Âm Dương Lưỡng Hư")
 
@@ -3645,7 +3697,7 @@ class TCMFusionPipeline:
             for kw in ["tay chân lạnh", "chân tay lạnh", "chi lãnh", "lưng lạnh", "tiểu đêm",
                        "đại tiện lỏng", "phân sống", "phân lỏng nát", "liệt dương"]
         )
-        if has_dao_han and has_duong_hu_sign:
+        if has_dao_han and has_duong_hu_sign and not _top_is_exterior:
             if not final_syndromes or final_syndromes[0].lower().strip() not in _amduong_names:
                 final_syndromes = [s for s in final_syndromes if s.lower().strip() not in _amduong_names]
                 final_syndromes.insert(0, "Âm Dương Lưỡng Hư")
