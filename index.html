@@ -283,16 +283,16 @@
 
     <script>
         // Cấu hình URL mặc định: chạy cục bộ (file/localhost) -> localhost:8000;
-        // khi deploy (Vercel) -> gọi CÙNG DOMAIN (backend chạy serverless tại /api trên chính Vercel).
-        // Vẫn có thể trỏ về backend khác (vd ngrok) bằng nút ⚙️ trên trang.
-        const LEGACY_NGROK_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
+        // khi deploy (Vercel) -> trỏ THẲNG về backend qua ngrok (đã cố định) — người dùng KHÔNG
+        // cần nhập link. Đổi ngrok? Sửa hằng NGROK_API_URL rồi deploy lại, HOẶC bấm ⚙️ dán URL mới.
+        const NGROK_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
         const DEFAULT_API_URL = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? "http://localhost:8000"
-            : "";
+            : NGROK_API_URL;
         const STORAGE_KEY = "healthwatch_api_base_url";
 
-        // Dọn cấu hình ngrok cũ còn lưu trong trình duyệt từ kiến trúc trước (backend nay đã nằm trên Vercel)
-        if (localStorage.getItem(STORAGE_KEY) === LEGACY_NGROK_API_URL) {
+        // Migration: dọn giá trị rỗng còn sót từ kiến trúc same-origin trước để quay về ngrok mặc định.
+        if (localStorage.getItem(STORAGE_KEY) === "") {
             localStorage.removeItem(STORAGE_KEY);
         }
 
