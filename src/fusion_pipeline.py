@@ -1150,7 +1150,7 @@ class TCMFusionPipeline:
             # ăn nhiều mau đói, tiểu nhiều, gầy sút). Cấm gán cho ca chỉ có họng khô / tiểu đêm hàn
             # chứng (đã xảy ra thật: 'Tiêu khát' cho ca thận âm hư chỉ họng khô, và ca thận dương hư
             # chỉ tiểu đêm). 'tiểu đêm nhiều lần' (nocturia) KHÔNG phải đa niệu tiêu khát nên không kê.
-            (("tiêu khát",),
+            (("tiêu khát", "đái tháo"),
              ("khát nước", "khát nhiều", "uống nhiều", "uống nước nhiều", "đa niệu", "tiểu nhiều",
               "đái nhiều", "tiểu tiện nhiều", "ăn nhiều", "mau đói", "chóng đói", "đói nhanh",
               "gầy sút", "sụt cân", "sút cân", "gầy nhiều", "tiêu khát", "đường huyết", "tiểu đường",
