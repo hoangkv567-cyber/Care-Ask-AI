@@ -211,8 +211,23 @@ class TCMFusionPipeline:
         )
         if has_thick_coating:
             symptoms = [
-                s for s in symptoms 
+                s for s in symptoms
                 if s.lower().strip() not in ["rêu bình thường", "rêu mỏng trắng", "rêu lưỡi mỏng", "rêu mỏng"]
+            ]
+            symptoms_lower = [s.lower().strip() for s in symptoms]
+
+        # 3b. Mâu thuẫn rêu MỎNG vs rêu ÍT: một lưỡi không thể vừa 'rêu trắng mỏng' (có rêu, gần
+        # sinh lý) vừa 'rêu ít' (thiểu rêu — dấu âm hư). LLM matcher hay map cả hai từ một mô tả
+        # 'rêu mỏng' -> giữ quan sát cụ thể (trắng mỏng), loại 'rêu ít' để không bơm bằng chứng
+        # âm hư giả vào chấm điểm hội chứng.
+        has_thin_coating = any(
+            kw in symptoms_lower
+            for kw in ["rêu trắng mỏng", "rêu lưỡi trắng mỏng", "rêu mỏng trắng", "rêu mỏng", "rêu lưỡi mỏng"]
+        )
+        if has_thin_coating:
+            symptoms = [
+                s for s in symptoms
+                if s.lower().strip() not in ["rêu ít", "ít rêu", "rêu lưỡi ít", "lưỡi ít rêu"]
             ]
             symptoms_lower = [s.lower().strip() for s in symptoms]
 
@@ -757,6 +772,13 @@ class TCMFusionPipeline:
         (("môi nhợt", "môi nhợt nhạt", "môi nhạt"),
          r"môi[^.,;\n]{0,24}(thâm|tím|tái|bầm|sẫm|tía)",
          r"môi[^.,;\n]{0,24}(nhợt|nhạt|trắng)"),
+        # 'rêu ít' (thiểu rêu — dấu ÂM HƯ) bị map trong khi mô tả nói rêu MỎNG phân bố đều (gần
+        # sinh lý). Rêu mỏng ≠ rêu ít: map nhầm tiếp bằng chứng âm hư giả cho ca thuần khí hư
+        # (đã xảy ra thật: cốt lõi thành 'Khí âm lưỡng hư' dù lưỡi hồng nhạt ẩm, không dấu âm hư).
+        (("rêu ít", "ít rêu", "rêu lưỡi ít", "lưỡi ít rêu"),
+         r"rêu[^.,;\n]{0,30}mỏng|rêu[^.,;\n]{0,34}phân bố đều|rêu bình thường|thin coat",
+         r"rêu[^.,;\n]{0,26}(rất\s+)?ít|ít\s+rêu|thiểu\s+rêu|gần như không|không\s+(có\s+)?rêu"
+         r"|bong tróc|scanty|sparse|little coat|peeled"),
     ]
 
     def _drop_polarity_conflicts(self, mapped: list, description: str) -> list:
@@ -1192,6 +1214,22 @@ class TCMFusionPipeline:
             (("dương nuy",),
              ("liệt dương", "dương nuy", "rối loạn cương", "yếu sinh lý", "bất lực", "xuất tinh",
               "di tinh", "tinh trùng")),
+            # Mất tiếng / Thất âm: bệnh danh ĐỊNH NGHĨA bằng rối loạn GIỌNG NÓI — cấm gán cho ca
+            # chỉ đau họng + ho khan không khàn/mất tiếng (đã xảy ra thật: row 'Mất tiếng|Phế âm hư'
+            # chứa 'đau họng, ho khan' nên vượt ngưỡng khớp dù bệnh nhân nói bình thường).
+            (("mất tiếng", "thất âm", "khản tiếng", "khàn tiếng"),
+             ("mất tiếng", "khàn", "khản", "tắt tiếng", "nói không ra", "không nói được", "nói khó",
+              "tiếng nói nặng", "tiếng nặng", "giọng", "thất âm", "mất giọng")),
+            # Yếm thực (biếng ăn): bệnh danh ĐỊNH NGHĨA bằng chán ăn — cấm gán khi không rối loạn ăn.
+            (("yếm thực", "biếng ăn", "chán ăn"),
+             ("ăn kém", "biếng ăn", "chán ăn", "không muốn ăn", "ăn ít", "ăn uống kém", "yếm thực",
+              "không thèm ăn", "nhìn thức ăn", "không thiết ăn", "bỏ ăn", "lười ăn")),
+            # Tam thoa thần kinh thống (đau dây V): phải có đau vùng MẶT/nửa đầu thật — cấm gán cho
+            # ca âm hư chỉ họng khô + gò má đỏ (đã xảy ra thật).
+            (("tam thoa", "thần kinh tam thoa"),
+             ("đau mặt", "mặt đau", "đau nửa mặt", "đau vùng mặt", "một bên mặt", "bên mặt",
+              "đau nửa đầu", "một bên đầu", "đau như điện giật", "từng cơn", "co giật",
+              "đau dây thần kinh", "tam thoa", "đau hàm", "đau má", "đau trán", "da mặt xám")),
             # Bệnh MẮT / MI MẮT (Châm nhãn=lẹo/chắp, viêm kết mạc, cam nhãn, mạch nhãn, cận thị):
             # bệnh danh nhãn khoa — bắt buộc có dấu MẮT/MI MẮT thật. Row 'Châm nhãn' chứa triệu chứng
             # kèm chung chung 'sợ gió, đau đầu, rêu trắng mỏng' -> ca mệt mỏi + dấu lưỡi bị gán 'Châm
@@ -2988,8 +3026,12 @@ class TCMFusionPipeline:
         # Hư' nào có rêu nhớt. Thiếu chúng thì ca lưỡi bệu+hằn răng+rêu nhớt bị chốt 'thuần Hư' trong
         # khi Mục 3-4 vẫn (đúng) nói 'Thủy thấp ứ đọng' -> nhãn tự mâu thuẫn. KHÔNG thêm 'lưỡi bệu'
         # trần (bệu nhạt đơn thuần là Tỳ khí/dương hư, thiên Hư) — chỉ RÊU nhớt mới chốt Thực.
+        # 'ho' TRẦN bị gỡ khỏi thuc_kws: ho đơn thuần KHÔNG định Hư/Thực (Phế khí hư ho, Phế âm hư
+        # ho khan — đều hư chứng); từng ép ca thuần Hư (ho khan + mệt mỏi + mặt nhợt) thành
+        # 'Bản Hư Tiêu Thực' vô căn cứ. Chỉ ho CÓ ĐỜM mới là bằng chứng tà thực (đàm trọc).
         thuc_kws = ["mụn đỏ", "nốt mụn đỏ", "tiếng nấc", "nấc", "rêu lưỡi trắng dày", "rêu trắng dày", "rêu dày",
-                    "khạc đờm", "ho", "sốt", "thực", "hữu lực", "đờm vàng", "mũi vàng", "vàng đục",
+                    "khạc đờm", "ho có đờm", "ho đờm", "đờm nhiều", "nhiều đờm", "sốt", "thực", "hữu lực",
+                    "đờm vàng", "mũi vàng", "vàng đục",
                     "rêu lưỡi trắng nhớt", "rêu trắng nhớt", "rêu nhớt", "rêu nhờn", "rêu lưỡi nhớt", "rêu vàng nhớt"]
 
         # Khớp theo RANH GIỚI TỪ (\b): check substring cũ khiến 'ho' dính trong 'hoa mắt' (triệu chứng
