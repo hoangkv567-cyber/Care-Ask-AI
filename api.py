@@ -28,7 +28,10 @@ app.add_middleware(
 # Khởi tạo bộ não AI
 logger.info("Đang khởi động AI Backend...")
 fusion_engine = TCMFusionPipeline()
-os.makedirs("temp_uploads", exist_ok=True) # Thư mục lưu ảnh tạm
+try:
+    os.makedirs("temp_uploads", exist_ok=True)  # Thư mục lưu ảnh tạm (chỉ dùng khi chạy local)
+except OSError:
+    pass  # Serverless (Vercel) filesystem read-only — ảnh upload đã lưu vào tempfile.gettempdir()
 logger.info("Sẵn sàng!")
 
 @app.post("/api/diagnose")

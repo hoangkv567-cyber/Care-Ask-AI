@@ -283,14 +283,19 @@
 
     <script>
         // Cấu hình URL mặc định: chạy cục bộ (file/localhost) -> localhost:8000;
-        // khi deploy (Vercel) -> trỏ THẲNG về backend qua ngrok (đã cố định).
-        // Đổi ngrok? Sửa hằng NGROK_API_URL rồi deploy lại, HOẶC bấm ⚙️ dán URL mới trên trang.
-        const NGROK_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
+        // khi deploy (Vercel) -> gọi CÙNG DOMAIN (backend chạy serverless tại /api trên chính Vercel).
+        // Vẫn có thể trỏ về backend khác (vd ngrok) bằng nút ⚙️ trên trang.
+        const LEGACY_NGROK_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
         const DEFAULT_API_URL = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
             ? "http://localhost:8000"
-            : NGROK_API_URL;
+            : "";
         const STORAGE_KEY = "healthwatch_api_base_url";
-        
+
+        // Dọn cấu hình ngrok cũ còn lưu trong trình duyệt từ kiến trúc trước (backend nay đã nằm trên Vercel)
+        if (localStorage.getItem(STORAGE_KEY) === LEGACY_NGROK_API_URL) {
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
         // Ưu tiên đọc cấu hình lưu trong trình duyệt trước, nếu không có sẽ tự nhận link mặc định
         let apiBaseUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_API_URL;
 
@@ -314,6 +319,12 @@
                 apiBaseUrl = url;
                 localStorage.setItem(STORAGE_KEY, url);
                 alert("Đã lưu kết nối API Endpoint: " + url);
+                settingsModal.classList.add('hidden');
+            } else {
+                // Bỏ trống -> quay về API mặc định của trang (backend Vercel cùng domain)
+                localStorage.removeItem(STORAGE_KEY);
+                apiBaseUrl = DEFAULT_API_URL;
+                alert("Đã trở về API mặc định của trang.");
                 settingsModal.classList.add('hidden');
             }
         });
@@ -785,7 +796,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert("Lỗi: Không thể kết nối tới Backend.\nHướng dẫn: Hãy chắc chắn máy tính cá nhân của bạn đã mở uvicorn và ngrok thành công!");
+                alert("Lỗi: Không thể kết nối tới Backend hoặc yêu cầu bị quá thời gian.\nVui lòng thử lại. Nếu đang trỏ về backend riêng (⚙️), hãy kiểm tra uvicorn/ngrok còn chạy không.");
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<span>Phân tích tham khảo bằng AI</span>';

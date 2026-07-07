@@ -1,0 +1,17 @@
+# Không upload lên Vercel — giữ bundle serverless nhỏ gọn
+.git
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+temp_uploads/
+scripts/
+data/*.bak*.csv
+data/Medicine_clean.bak.csv
+data/csv_dirt_audit.txt
+baseline_*.txt
+*.jpg
+*.jpeg
+*.png
+main.py
