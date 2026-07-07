@@ -1120,7 +1120,12 @@ class TCMFusionPipeline:
             # 'bách nhật khái' (ho gà) / 'khái suyễn': bệnh danh HO theo tên Hán-Việt — bắt buộc có ho
             # (row ho gà chứa hắt hơi + sổ mũi nên khớp lan sang ca viêm mũi không ho).
             (("khái thấu", "bách nhật khái", "khái suyễn"), ("ho", "khái thấu")),
-            (("khái huyết",), ("ho", "khạc", "đờm", "máu")),
+            # Khái huyết (HO RA MÁU): định nghĩa bằng MÁU trong đờm/khi ho — KHÔNG được chỉ cần 'ho'
+            # (mọi row Khái huyết đều có 'máu'/'ho ra máu'). Cổng cũ ('ho' OR 'khạc' OR 'đờm' OR
+            # 'máu') cho ca ho khan lọt qua vì có 'ho' -> gán oan ho ra máu (đã xảy ra thật).
+            (("khái huyết",),
+             ("máu", "khái huyết", "ho ra máu", "khạc ra máu", "khạc máu", "đờm máu", "đờm có máu",
+              "đờm lẫn máu", "ho khạc máu", "máu tươi", "huyết ra")),
             (("hư lao",),
              ("mệt mỏi", "suy nhược", "gầy sút", "vô lực", "đuối sức", "uể oải", "sụt cân", "người yếu", "hư lao", "bệnh lâu ngày")),
             (("cổ trướng",), ("bụng to", "bụng căng", "bụng trướng to", "báng bụng", "cổ trướng")),
@@ -1230,6 +1235,11 @@ class TCMFusionPipeline:
              ("đau mặt", "mặt đau", "đau nửa mặt", "đau vùng mặt", "một bên mặt", "bên mặt",
               "đau nửa đầu", "một bên đầu", "đau như điện giật", "từng cơn", "co giật",
               "đau dây thần kinh", "tam thoa", "đau hàm", "đau má", "đau trán", "da mặt xám")),
+            # Béo phì: bệnh danh ĐỊNH NGHĨA bằng thừa cân/mập — cấm gán cho ca gầy/bình thường chỉ
+            # trùng hội chứng Tỳ hư thấp/đàm (đã xảy ra thật: 'Béo phì' cho ca đau họng ho khan có
+            # lưỡi bệu + rêu nhớt). Mục 5 khi đó vẽ bài giảm cân vô lý cho bệnh nhân không béo.
+            (("béo phì",),
+             ("béo", "mập", "thừa cân", "tăng cân", "quá cân", "phát phì", "béo phì", "bụng to")),
             # Bệnh MẮT / MI MẮT (Châm nhãn=lẹo/chắp, viêm kết mạc, cam nhãn, mạch nhãn, cận thị):
             # bệnh danh nhãn khoa — bắt buộc có dấu MẮT/MI MẮT thật. Row 'Châm nhãn' chứa triệu chứng
             # kèm chung chung 'sợ gió, đau đầu, rêu trắng mỏng' -> ca mệt mỏi + dấu lưỡi bị gán 'Châm
