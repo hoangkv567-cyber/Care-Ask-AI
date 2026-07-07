@@ -1090,6 +1090,17 @@ class TCMFusionPipeline:
             (("tử cung hạ sa", "sa tử cung", "âm đĩnh", "thoát giang", "sa trực tràng", "sa dạ dày", "vị hạ thùy"),
              ("sa tử cung", "tử cung sa", "khối sa", "sa xuống", "trằn nặng", "sa dạ con",
               "âm đĩnh", "lòi dom", "thoát giang", "sa trực tràng", "sa nội tạng", "sa dạ dày")),
+            # Bệnh MẮT / MI MẮT (Châm nhãn=lẹo/chắp, viêm kết mạc, cam nhãn, mạch nhãn, cận thị):
+            # bệnh danh nhãn khoa — bắt buộc có dấu MẮT/MI MẮT thật. Row 'Châm nhãn' chứa triệu chứng
+            # kèm chung chung 'sợ gió, đau đầu, rêu trắng mỏng' -> ca mệt mỏi + dấu lưỡi bị gán 'Châm
+            # nhãn (lẹo/chắp)' dù KHÔNG hề có triệu chứng mắt (đã xảy ra thật). KHÔNG dùng 'mắt' trần
+            # vì \bmắt\b dính 'hoa mắt' (chóng mặt). LƯU Ý: 'Khẩu nhãn oa tà' (liệt mặt) KHÔNG thuộc
+            # nhóm này — vì thế không đưa 'nhãn' trần vào danh sách tên.
+            (("châm nhãn", "lẹo", "chắp", "kết mạc", "cam nhãn", "mạch nhãn", "cận thị"),
+             ("mắt đỏ", "đỏ mắt", "mắt sưng", "sưng mắt", "đau mắt", "mắt đau", "nhức mắt", "cộm mắt",
+              "ngứa mắt", "mắt ngứa", "chảy nước mắt", "mờ mắt", "mắt mờ", "khô mắt", "mỏi mắt",
+              "mi mắt", "mí mắt", "bờ mi", "lẹo", "chắp", "kết mạc", "giác mạc", "nhặm", "ghèn",
+              "nhìn mờ", "nhìn không rõ", "giảm thị lực", "con ngươi", "đồng tử", "tròng mắt")),
         ]
         for _names, _required in _DEFINING_SYMPTOM_RULES:
             if any(n in disease_lower for n in _names):
