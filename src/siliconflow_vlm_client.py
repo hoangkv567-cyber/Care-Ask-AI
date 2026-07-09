@@ -2,7 +2,10 @@
 import os
 import base64
 import logging
-from src.prompts import TONGUE_PROMPT_TEMPLATE_VI, FACE_PROMPT_TEMPLATE_VI
+from src.prompts import (
+    TONGUE_PROMPT_TEMPLATE_VI, FACE_PROMPT_TEMPLATE_VI,
+    TONGUE_JSON_PROMPT_VI, FACE_JSON_PROMPT_VI,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -124,6 +127,32 @@ class SiliconFlowVLMClient:
                 logger.warning("Cloud VLM lỗi -> chuyển sang LLaVA local (fallback) để phân tích ảnh...")
                 return self.fallback_client.diagnose_image(image_path, modality=modality)
             return []
+
+    def diagnose_image_structured(self, image_path: str, modality: str = "tongue") -> dict:
+        """Gọi VLM ở chế độ JSON CÓ CẤU TRÚC. Trả {'data': <dict JSON đã parse>, 'raw': <text thô>}
+        hoặc None nếu lỗi/không parse được (caller tự fallback về diagnose_image prose)."""
+        from src.vision_schema import parse_vlm_json
+        if modality == "tongue":
+            prompt = TONGUE_JSON_PROMPT_VI
+        elif modality == "face":
+            prompt = FACE_JSON_PROMPT_VI
+        else:
+            raise ValueError(f"Modality '{modality}' không được hỗ trợ")
+        try:
+            logger.info(f"Gửi ảnh {image_path} đến {self.model_name} (JSON, modality={modality})...")
+            content = self._chat_vision(
+                "Bạn là chuyên gia vọng chẩn Đông y. Chỉ trả về JSON đúng schema, không thêm chữ nào.",
+                prompt, image_path,
+            )
+            data = parse_vlm_json(content)
+            if data is None:
+                logger.warning(f"VLM không trả JSON hợp lệ (modality={modality}), sẽ fallback prose. Raw: {content[:120]}")
+                return None
+            logger.info(f"{self.model_name} JSON {modality}: {data}")
+            return {"data": data, "raw": content}
+        except Exception as e:
+            logger.error(f"Lỗi gọi VLM JSON: {e}")
+            return None
 
     def verify_image_modality(self, image_path: str) -> str:
         """Phân loại THÔ ảnh trước khi phân tích: trả 'tongue' | 'face' | 'other' | None (lỗi).

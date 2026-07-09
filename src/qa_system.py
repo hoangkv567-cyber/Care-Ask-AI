@@ -271,19 +271,71 @@ class TCMQA:
             "phù", "táo", "bón", "tê", "loét", "run", "nấc", "đau", "lỵ"
         }
         
+        # [CHẶN MẢNH VỠ ĐỊNH TÍNH] Node TrieuChung rác sinh ra do mô tả CSV bị tách theo dấu phẩy
+        # ('...xuất hiện nhiều, liên tục, lâu ngày...' -> node 'liên tục'). Chúng là TRẠNG TỪ định
+        # tính, không phải triệu chứng — nếu để khớp, chúng nuốt mất cụm thật ('ho liên tục' bị xé
+        # thành 'liên tục' + 'ho') và chuỗi gộp hiển thị vô nghĩa. Chỉ chặn khi TOÀN BỘ tên node
+        # bằng đúng mảnh vỡ; cụm dài chứa chúng ('ho kéo dài') vẫn khớp bình thường.
+        qualifier_fragments = {
+            "liên tục", "kéo dài", "thường xuyên", "lâu ngày", "từng cơn", "nhiều lần",
+            "tái phát", "dữ dội", "âm ỉ", "đột ngột", "dai dẳng", "về đêm", "ban đêm",
+        }
+
+        spans = []   # (start, end, symptom) — vị trí mỗi triệu chứng đã trích trên text_lower
         for symptom in db_symptoms_sorted:
             sym_l = symptom.lower()
+            if sym_l.strip() in qualifier_fragments:
+                continue
             if len(sym_l.split()) < 2:
                 if sym_l not in whitelist_1word:
                     continue
             # Dùng regex \b để khớp từ độc lập tránh substring trượt
             pattern = rf'\b{re.escape(sym_l)}\b'
-            if re.search(pattern, temp_text):
+            m = re.search(pattern, temp_text)
+            if m:
                 extracted.append(symptom)
-                # Thay bằng khoảng trắng cùng chiều dài để tránh các cụm từ khác đè trùng
-                temp_text = re.sub(pattern, " " * len(sym_l), temp_text, count=1)
-                
-        return extracted
+                spans.append((m.start(), m.end(), symptom))
+                # Thay bằng khoảng trắng CÙNG CHIỀU DÀI (giữ nguyên tọa độ) để cụm khác không đè trùng
+                temp_text = temp_text[:m.start()] + (" " * (m.end() - m.start())) + temp_text[m.end():]
+
+        # [CHỐNG PHỦ ĐỊNH VĂN BẢN] Loại triệu chứng bị lời khai phủ định ('không sốt, ho khan' -> bỏ
+        # 'sốt'). Chạy SAU longest-match: các tên triệu chứng vốn chứa 'không' ('miệng nhạt không
+        # khát', 'tay chân không ấm'...) đã được gom nguyên cụm và xóa khỏi temp_text, nên chữ
+        # 'không' còn sót trong temp_text mới đúng là phủ định TỰ DO của người bệnh.
+        return self._drop_negated_text_symptoms(extracted, spans, temp_text)
+
+    # 'không những'/'không chỉ' = 'không riêng' (nhấn mạnh CÓ), KHÔNG phải phủ định triệu chứng.
+    _NEG_TEXT_CUE = re.compile(r'\b(?:không|chẳng|chả|chưa|ko)\b')
+    # Dấu ngắt mệnh đề / liên từ đối lập — phủ định KHÔNG vươn qua các ranh giới này.
+    _NEG_TEXT_STOP = re.compile(r'[,.;:!?]|\b(?:nhưng|mà|còn|song|tuy)\b')
+
+    def _drop_negated_text_symptoms(self, extracted: list, spans: list, blanked_text: str) -> list:
+        """Bỏ khỏi 'extracted' các triệu chứng đứng trong tầm phủ định của một chữ 'không/chưa/
+        chẳng' TỰ DO (không thuộc tên triệu chứng nào). Tầm phủ định = từ chữ phủ định tới dấu ngắt
+        mệnh đề gần nhất (hoặc tối đa 40 ký tự). 'sốt, không ho' -> bỏ 'ho', GIỮ 'sốt'."""
+        if not spans:
+            return extracted
+        cues = []
+        for m in self._NEG_TEXT_CUE.finditer(blanked_text):
+            tail = blanked_text[m.end():m.end() + 8].lstrip()
+            if tail.startswith("những") or tail.startswith("chỉ"):   # 'không những/chỉ' -> bỏ qua
+                continue
+            cues.append(m.start())
+        if not cues:
+            return extracted
+        negated = set()
+        for (s, _e, name) in spans:
+            for c in cues:
+                if c >= s:                                   # phủ định phải đứng TRƯỚC triệu chứng
+                    continue
+                gap = blanked_text[c:s]
+                if len(gap) > 40 or self._NEG_TEXT_STOP.search(gap):
+                    continue                                 # quá xa / có ranh giới mệnh đề -> không tới
+                negated.add(name)
+                break
+        if negated:
+            logger.info(f"[CHỐNG PHỦ ĐỊNH VĂN BẢN] Loại triệu chứng bị phủ định: {sorted(negated)}")
+        return [x for x in extracted if x not in negated]
 
     def _preprocess_question(self, question: str) -> list:
         # Chuẩn hóa văn bản trước khi khớp

@@ -161,6 +161,100 @@
                     </div>
                 </div>
 
+                <!-- Vấn chẩn chi tiết (thập vấn + nhân khẩu) -->
+                <details class="border border-slate-200 rounded-xl overflow-hidden">
+                    <summary class="cursor-pointer select-none px-4 py-3 bg-slate-50 hover:bg-slate-100 text-sm font-semibold text-slate-700 transition">
+                        📋 Vấn chẩn chi tiết (không bắt buộc — giúp chẩn đoán chính xác hơn)
+                    </summary>
+                    <div class="p-4 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Tuổi</span>
+                            <input type="number" id="qAge" min="0" max="129" placeholder="vd 45"
+                                   class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none"/>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Giới tính</span>
+                            <select id="qSex" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="nam">Nam</option>
+                                <option value="nu">Nữ</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Thời gian mắc</span>
+                            <select id="qOnset" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="moi">Mới mắc (1-2 ngày)</option>
+                                <option value="vai_ngay">Vài ngày</option>
+                                <option value="vai_tuan">Vài tuần</option>
+                                <option value="man">Mạn tính / lâu ngày</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Hàn / nhiệt</span>
+                            <select id="qHanNhiet" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="so_lanh">Sợ lạnh</option>
+                                <option value="so_nong">Sợ nóng, thích mát</option>
+                                <option value="binh_thuong">Bình thường</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Mồ hôi</span>
+                            <select id="qMoHoi" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="tu_han">Ra nhiều ban ngày</option>
+                                <option value="dao_han">Mồ hôi trộm (ban đêm)</option>
+                                <option value="it">Ít / bình thường</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Đại tiện</span>
+                            <select id="qDaiTien" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="tao">Táo bón</option>
+                                <option value="long">Lỏng / nát</option>
+                                <option value="binh_thuong">Bình thường</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Tiểu tiện</span>
+                            <select id="qTieuTien" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="vang">Vàng / sẫm</option>
+                                <option value="trong_dai">Trong, đi nhiều</option>
+                                <option value="binh_thuong">Bình thường</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Miệng / khát</span>
+                            <select id="qKhat" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="khat_nuoc">Khát, thích uống</option>
+                                <option value="mieng_nhat">Miệng nhạt, không khát</option>
+                                <option value="binh_thuong">Bình thường</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Ăn uống</span>
+                            <select id="qAnUong" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="an_kem">Ăn kém, chán ăn</option>
+                                <option value="mau_doi">Ăn nhiều, mau đói</option>
+                                <option value="binh_thuong">Bình thường</option>
+                            </select>
+                        </label>
+                        <label class="flex flex-col gap-1">
+                            <span class="text-xs font-semibold text-slate-500">Giấc ngủ</span>
+                            <select id="qNgu" class="border border-slate-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">—</option>
+                                <option value="kho_ngu">Khó ngủ / mất ngủ</option>
+                                <option value="binh_thuong">Bình thường</option>
+                            </select>
+                        </label>
+                    </div>
+                </details>
+
                 <!-- Vọng chẩn -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition duration-200">
@@ -591,8 +685,22 @@
             const faceFile = document.getElementById('faceImg').files[0];
             const tongueFile = document.getElementById('tongueImg').files[0];
 
-            if (!symptoms.trim() && !faceFile && !tongueFile) {
-                alert("Vui lòng cung cấp triệu chứng bằng văn bản hoặc tải lên ít nhất một hình ảnh (ảnh khuôn mặt hoặc ảnh lưỡi) để tiến hành chẩn đoán!");
+            // Vấn chẩn chi tiết (thập vấn + nhân khẩu) — chỉ gửi field có chọn
+            const interviewFields = {
+                age: 'qAge', sex: 'qSex', onset: 'qOnset', han_nhiet: 'qHanNhiet',
+                mo_hoi: 'qMoHoi', dai_tien: 'qDaiTien', tieu_tien: 'qTieuTien',
+                khat: 'qKhat', an_uong: 'qAnUong', ngu: 'qNgu'
+            };
+            // Thập vấn CÓ Ý NGHĨA lâm sàng (bỏ nhân khẩu và lựa chọn 'bình thường/ít')
+            const symptomGroups = ['han_nhiet','mo_hoi','dai_tien','tieu_tien','khat','an_uong','ngu'];
+            const nonInformative = new Set(['', 'binh_thuong', 'it']);
+            const hasInterviewSymptom = symptomGroups.some(g => {
+                const el = document.getElementById(interviewFields[g]);
+                return el && !nonInformative.has(el.value);
+            });
+
+            if (!symptoms.trim() && !faceFile && !tongueFile && !hasInterviewSymptom) {
+                alert("Vui lòng cung cấp triệu chứng bằng văn bản, chọn ở mục Vấn chẩn chi tiết, hoặc tải lên ít nhất một hình ảnh (ảnh khuôn mặt hoặc ảnh lưỡi) để tiến hành chẩn đoán!");
                 return;
             }
 
@@ -606,6 +714,11 @@
             formData.append('symptoms', combinedSymptoms);
             if(faceFile) formData.append('face_img', faceFile);
             if(tongueFile) formData.append('tongue_img', tongueFile);
+
+            for (const [field, elId] of Object.entries(interviewFields)) {
+                const el = document.getElementById(elId);
+                if (el && el.value) formData.append(field, el.value);
+            }
 
             // Bật trạng thái loading
             submitBtn.disabled = true;

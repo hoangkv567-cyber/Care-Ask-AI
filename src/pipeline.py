@@ -4,6 +4,7 @@ from src.siliconflow_vlm_client import create_vision_client
 from src.neo4j_client import Neo4jTCMClient
 from src.utils import logger
 from src.config_loader import load_config
+from src.image_quality import assess_image_quality
 
 class TCMTonguePipeline:
     def __init__(self, config: dict = None, modality: str = "tongue"):
@@ -48,15 +49,28 @@ class TCMTonguePipeline:
         tongue_desc = ""
         face_desc = ""
         vision_warnings = {}   # {'tongue'|'face': thông báo} khi tải nhầm loại ảnh
+        structured = {}        # {'tongue'|'face': {'data':..., 'symptoms':[...]}} khi dùng chế độ JSON
 
         _LABEL_VI = {"tongue": "ảnh lưỡi", "face": "ảnh khuôn mặt", "other": "ảnh không xác định (không phải lưỡi/mặt)"}
+        _use_structured = bool(self.config.get("vision", {}).get("structured", False)) \
+            and hasattr(self.ollama_client, "diagnose_image_structured")
 
         def _process_image(modality: str, image_path: str):
-            """Xử lý trọn 1 ảnh: GÁC CỔNG phân loại rồi phân tích. Trả (desc, warning)."""
+            """Xử lý trọn 1 ảnh: GÁC CỔNG phân loại rồi phân tích. Trả (desc, warning, struct)
+            với struct = {'data':<json>, 'symptoms':[...]} khi dùng chế độ JSON, ngược lại None."""
             if modality == "tongue":
                 wrong_kinds, slot_vi, hint_vi = ("face", "other"), "LƯỠI", "Vui lòng tải ảnh cận cảnh LƯỠI (thè lưỡi ra)."
             else:
                 wrong_kinds, slot_vi, hint_vi = ("tongue", "other"), "KHUÔN MẶT", "Vui lòng tải ảnh KHUÔN MẶT chính diện."
+            # [GÁC CHẤT LƯỢNG ẢNH] Chặn ảnh quá tối/sáng/nhỏ/mờ TRƯỚC khi phân tích — màu lưỡi/sắc
+            # mặt là bằng chứng hàn-nhiệt cốt lõi, ảnh kém khiến VLM tả sai màu, lệch chẩn đoán.
+            q_ok, q_reason = assess_image_quality(image_path)
+            if not q_ok:
+                logger.warning(f"Ảnh ô {slot_vi} chất lượng kém ({q_reason}) — bỏ qua.")
+                return "", (
+                    f"⚠️ Ảnh ở ô {slot_vi} chất lượng kém ({q_reason}). "
+                    f"Đã bỏ qua để tránh kết quả sai. Chụp lại ở nơi đủ sáng, rõ nét, không lóa. {hint_vi}"
+                ), None
             detected = self.ollama_client.verify_image_modality(image_path)
             if detected in wrong_kinds:          # sai ô rõ ràng -> KHÔNG bịa, chỉ cảnh báo
                 logger.warning(f"Ảnh ô {slot_vi} bị từ chối (phân loại: {detected}).")
@@ -64,11 +78,28 @@ class TCMTonguePipeline:
                     f"⚠️ Ảnh ở ô {slot_vi} có vẻ không phải {_LABEL_VI.get(modality)} "
                     f"(AI nhận thấy: {_LABEL_VI.get(detected, detected)}). "
                     f"Đã bỏ qua để tránh kết quả sai. {hint_vi}"
-                )
+                ), None
             # đúng loại hoặc None (lỗi phân loại) -> cho qua
             logger.info(f"Đang gọi mô hình vision phân tích ảnh {slot_vi.capitalize()}...")
+            # [VỌNG CHẨN CÓ CẤU TRÚC] Ưu tiên JSON schema -> map triệu chứng deterministic; nếu VLM
+            # không trả JSON hợp lệ (trả None) thì fallback về mô tả prose như cũ.
+            if _use_structured:
+                res = self.ollama_client.diagnose_image_structured(image_path, modality=modality)
+                if res and res.get("data") is not None:
+                    from src.vision_schema import (
+                        tongue_json_to_symptoms, face_json_to_symptoms,
+                        tongue_json_to_prose, face_json_to_prose,
+                    )
+                    data = res["data"]
+                    if modality == "tongue":
+                        syms = tongue_json_to_symptoms(data)
+                        prose = tongue_json_to_prose(data)
+                    else:
+                        syms = face_json_to_symptoms(data)
+                        prose = face_json_to_prose(data)
+                    return prose, None, {"data": data, "symptoms": syms}
             symptoms = self.ollama_client.diagnose_image(image_path, modality=modality)
-            return (symptoms[0] if symptoms else ""), None
+            return (symptoms[0] if symptoms else ""), None, None
 
         # Bước 1: Xử lý ảnh Lưỡi và Mặt SONG SONG (2 ảnh độc lập — chạy tuần tự lãng phí ~45s
         # vì mỗi lượt phân tích cloud mất 40-60s; song song thì tổng = lượt chậm nhất)
@@ -81,17 +112,21 @@ class TCMTonguePipeline:
                 futures["face"] = executor.submit(_process_image, "face", face_image_path)
 
         if "tongue" in futures:
-            tongue_desc, warn = futures["tongue"].result()
+            tongue_desc, warn, struct = futures["tongue"].result()
             if warn:
                 vision_warnings["tongue"] = warn
             elif tongue_desc:
                 all_symptoms.append(tongue_desc)
+            if struct:
+                structured["tongue"] = struct
         if "face" in futures:
-            face_desc, warn = futures["face"].result()
+            face_desc, warn, struct = futures["face"].result()
             if warn:
                 vision_warnings["face"] = warn
             elif face_desc:
                 all_symptoms.append(face_desc)
+            if struct:
+                structured["face"] = struct
 
         # Loại bỏ các triệu chứng bị trùng lặp (nếu cả 2 ảnh đều báo giống nhau)
         all_symptoms = list(set(all_symptoms))
@@ -104,7 +139,8 @@ class TCMTonguePipeline:
                 "analysis": "",  # Trả về rỗng để Fusion Pipeline không bị lỗi
                 "tongue_description": "",
                 "face_description": "",
-                "vision_warnings": vision_warnings
+                "vision_warnings": vision_warnings,
+                "structured": structured,
             }
 
         # Bước 2: Tạo chuỗi phân tích chuẩn bị cho Tứ chẩn hợp tham
@@ -113,7 +149,13 @@ class TCMTonguePipeline:
         logger.info(f"Mô hình vision đã nhìn thấy: {analysis_text}")
 
         # Bước 3: Ánh xạ hội chứng & Bài thuốc (Giữ lại logic cũ để hệ thống không bị phá vỡ cấu trúc)
-        syndromes = self.mapper.map_symptoms_to_syndromes(all_symptoms)
+        # Chế độ structured: all_symptoms là câu PROSE (mô tả) -> mapper cũ không khớp được (cảnh báo
+        # "Chưa có mapping cho..."). Đưa TRIỆU CHỨNG chuẩn deterministic vào mapper thay vì prose.
+        _mapper_symptoms = []
+        for _m in ("tongue", "face"):
+            if structured.get(_m):
+                _mapper_symptoms.extend(structured[_m].get("symptoms", []))
+        syndromes = self.mapper.map_symptoms_to_syndromes(_mapper_symptoms or all_symptoms)
         treatments = []
         if syndromes:
             for syndrome in syndromes:
@@ -129,7 +171,8 @@ class TCMTonguePipeline:
             "possible_syndromes": syndromes,
             "treatments": treatments,
             "analysis": analysis_text,  # <--- Key này sẽ được Fusion Pipeline bốc ra ghép vào câu hỏi
-            "vision_warnings": vision_warnings
+            "vision_warnings": vision_warnings,
+            "structured": structured,   # {'tongue'|'face': {'data':json, 'symptoms':[...]}} nếu dùng JSON mode
         }
         
         logger.info("Pipeline Vision hoàn tất!")

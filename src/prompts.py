@@ -65,3 +65,47 @@ QUY TẮC BẮT BUỘC:
 
 Viết mô tả ngắn gọn, khách quan 2-3 câu bằng tiếng Việt.
 """
+
+# ============================================================================
+# Prompt VLM CÓ CẤU TRÚC (JSON) — mỗi trường có tập giá trị cố định + 'không rõ'.
+# Thay văn xuôi bằng JSON để map triệu chứng DETERMINISTIC (src/vision_schema.py),
+# bỏ được bước LLM đọc prose + nhiều tầng regex vá ảo giác. Bắt buộc dùng 'không rõ'
+# khi không chắc để KHÔNG bịa đặc điểm.
+# ============================================================================
+
+TONGUE_JSON_PROMPT_VI = """
+Bạn là chuyên gia Đông y vọng chẩn (xem lưỡi). Quan sát ảnh lưỡi và trả về DUY NHẤT một object JSON
+(không kèm giải thích, không rào ```), theo đúng các khóa và giá trị cho phép sau:
+{
+  "than_luoi": "nhợt" | "hồng nhạt" | "đỏ" | "đỏ sẫm" | "tím" | "không rõ",
+  "reu_mau":   "trắng" | "vàng" | "xám đen" | "không rêu" | "không rõ",
+  "reu_day":   "mỏng" | "dày" | "không rõ",
+  "reu_chat":  "nhuận" | "nhớt" | "khô" | "bong tróc" | "không rõ",
+  "dau_rang":  "có" | "không" | "không rõ",
+  "vet_nut":   "có" | "không" | "không rõ",
+  "luoi_beu":  "có" | "không" | "không rõ"
+}
+QUY TẮC:
+- CHỈ dùng đúng các giá trị liệt kê. Không chắc chắn -> "không rõ" (KHÔNG đoán, KHÔNG bịa).
+- Chú ý ánh sáng ấm làm lưỡi trông đỏ hơn thực: nếu hồng nhạt/bình thường thì để "hồng nhạt".
+- Vết lõm gợn sóng ở mép lưỡi = "dau_rang": "có" (dù nhẹ). Mép trơn nhẵn hoàn toàn = "không".
+- Chỉ trả JSON, không thêm chữ nào khác.
+"""
+
+FACE_JSON_PROMPT_VI = """
+Bạn là chuyên gia Đông y vọng chẩn (xem sắc mặt). Quan sát ảnh khuôn mặt và trả về DUY NHẤT một
+object JSON (không kèm giải thích, không rào ```), theo đúng các khóa và giá trị cho phép sau:
+{
+  "sac_mat":    "trắng nhợt" | "vàng úa" | "đỏ bừng" | "xanh xao" | "sạm tối" | "hồng hào bình thường" | "không rõ",
+  "go_ma_do":   "có" | "không" | "không rõ",
+  "phu":        "có" | "không" | "không rõ",
+  "ban_do":     "có" | "không" | "không rõ",
+  "quang_tham": "có" | "không" | "không rõ",
+  "trang_diem": "có" | "không" | "không rõ"
+}
+QUY TẮC:
+- CHỈ dùng đúng các giá trị liệt kê. Không chắc chắn -> "không rõ" (KHÔNG đoán, KHÔNG bịa).
+- Chú ý ánh sáng/nền ấm làm da trông vàng: nếu da vốn trắng nhợt thì để "trắng nhợt", KHÔNG "vàng úa".
+- Có son/phấn/kẻ mắt rõ -> "trang_diem": "có" (vì trang điểm che sắc mặt thật).
+- Chỉ trả JSON, không thêm chữ nào khác.
+"""

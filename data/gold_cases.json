@@ -1,0 +1,782 @@
+{
+  "version": 1,
+  "description": "Bộ ca chuẩn (gold) cho tầng khớp bệnh danh — phạm vi Vấn + Vọng (lưỡi/mặt), KHÔNG mạch. Ca 'recall': bệnh phải nằm trong top-3. Ca 'discrim': bệnh trong forbid không được xuất hiện, bệnh trong expect_any phải xuất hiện. Cần bác sĩ Đông y rà soát & mở rộng.",
+  "cases": [
+    {
+      "id": "recall_01",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Ho tiếng nặng",
+        "ngứa họng",
+        "khạc đờm loãng trắng",
+        "kèm nghẹt mũi",
+        "chảy nước mũi trong",
+        "hắt hơi; có thể sốt nhẹ sợ lạnh"
+      ],
+      "raw": "Ho tiếng nặng, ngứa họng, khạc đờm loãng trắng, kèm nghẹt mũi, chảy nước mũi trong, hắt hơi; có thể sốt nhẹ sợ lạnh",
+      "expect_disease": "Khái thấu",
+      "hoi_chung": "Phong hàn tập phế",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_02",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Viêm họng",
+        "chân lạnh",
+        "ho đờm nhiều",
+        "họng đau ngứa rát",
+        "hay đau bụng đi ngoài",
+        "lưỡi đỏ tươi"
+      ],
+      "raw": "Viêm họng, chân lạnh, ho đờm nhiều, họng đau ngứa rát, hay đau bụng đi ngoài, lưỡi đỏ tươi",
+      "expect_disease": "Viêm yết hầu",
+      "hoi_chung": "Dương hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_03",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Chảy máu mũi lượng nhiều",
+        "đỏ tươi",
+        "chảy máu chân răng rỉ rả có khi chảy cả máu tai",
+        "lưỡi khô",
+        "đỏ",
+        "khô miệng"
+      ],
+      "raw": "Chảy máu mũi lượng nhiều, đỏ tươi, chảy máu chân răng rỉ rả có khi chảy cả máu tai, lưỡi khô, đỏ, khô miệng",
+      "expect_disease": "Tỵ nục",
+      "hoi_chung": "Huyết nhiệt",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_04",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Tiếng nói nặng",
+        "nghe không rõ",
+        "ngực đầy",
+        "ho ra nhiều đờm",
+        "cơ thể mập",
+        "người mệt mỏi"
+      ],
+      "raw": "Tiếng nói nặng, nghe không rõ, ngực đầy, ho ra nhiều đờm, cơ thể mập, người mệt mỏi",
+      "expect_disease": "Mất tiếng",
+      "hoi_chung": "Đờm trệ",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_05",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Hồi hộp",
+        "khó thở",
+        "mệt mỏi",
+        "váng đầu",
+        "hoa mắt",
+        "khô miệng"
+      ],
+      "raw": "Hồi hộp, khó thở, mệt mỏi, váng đầu, hoa mắt, khô miệng",
+      "expect_disease": "Suy tim",
+      "hoi_chung": "Khí âm lưỡng hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_06",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Tim hồi hộp không yên",
+        "thở suyễn",
+        "ngực khó chịu",
+        "thân thể ớn lạnh",
+        "tay chân lạnh",
+        "phù toàn thân"
+      ],
+      "raw": "Tim hồi hộp không yên, thở suyễn, ngực khó chịu, thân thể ớn lạnh, tay chân lạnh, phù toàn thân",
+      "expect_disease": "Tâm quý",
+      "hoi_chung": "Dương Khí Suy Nhược",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_07",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Tiếng nấc trong",
+        "nấc mạnh",
+        "nấc dồn",
+        "hôi miệng",
+        "buồn bực",
+        "khát nước"
+      ],
+      "raw": "Tiếng nấc trong, nấc mạnh, nấc dồn, hôi miệng, buồn bực, khát nước",
+      "expect_disease": "Ách nghịch",
+      "hoi_chung": "Vị nhiệt",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_08",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Nôn ra chất chua và chất đục của thức ăn",
+        "đau bụng tức",
+        "nôn",
+        "ợ chua",
+        "không thích ấn vào",
+        "biếng ăn"
+      ],
+      "raw": "Nôn ra chất chua và chất đục của thức ăn, đau bụng tức, nôn, ợ chua, không thích ấn vào, biếng ăn",
+      "expect_disease": "Ẩu thổ",
+      "hoi_chung": "Thương thực",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_09",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "đau bụng cự án",
+        "hồi hộp",
+        "tâm phiền",
+        "miệng khát không muốn uống",
+        "khô miệng",
+        "lúc sốt lúc rét"
+      ],
+      "raw": "đau bụng cự án, hồi hộp, tâm phiền, miệng khát không muốn uống, khô miệng, lúc sốt lúc rét",
+      "expect_disease": "Phúc thống",
+      "hoi_chung": "Thấp nhiệt",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_10",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Đau vùng thượng vị liên miên",
+        "nôn nhiều",
+        "mệt mỏi",
+        "thích xoa bóp",
+        "chườm nóng",
+        "đầy bụng"
+      ],
+      "raw": "Đau vùng thượng vị liên miên, nôn nhiều, mệt mỏi, thích xoa bóp, chườm nóng, đầy bụng",
+      "expect_disease": "Vị quản thống",
+      "hoi_chung": "Hư hàn",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_11",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Bế kinh vài tháng",
+        "sắc mặt vàng",
+        "tinh thần mệt mỏi",
+        "tay chân lạnh",
+        "phù thũng",
+        "choáng đầu hồi hộp"
+      ],
+      "raw": "Bế kinh vài tháng, sắc mặt vàng, tinh thần mệt mỏi, tay chân lạnh, phù thũng, choáng đầu hồi hộp",
+      "expect_disease": "Bế kinh",
+      "hoi_chung": "Khí hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_12",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Đau trước kỳ",
+        "cự án",
+        "đau lan 2 bên bụng dưới",
+        "kinh nguyệt trước kỳ",
+        "lượng nhiều",
+        "sắc đỏ tím đặc"
+      ],
+      "raw": "Đau trước kỳ, cự án, đau lan 2 bên bụng dưới, kinh nguyệt trước kỳ, lượng nhiều, sắc đỏ tím đặc",
+      "expect_disease": "Thống kinh",
+      "hoi_chung": "Huyết nhiệt",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_13",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Mới phát hoặc tái phát không lâu",
+        "vết sần nổi lên như đồng tiền hoặc bùn",
+        "thường nổi hạt nhỏ như ban chẩn",
+        "to nhỏ không đều",
+        "màu hồng tươi",
+        "mọc nhiều ở tứ chi"
+      ],
+      "raw": "Mới phát hoặc tái phát không lâu, vết sần nổi lên như đồng tiền hoặc bùn, thường nổi hạt nhỏ như ban chẩn, to nhỏ không đều, màu hồng tươi, mọc nhiều ở tứ chi",
+      "expect_disease": "Ngân tiết",
+      "hoi_chung": "Huyết nhiệt",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_14",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Vùng da tổn thương màu đỏ",
+        "có nốt ban có nước",
+        "mọc gom một chỗ hoặc giống như dải khăn",
+        "cảm thấy nóng rát",
+        "về đêm không ngủ được",
+        "khô họng"
+      ],
+      "raw": "Vùng da tổn thương màu đỏ, có nốt ban có nước, mọc gom một chỗ hoặc giống như dải khăn, cảm thấy nóng rát, về đêm không ngủ được, khô họng",
+      "expect_disease": "Đới trạng bào chẩn",
+      "hoi_chung": "Nhiệt độc",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_15",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Đái dầm",
+        "đái nhiều lần nhưng lượng ít",
+        "sắc mặt trắng",
+        "người gầy",
+        "mệt mỏi",
+        "ăn kém"
+      ],
+      "raw": "Đái dầm, đái nhiều lần nhưng lượng ít, sắc mặt trắng, người gầy, mệt mỏi, ăn kém",
+      "expect_disease": "Di niệu",
+      "hoi_chung": "Người lớn - Khí hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_16",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Mệt mỏi",
+        "đau lưng",
+        "mỏi gối",
+        "sắc mặt xạm đen",
+        "hoa mắt",
+        "ù tai"
+      ],
+      "raw": "Mệt mỏi, đau lưng, mỏi gối, sắc mặt xạm đen, hoa mắt, ù tai",
+      "expect_disease": "Dương nuy",
+      "hoi_chung": "Thận hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_17",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Sắc manh",
+        "mù màu",
+        "dị thường sắc giác"
+      ],
+      "raw": "Sắc manh, mù màu, dị thường sắc giác",
+      "expect_disease": "Dạ manh",
+      "hoi_chung": "Thận dương hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_18",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Đau từng cơn nhấm nhói",
+        "đau căng đầu",
+        "nặng đầu chân nhẹ",
+        "hoa mắt sợ sáng",
+        "chóng mặt",
+        "đau nhiều vùng thái dương"
+      ],
+      "raw": "Đau từng cơn nhấm nhói, đau căng đầu, nặng đầu chân nhẹ, hoa mắt sợ sáng, chóng mặt, đau nhiều vùng thái dương",
+      "expect_disease": "Đầu thống",
+      "hoi_chung": "Can dương thượng cang",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_19",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Đau nửa đầu gặp nóng thì đau kịch liệt",
+        "gặp lạnh dễ chịu",
+        "tâm phiền",
+        "miệng đắng",
+        "tiểu vàng"
+      ],
+      "raw": "Đau nửa đầu gặp nóng thì đau kịch liệt, gặp lạnh dễ chịu, tâm phiền, miệng đắng, tiểu vàng",
+      "expect_disease": "Thiên đầu thống",
+      "hoi_chung": "Nhiệt",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_20",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Liệt nửa người",
+        "nửa người tê dại",
+        "lưỡi cứng",
+        "khó nói hoặc không nói được",
+        "miệng méo",
+        "chóng mặt đau đầu"
+      ],
+      "raw": "Liệt nửa người, nửa người tê dại, lưỡi cứng, khó nói hoặc không nói được, miệng méo, chóng mặt đau đầu",
+      "expect_disease": "Trúng phong",
+      "hoi_chung": "Can dương thịnh",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_21",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Mắc bệnh lâu ngày tái phát nhiều lần",
+        "khi lên cơn đầu tối sầm lại",
+        "ngã",
+        "tay chân run miệng kêu",
+        "hôn mê",
+        "sau khi tỉnh mệt mỏi"
+      ],
+      "raw": "Mắc bệnh lâu ngày tái phát nhiều lần, khi lên cơn đầu tối sầm lại, ngã, tay chân run miệng kêu, hôn mê, sau khi tỉnh mệt mỏi",
+      "expect_disease": "Động kinh",
+      "hoi_chung": "Tâm thận tỳ hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_22",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Sắc mặt xanh hoặc vàng úa",
+        "hồi hộp",
+        "ít ngủ",
+        "mệt mỏi",
+        "hay quên",
+        "ăn kém"
+      ],
+      "raw": "Sắc mặt xanh hoặc vàng úa, hồi hộp, ít ngủ, mệt mỏi, hay quên, ăn kém",
+      "expect_disease": "Huyễn vựng",
+      "hoi_chung": "Khí huyết hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_23",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Tiểu tiện nhiều lần",
+        "lượng nhiều",
+        "nước tiểu như cao mỡ",
+        "khô miệng khát",
+        "gầy còm",
+        "hồi hộp"
+      ],
+      "raw": "Tiểu tiện nhiều lần, lượng nhiều, nước tiểu như cao mỡ, khô miệng khát, gầy còm, hồi hộp",
+      "expect_disease": "Tiêu khát",
+      "hoi_chung": "Thận âm hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_24",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "tay chân lạnh",
+        "lưng gối nhức mỏi",
+        "trời lạnh nhức nhiều",
+        "di tinh",
+        "liệt dương",
+        "tiểu nhiều"
+      ],
+      "raw": "tay chân lạnh, lưng gối nhức mỏi, trời lạnh nhức nhiều, di tinh, liệt dương, tiểu nhiều",
+      "expect_disease": "Hư lao",
+      "hoi_chung": "Thận dương hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_25",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Béo phì",
+        "chân phù",
+        "mặt nặng",
+        "mệt mỏi",
+        "chán ăn",
+        "tiêu lỏng"
+      ],
+      "raw": "Béo phì, chân phù, mặt nặng, mệt mỏi, chán ăn, tiêu lỏng",
+      "expect_disease": "Béo phì",
+      "hoi_chung": "Tỳ hư thấp trệ",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_26",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Người gầy",
+        "mệt mỏi",
+        "sợ gió lạnh",
+        "đoản khí",
+        "hồi hộp",
+        "dễ cảm mạo"
+      ],
+      "raw": "Người gầy, mệt mỏi, sợ gió lạnh, đoản khí, hồi hộp, dễ cảm mạo",
+      "expect_disease": "Tê bì tứ chi",
+      "hoi_chung": "Khí huyết hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_27",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Lượng ra mồ hôi nhiều",
+        "dễ cảm mạo",
+        "khát nước",
+        "hồi hộp",
+        "sốt nhẹ",
+        "tấu lý sơ hở"
+      ],
+      "raw": "Lượng ra mồ hôi nhiều, dễ cảm mạo, khát nước, hồi hộp, sốt nhẹ, tấu lý sơ hở",
+      "expect_disease": "Đạo hãn",
+      "hoi_chung": "Khí âm đều hư",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "recall_28",
+      "type": "recall",
+      "specialty": "",
+      "symptoms": [
+        "Ra nhiều mồ hôi tay chân",
+        "ngực đầy bụng tức",
+        "chán ăn",
+        "cơ thể nặng nề",
+        "thân nhiệt không tăng",
+        "nước tiểu sẫm màu lượng ít"
+      ],
+      "raw": "Ra nhiều mồ hôi tay chân, ngực đầy bụng tức, chán ăn, cơ thể nặng nề, thân nhiệt không tăng, nước tiểu sẫm màu lượng ít",
+      "expect_disease": "Thủ túc xuất hãn",
+      "hoi_chung": "Tỳ vị thấp nhiệt",
+      "note": "Máy sinh từ CSV — bác sĩ rà lại."
+    },
+    {
+      "id": "discrim_01",
+      "type": "discrim",
+      "specialty": "hô hấp",
+      "symptoms": [
+        "ho nhiều",
+        "khó thở",
+        "mệt mỏi",
+        "rêu trắng",
+        "lưỡi hồng",
+        "mặt nhợt nhạt"
+      ],
+      "raw": "ho nhiều, khó thở, mệt mỏi",
+      "forbid_disease": [
+        "Áp xe gan",
+        "Bạch tiển (nấm da)",
+        "Dương nuy",
+        "Tĩnh mạch viêm tắc",
+        "Trưng hà",
+        "Long bế"
+      ],
+      "expect_disease_any": [
+        "Mạn tính tắc nghẽn phế bệnh"
+      ],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_02",
+      "type": "discrim",
+      "specialty": "tim mạch",
+      "symptoms": [
+        "đau thắt ngực",
+        "tức ngực",
+        "khó thở",
+        "hồi hộp",
+        "mệt mỏi"
+      ],
+      "raw": "đau ngực dữ dội, tức ngực, khó thở, hồi hộp",
+      "forbid_disease": [],
+      "expect_disease_any": [
+        "Hung tý"
+      ],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_03",
+      "type": "discrim",
+      "specialty": "nam khoa",
+      "symptoms": [
+        "liệt dương",
+        "đau lưng mỏi gối",
+        "tiểu đêm",
+        "mệt mỏi"
+      ],
+      "raw": "liệt dương, yếu sinh lý, đau lưng",
+      "forbid_disease": [],
+      "expect_disease_any": [
+        "Dương nuy"
+      ],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_04",
+      "type": "discrim",
+      "specialty": "sản khoa",
+      "symptoms": [
+        "động thai",
+        "đau bụng",
+        "ra huyết"
+      ],
+      "raw": "đang mang thai, đau bụng, ra huyết âm đạo",
+      "forbid_disease": [],
+      "expect_disease_any": [
+        "Động thai"
+      ],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_05",
+      "type": "discrim",
+      "specialty": "phụ khoa",
+      "symptoms": [
+        "bụng dưới đau lạnh",
+        "tay chân lạnh",
+        "bế kinh"
+      ],
+      "raw": "bụng dưới đau lạnh, bế kinh, tay chân lạnh",
+      "forbid_disease": [
+        "Quỷ thai"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_06",
+      "type": "discrim",
+      "specialty": "tiêu hóa",
+      "symptoms": [
+        "tiêu chảy",
+        "phân lỏng nát",
+        "sợ lạnh",
+        "tay chân lạnh",
+        "đau lưng",
+        "đau bụng"
+      ],
+      "raw": "tiêu chảy, phân lỏng nát, sợ lạnh, tay chân lạnh",
+      "forbid_disease": [
+        "Tâm nhồi máu",
+        "Nguyệt kinh trì kỳ"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_07",
+      "type": "discrim",
+      "specialty": "tiêu hóa",
+      "symptoms": [
+        "nấc",
+        "ưa nóng",
+        "miệng nhạt không khát",
+        "rêu trắng nhuận"
+      ],
+      "raw": "nấc, ưa nóng, miệng nhạt không khát",
+      "forbid_disease": [
+        "Thiên đầu thống"
+      ],
+      "expect_disease_any": [
+        "Ách nghịch"
+      ],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_08",
+      "type": "discrim",
+      "specialty": "cảm mạo",
+      "symptoms": [
+        "sợ lạnh",
+        "sổ mũi",
+        "sốt",
+        "ho",
+        "mặt nhợt nhạt",
+        "lưỡi hồng nhạt",
+        "rêu trắng"
+      ],
+      "raw": "sợ lạnh, sổ mũi, sốt, ho",
+      "forbid_disease": [
+        "Tâm quý",
+        "Ngân tiết",
+        "Phong chẩn",
+        "Nhũ ung",
+        "Áp xe phế"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_09",
+      "type": "discrim",
+      "specialty": "khí hư đàm thấp",
+      "symptoms": [
+        "mệt mỏi",
+        "đầy bụng",
+        "lưỡi bệu",
+        "rêu lưỡi trắng nhớt",
+        "rìa lưỡi có hằn răng"
+      ],
+      "raw": "mệt mỏi, đầy bụng, lưỡi bệu, rêu nhớt",
+      "forbid_disease": [
+        "Béo phì",
+        "Khái huyết"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_10",
+      "type": "discrim",
+      "specialty": "huyết hư",
+      "symptoms": [
+        "chóng mặt",
+        "hoa mắt",
+        "hồi hộp",
+        "mất ngủ",
+        "mặt nhợt nhạt",
+        "lưỡi nhợt"
+      ],
+      "raw": "chóng mặt, hoa mắt, hồi hộp, mất ngủ, sắc mặt nhợt",
+      "forbid_disease": [
+        "Bạo manh",
+        "Canh niên kỳ hội chứng",
+        "Dạ manh"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_11",
+      "type": "discrim",
+      "specialty": "tỳ khí hư",
+      "symptoms": [
+        "mệt mỏi",
+        "ăn kém",
+        "đại tiện lỏng",
+        "khó thở",
+        "rìa lưỡi có hằn răng",
+        "lưỡi nhợt"
+      ],
+      "raw": "mệt mỏi, ăn kém, đại tiện lỏng, khó thở",
+      "forbid_disease": [
+        "Tỵ cứu",
+        "Khẩu sang",
+        "Sán khí",
+        "Tử cung hạ sa",
+        "Tê bì tứ chi"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_12",
+      "type": "discrim",
+      "specialty": "đau họng ho khan",
+      "symptoms": [
+        "đau họng",
+        "ho khan",
+        "họng khô",
+        "lưỡi đỏ",
+        "rêu vàng mỏng"
+      ],
+      "raw": "đau họng, ho khan, họng khô",
+      "forbid_disease": [
+        "Béo phì",
+        "Tĩnh mạch viêm tắc"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_13",
+      "type": "discrim",
+      "specialty": "tỳ vị hư hàn",
+      "symptoms": [
+        "tay chân lạnh",
+        "đại tiện lỏng",
+        "buồn nôn",
+        "đau bụng",
+        "mất ngủ",
+        "sợ lạnh",
+        "ợ hơi",
+        "quầng đen dưới mắt",
+        "rêu trắng mỏng"
+      ],
+      "raw": "tay chân lạnh, đại tiện lỏng, buồn nôn, đau bụng, sợ lạnh, ợ hơi",
+      "forbid_disease": [
+        "Nguyệt kinh trì kỳ",
+        "Nguyệt kinh tiên kỳ",
+        "Kinh nguyệt rối loạn"
+      ],
+      "expect_disease_any": [
+        "Viêm đại tràng"
+      ],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_14",
+      "type": "discrim",
+      "specialty": "dương hư (tiểu vàng cô đặc)",
+      "symptoms": [
+        "nước tiểu vàng",
+        "tay chân lạnh",
+        "đại tiện lỏng",
+        "mệt mỏi",
+        "sợ lạnh",
+        "rêu trắng mỏng",
+        "quầng đen dưới mắt"
+      ],
+      "raw": "mệt mỏi, tay chân lạnh, sợ lạnh, đại tiện lỏng",
+      "forbid_disease": [
+        "Động mạch viêm tắc",
+        "Hoàng đản",
+        "Khí hư"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    },
+    {
+      "id": "discrim_15",
+      "type": "discrim",
+      "specialty": "cảm mạo ho khan",
+      "symptoms": [
+        "chảy nước mũi",
+        "khô họng",
+        "ho khan",
+        "quầng đen dưới mắt",
+        "rêu trắng mỏng"
+      ],
+      "raw": "chảy nước mũi, khô họng, ho khan",
+      "forbid_disease": [
+        "Bách nhật khái"
+      ],
+      "expect_disease_any": [],
+      "note": "Soạn tay từ lỗi đã biết (lịch sử commit + test lâm sàng)."
+    }
+  ]
+}

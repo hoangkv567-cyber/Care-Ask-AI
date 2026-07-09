@@ -30,6 +30,10 @@ vision:
   model: "Qwen/Qwen3-VL-32B-Instruct"
   classify_model: "Qwen/Qwen3-VL-8B-Instruct"   # bước gác cổng lưỡi/mặt chỉ cần model nhỏ + ảnh 512px
   temperature: 0.0
+  # Vọng chẩn CÓ CẤU TRÚC: VLM trả JSON theo schema -> map triệu chứng deterministic (bỏ bước LLM
+  # đọc prose + regex vá ảo giác). Tự fallback về prose nếu VLM không trả JSON hợp lệ. Chỉ áp dụng
+  # cho provider siliconflow (Qwen3-VL). Đặt false để về nguyên hành vi mô tả văn xuôi cũ.
+  structured: true
 
 # Model vision local — dùng khi vision.provider="ollama", và làm fallback khi cloud lỗi
 ollama:

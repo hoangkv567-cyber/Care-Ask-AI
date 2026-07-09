@@ -53,3 +53,6 @@ scratch_*.txt
 
 .vercel
 .env*
+
+# Backup CSV do script sinh (split_csv_columns.py...) — không đưa lên repo
+data/*.bak.*.csv

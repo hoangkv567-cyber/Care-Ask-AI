@@ -8,6 +8,7 @@ import re
 import logging
 
 from src.fusion_pipeline import TCMFusionPipeline
+from src.interview import compose_interview_text, merge_symptoms
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,15 +37,36 @@ logger.info("Sẵn sàng!")
 
 @app.post("/api/diagnose")
 async def diagnose(
-    symptoms: str = Form(""), 
-    face_img: UploadFile = File(None), 
-    tongue_img: UploadFile = File(None)
+    symptoms: str = Form(""),
+    face_img: UploadFile = File(None),
+    tongue_img: UploadFile = File(None),
+    # Vấn chẩn có cấu trúc (thập vấn + nhân khẩu) — tất cả tùy chọn, canonicalize ở backend
+    age: str = Form(""),
+    sex: str = Form(""),
+    onset: str = Form(""),
+    han_nhiet: str = Form(""),
+    mo_hoi: str = Form(""),
+    dai_tien: str = Form(""),
+    tieu_tien: str = Form(""),
+    khat: str = Form(""),
+    an_uong: str = Form(""),
+    ngu: str = Form(""),
 ):
     # Làm sạch dữ liệu rác truyền từ frontend (nếu JS truyền biến undefined/null ở dạng chuỗi)
     if symptoms:
         s_val = symptoms.strip().lower()
         if s_val in ["undefined", "null", "none"]:
             symptoms = ""
+
+    # Ghép phần vấn chẩn có cấu trúc vào lời khai tự do (quy về từ khóa chuẩn của hệ chẩn đoán)
+    interview_text = compose_interview_text(
+        age=age, sex=sex, onset=onset,
+        answers={
+            "han_nhiet": han_nhiet, "mo_hoi": mo_hoi, "dai_tien": dai_tien,
+            "tieu_tien": tieu_tien, "khat": khat, "an_uong": an_uong, "ngu": ngu,
+        },
+    )
+    symptoms = merge_symptoms(symptoms, interview_text)
 
     # Kiểm tra bắt buộc: Phải cung cấp ít nhất triệu chứng bằng văn bản HOẶC tải lên ít nhất một hình ảnh
     if not symptoms.strip() and not face_img and not tongue_img:
