@@ -1449,6 +1449,30 @@ class TCMFusionPipeline:
             out_lines.append(" ".join(p for p in new_parts if p) if changed else line)
         return "\n".join(out_lines)
 
+    @staticmethod
+    def _syndrome_thermal_sign(name):
+        """Cực HÀN / NHIỆT của hội chứng theo TÊN. Trả 'han', 'nhiet', hoặc None (trung tính hoặc
+        lẫn cả hai — vd 'Phong hàn hóa nhiệt', 'Thượng nhiệt hạ hàn' -> None, không coi là xung).
+        Táo/ôn/thử xếp phía NHIỆT: phong táo (Tang hạnh thang tân lương nhuận táo) đối lập pháp trị
+        với phong hàn (tân ôn giải biểu) — dùng để chặn mượn chéo giữa hai cực."""
+        nl = (name or "").lower()
+        han = bool(re.search(r'\b(hàn|lạnh)\b', nl))
+        nhiet = bool(re.search(r'\b(nhiệt|hỏa|hoả|ôn|thử|táo)\b', nl))
+        if han and not nhiet:
+            return "han"
+        if nhiet and not han:
+            return "nhiet"
+        return None
+
+    @classmethod
+    def _syndromes_thermal_conflict(cls, a, b):
+        """True khi hai hội chứng ĐỐI CỰC hàn-nhiệt rõ ràng (một 'han', một 'nhiet'). Hội chứng
+        trung tính/lẫn cực -> False (không chặn). Dùng để KHÔNG mượn metadata Bát Cương lẫn bài
+        thuốc từ ứng viên trái cực (vd cốt lõi Phong hàn không được mượn Phong táo/Phong nhiệt —
+        chúng 'liên quan' qua chữ 'phong' nhưng pháp trị ngược nhau)."""
+        sa, sb = cls._syndrome_thermal_sign(a), cls._syndrome_thermal_sign(b)
+        return sa is not None and sb is not None and sa != sb
+
     # Cụm "bạn hữu giả": chứa âm tiết trùng keyword bệnh lý nhưng vô hại ('sốt' trong 'sốt ruột',
     # 'thực' trong 'thực sự'). Gỡ khỏi text TRƯỚC khi khớp keyword Hàn/Nhiệt/Hư/Thực ở MỌI tầng
     # (Bát Cương lẫn run_diagnosis) để hai tầng không mâu thuẫn nhau.
@@ -2930,6 +2954,12 @@ class TCMFusionPipeline:
                             # Hàn/Nhiệt/Thực đã được khối seed theo tên phía dưới lo.
                             if self._syndrome_is_exterior_wind(_syn) and not self._syndrome_is_exterior_wind(_cand):
                                 continue
+                            # [CHỐNG RÒ NHIỆT TRÁI CỰC] Cốt lõi Phong hàn (hàn) không được mượn
+                            # metadata của ứng viên Phong táo/Phong nhiệt (nhiet) — cùng là ngoại
+                            # cảm biểu (_are_syndromes_related qua 'phong') nhưng tag Nhiệt của nó
+                            # rò vào Bát Cương thành 'Hàn Nhiệt Thác Tạp' giả, mâu thuẫn Mục 4 thuần hàn.
+                            if self._syndromes_thermal_conflict(_syn, _cand):
+                                continue
                             if self._are_syndromes_related(_key, _cand) and \
                                     (d.get("organs") or d.get("bat_cuong")):
                                 _meta_entries.append(d)
@@ -3639,6 +3669,12 @@ class TCMFusionPipeline:
                 if syn_name in active_syndromes:
                     continue
                 if not self._are_syndromes_related(final_primary, data["syndrome"]):
+                    continue
+                # [CHỐNG BÀI TRÁI CỰC] Cốt lõi Phong hàn (tân ôn) không được gợi ý bài của ứng viên
+                # Phong táo/Phong nhiệt (tân lương nhuận táo/thanh nhiệt) — 'liên quan' qua chữ
+                # 'phong' nhưng pháp trị NGƯỢC nhau. Thà để Mục 5 'chưa có bài, tham khảo thầy
+                # thuốc' còn hơn kê bài trái cực (vd Tang hạnh thang cho ca cảm phong hàn).
+                if self._syndromes_thermal_conflict(final_primary, data["syndrome"]):
                     continue
                 for tb in data.get("treatments_by_disease", []):
                     if tb.get("disease") in disease_names and tb.get("bai_thuoc"):

@@ -69,6 +69,15 @@ def build():
         (("khái huyết",),
          ("máu", "khái huyết", "ho ra máu", "khạc ra máu", "khạc máu", "đờm máu", "đờm có máu",
           "đờm lẫn máu", "ho khạc máu", "máu tươi", "huyết ra")),
+        # Đởm kết thạch (sỏi đường mật/túi mật) ĐỊNH NGHĨA bằng dấu GAN-MẬT: đau vùng hạ sườn/hông
+        # phải, vàng da/mắt, miệng đắng, sỏi mật, đau xoắn quặn. TUYỆT ĐỐI không để khớp chỉ vì
+        # 'sốt'+'khô họng' (trùng 'miệng đắng khô họng, sốt sợ lạnh' của các thể) — nếu không, ca
+        # cảm cúm hô hấp (ngạt mũi/sổ mũi/ho/sốt) bị dán 'sỏi mật'. Cả 9 thể CSV đều có >=1 dấu
+        # {đau sườn/hạ sườn/hông phải, vàng da, miệng đắng} nên requires bảo toàn self-recall.
+        (("đởm kết thạch", "sỏi mật", "sỏi đường mật", "sỏi túi mật"),
+         ("đau sườn", "hạ sườn", "sườn phải", "hông phải", "đau hông", "hông đau", "mạng sườn",
+          "vùng gan", "vàng da", "da vàng", "vàng mắt", "mắt vàng", "hoàng đản", "miệng đắng",
+          "sỏi mật", "sỏi đường mật", "sỏi túi mật", "đau xoắn", "quặn", "túi mật")),
         # Hầu ngứa là bệnh danh ĐẶT THEO CHỦ CHỨNG ngứa họng — không được dán chỉ vì bệnh nhân ho
         # (thể Phong hàn 'Họng ngứa, ho lâu, ho khan' từng khớp ca 'ho + sợ gió' không hề ngứa họng
         # rồi chiếm cả Mục 1 lẫn bài thuốc Mục 5). Đòi hỏi lời khai có ngứa họng/hầu thật. Cả 3 thể

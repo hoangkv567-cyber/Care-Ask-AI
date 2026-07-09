@@ -282,6 +282,37 @@
     },
     {
       "names": [
+        "đởm kết thạch",
+        "sỏi mật",
+        "sỏi đường mật",
+        "sỏi túi mật"
+      ],
+      "requires": [
+        "đau sườn",
+        "hạ sườn",
+        "sườn phải",
+        "hông phải",
+        "đau hông",
+        "hông đau",
+        "mạng sườn",
+        "vùng gan",
+        "vàng da",
+        "da vàng",
+        "vàng mắt",
+        "mắt vàng",
+        "hoàng đản",
+        "miệng đắng",
+        "sỏi mật",
+        "sỏi đường mật",
+        "sỏi túi mật",
+        "đau xoắn",
+        "quặn",
+        "túi mật"
+      ],
+      "kw_wb": true
+    },
+    {
+      "names": [
         "hầu ngứa"
       ],
       "requires": [
