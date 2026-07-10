@@ -1,0 +1,54 @@
+[
+ {
+  "benh": "Viêm yết hầu",
+  "dirty": "Cấp (Phong nhiệt)",
+  "clean": "Phong nhiệt",
+  "bai": [
+   "Phương sơ phong thanh nhiệt hoá đàm"
+  ],
+  "trieuchung": [
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "đau đầu"
+   },
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "đau"
+   },
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "Họng đỏ"
+   },
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "khô rát"
+   },
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "phát sốt"
+   }
+  ]
+ },
+ {
+  "benh": "Viêm yết hầu",
+  "dirty": "Âm hư (mạn tính)",
+  "clean": "Âm hư",
+  "bai": [
+   "Phương dưỡng âm thanh nhiệt hoá đàm"
+  ],
+  "trieuchung": [
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "Họng khô khó chịu"
+   },
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "niêm mạc họng có điểm xung huyết đỏ đậm"
+   },
+   {
+    "benh_ly": "Viêm yết hầu",
+    "t": "hoặc có hạt lâm ba"
+   }
+  ]
+ }
+]

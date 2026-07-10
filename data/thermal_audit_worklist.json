@@ -1,0 +1,183 @@
+[
+ {
+  "line": 248,
+  "benh": "Kiên tý",
+  "hc": "Phong hàn thấp",
+  "sign": "HAN",
+  "need": "ẤM (tân ôn)",
+  "bai": "Phương khu phong chỉ thống",
+  "mean": -0.375,
+  "wrong": 0.375,
+  "severity": "REVIEW",
+  "n_known": 8,
+  "n_total": 8,
+  "warm": [
+   "Quế chi"
+  ],
+  "cold": [
+   "Ngân hoa",
+   "Phòng kỉ"
+  ],
+  "unknown": []
+ },
+ {
+  "line": 475,
+  "benh": "Sắc manh",
+  "hc": "Hỏa uất kết",
+  "sign": "NHIET",
+  "need": "LẠNH (thanh/lương)",
+  "bai": "Khoan Hung Lợi Cách Hoàn",
+  "mean": 0.278,
+  "wrong": 0.278,
+  "severity": "REVIEW",
+  "n_known": 18,
+  "n_total": 18,
+  "warm": [
+   "Binh lang",
+   "Mao Xương truật",
+   "Quảng hoắc hương",
+   "Quảng Mộc hương",
+   "Sa nhân",
+   "Sơn tra",
+   "Thảo quả",
+   "Thần khúc",
+   "Trần bì",
+   "Hậu phác"
+  ],
+  "cold": [
+   "Bạch thược",
+   "Chỉ sác",
+   "Đại hoàng chế",
+   "Xuyên bối"
+  ],
+  "unknown": []
+ },
+ {
+  "line": 193,
+  "benh": "Chiến chấn (Chấn điệu)",
+  "hc": "Đờm Nhiệt Động Phong",
+  "sign": "NHIET",
+  "need": "LẠNH (thanh/lương)",
+  "bai": "Đạo Đờm Thang gia giảm",
+  "mean": 0.25,
+  "wrong": 0.25,
+  "severity": "REVIEW",
+  "n_known": 8,
+  "n_total": 8,
+  "warm": [
+   "Trần bì",
+   "Bán hạ",
+   "Nam tinh",
+   "Tạo giác"
+  ],
+  "cold": [
+   "Chỉ sác",
+   "Bằng sa"
+  ],
+  "unknown": []
+ },
+ {
+  "line": 826,
+  "benh": "Bất mị",
+  "hc": "Đàm nhiệt",
+  "sign": "NHIET",
+  "need": "LẠNH (thanh/lương)",
+  "bai": "Ôn đởm thang",
+  "mean": 0.25,
+  "wrong": 0.25,
+  "severity": "REVIEW",
+  "n_known": 8,
+  "n_total": 8,
+  "warm": [
+   "Trần bì",
+   "Bán hạ",
+   "Sinh khương",
+   "Đại táo"
+  ],
+  "cold": [
+   "Chỉ thực",
+   "Trúc nhự"
+  ],
+  "unknown": []
+ },
+ {
+  "line": 335,
+  "benh": "Tam thoa thần kinh thống",
+  "hc": "Phong nhiệt đờm",
+  "sign": "NHIET",
+  "need": "LẠNH (thanh/lương)",
+  "bai": "Khung Chỉ Thạch Cao Thang gia vị",
+  "mean": 0.231,
+  "wrong": 0.231,
+  "severity": "REVIEW",
+  "n_known": 13,
+  "n_total": 13,
+  "warm": [
+   "Xuyên khung",
+   "Bạch chỉ",
+   "Phụ tử",
+   "Nam tinh",
+   "Bán hạ",
+   "Kinh giới",
+   "Khương hoạt",
+   "Cảo bản"
+  ],
+  "cold": [
+   "Thạch cao",
+   "Cát căn",
+   "Cúc hoa",
+   "Ngân hoa"
+  ],
+  "unknown": []
+ },
+ {
+  "line": 90,
+  "benh": "Bắp chân xung đau",
+  "hc": "Thấp nhiệt",
+  "sign": "NHIET",
+  "need": "LẠNH (thanh/lương)",
+  "bai": "Tĩnh mạch viêm khẩu phục phương",
+  "mean": 0.222,
+  "wrong": 0.222,
+  "severity": "REVIEW",
+  "n_known": 9,
+  "n_total": 9,
+  "warm": [
+   "Mộc qua",
+   "Xương truật",
+   "Kê huyết đằng",
+   "Ô dược",
+   "Trạch lan"
+  ],
+  "cold": [
+   "Xích thược",
+   "Trạch tả"
+  ],
+  "unknown": []
+ },
+ {
+  "line": 639,
+  "benh": "Tĩnh mạch viêm tắc",
+  "hc": "Thấp nhiệt",
+  "sign": "NHIET",
+  "need": "LẠNH (thanh/lương)",
+  "bai": "Thanh hoá thấp nhiệt, thông kinh hoạt huyết chỉ thống",
+  "mean": 0.222,
+  "wrong": 0.222,
+  "severity": "REVIEW",
+  "n_known": 9,
+  "n_total": 9,
+  "warm": [
+   "Mộc qua",
+   "Xương truật",
+   "Kê huyết đằng",
+   "Ô dược",
+   "Trạch lan"
+  ],
+  "cold": [
+   "Xích thược",
+   "Trạch tả"
+  ],
+  "unknown": []
+ }
+]

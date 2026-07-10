@@ -1473,6 +1473,51 @@ class TCMFusionPipeline:
         sa, sb = cls._syndrome_thermal_sign(a), cls._syndrome_thermal_sign(b)
         return sa is not None and sb is not None and sa != sb
 
+    @classmethod
+    def _gate_concurrent_by_disease(cls, final_primary, final_concurrent, matched_diseases,
+                                    disease_names, overridden):
+        """[CỔNG CÙNG-BỆNH cho HỘI CHỨNG KÈM THEO] Trả (final_concurrent_đã_lọc, reason|None).
+
+        Hội chứng kèm theo (final_concurrent) chọn theo rank KG + khử trùng-tên, KHÔNG kiểm nó có
+        thuộc bệnh danh đã chốt hay không -> ứng viên rank-2 khớp triệu chứng CHUNG (sợ gió, rêu
+        trắng mỏng) của MỘT BỆNH KHÁC lọt vào (vd 'Doanh vệ bất hòa' — vốn CHỈ thuộc 'Tiểu nhi hãn
+        chứng', bài Quế chi thang gia Hoàng kỳ tính ẤM — ghép nhầm vào 'Viêm yết hầu × Phong nhiệt
+        phạm phế'). Cổng _syndromes_thermal_conflict KHÔNG cứu được vì tên 'Doanh vệ bất hòa' vô
+        dấu-nhiệt (thermal_sign=None). Chặn theo CẤU TRÚC: kèm-theo phải là hội chứng của ÍT NHẤT
+        một bệnh trong CỬA SỔ chief-complaint (ratio cao nhất).
+
+        Vì sao neo theo CỬA SỔ RATIO (tính lại tại chỗ) chứ KHÔNG theo disease_names: disease_names
+        được lọc qua valid_syndromes vốn CHỨA chính final_concurrent, nên concurrent giả có thể tự
+        kéo bệnh-nhà của nó vào rồi tự-hợp-thức (vòng lặp). Cửa sổ ratio miễn nhiễm.
+
+        UNION theo >=1 bệnh cửa sổ (KHÔNG bó cùng-bệnh-chính) để VẪN cho phép kèm-theo chéo bệnh
+        HỢP LỆ kiểu biểu-lý đồng bệnh (vd Cảm mạo Phong hàn + Thực tích của Thương thực — cả hai
+        cùng trong cửa sổ). Thành viên khớp EXACT/SUBSTRING (KHÔNG _are_syndromes_related — nhóm
+        khái niệm quá lỏng, rò qua 1 âm tiết chung 'phong/khí/huyết'). Cổng thermal giữ làm phụ trợ
+        (bắt ca kèm-theo có dấu cực đối nghịch rõ trong tên). Chừa 8 nhánh hardcode (overridden=True
+        — cố ý ghép tiêu-bản chéo bệnh). Giữ nguyên khi disease_names/matched_diseases rỗng (bay mù).
+        """
+        fc = (final_concurrent or "").strip().lower()
+        if overridden or fc in ("không có", "", "chưa rõ") or not disease_names or not matched_diseases:
+            return final_concurrent, None
+        gb = matched_diseases[0].get("ratio", 0.0)
+        window = [m for m in matched_diseases
+                  if m.get("ratio", 0.0) >= gb - 0.15 and m.get("ratio", 0.0) >= 0.30]
+        union_hc = set()
+        for m in window:
+            for hc in m.get("hoi_chung_all", [m.get("hoi_chung", "")]):
+                hc = (hc or "").strip().lower()
+                if hc:
+                    union_hc.add(hc)
+        member = any(fc == hc or fc in hc or hc in fc for hc in union_hc)
+        thermal_bad = cls._syndromes_thermal_conflict(final_primary, final_concurrent)
+        if (not member) or thermal_bad:
+            reason = (f"loại kèm-theo {final_concurrent!r} khỏi cốt lõi {final_primary!r} "
+                      f"(member={member}, thermal_bad={thermal_bad}; "
+                      f"cửa sổ={[m.get('benh_ly') for m in window]})")
+            return "Không có", reason
+        return final_concurrent, None
+
     # Cụm "bạn hữu giả": chứa âm tiết trùng keyword bệnh lý nhưng vô hại ('sốt' trong 'sốt ruột',
     # 'thực' trong 'thực sự'). Gỡ khỏi text TRƯỚC khi khớp keyword Hàn/Nhiệt/Hư/Thực ở MỌI tầng
     # (Bát Cương lẫn run_diagnosis) để hai tầng không mâu thuẫn nhau.
@@ -2914,6 +2959,14 @@ class TCMFusionPipeline:
             final_concurrent = "Không có"
             rag_context_str = "Tà nhiệt nung nấu tạng Phế, thiêu đốt tân dịch làm đờm cô đặc vàng dính, bít tắc Phế quản gây khó khạc, ho. Nhiệt thịnh sinh sốt, khát nước, rêu lưỡi vàng."
             overridden = True
+
+        # [CỔNG CÙNG-BỆNH] Loại hội chứng kèm theo lọt từ BỆNH KHÁC (vd 'Doanh vệ bất hòa' của Tiểu
+        # nhi hãn chứng ghép nhầm vào Viêm yết hầu). Chèn tại đây (sau chuỗi hardcode, trước khi in
+        # Mục 1) để tự lan xuống Bát Cương (Biểu-Lý đồng bệnh, L3077) và Mục 5 (active_syndromes).
+        final_concurrent, _gate_reason = self._gate_concurrent_by_disease(
+            final_primary, final_concurrent, matched_diseases, disease_names, overridden)
+        if _gate_reason:
+            logger.info(f"[CỔNG CÙNG-BỆNH] {_gate_reason}")
 
         final_markdown += f"- **Hội chứng cốt lõi:** {final_primary}\n"
         final_markdown += f"- **Hội chứng kèm theo (nếu có):** {final_concurrent}\n\n"

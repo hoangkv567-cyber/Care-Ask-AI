@@ -1,0 +1,2180 @@
+{
+ "_meta": "Từ điển tính vị (四氣) sinh bởi workflow herb-thermal-lexicon. score: nhiệt=2 ôn=1 bình=0 lương=-1 hàn=-2. Dùng bởi scripts/audit_thermal_polarity.py.",
+ "herbs": {
+  "cam thảo": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "hoàng cầm": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sinh địa": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "chi tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "hoàng liên": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sài hồ": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "mộc thông": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "trần bì": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "liên kiều": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "bạch thược": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "trạch tả": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "xích thược": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "qui đầu": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "cát cánh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "đại hoàng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "hoàng bá": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ngân hoa": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "bán hạ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "đan bì": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "xuyên khung": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạc hà": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "bạch linh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "long đởm thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sinh khương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạch truật": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "sa tiền": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "quế chi": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "kinh giới": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thạch cao": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "huyền sâm": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "phục linh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "ngưu tất": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "hoạt thạch": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bồ công anh": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "phòng phong": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "hạnh nhân": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "chỉ thực": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "kim ngân hoa": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "mạch môn": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "nhân trần": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "hậu phác": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "đương quy": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xương truật": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "ma hoàng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thăng ma": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "đào nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tang diệp": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "tri mẫu": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "trích thảo": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "đương qui": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạch chỉ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "ngưu bàng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "cúc hoa": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "uất kim": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "trúc diệp": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "đan sâm": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "ý dĩ": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "mộc hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "trúc nhự": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "tỳ giải": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "hồng hoa": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thanh bì": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "lô căn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "hoàng kỳ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "hoắc hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thục địa": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xa tiền tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "khương hoạt": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thổ phục linh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "ngưu bàng tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "kê huyết đằng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "can khương": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "táo": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "thap"
+  },
+  "đẳng sâm": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "bối mẫu": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "mang tiêu": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "qua lâu": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "toàn yết": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "khổ sâm": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "tế tân": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thuyền thoái": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "qui xuyên": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "ô dược": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "địa long": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "tang bạch bì": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "trư linh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "nhũ hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "binh lang": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tang bì": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "nhân sâm": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "địa cốt bì": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "mao căn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "phụ tử": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "cát căn": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "kinh giới tuệ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xuyên sơn giáp": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "tạo giác thích": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "một dược": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thương truật": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "mộc qua": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xương bồ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "hương phụ": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "mẫu lệ": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "nam tinh": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "nhục quế": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "xạ can": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "thông thảo": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "ké": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "chỉ sác": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "hạ khô thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "đởm nam tinh": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "trắc bách diệp": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "cương tàm": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "câu đằng": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "tỳ bà diệp": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "uy linh tiên": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bản lam căn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ý dĩ nhân": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "tiền hồ": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "sa sâm": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "kim tiền thảo": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "hoài sơn": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thiên hoa phấn": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "huyền hồ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "nhọ nồi": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "ngũ vị": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thiên hoa": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "cù mạch": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sơn thù": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "hoàng đằng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "mạn kinh tử": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "thạch hộc": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "ngô thù": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "đại táo": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tử hoa địa đinh": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sinh địa hoàng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "cương tằm": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "đông qua nhân": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "chỉ xác": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "đạm đậu xị": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "mẫu đơn bì": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "a giao": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "đạm trúc diệp": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bạch giới tử": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "đương quy vĩ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "phòng kỷ": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sơn đậu căn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "tô tử": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "ngải diệp": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "sơn chi": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ô mai": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "đăng tâm thảo": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "linh bì": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "thap"
+  },
+  "địa phụ tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "phòng kỉ": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "tang kí sinh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tô diệp": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "đại phúc bì": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "sinh cam thảo": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "ích mẫu": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "địa du": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "xích tiểu đậu": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "biển đậu": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "bại tương thảo": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "tử thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "dã cúc hoa": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "tục đoạn": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "long cốt": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "cam thảo tiết": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "nga truật": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "ngô thù du": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "đậu xị": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "thiên môn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ngọc trúc": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "biển súc": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "qui vĩ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tây thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "tô mộc": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tang chi": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "xuyên ô": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "dạ giao đằng": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thanh đại": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "viễn trí": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "phục thần": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "hi thiêm": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "độc hoạt": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tần giao": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thương nhĩ tử": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "sinh đại hoàng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bách bộ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "chích thảo": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "hà thủ ô": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tử uyển": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "kê nội kim": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "bạch hoa xà": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "hòe hoa": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "chích cam thảo": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "hồng đằng": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "tử bối thiên quỳ tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "đơn bì": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "chu sa": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "đinh hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thị đế": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "giềng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "ma hoàng căn": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tiểu hồi": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "trầm hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "ngũ vị tử": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xuyên luyện tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "trạch lan": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạch đầu ông": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "thảo quyết minh": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "manh trùng": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "thủy điệt": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "xạ hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tiểu bì": {
+   "score": 0,
+   "tinh": "khong_ro",
+   "conf": "thap"
+  },
+  "giá trùng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "ban long": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "thap"
+  },
+  "vương bất lưu hành": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thổ phục": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "toan táo nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tâm sen": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bạch tiễn bì": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "thiên ma": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "sà sàng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "miết giáp": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "nhẫn đông đằng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "hải đồng bì": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "khương hoàng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "gạo nếp": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "thap"
+  },
+  "sa tiền thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sinh thạch cao": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ngô công": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bồ hoàng": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "cảo bản": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tê giác": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ngư tinh thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bạch bộ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tiên hạc thảo": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "bạch mao căn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ngẫu tiết": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "lê bì": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "tiểu kế": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "ngạnh mễ": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "thần khúc": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "sơn tra": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "mạch nha": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thảo quả": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thiên trúc hoàng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "chỉ xác sao": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "hổ trượng": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "chi tử sống": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "đăng tâm": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "linh dương giác": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "trân châu": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bán liên chi": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "bạch anh": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "bắc đậu căn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "đại thanh diệp": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "mã xỉ hiện": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bội lan": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tam lăng": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tiểu hồi hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "qua lâu nhân": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "quất hồng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "khoản đông hoa": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "cao lương khương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "hồ ma nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "quy bản": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "xích phục linh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "ích trí nhân": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "lạc tiên": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "lá vông": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "hạn liên thảo": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "ô tặc cốt": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "từ thạch": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "quy vĩ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "lộc giác giao": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bào khương thán": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xuyên tiêu": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thông bạch": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "ma tử nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "kinh giới huệ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tô ngạnh": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xuyên tâm liên": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sinh hoàng kỳ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "lộ lộ thông": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "phấn khương hoàng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "trạch lan diệp": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "sơn giáp": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "dương hoà thang: thục địa": {
+   "score": 0,
+   "tinh": "khong_ro",
+   "conf": "thap"
+  },
+  "thác lý tán: sinh hoàng kỳ": {
+   "score": 0,
+   "tinh": "khong_ro",
+   "conf": "thap"
+  },
+  "xuyên ngưu tất": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "hải cáp phấn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "hòe hoa sao": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "lá cối xay": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "mã đề": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "tạo giác": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bằng sa": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "bá tử nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "tật lê": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "ty qua lạc": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "bạch cự tử": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "uất lý nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "hắc mộc nhĩ": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "thap"
+  },
+  "mai mực": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạch hoa xà thiệt thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "dạ dày lợn": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "thap"
+  },
+  "chế qui bản": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sao đào nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "huyết kiệt": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "một dược chế": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "hương nhu": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "lá sen": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "tiểu tang chi": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "khương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "t niên kiện": {
+   "score": 0,
+   "tinh": "khong_ro",
+   "conf": "thap"
+  },
+  "rượu rắn": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "thap"
+  },
+  "mật gấu": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "qui bản": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "phù tiểu mạch": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "sử quân tử": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "mã bột": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "màn kinh": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "kỉ tử": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "sinh mẫu lệ": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "can địa hoàng": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sinh ma hoàng": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "hoa hòe": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "nha đởm tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "long nhãn nhục": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tần bì": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "rau sam": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "tiêu sơn tra": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tiêu thần khúc": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "tiêu mạch nha": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "lá tre": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "tam thất": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "ngó sen": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "thap"
+  },
+  "ngân diệp": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "ô đầu": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "đảng sâm": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "đình lịch tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "mật gà": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "thap"
+  },
+  "đường kính": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "thap"
+  },
+  "kim phất thảo": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "đại cáp tán": {
+   "score": 0,
+   "tinh": "khong_ro",
+   "conf": "thap"
+  },
+  "khấu nhân": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "khổ luyện tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "thông căn bì": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "thap"
+  },
+  "ngải diệp sao": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "đường phèn": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "thap"
+  },
+  "đại hoàng chế": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "la bặc tử": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "mao xương truật": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "quảng hoắc hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "quảng mộc hương": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "sa nhân": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "xuyên bối": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "đại bối": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "kim phí thảo": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "xa tiền": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "tn kiện": {
+   "score": 0,
+   "tinh": "khong_ro",
+   "conf": "thap"
+  },
+  "hoàng kì": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "địa đinh": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "nguyên hoa": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "tần cửu": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "ba kích": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạch đậu khấu": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bán hạ chế": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạch thông thảo": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "hoạt thạch phi": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bột băng phiến": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "bột hàn thạch thủy": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "thỏ ti tử": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "đại giả thạch": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "thường sơn": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "sinh địa tươi": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "thạch cao sống": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "phúc bì": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "lưu hoàng": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "nhục thung dung": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "mật ong": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "thap"
+  },
+  "thảo đậu khấu": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thiên niên kiện": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "tầm sa": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "quát lâu": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "thiên trúc": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "an cung ngưu hoàng hoàn": {
+   "score": 0,
+   "tinh": "khong_ro",
+   "conf": "thap"
+  },
+  "đởm thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "chỉ tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "xà lục cốc": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "thap"
+  },
+  "xa tiền thảo": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bạch vi": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "biển xúc": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "hàn thuỷ thạch": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "hỏa ma nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thảo hà sa": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "sài đất": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "lục đậu y": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "hồ hoàng liên": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "lô hội": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "cỏ mực": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "nam hoàng bá": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "cam thảo đất": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "bạch tiền": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "xuyên bối mẫu": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "chi tử bì": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "hải cáp xác": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "bạch quả": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "sơn chi tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "giới bạch": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bạch tửu": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "thap"
+  },
+  "tiêu mục": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "thap"
+  },
+  "sinh khương bì": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "vua"
+  },
+  "thạch vĩ": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "đông quỳ tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "hải kim sa": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "bạch phục linh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "thiên quỳ tử": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "ba đậu": {
+   "score": 2,
+   "tinh": "nhiệt",
+   "conf": "cao"
+  },
+  "tông lư thán": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "vua"
+  },
+  "ngưu hoàng": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "thạch xương bồ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "thủy ngưu giác": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "cao"
+  },
+  "tân di": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "bách hợp": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "cao"
+  },
+  "phá cố chỉ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "cao"
+  },
+  "lá đơn": {
+   "score": -1,
+   "tinh": "lương",
+   "conf": "thap"
+  },
+  "liên nhục": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "táo nhân": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "trân châu mẫu": {
+   "score": -2,
+   "tinh": "hàn",
+   "conf": "vua"
+  },
+  "câu kỷ tử": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  },
+  "bạch phụ": {
+   "score": 1,
+   "tinh": "ôn",
+   "conf": "vua"
+  },
+  "tang ký sinh": {
+   "score": 0,
+   "tinh": "bình",
+   "conf": "cao"
+  }
+ }
+}
