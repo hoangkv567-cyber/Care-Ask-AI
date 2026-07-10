@@ -3608,7 +3608,21 @@ class TCMFusionPipeline:
                     if (_b.lower(), _bt.lower()) in _printed_pairs:
                         continue
                     _hc_toks = set(re.findall(r'[^\W\d_]+', _hc.lower()))
-                    if not _hc_toks or not (_hc_toks < _core_toks):
+                    _subset_ok = bool(_hc_toks) and (_hc_toks < _core_toks)
+                    # [NGOẠI CẢM CÙNG CHỮ KÝ] Cốt lõi ngoại cảm biểu ('Phong hàn phạm biểu') vs thể
+                    # KB ngoại cảm CÙNG CHỮ KÝ BỆNH LÝ ('Phong hàn tập phế' — patho-token {phong,hàn}
+                    # bằng nhau, chỉ khác từ định vị phạm biểu/tập phế) -> không chiều nào là tập con
+                    # của chiều kia nên phép thử subset trượt oan dù đây chính là thể đúng cực của
+                    # bệnh danh (Khái thấu × Phong hàn tập phế — Tam ảo thang). Chữ ký bằng nhau tự
+                    # loại thể trái cực ('Phong táo/nhiệt...' có patho-token khác) và thể nội thương
+                    # (đòi cả hai đều là ngoại cảm biểu).
+                    _ext_sig_ok = (
+                        not _subset_ok and bool(_hc_toks)
+                        and self._syndrome_is_exterior_wind(final_primary)
+                        and self._syndrome_is_exterior_wind(_hc)
+                        and (_hc_toks & _patho_toks) == (_core_toks & _patho_toks)
+                    )
+                    if not (_subset_ok or _ext_sig_ok):
                         continue
                     if not (_hc_toks & _patho_toks):
                         continue
@@ -3620,14 +3634,15 @@ class TCMFusionPipeline:
                         continue
                     if self._syndrome_is_hu(_hc) != self._syndrome_is_hu(final_primary):
                         continue
-                    _gen_rows.append((_hc, _b, _bt, _row.get("vi_thuoc", "").strip()))
+                    _gen_rows.append((_hc, _b, _bt, _row.get("vi_thuoc", "").strip(), _subset_ok))
                 # Thể sát cốt lõi nhất trước (nhiều âm tiết hơn = ít khái quát hơn); tối đa 2 bài
                 _gen_rows.sort(key=lambda t: -len(re.findall(r'[^\W\d_]+', t[0])))
-                for _hc, _b, _bt, _vi in _gen_rows[:2]:
+                for _hc, _b, _bt, _vi, _was_subset in _gen_rows[:2]:
                     _printed_pairs.add((_b.lower(), _bt.lower()))
+                    _rel_word = "bao quát" if _was_subset else "tương ứng"
                     core_lines.append(
                         f"- Trị Bệnh **{_b}** — *Bản – thể tổng quát của hội chứng cốt lõi* "
-                        f"(Hội chứng {_hc} — bao quát {final_primary}) → Dùng bài **{_bt}**\n"
+                        f"(Hội chứng {_hc} — {_rel_word} {final_primary}) → Dùng bài **{_bt}**\n"
                         f"  - *Vị thuốc:* {self._dedupe_herbs(_vi) or '(chưa cập nhật vị thuốc)'}\n"
                     )
 

@@ -282,6 +282,71 @@
     },
     {
       "names": [
+        "khẩu nhãn oa tà",
+        "liệt mặt",
+        "liệt thần kinh mặt",
+        "liệt dây thần kinh"
+      ],
+      "requires": [
+        "méo",
+        "méo miệng",
+        "miệng méo",
+        "mặt méo",
+        "méo lệch",
+        "liệt mặt",
+        "liệt nửa mặt",
+        "mắt nhắm không kín",
+        "mắt không nhắm",
+        "không nhắm được mắt",
+        "nhắm không kín",
+        "mặt lệch",
+        "nhân trung lệch",
+        "khẩu nhãn oa tà"
+      ],
+      "kw_wb": true
+    },
+    {
+      "names": [
+        "anh lựu",
+        "bướu cổ",
+        "khí anh",
+        "nhục anh"
+      ],
+      "requires": [
+        "tuyến giáp",
+        "bướu",
+        "bướu cổ",
+        "khối u",
+        "u vùng cổ",
+        "cổ to",
+        "sưng cổ",
+        "cổ sưng",
+        "cục ở cổ",
+        "khối ở cổ",
+        "anh lựu"
+      ],
+      "kw_wb": true
+    },
+    {
+      "names": [
+        "viêm sai",
+        "quai bị"
+      ],
+      "requires": [
+        "mang tai",
+        "má sưng",
+        "sưng má",
+        "vùng má",
+        "quai bị",
+        "khó há miệng",
+        "quai hàm",
+        "tuyến nước bọt",
+        "viêm sai"
+      ],
+      "kw_wb": true
+    },
+    {
+      "names": [
         "đởm kết thạch",
         "sỏi mật",
         "sỏi đường mật",

@@ -69,6 +69,23 @@ def build():
         (("khái huyết",),
          ("máu", "khái huyết", "ho ra máu", "khạc ra máu", "khạc máu", "đờm máu", "đờm có máu",
           "đờm lẫn máu", "ho khạc máu", "máu tươi", "huyết ra")),
+        # Khẩu nhãn oa tà (liệt mặt ngoại biên) ĐỊNH NGHĨA bằng dấu LIỆT MẶT: mặt/miệng méo lệch,
+        # mắt nhắm không kín, liệt (nửa) mặt. Thể 'Phong hàn' của nó (sợ lạnh, tắc mũi, gáy căng)
+        # trùng triệu chứng cảm mạo -> từng dán 'liệt mặt' + kê bài Toàn yết/Cương tàm/Địa long cho
+        # ca cảm cúm thường. Cả 6 thể CSV đều có >=1 dấu {méo, liệt mặt/nửa mặt, mắt nhắm không kín}.
+        (("khẩu nhãn oa tà", "liệt mặt", "liệt thần kinh mặt", "liệt dây thần kinh"),
+         ("méo", "méo miệng", "miệng méo", "mặt méo", "méo lệch", "liệt mặt", "liệt nửa mặt",
+          "mắt nhắm không kín", "mắt không nhắm", "không nhắm được mắt", "nhắm không kín",
+          "mặt lệch", "nhân trung lệch", "khẩu nhãn oa tà")),
+        # Anh lựu (bướu cổ/tuyến giáp) đòi khối/bướu vùng cổ thật; Viêm sai (quai bị) đòi sưng đau
+        # vùng mang tai/má — cả hai từng leo top bệnh danh ca hô hấp chỉ nhờ triệu chứng toàn thân
+        # chung (sốt, mệt, rêu lưỡi). Mọi thể CSV đều mở đầu bằng dấu định nghĩa nên giữ self-recall.
+        (("anh lựu", "bướu cổ", "khí anh", "nhục anh"),
+         ("tuyến giáp", "bướu", "bướu cổ", "khối u", "u vùng cổ", "cổ to", "sưng cổ", "cổ sưng",
+          "cục ở cổ", "khối ở cổ", "anh lựu")),
+        (("viêm sai", "quai bị"),
+         ("mang tai", "má sưng", "sưng má", "vùng má", "quai bị", "khó há miệng", "quai hàm",
+          "tuyến nước bọt", "viêm sai")),
         # Đởm kết thạch (sỏi đường mật/túi mật) ĐỊNH NGHĨA bằng dấu GAN-MẬT: đau vùng hạ sườn/hông
         # phải, vàng da/mắt, miệng đắng, sỏi mật, đau xoắn quặn. TUYỆT ĐỐI không để khớp chỉ vì
         # 'sốt'+'khô họng' (trùng 'miệng đắng khô họng, sốt sợ lạnh' của các thể) — nếu không, ca
