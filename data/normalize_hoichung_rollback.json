@@ -1084,5 +1084,35 @@
     "t": "rêu vàng dày hoặc vàng nhớt. Mạch hồng sác hoặc hoạt sác"
    }
   ]
+ },
+ {
+  "benh": "Viêm sai",
+  "old": "Thể nhẹ",
+  "new": "Ôn độc phạm biểu",
+  "bai": [
+   "Sơ phong thanh nhiệt tán kết"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm sai",
+    "t": "rêu lưỡi trắng mỏng"
+   },
+   {
+    "benh_ly": "Viêm sai",
+    "t": "Không sốt hoặc sốt nhẹ"
+   },
+   {
+    "benh_ly": "Viêm sai",
+    "t": "sưng đau một bên hoặc hai bên mang tai"
+   },
+   {
+    "benh_ly": "Viêm sai",
+    "t": "vùng má dưới đau tai và sưng dần"
+   },
+   {
+    "benh_ly": "Viêm sai",
+    "t": "mạch Phù"
+   }
+  ]
  }
 ]
