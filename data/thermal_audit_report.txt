@@ -1,8 +1,8 @@
 AUDIT XUNG CỰC HÀN/NHIỆT (nhãn hội chứng vs tính vị thuốc) — data/Medicine_clean.csv
 Tổng dòng: 1038 | Từ điển tính vị: 435 vị
-Loại HƯ (ngoài phạm vi, tư bổ): 413
-Trung tính/không cực: 326
-THỰC + cực rõ + có bài/vị (phạm vi soi): 299
+Loại HƯ (ngoài phạm vi, tư bổ): 411
+Trung tính/không cực: 329
+THỰC + cực rõ + có bài/vị (phạm vi soi): 298
 Bỏ vì thiếu phủ tính vị (<3 vị biết hoặc <40%): 4
 => NGHI VẤN: 7  (STRONG=0, REVIEW=7)
 
@@ -48,6 +48,6 @@ XEM LẠI (REVIEW)
     Vị ÔN/NHIỆT: Mộc qua, Xương truật, Kê huyết đằng, Ô dược, Trạch lan
 
 ==============================================================================
-VỊ CHƯA CÓ TRONG TỪ ĐIỂN (2) — cân nhắc bổ sung nếu xuất hiện nhiều:
+VỊ CHƯA CÓ TRONG TỪ ĐIỂN (3) — cân nhắc bổ sung nếu xuất hiện nhiều:
 ==============================================================================
-thạch vi(1), chế xuyên ô(1)
+thạch vi(1), chế xuyên ô(1), nguyên hồ(1)
