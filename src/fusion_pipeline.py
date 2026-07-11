@@ -1558,6 +1558,42 @@ class TCMFusionPipeline:
             return False
         return any(na in cl and nb in cl for cl in cls._load_synonym_map())
 
+    @classmethod
+    def _core_grounded_in_window(cls, syn, window):
+        """True khi hội chứng `syn` THỰC SỰ thuộc một bệnh trong cửa sổ chief-complaint (khớp
+        EXACT/SUBSTRING/ĐỒNG NGHĨA với hoi_chung_all). KHÔNG dùng _are_syndromes_related (lỏng: 46%
+        cặp lệch Âm/Dương, và 'khí trệ huyết ứ' ~ 'can khí phạm vị' qua 'khí' -> tưởng grounded oan).
+        Substring có chủ đích để nhận biến thể tạng: core 'Phế khí hư' grounded ở bệnh có 'Khí hư'."""
+        sl = (syn or "").lower().strip()
+        if not sl:
+            return False
+        for m in (window or []):
+            for hc in m.get("hoi_chung_all", [m.get("hoi_chung", "")]):
+                hcl = (hc or "").lower().strip()
+                if hcl and (sl == hcl or sl in hcl or hcl in sl or cls._syndromes_are_synonyms(syn, hc)):
+                    return True
+        return False
+
+    @classmethod
+    def _reground_core(cls, final_primary, all_syndromes, window):
+        """[CỔNG GROUNDING CORE] all_syndromes[0] có thể là hội chứng PROMISCUOUS của bệnh KHÁC (vd
+        'Khí trệ huyết ứ' xuất hiện ở 19 bệnh) thắng oan core dù KHÔNG thuộc bệnh trong cửa sổ chief-
+        complaint -> Mục 5 trắng + biện chứng lệch (scorer _score_syndromes_grounded gộp triệu chứng
+        qua MỌI bệnh, không scope). Nếu core KHÔNG grounded ở cửa sổ, re-rank sang ứng viên
+        all_syndromes CAO NHẤT (giữ thứ hạng scorer) có grounded. Trả (core_mới, reason|None).
+
+        AN TOÀN: chỉ THU HẸP pool -> NO-OP nếu core vốn grounded (kể cả biến thể tạng 'Phế khí hư' ⊃
+        'Khí hư') -> không phá ca tốt, chỉ ground lại ca ngoại lai. Nếu KHÔNG ứng viên nào grounded
+        -> giữ core cũ (thà 'chưa có bài' còn hơn đổi bừa)."""
+        if not window or not final_primary:
+            return final_primary, None
+        if cls._core_grounded_in_window(final_primary, window):
+            return final_primary, None
+        reg = next((s for s in (all_syndromes or []) if cls._core_grounded_in_window(s, window)), None)
+        if reg and reg.lower().strip() != final_primary.lower().strip():
+            return reg, f"core ngoại lai {final_primary!r} (promiscuity) -> re-rank grounded {reg!r}"
+        return final_primary, None
+
     # Cụm "bạn hữu giả": chứa âm tiết trùng keyword bệnh lý nhưng vô hại ('sốt' trong 'sốt ruột',
     # 'thực' trong 'thực sự'). Gỡ khỏi text TRƯỚC khi khớp keyword Hàn/Nhiệt/Hư/Thực ở MỌI tầng
     # (Bát Cương lẫn run_diagnosis) để hai tầng không mâu thuẫn nhau.
@@ -2911,6 +2947,30 @@ class TCMFusionPipeline:
                 m for m in matched_diseases
                 if m["ratio"] >= _global_best - 0.15 and m["ratio"] >= 0.30
             ]
+            # [CỔNG GROUNDING CORE] Ground lại core NGOẠI LAI (hội chứng promiscuous của bệnh khác
+            # thắng oan) về ứng viên grounded ở cửa sổ chief-complaint. Chèn TRƯỚC core_matched để
+            # toàn bộ định vị bệnh danh + Bát Cương + Mục 5 dùng core đã ground. No-op nếu core vốn
+            # grounded (không đụng ca tốt).
+            _new_core, _reg_reason = self._reground_core(final_primary, all_syndromes, _window)
+            if _reg_reason:
+                logger.info(f"[CỔNG GROUNDING CORE] {_reg_reason}")
+                final_primary = _new_core
+                # Re-chọn hội chứng kèm theo (loại trùng ý với core mới) + cập nhật valid_syndromes.
+                _fpl = final_primary.lower().strip()
+                _fpf = _fold_vn(final_primary)
+                final_concurrent = "Không có"
+                for _c in all_syndromes:
+                    if _c.lower().strip() == _fpl:
+                        continue
+                    _clx = _c.lower().strip()
+                    _cfx = _fold_vn(_c)
+                    if (_clx in _fpl or _fpl in _clx or _cfx in _fpf or _fpf in _cfx):
+                        continue
+                    final_concurrent = _c
+                    break
+                valid_syndromes = [final_primary.lower().strip()]
+                if final_concurrent and final_concurrent != "Không có":
+                    valid_syndromes.append(final_concurrent.lower().strip())
             core_matched = [
                 m for m in _window
                 if any(self._are_syndromes_related(final_primary.lower().strip(), hc)
