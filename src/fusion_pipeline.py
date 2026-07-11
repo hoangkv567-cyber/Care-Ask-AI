@@ -1726,6 +1726,19 @@ class TCMFusionPipeline:
         if _physio:
             logger.info(f"[GROUNDED] Loại dấu hiệu sinh lý khỏi bằng chứng chấm điểm: {_physio}")
             terms = [t for t in terms if t not in self._PHYSIOLOGICAL_TERMS]
+        # [CHỐNG RÒ CROSS-REGION LƯỠI-NỨT] 'vết nứt/lưỡi nứt' (tongue crack) KHÔNG có node đúng chỗ
+        # trên KG -> bare 'vết nứt' khớp NHẦM node 'Vết nứt hậu môn' (bệnh Hậu môn nứt kẽ × Khí trệ
+        # huyết ứ), đẩy core sang 'huyết ứ' TRÁI luật (cracks = âm hư/tân dịch khuy, KHÔNG phải huyết
+        # ứ — xem quy tắc SPECIAL RULE FOR CRACKS trong prompt vọng chẩn). Loại khỏi bằng chứng chấm
+        # core. GIỮ term 'nứt' CÓ định vị vùng KHÁC lưỡi (vd 'vết nứt hậu môn') để khớp đúng bệnh vùng.
+        def _is_tongue_crack(_t):
+            _tl = (_t or "").lower()
+            return ("nứt" in _tl) and not any(_r in _tl for _r in (
+                "hậu môn", "môi", "gót", "bàn chân", "kẽ chân", "vú", "núm", "gan bàn", "kẽ tay", " da"))
+        _bg_crack = [t for t in terms if _is_tongue_crack(t)]
+        if _bg_crack:
+            logger.info(f"[GROUNDED] Loại dấu nền lưỡi-nứt khỏi chấm core (chống rò cross-region): {_bg_crack}")
+            terms = [t for t in terms if not _is_tongue_crack(t)]
         if not terms:
             return []
         # Java-regex khớp từ độc lập (tái dùng của qa_system, bắt cả triệu chứng nằm trong node ghép).
