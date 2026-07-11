@@ -313,6 +313,41 @@ def build():
         {"names": ["phát nhiệt", "phát sốt"],
          "requires": ["sốt", "phát nhiệt", "phát sốt", "triều nhiệt", "cốt chưng", "ngũ tâm phiền nhiệt",
                       "nóng trong", "sốt về chiều", "hâm hấp", "nóng về chiều", "sốt nhẹ", "hầm hập", "nhiệt độ"]},
+
+        # ── Nhóm 25: cổng bệnh CHUYÊN KHOA còn thiếu (rà bằng scripts + quét leak trên profile
+        # triệu chứng CHUNG). Trước đây các bệnh định vị tạng/hệ này KHÔNG có cổng nên lọt vào ca
+        # thể trạng chung chỉ nhờ dấu phụ (vd COPD dán ca MẤT NGỦ vì trùng 'sợ gió/tự hãn' của thể
+        # Phế khí hư). requires phủ đủ triệu chứng ĐỊNH NGHĨA của mọi thể CSV -> bảo toàn self-recall.
+        # (Bỏ qua Nhiễm mỡ xơ mạch — triệu chứng CSV toàn chóng mặt/váng đầu chung, không có từ khóa
+        # mỡ/xơ vữa nên không gate được mà không phá self-recall; Nhi bại liệt — giai đoạn đầu giống
+        # sốt virus; Suy nhược thần kinh — mệt/mất ngủ vốn LÀ bệnh cảnh đúng của nó.)
+        {"names": ["tắc nghẽn phế", "phổi tắc nghẽn", "mạn tính tắc nghẽn"], "kw_wb": True,
+         "requires": ["ho", "đờm", "đàm", "khạc", "khó thở", "khò khè", "suyễn", "đoản khí", "hụt hơi",
+                      "tức ngực", "thở", "phổi", "phế", "hô hấp"]},
+        {"names": ["hung thống"],
+         "requires": ["đau ngực", "tức ngực", "ngực đau", "đau vùng ngực", "xương ức", "sau xương ức",
+                      "đau thắt ngực", "ngực đầy", "đau lan", "hồi hộp", "trống ngực", "vai"]},
+        {"names": ["hầu ung", "hạnh đào"], "kw_wb": True,
+         "requires": ["họng", "hầu", "amidan", "hạnh đào", "nuốt", "rát cổ", "đau cổ", "sưng họng",
+                      "họng đau", "họng sưng", "ho"]},
+        {"names": ["đại tràng", "trường ung", "ruột thừa"],
+         "requires": ["đau bụng", "bụng đau", "bụng dưới", "quanh rốn", "tiêu chảy", "đại tiện", "phân",
+                      "đi ngoài", "đi lỏng", "ỉa", "táo bón", "sôi bụng", "đầy bụng", "ruột", "cự án"]},
+        {"names": ["áp xe gan"],
+         "requires": ["hạ sườn", "sườn phải", "hông phải", "hông sườn", "vùng gan", "gan", "sốt",
+                      "nóng lạnh", "vàng da", "áp xe", "mủ", "đau sườn"]},
+        {"names": ["thận vu viêm", "bể thận", "thận quặn"],
+         "requires": ["thận", "tiểu", "đái", "niệu", "đau lưng", "thắt lưng", "đau quặn", "sỏi", "hông",
+                      "phù", "sốt", "vùng thận"]},
+        {"names": ["khớp dạng thấp", "viêm khớp", "cốt lao", "lao xương"],
+         "requires": ["khớp", "đau khớp", "sưng khớp", "cứng khớp", "viêm khớp", "xương khớp", "đau xương",
+                      "nhức xương", "khớp xương", "teo cơ", "biến dạng", "đau nhức", "sưng đau"]},
+        {"names": ["bắp chân xung đau"],
+         "requires": ["bắp chân", "chân", "chi dưới", "cẳng chân", "sưng chân", "đau chân", "tĩnh mạch",
+                      "sợi mạch", "gân"]},
+        {"names": ["bạch biến", "ngoan tiển"],
+         "requires": ["da", "vết trắng", "đốm trắng", "mất sắc tố", "bạch biến", "ngứa", "tổn thương da",
+                      "sẩn", "da dày", "mảng da", "vảy"]},
     ]
 
     payload = {
