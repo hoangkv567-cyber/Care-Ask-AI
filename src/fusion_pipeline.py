@@ -1449,6 +1449,49 @@ class TCMFusionPipeline:
             out_lines.append(" ".join(p for p in new_parts if p) if changed else line)
         return "\n".join(out_lines)
 
+    # Lưỡi KHÔNG/ÍT rêu (kính diện thiệt, bong rêu) = ÂM HƯ / TÂN DỊCH KHUY. LLM Mục 4 hay quy SAI
+    # cho huyết hư/khí hư/thấp/huyết ứ (over-fit theo cốt lõi đã chốt).
+    _NO_COAT_RE = re.compile(
+        r'(?:không|hầu như không|gần như không)\s*(?:có\s+)?rêu'
+        r'|(?:^|[^\w])ít\s+rêu|rêu(?:\s+lưỡi)?\s+ít|lưỡi\s+(?:nhẵn\s+)?(?:trơn\s+)?bóng'
+        r'|kính\s+diện\s+thiệt|bong\s+(?:tróc\s+)?rêu')
+    _NO_COAT_WRONG_ATTR_RE = re.compile(
+        r'\b(huyết hư|khí hư|khí huyết|dương hư|thủy thấp|thuỷ thấp|ẩm thấp|thấp trệ|đàm|đờm|huyết ứ|khí trệ)\b')
+    # Cốt lõi liên quan âm/tân/táo -> quy lưỡi-không-rêu cho nó là ĐÚNG (không gỡ).
+    _CORE_YIN_RE = re.compile(r'\b(âm|tân dịch|dịch|táo|khô)\b')
+
+    def _strip_no_coating_yin_claims(self, text: str, final_primary: str = "") -> str:
+        """[NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Lưỡi không/ít rêu (kính diện thiệt) = ÂM HƯ / TÂN DỊCH KHUY,
+        KHÔNG phải huyết hư/khí hư/thấp/huyết ứ. LLM Mục 4 hay over-fit (vd core Huyết hư -> 'lưỡi
+        không có rêu là biểu hiện của huyết hư' — SAI; chính KG map lưỡi-không-rêu vào Can thận âm
+        hư/Khí âm/Khí huyết hư chứ KHÔNG phải Huyết hư đơn thuần). Cùng lớp với luật cracks (lưỡi
+        nứt = âm hư). Nếu cốt lõi KHÔNG liên quan âm/tân/táo, gỡ câu quy sai + chèn nhận định chuẩn
+        (chỉ 1 lần). Cốt lõi âm/tân -> giữ nguyên (quy cho nó là đúng)."""
+        if not text or not self._NO_COAT_RE.search(text.lower()):
+            return text
+        if self._CORE_YIN_RE.search((final_primary or "").lower()):
+            return text
+        sanctioned = ("Lưỡi không (ít) rêu phản ánh âm dịch/tân dịch hao tổn nhẹ (dấu âm hư), "
+                      "không phải biểu hiện của huyết hư; là dấu nền nên theo dõi thêm.")
+        has_sanctioned = "âm dịch" in text.lower()
+        out_lines = []
+        for line in text.split("\n"):
+            sentences = re.split(r'(?<=[.!?])\s+', line)
+            changed = False
+            new_parts = []
+            for sent in sentences:
+                sl = sent.lower()
+                if self._NO_COAT_RE.search(sl) and self._NO_COAT_WRONG_ATTR_RE.search(sl):
+                    logger.info(f"[NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Gỡ câu quy sai lưỡi-không-rêu: {sent[:90]!r}")
+                    changed = True
+                    if not has_sanctioned:
+                        new_parts.append(sanctioned)
+                        has_sanctioned = True
+                    continue
+                new_parts.append(sent)
+            out_lines.append(" ".join(p for p in new_parts if p) if changed else line)
+        return "\n".join(out_lines)
+
     @staticmethod
     def _syndrome_thermal_sign(name):
         """Cực HÀN / NHIỆT của hội chứng theo TÊN. Trả 'han', 'nhiet', hoặc None (trung tính hoặc
@@ -3667,6 +3710,9 @@ class TCMFusionPipeline:
         # (vi phạm luật 14 — Mục 3 từng mâu thuẫn thẳng với Mục 4 'vị khí còn tốt'); truyền
         # final_primary để CHỪA ca ngoại cảm biểu (được phép 'tà mới xâm nhập -> rêu trắng mỏng')
         llm_explanation = self._strip_thin_coating_damp_claims(llm_explanation, final_primary)
+        # [NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Chặn LLM quy 'lưỡi không/ít rêu' (= âm hư/tân dịch khuy) cho
+        # huyết hư/khí hư/thấp/huyết ứ khi cốt lõi không liên quan âm/tân (over-fit theo core).
+        llm_explanation = self._strip_no_coating_yin_claims(llm_explanation, final_primary)
 
         final_markdown += f"{llm_explanation}\n\n"
 
