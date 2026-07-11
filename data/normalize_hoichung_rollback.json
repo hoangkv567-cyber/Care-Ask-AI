@@ -1114,5 +1114,1454 @@
     "t": "mạch Phù"
    }
   ]
+ },
+ {
+  "benh": "Bĩ mãn",
+  "old": "Ẩm thực nội đình (thực tích)",
+  "new": "Ẩm thực nội đình",
+  "bai": [
+   "Bảo hòa hoàn"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "mạch Hoạt"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "chán ăn"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "Bụng trên bĩ đầy trướng tức"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "ợ hơi ợ chua có mùi thức ăn"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "buồn nôn nôn ra thức ăn không tiêu"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "đại tiện bất sảng hoặc phân thối khẳm"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "lưỡi rêu dày nhớt"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Bĩ mãn",
+  "old": "Can vị bất hòa (can khí uất trệ)",
+  "new": "Can vị bất hòa",
+  "bai": [
+   "Việt cúc hoàn hợp Sài hồ sơ can tán"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "mạch huyền"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "Bụng trên đầy tức"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "hai bên sườn trướng đau"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "tức ngực hay thở dài"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "ợ hơi ợ chua"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "bĩ mãn tăng khi tình chí không thư thái"
+   },
+   {
+    "benh_ly": "Bĩ mãn",
+    "t": "chán ăn; lưỡi đỏ nhạt rêu trắng mỏng"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Châm nhãn (lẹo/chắp)",
+  "old": "Tỳ vị phục nhiệt (tái phát)",
+  "new": "Tỳ vị phục nhiệt",
+  "bai": [
+   "Thanh tỳ tán (Thanh tỳ thang) gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "khát nước"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "mạch hoạt sác"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "Lẹo/chắp tái phát nhiều lần"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "sưng đau không nhiều nhưng dai dẳng"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "cục cứng lâu tan"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "miệng hôi"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "đại tiện khô kết"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "mi mắt hơi đỏ cộm"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "ăn nhiều dễ đói hoặc ăn kém"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "thích ăn đồ béo ngọt cay nóng"
+   },
+   {
+    "benh_ly": "Châm nhãn (lẹo/chắp)",
+    "t": "rêu vàng khô hoặc vàng nhớt"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Cường giáp (Basedow)",
+  "old": "Biến chứng - Đau ngực (Hung tý)",
+  "new": "Hung tý",
+  "bai": [
+   "Phương sơ can thông lạc thanh nhiệt hóa đàm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Cường giáp (Basedow)",
+    "t": "Đau ngực do can khí uất trệ"
+   },
+   {
+    "benh_ly": "Cường giáp (Basedow)",
+    "t": "nhiệt đàm tắc kinh lạc"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Cổ trướng",
+  "old": "Cổ trướng do (Thấp) nhiệt uất huyết ứ",
+  "new": "Thấp nhiệt uất huyết ứ",
+  "bai": [
+   "Nhân trần cao thang hợp Hoá ứ thang gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "khô miệng"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "môi đỏ"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "Bụng to căng chắc nặng thì nổi gân xanh"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "hông đau sườn nhói"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "mắt vàng"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "mặt vàng xám"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "buồn nóng"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "tiểu vàng giắt"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "đại tiện khô táo"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "rêu dầy"
+   },
+   {
+    "benh_ly": "Cổ trướng",
+    "t": "mạch huyền sác"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Hoàng đản",
+  "old": "Cấp hoàng (nhiệt độc thịnh)",
+  "new": "Cấp hoàng",
+  "bai": [
+   "Tê giác tán (Thanh ôn bại độc ẩm gia giảm)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "chất lưỡi đỏ tía"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "chảy máu cam"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "nôn ra máu"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "Bệnh phát nhanh và nặng"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "sắc vàng đậm tối như màu vàng kim"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "sốt cao phiền khát"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "bụng trướng đầy đau"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "thần chí mê sảng nói nhảm"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "đại tiện ra máu"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "có thể phát ban chẩn"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "tiểu tiện ít đỏ sẫm"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "rêu lưỡi vàng khô hoặc vàng đen"
+   },
+   {
+    "benh_ly": "Hoàng đản",
+    "t": "Mạch huyền sác hoặc hồng đại"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Hầu ung",
+  "old": "Nhiệt độc nội thịnh (nung mủ)",
+  "new": "Nhiệt độc nội thịnh",
+  "bai": [
+   "Tiên phương hoạt mệnh ẩm (gia giảm)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Hầu ung",
+    "t": "mặt đỏ"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "tiểu vàng đỏ"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "Sốt cao"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "rêu vàng dày"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "phiền khát"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "đại tiện táo"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "Họng đau dữ dội một bên"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "sưng to đỏ tấy lan rộng"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "nuốt rất khó"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "đau lan lên tai"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "há miệng hạn chế"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "hơi thở hôi"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "tiếng nói ngậm hột"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "chảy nhiều nước dãi"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "khám thấy khối sưng căng bóng"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "mềm khi đã thành mủ"
+   },
+   {
+    "benh_ly": "Hầu ung",
+    "t": "Mạch hồng sác hoặc hoạt sác"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Khẩu nhãn oa tà",
+  "old": "Phong nhiệt (nhiễm trùng)",
+  "new": "Phong nhiệt",
+  "bai": [
+   "Khu phong thanh nhiệt hoạt huyết (khi sốt) / Khu phong bổ huyết hoạt lạc (khi hết sốt)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "sợ nóng"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "sợ gió"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "mạch phù sác"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "Liệt nửa mặt"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "toàn thân có sốt"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "rêu lưỡi trắng dầy"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "sau khi hết sốt chỉ còn tình trạng liệt dây 7"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Khẩu nhãn oa tà",
+  "old": "Huyết ứ (do chấn thương)",
+  "new": "Huyết ứ",
+  "bai": [
+   "Hoạt huyết, hành khí"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "mặt"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "Liệt mặt sau khi ngã"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "mổ vùng hàm"
+   },
+   {
+    "benh_ly": "Khẩu nhãn oa tà",
+    "t": "xương chũm"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Kiên tý",
+  "old": "Kinh nghiệm (mới hoặc lâu khó cử động)",
+  "new": "Kinh nghiệm",
+  "bai": [
+   "Phương kinh nghiệm dưỡng huyết thư cân"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Kiên tý",
+    "t": "Một bên hoặc cả hai cánh tay tê đau đến nỗi không giơ cao"
+   },
+   {
+    "benh_ly": "Kiên tý",
+    "t": "xoay chuyển hạn chế"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Nha thống",
+  "old": "Hư hỏa (thận âm hư)",
+  "new": "Hư hỏa",
+  "bai": [
+   "Tri bá địa hoàng hoàn"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Nha thống",
+    "t": "họng khô"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "mạch tế sác"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "ù tai"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "ngũ tâm phiền nhiệt"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "Răng đau âm ỉ kéo dài"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "đau nhẹ mà dai dẳng"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "chân răng lung lay"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "nướu teo tụt hở chân răng"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "không sưng đỏ nhiều hoặc chỉ hơi đỏ"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "đau tăng về chiều tối"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "kèm lưng gối mỏi yếu"
+   },
+   {
+    "benh_ly": "Nha thống",
+    "t": "Lưỡi đỏ ít rêu hoặc rêu ít"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Suyễn chứng",
+  "old": "Hàn háo (Hàn đàm phục phế)",
+  "new": "Hàn háo",
+  "bai": [
+   "Xạ can ma hoàng thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sợ lạnh"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "chất lưỡi nhạt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "rêu lưỡi trắng nhớt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sắc mặt xanh xám"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "Thở gấp khò khè"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "trong họng có tiếng đờm cò cưa"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "tức ngực đầy tức"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "khạc đờm loãng trắng có bọt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "không khát hoặc thích uống nóng"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "gặp lạnh thì bệnh phát hoặc nặng thêm"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "mạch huyền khẩn hoặc phù khẩn"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Suyễn chứng",
+  "old": "Nhiệt háo (Đàm nhiệt ủng phế)",
+  "new": "Nhiệt háo",
+  "bai": [
+   "Định suyễn thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "mạch hoạt sác"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "rêu lưỡi vàng nhớt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "Thở gấp khò khè"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "tiếng đờm cò cưa to thô"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "ngực đầy tức phiền muộn"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "ho khạc đờm vàng đặc dính khó ra"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sắc mặt đỏ hồng"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "người bứt rứt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "miệng khát thích uống"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "mồ hôi ra"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Suyễn chứng",
+  "old": "Phong hàn bế phế (Phong hàn tập phế)",
+  "new": "Phong hàn bế phế",
+  "bai": [
+   "Ma hoàng thang (kèm Tam ảo thang)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "chất lưỡi nhạt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "không có mồ hôi"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "rêu lưỡi trắng mỏng"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "mạch phù khẩn"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "Thở gấp tức ngực"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "ho khạc đờm loãng trắng"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "kèm đau đầu"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sợ lạnh phát sốt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "ngạt mũi chảy nước mũi trong"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "người đau mỏi"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Suyễn chứng",
+  "old": "Phế khí hư (Phế khí hư nhược)",
+  "new": "Phế khí hư",
+  "bai": [
+   "Bổ phế thang (hợp Ngọc bình phong tán)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "tự ra mồ hôi"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sợ gió"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "dễ cảm mạo"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "tiếng nói nhỏ yếu"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "mệt mỏi vô lực"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "Thở ngắn hụt hơi"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "ho khan hoặc ho có đờm loãng"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sắc mặt trắng nhợt; chất lưỡi nhạt"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "rêu lưỡi trắng mỏng; mạch nhược hoặc hư nhuyễn"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Suyễn chứng",
+  "old": "Thận bất nạp khí (Thận hư không nạp khí)",
+  "new": "Thận bất nạp khí",
+  "bai": [
+   "Thận khí hoàn hợp Nhân sâm cáp giới tán"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "mệt mỏi"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "rêu lưỡi trắng"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sắc mặt xanh xám"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "lưng gối mỏi yếu"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "Thở gấp khí đoản lâu ngày"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "thở ra nhiều hít vào ít"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "hễ động thì suyễn tăng"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "khí không tiếp nối được"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "sợ lạnh chân tay lạnh"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "tiểu tiện nhiều lần hoặc són tiểu khi suyễn"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "chất lưỡi nhạt bệu"
+   },
+   {
+    "benh_ly": "Suyễn chứng",
+    "t": "mạch trầm tế vô lực"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Tiêu khát",
+  "old": "Thể Chung",
+  "new": "Âm hư táo nhiệt",
+  "bai": [
+   "Dưỡng âm thanh nhiệt sinh tân"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Tiêu khát",
+    "t": "tiểu nhiều"
+   },
+   {
+    "benh_ly": "Tiêu khát",
+    "t": "Uống nhiều"
+   },
+   {
+    "benh_ly": "Tiêu khát",
+    "t": "đói nhiều"
+   },
+   {
+    "benh_ly": "Tiêu khát",
+    "t": "đường huyết và đường niệu tăng cao"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Trường ung",
+  "old": "Ứ trệ (khí trệ huyết ứ)",
+  "new": "Khí trệ huyết ứ",
+  "bai": [
+   "Đại hoàng mẫu đơn thang gia giảm (phối hợp Hồng đằng tiễn)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Trường ung",
+    "t": "buồn nôn"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "ấn đau cự án"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "Bụng dưới bên phải đau chướng"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "thường đau quanh rốn rồi khu trú xuống hố chậu phải"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "đau tăng khi co chân phải"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "kèm chán ăn"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "có thể sốt nhẹ"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "đại tiện bình thường hoặc táo nhẹ. Chất lưỡi hồng hoặc hồng nhợt"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "rêu lưỡi trắng mỏng hoặc trắng nhớt; mạch huyền khẩn hoặc huyền hoạt"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Trường ung",
+  "old": "Nhiệt độc (nung mủ)",
+  "new": "Nhiệt độc",
+  "bai": [
+   "Đại hoàng mẫu đơn thang hợp Hồng đằng tiễn hợp Ngũ vị tiêu độc ẩm gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Trường ung",
+    "t": "khát nước"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "ra mồ hôi"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "Bụng dưới bên phải đau kịch liệt"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "ấn đau cự án dữ dội"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "bụng cứng như tảng"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "sốt cao liên tục hoặc sốt rét"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "mặt đỏ môi khô"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "đại tiện táo bí"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "có thể sờ thấy khối"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "tiểu vàng sẫm; trường hợp nặng có thể phiền táo"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "thần hôn. Chất lưỡi đỏ giáng"
+   },
+   {
+    "benh_ly": "Trường ung",
+    "t": "rêu lưỡi vàng khô hoặc vàng dày nhớt; mạch hồng sác hoặc hoạt sác"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm cầu thận mạn",
+  "old": "Thể tỳ dương hư",
+  "new": "Tỳ dương hư",
+  "bai": [
+   "Thực tỳ ẩm hợp Vị linh thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "tay chân lạnh"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "có vết răng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "thở gấp"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "tiểu tiện ít"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "Phù ít không rõ ràng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "phù ở mí mắt"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "sắc mặt trắng xanh"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "tay chân mệt mỏi"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "hay đầy bụng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "phân nhão"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "chất lưỡi bệu"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "mạch hoãn"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm cầu thận mạn",
+  "old": "Thể thận tỳ dương hư",
+  "new": "Tỳ thận dương hư",
+  "bai": [
+   "Chân vũ thang gia giảm (hoặc phương ôn dương lợi thuỷ)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "mệt mỏi"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "mạch trầm tế"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "tay chân lạnh"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "bụng trướng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "sợ lạnh"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "lưỡi bệu"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "sắc mặt trắng xanh"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "Phù không rõ ràng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "phù ít"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "kéo dài (nhất là 2 mắt cá chân)"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "ỉa lỏng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "nước tiểu ít"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "lưng mỏi"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm cầu thận mạn",
+  "old": "Thể âm hư dương xung",
+  "new": "Âm hư dương xung",
+  "bai": [
+   "Kỷ cúc địa hoàng hoàn gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "chóng mặt"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "môi đỏ"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "hồi hộp"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "khô họng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "mạch Huyền Sác"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "đau đầu"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "Phù ít"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "miệng khát"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm cầu thận mạn",
+  "old": "Thể nặng",
+  "new": "Tỳ thận dương hư kèm trọc độc",
+  "bai": [
+   "Phương ôn dương giáng trọc"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "đại tiện lỏng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "rêu trắng dày"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "chất lưỡi bệu"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "Ure máu cao"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "lợm giọng buồn nôn"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "sắc mặt đen"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "tức ngực"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "trướng bụng"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "tiểu tiện ngắn ít"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "mạch huyền tế"
+   },
+   {
+    "benh_ly": "Viêm cầu thận mạn",
+    "t": "nhu tế"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm khớp dạng thấp",
+  "old": "Phòng tái phát (bổ can thận khu phong trừ thấp)",
+  "new": "Can thận hư kèm phong thấp",
+  "bai": [
+   "Độc hoạt kí sinh thang gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm khớp dạng thấp",
+    "t": "Viêm khớp dạng thấp giai đoạn ổn định"
+   },
+   {
+    "benh_ly": "Viêm khớp dạng thấp",
+    "t": "cần phòng tái phát"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm tai giữa",
+  "old": "Thể mãn tính - Can kinh thấp nhiệt (đợt cấp)",
+  "new": "Can kinh thấp nhiệt",
+  "bai": [
+   "Thanh nhiệt lợi thấp"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "đau tai nhức"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "chảy mủ đặc dính mùi hôi lượng nhiều"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm tai giữa",
+  "old": "Thể mãn tính - Thận hư (âm hư hỏa viêm)",
+  "new": "Thận âm hư hỏa vượng",
+  "bai": [
+   "Dưỡng âm thanh nhiệt, bổ thận thông khiếu"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "mạch tế sác"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "ù tai"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "chóng mặt"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "lưng gối đau mỏi"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "hoa mắt"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "ít ngủ"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "rêu lưỡi ít"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "Ra mủ thường xuyên"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "loãng"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "nghe kém"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Viêm tai giữa",
+  "old": "Thể mãn tính - Tỳ hư",
+  "new": "Tỳ hư",
+  "bai": [
+   "Kiện tỳ hoá thấp"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "mệt mỏi"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "ăn kém"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "mạch hoãn nhược"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "chậm tiêu"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "sắc mặt vàng bủng"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "Chảy mủ mãn"
+   },
+   {
+    "benh_ly": "Viêm tai giữa",
+    "t": "đại tiện loãng"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Đinh sang",
+  "old": "Tẩu hoàng (nhiễm độc toàn thân)",
+  "new": "Tẩu hoàng",
+  "bai": [
+   "Hoàng liên giải độc thang hợp Ngũ vị tiêu độc ẩm gia giảm (thanh doanh lương huyết, gia Tê giác/Thủy ngưu giác)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Đinh sang",
+    "t": "miệng khát"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "Chỗ đinh sang đột nhiên tối sạm"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "sưng lan tràn nhanh không có ranh giới"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "đầu đinh lõm hãm thâm đen"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "chân đinh cứng"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "kèm sốt cao rét run"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "đau đầu phiền táo"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "thần chí lơ mơ mê sảng hoặc hôn mê"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "có thể phát ban chẩn xuất huyết dưới da"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "buồn nôn nôn mửa"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "Lưỡi hồng giáng"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "rêu vàng khô hoặc rêu xám đen"
+   },
+   {
+    "benh_ly": "Đinh sang",
+    "t": "Mạch hồng sác hoặc tế sác"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Đởm kết thạch",
+  "old": "Thể khí trệ",
+  "new": "Khí trệ",
+  "bai": [
+   "Đại sài hồ thang hợp Kim linh tử tán gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "mạch huyền"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "Hông phải căng đau"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "ợ được thì đỡ"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "buồn bực đầy cứng"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "đau hay tái phát"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "sốt và vàng khô dang rõ"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "rêu lưỡi mỏng"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Đởm kết thạch",
+  "old": "Thể thấp nhiệt",
+  "new": "Thấp nhiệt",
+  "bai": [
+   "Đại sài hồ thang hợp Nhân trần cao thang gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "táo bón"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "rêu lưỡi vàng"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "mạch huyền sác"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "Hông phải đau xoắn"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "miệng đắng đầy bụng"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "sốt cao sợ lạnh"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "tiểu tiện đỏ dắt"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "kèm vàng da"
+   }
+  ],
+  "shared": false
+ },
+ {
+  "benh": "Đởm kết thạch",
+  "old": "Thể hỏa độc",
+  "new": "Hỏa độc",
+  "bai": [
+   "Nhân trần cao thang hợp Hoàng liên giải độc thang gia giảm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "tiểu vàng đỏ"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "miệng khát"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "đại tiện bí"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "Sốt cao và rét"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "vàng da rõ"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "bụng hông đều đau"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "nặng thì hôn mê nói nhảm"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "lưỡi gai đỏ"
+   },
+   {
+    "benh_ly": "Đởm kết thạch",
+    "t": "mạch huyền hoạt hoặc tế sác"
+   }
+  ],
+  "shared": false
  }
 ]
