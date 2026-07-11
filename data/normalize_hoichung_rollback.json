@@ -1,0 +1,1088 @@
+[
+ {
+  "benh": "Cam tích",
+  "old": "Cam khí (thể nhẹ) - Tỳ vị bất hòa",
+  "new": "Tỳ vị bất hòa",
+  "bai": [
+   "Tư sinh kiện tỳ hoàn gia giảm (nền Sâm linh bạch truật tán gia tiêu đạo)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Cam tích",
+    "t": "Ngủ không yên"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "mạch tế hoạt"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "Người gầy sút nhẹ"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "sắc mặt hơi vàng kém tươi"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "ăn kém không ngon miệng"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "hoặc ăn nhiều mau đói"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "bụng đầy nhẹ"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "đại tiện lúc lỏng lúc táo"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "phiền táo hay khóc"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "Lưỡi chất hồng nhạt"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "rêu lưỡi trắng mỏng hơi nhớt"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "chỉ văn sắc hồng nhạt"
+   }
+  ]
+ },
+ {
+  "benh": "Cam tích",
+  "old": "Cam tích (thể vừa) - Tỳ hư tích trệ",
+  "new": "Tỳ hư tích trệ",
+  "bai": [
+   "Phì nhi hoàn (hợp Tiêu nhũ hoàn)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Cam tích",
+    "t": "Người gầy rõ"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "cơ nhục teo nhẽo"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "sắc mặt vàng úa không tươi"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "bụng ỏng to đầy chướng"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "gân xanh nổi"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "tóc thưa dễ rụng dựng đứng như bông lúa"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "gạo sống)"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "đại tiện lỏng nát tanh hôi hoặc táo"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "hay quấy khóc phiền táo"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "ăn kém hoặc ăn dở"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "ngủ không yên nghiến răng"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "Lưỡi chất nhạt"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "rêu lưỡi nhớt bẩn"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "Mạch tế hoạt hoặc tế nhược"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "chỉ văn tím trệ"
+   }
+  ]
+ },
+ {
+  "benh": "Cam tích",
+  "old": "Can cam / Cam khô (thể nặng) - Khí huyết lưỡng hư, Tỳ vị hư suy",
+  "new": "Khí huyết lưỡng hư kèm Tỳ vị hư suy",
+  "bai": [
+   "Bát trân thang gia giảm (Thập toàn đại bổ / Nhân sâm dưỡng vinh gia giảm)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Cam tích",
+    "t": "sắc mặt xám vàng khô héo không tươi"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "tinh thần ủ rũ mệt mỏi"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "khóc không ra nước mắt hoặc khóc yếu"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "da khô nhăn nheo mất tính đàn hồi"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "bụng lõm lòng thuyền"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "ăn rất kém hoặc không ăn"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "đại tiện lỏng sống phân"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "Người gầy đét trơ xương"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "Lưỡi chất nhạt bệu hoặc hồng khô ít tân dịch"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "rêu lưỡi ít hoặc bong tróc"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "Mạch tế nhược vô lực"
+   },
+   {
+    "benh_ly": "Cam tích",
+    "t": "chỉ văn nhạt mờ ẩn"
+   }
+  ]
+ },
+ {
+  "benh": "Lâm chứng",
+  "old": "Nhiệt lâm (Bàng quang thấp nhiệt)",
+  "new": "Nhiệt lâm",
+  "bai": [
+   "Bát chính tán"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "họng khô"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "miệng đắng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "lượng ít"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "rêu lưỡi vàng nhớt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Tiểu nhiều lần"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu gấp"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu buốt rát"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "nước tiểu vàng đục hoặc đỏ"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "đau tức vùng bụng dưới và thắt lưng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "có thể sốt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch sác hoặc hoạt sác"
+   }
+  ]
+ },
+ {
+  "benh": "Lâm chứng",
+  "old": "Thạch lâm (Sỏi tiết niệu - thấp nhiệt kết tụ, sa thạch nội trở)",
+  "new": "Thạch lâm",
+  "bai": [
+   "Thạch vĩ tán"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu buốt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "rêu lưỡi vàng nhớt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu khó"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Tiểu ra sạn sỏi"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "dòng tiểu đột ngột gián đoạn"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "đau quặn vùng thắt lưng bụng dưới lan xuống bộ phận sinh dục"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "nước tiểu vàng đục hoặc lẫn máu"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch huyền sác hoặc huyền khẩn"
+   }
+  ]
+ },
+ {
+  "benh": "Lâm chứng",
+  "old": "Khí lâm (thực chứng - Khí trệ; hư chứng - Trung khí hạ hãm)",
+  "new": "Khí lâm",
+  "bai": [
+   "Trầm hương tán (thể thực); Bổ trung ích khí thang (thể hư)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "rêu mỏng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch Tế Nhược"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch Huyền"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tinh thần uất ức"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "chất lưỡi nhạt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu không thông"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Thể thực: tiểu khó"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu nhỏ giọt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tức trướng đau vùng bụng dưới và mạng sườn"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "bụng dưới trệ trướng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu xong vẫn buồn tiểu"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mệt mỏi đoản hơi"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "chất lưỡi hồng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Thể hư: tiểu són không dứt"
+   }
+  ]
+ },
+ {
+  "benh": "Lâm chứng",
+  "old": "Huyết lâm (thực chứng - Hạ tiêu thấp nhiệt, nhiệt thịnh bức huyết; hư chứng - Âm hư hỏa vượng)",
+  "new": "Huyết lâm",
+  "bai": [
+   "Tiểu kế ẩm tử (thể thực); Tri bá địa hoàng hoàn (thể âm hư)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "rêu vàng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch hoạt sác"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch tế sác"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "lòng bàn tay chân nóng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "chất lưỡi đỏ ít rêu"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "bụng dưới đau tức"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "lưng gối mỏi yếu"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Tiểu ra máu"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "nước tiểu đỏ hồng hoặc lẫn máu cục"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu buốt rát đau"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Thể thực: chất lưỡi đỏ"
+   }
+  ]
+ },
+ {
+  "benh": "Lâm chứng",
+  "old": "Cao lâm (thực chứng - Thấp nhiệt hạ chú, thanh trọc bất phân; hư chứng - Thận hư hạ nguyên bất cố)",
+  "new": "Cao lâm",
+  "bai": [
+   "Trình thị tỳ giải phân thanh ẩm (thể thực); Cao lâm thang / Vô tỷ sơn dược hoàn (thể hư)"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch Tế Nhược"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "rêu trắng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "rêu vàng nhớt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "chất lưỡi nhạt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "lưng gối yếu mỏi"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "gầy sút"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch Nhu Sác hoặc Hoạt Sác"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "đầu váng tai ù"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Nước tiểu đục như nước vo gạo hoặc như mỡ/cao"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu buốt bí"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Thể thực: chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Thể hư: tiểu đục kéo dài"
+   }
+  ]
+ },
+ {
+  "benh": "Lâm chứng",
+  "old": "Lao lâm (Tỳ Thận lưỡng hư, lao quyện tức phát)",
+  "new": "Lao lâm",
+  "bai": [
+   "Vô tỷ sơn dược hoàn"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tinh thần mệt mỏi"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "mạch Tế Nhược"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "rêu trắng mỏng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "chất lưỡi nhạt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "sắc mặt vàng bủng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "lưng gối mỏi yếu"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "Tiểu són nhỏ giọt không dứt"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "tiểu không thông sướng"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "bệnh dây dưa kéo dài"
+   },
+   {
+    "benh_ly": "Lâm chứng",
+    "t": "gặp mệt nhọc hoặc lao lực thì phát nặng"
+   }
+  ]
+ },
+ {
+  "benh": "Ma chẩn (sởi)",
+  "old": "Sơ nhiệt kỳ (thời kỳ tiền phát/khởi phát - tà uất phế vệ)",
+  "new": "Tà uất phế vệ",
+  "bai": [
+   "Tuyên độc phát biểu thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "tinh thần mệt mỏi"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ho"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "Sốt"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mạch phù sác"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "sợ ánh sáng"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "kém ăn"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "rêu lưỡi trắng mỏng hoặc hơi vàng"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "sổ mũi"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "sợ gió lạnh nhẹ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "hắt hơi"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mắt đỏ chảy nước mắt"
+   }
+  ]
+ },
+ {
+  "benh": "Ma chẩn (sởi)",
+  "old": "Kiến hình kỳ (thời kỳ toàn phát/ra ban - phế vị nhiệt thịnh, độc tà ngoại thấu)",
+  "new": "Phế vị nhiệt thịnh",
+  "bai": [
+   "Thanh giải thấu biểu thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mắt đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ho nhiều"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "rêu lưỡi vàng"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "Mạch hồng sác"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "phiền khát"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "Sốt cao liên tục"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ban chẩn mọc dần theo trình tự từ sau tai"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "chân tóc"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mặt xuống thân mình và tứ chi"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ban màu hồng đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "sờ vướng tay"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ban dày"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "tinh thần bứt rứt hoặc lơ mơ"
+   }
+  ]
+ },
+ {
+  "benh": "Ma chẩn (sởi)",
+  "old": "Thu một kỳ (thời kỳ ban lặn/hồi phục - âm tân hao tổn, dư nhiệt vị thanh)",
+  "new": "Âm tân hao tổn",
+  "bai": [
+   "Sa sâm mạch đông thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "miệng khô họng ráo"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "đại tiện khô"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "kém ăn"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "Ban chẩn lặn dần theo thứ tự đã mọc"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "để lại vết thâm màu nâu và bong vảy cám mịn"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "sốt lui"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ho khan ít đờm"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "tinh thần mệt"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "chất lưỡi đỏ ít tân dịch"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "rêu lưỡi mỏng ít hoặc bóc rêu"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mạch tế sác vô lực"
+   }
+  ]
+ },
+ {
+  "benh": "Ma chẩn (sởi)",
+  "old": "Ma độc bế phế (thể nghịch chứng - độc tà nội hãm, bế trở phế khí)",
+  "new": "Ma độc bế phế",
+  "bai": [
+   "Ma hạnh thạch cam thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "khát nước"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "thở khò khè"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mạch Sác hữu lực"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "phiền táo"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "rêu lưỡi vàng nhớt"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "Sốt cao không lui"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ho suyễn gấp"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "cánh mũi phập phồng"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "môi và đầu ngón tím tái"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "tiểu vàng sẫm"
+   }
+  ]
+ },
+ {
+  "benh": "Ma chẩn (sởi)",
+  "old": "Nhiệt độc công hầu (thể nghịch chứng - độc tà công xung yết hầu)",
+  "new": "Nhiệt độc công hầu",
+  "bai": [
+   "Thanh yết hạ đàm thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mặt đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "mạch hoạt sác"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "rêu lưỡi vàng dày"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "Sốt"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "chất lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "họng sưng đau đỏ"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "nuốt khó"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "ho khàn tiếng như tiếng chó sủa"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "thở khó thanh quản"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "cổ họng có màng giả"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "đờm nhiều dính"
+   },
+   {
+    "benh_ly": "Ma chẩn (sởi)",
+    "t": "phiền táo bất an"
+   }
+  ]
+ },
+ {
+  "benh": "Sán khí",
+  "old": "Hàn sán (hàn ngưng can mạch)",
+  "new": "Hàn ngưng can mạch",
+  "bai": [
+   "Thiên thai ô dược tán"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Sán khí",
+    "t": "Sợ lạnh"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "tay chân lạnh"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "Bìu dái sưng to"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "chất lưỡi nhợt"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "gặp lạnh đau tăng"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "cứng lạnh"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "đau kéo xuống bụng dưới"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "rêu trắng trơn"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "gặp ấm đau giảm"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "bìu co rút"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "mạch trầm huyền hoặc trầm khẩn"
+   }
+  ]
+ },
+ {
+  "benh": "Sán khí",
+  "old": "Khí sán (can uất khí trệ)",
+  "new": "Can uất khí trệ",
+  "bai": [
+   "Thiên thai ô dược tán"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Sán khí",
+    "t": "mạch Huyền"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "rêu trắng mỏng"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "chất lưỡi hồng nhạt"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "ngực sườn đầy tức"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "hay thở dài"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "Bìu dái hoặc bụng dưới trướng đau"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "đau lan xuống tinh hoàn"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "đau tăng khi tức giận"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "buồn phiền"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "khóc lóc"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "thường thay đổi theo tình chí"
+   }
+  ]
+ },
+ {
+  "benh": "Sán khí",
+  "old": "Hồ sán (thoát vị bẹn)",
+  "new": "Hồ sán",
+  "bai": [
+   "Bổ trung ích khí thang"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Sán khí",
+    "t": "mệt mỏi"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "rêu trắng mỏng"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "ho"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "đoản hơi"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "ăn kém"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "chất lưỡi nhợt"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "Khối phồng vùng bẹn bìu"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "khi đứng lâu"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "đi lại"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "gắng sức thì sa xuống to ra"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "nằm nghỉ hoặc lấy tay đẩy lên thì thu nhỏ hoặc mất"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "người gầy yếu"
+   },
+   {
+    "benh_ly": "Sán khí",
+    "t": "mạch hư nhược hoặc trầm tế"
+   }
+  ]
+ },
+ {
+  "benh": "Thủy đậu",
+  "old": "Phong nhiệt (thể nhẹ)",
+  "new": "Phong nhiệt",
+  "bai": [
+   "Ngân kiều tán"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "ho"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "chất nước trong"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "Sốt nhẹ hoặc không sốt"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "hắt hơi chảy nước mũi"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "kích thước nhỏ"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "xung quanh có quầng đỏ nhạt"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "người mệt; nốt phỏng nước mọc rải rác"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "ngứa; ăn uống bình thường"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "tiểu vàng nhẹ. Lưỡi hồng"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "rêu trắng mỏng hoặc hơi vàng. Mạch phù sác"
+   }
+  ]
+ },
+ {
+  "benh": "Thủy đậu",
+  "old": "Thấp nhiệt độc thịnh (thể nặng) / Khí dinh (huyết) lưỡng phần nhiệt độc",
+  "new": "Thấp nhiệt độc thịnh",
+  "bai": [
+   "Thanh ôn bại độc ẩm"
+  ],
+  "tc": [
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "Sốt cao dai dẳng"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "phiền táo khát nước"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "to"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "chất nước đục"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "quầng đỏ đậm rõ"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "một số nốt hóa mủ"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "niêm mạc miệng có nốt phỏng"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "tiểu ít vàng sẫm"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "mặt đỏ môi hồng; nốt phỏng nước mọc dày"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "có thể kèm nốt xuất huyết; miệng khô"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "đại tiện táo. Lưỡi đỏ"
+   },
+   {
+    "benh_ly": "Thủy đậu",
+    "t": "rêu vàng dày hoặc vàng nhớt. Mạch hồng sác hoặc hoạt sác"
+   }
+  ]
+ }
+]
