@@ -348,6 +348,14 @@ def build():
         {"names": ["bạch biến", "ngoan tiển"],
          "requires": ["da", "vết trắng", "đốm trắng", "mất sắc tố", "bạch biến", "ngứa", "tổn thương da",
                       "sẩn", "da dày", "mảng da", "vảy"]},
+        # Nhiễm mỡ xơ mạch = chẩn đoán Tây y (xơ vữa/rối loạn lipid); biểu hiện TCM trùng Huyễn vựng
+        # (chóng mặt/váng đầu) + Hung tý (tức ngực). ĐÒI dấu mỡ/mạch/tim MỚI cho chẩn — KHÔNG dùng
+        # 'hồi hộp' (dấu chung, có trong ca huyết hư). Thể 'Xơ cứng động mạch vành' self-recall qua
+        # 'tức ngực/đau vùng tim'; thể chóng-mặt thuần định tuyến sang Huyễn vựng (đúng hơn xơ vữa).
+        {"names": ["nhiễm mỡ xơ mạch"],
+         "requires": ["mỡ máu", "cholesterol", "máu nhiễm mỡ", "lipid", "xơ vữa", "xơ mạch",
+                      "xơ cứng động mạch", "xơ cứng mạch", "mảng xơ", "huyết áp", "tức ngực",
+                      "đau ngực", "đau vùng tim", "đau tim", "đau thắt ngực", "đau trước tim"]},
     ]
 
     payload = {

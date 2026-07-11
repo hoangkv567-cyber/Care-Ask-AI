@@ -2002,6 +2002,29 @@
         "mảng da",
         "vảy"
       ]
+    },
+    {
+      "names": [
+        "nhiễm mỡ xơ mạch"
+      ],
+      "requires": [
+        "mỡ máu",
+        "cholesterol",
+        "máu nhiễm mỡ",
+        "lipid",
+        "xơ vữa",
+        "xơ mạch",
+        "xơ cứng động mạch",
+        "xơ cứng mạch",
+        "mảng xơ",
+        "huyết áp",
+        "tức ngực",
+        "đau ngực",
+        "đau vùng tim",
+        "đau tim",
+        "đau thắt ngực",
+        "đau trước tim"
+      ]
     }
   ]
 }
