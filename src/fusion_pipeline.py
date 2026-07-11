@@ -1518,6 +1518,46 @@ class TCMFusionPipeline:
             return "Không có", reason
         return final_concurrent, None
 
+    _synonym_clusters = None  # cache cụm đồng nghĩa (list[set[str]] tên đã chuẩn hoá)
+
+    @staticmethod
+    def _norm_syn_name(s):
+        """Chuẩn hoá tên hội chứng để so cụm đồng nghĩa: chữ thường, bỏ nội dung ngoặc, gộp space."""
+        s = re.sub(r'\([^)]*\)', ' ', (s or '').lower())
+        return re.sub(r'\s+', ' ', s).strip()
+
+    @classmethod
+    def _load_synonym_map(cls):
+        """Nạp data/syndrome_synonyms.json -> list các set tên chuẩn hoá (>=2 thành viên). Cache."""
+        if cls._synonym_clusters is not None:
+            return cls._synonym_clusters
+        import json as _json
+        import os as _os
+        path = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))),
+                             "data", "syndrome_synonyms.json")
+        clusters = []
+        try:
+            data = _json.load(open(path, encoding="utf-8"))
+            for cl in data.get("clusters", []):
+                members = {cls._norm_syn_name(x) for x in cl if x and str(x).strip()}
+                if len(members) >= 2:
+                    clusters.append(members)
+        except Exception as e:
+            logger.warning(f"Không nạp được syndrome_synonyms.json: {e}")
+        cls._synonym_clusters = clusters
+        return clusters
+
+    @classmethod
+    def _syndromes_are_synonyms(cls, a, b):
+        """True khi a,b ĐỒNG NGHĨA (cùng một cụm curated data/syndrome_synonyms.json) — dùng để
+        bắc cầu tra bài Mục 5 khi nhãn core lệch tên với hội chứng của bệnh đã chốt (vd 'Can vị bất
+        hòa' vs 'Can khí phạm vị'). KHÔNG dùng _are_syndromes_related (lỏng: 46% cặp liên quan lệch
+        trục Âm/Dương -> kê trái cực). Chỉ xét khi tên KHÁC nhau (đồng nhất đã do tầng exact lo)."""
+        na, nb = cls._norm_syn_name(a), cls._norm_syn_name(b)
+        if not na or not nb or na == nb:
+            return False
+        return any(na in cl and nb in cl for cl in cls._load_synonym_map())
+
     # Cụm "bạn hữu giả": chứa âm tiết trùng keyword bệnh lý nhưng vô hại ('sốt' trong 'sốt ruột',
     # 'thực' trong 'thực sự'). Gỡ khỏi text TRƯỚC khi khớp keyword Hàn/Nhiệt/Hư/Thực ở MỌI tầng
     # (Bát Cương lẫn run_diagnosis) để hai tầng không mâu thuẫn nhau.
@@ -3724,6 +3764,39 @@ class TCMFusionPipeline:
                     (core_lines if _is_core2 else branch_lines).append(_line2)
                     logger.info(f"[FALLBACK THỂ KB CÙNG CỰC] {'Bản' if _is_core2 else 'Tiêu'}: "
                                 f"{_b2} × {_hc2} -> {_bt2}")
+
+            # [FALLBACK THỂ ĐỒNG NGHĨA] Core lệch TÊN với hội chứng của bệnh đã chốt nhưng ĐỒNG
+            # NGHĨA cùng pháp trị theo bản đồ curated (data/syndrome_synonyms.json) — vd core 'Can
+            # vị bất hòa' (grounded ở bệnh khác) vs 'Can khí phạm vị' của Nôn mửa/Ẩu thổ. Anh-em
+            # đồng nghĩa KHÔNG tập-con nên mọi tầng token phía trên trượt -> Mục 5 trắng OAN dù KB
+            # có bài. CHỈ bắc cầu cặp ĐÃ THẨM ĐỊNH (không dùng _are_syndromes_related lỏng — 46%
+            # cặp related lệch trục Âm/Dương, sẽ kê trái cực). Belt-and-suspenders: vẫn gác cùng
+            # cực Hư/Thực + không xung nhiệt (dù cụm đã curated cùng cực).
+            if not core_lines and primary_key not in ("chưa rõ", "", "không có"):
+                _syn_rows = []
+                for _row in (getattr(self, "csv_rows", None) or []):
+                    _b = _row.get("benh_ly", "").strip()
+                    _hc = _row.get("hoi_chung", "").strip()
+                    _bt = _row.get("bai_thuoc", "").strip()
+                    if not _b or not _hc or not _bt or _b.lower() not in _diseases_lower:
+                        continue
+                    if (_b.lower(), _bt.lower()) in _printed_pairs:
+                        continue
+                    if not self._syndromes_are_synonyms(final_primary, _hc):
+                        continue
+                    if self._syndrome_is_hu(_hc) != self._syndrome_is_hu(final_primary):
+                        continue
+                    if self._syndromes_thermal_conflict(final_primary, _hc):
+                        continue
+                    _syn_rows.append((_hc, _b, _bt, _row.get("vi_thuoc", "").strip()))
+                for _hc, _b, _bt, _vi in _syn_rows[:2]:
+                    _printed_pairs.add((_b.lower(), _bt.lower()))
+                    core_lines.append(
+                        f"- Trị Bệnh **{_b}** — *Bản – thể tương đương của hội chứng cốt lõi* "
+                        f"(Hội chứng {_hc} — đồng nghĩa {final_primary}) → Dùng bài **{_bt}**\n"
+                        f"  - *Vị thuốc:* {self._dedupe_herbs(_vi) or '(chưa cập nhật vị thuốc)'}\n"
+                    )
+                    logger.info(f"[FALLBACK THỂ ĐỒNG NGHĨA] {_b} × {_hc} (đồng nghĩa {final_primary}) -> {_bt}")
 
         # [NHẤT QUÁN TEXT ↔ ĐỒ THỊ] Cốt lõi/kèm theo chưa có bài grounded nhưng một hội chứng
         # LIÊN QUAN trong danh sách ứng viên (vd Huyết hư khi cốt lõi là Khí huyết lưỡng hư) CÓ bài

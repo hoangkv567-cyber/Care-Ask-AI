@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "description": "Cụm hội chứng ĐỒNG NGHĨA (cùng pháp trị, cùng cực) — bắc cầu tra bài Mục 5 khi nhãn core lệch tên với hội chứng của bệnh đã chốt (anh-em đồng nghĩa KHÔNG tập-con nên các tầng fallback token trượt). Dùng bởi TCMFusionPipeline._syndromes_are_synonyms.\n\nAN TOÀN — LUẬT THÊM CỤM: (1) mọi thành viên PHẢI cùng pháp trị/cùng cực; (2) TUYỆT ĐỐI không gộp cặp lệch trục Âm/Dương hoặc Hàn/Nhiệt (điều tra cho thấy 46% cặp 'liên quan' lỏng lệch Âm/Dương -> bắc cầu = kê tễ trái cực); (3) khớp chuẩn hoá: chữ thường + bỏ nội dung trong ngoặc + gộp khoảng trắng. Seed nhỏ, mở rộng dần sau khi thẩm định.",
+  "clusters": [
+    [
+      "Can vị bất hòa",
+      "Can khí phạm vị",
+      "Can khí uất trệ phạm vị",
+      "Can khí phạm vị (can vị bất hòa)",
+      "Can vị bất hòa (can khí uất trệ)"
+    ],
+    [
+      "Tỳ vị hư nhược",
+      "Tỳ vị hư yếu",
+      "Tỳ vị hư suy"
+    ],
+    [
+      "Vị âm hư",
+      "Vị âm bất túc",
+      "Vị âm khuy hư"
+    ]
+  ]
+}
