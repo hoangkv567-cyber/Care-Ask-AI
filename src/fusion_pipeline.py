@@ -2075,6 +2075,50 @@ class TCMFusionPipeline:
         logger.info(f"[GROUNDED] Điểm hội chứng (IDF): {[(n, round(s, 3), m) for n, s, m in picked]}")
         return [(name, round(score, 3)) for name, score, _matched in picked]
 
+    # ------ CỔNG ÂM-HƯ KHÔNG NHIỆT (GUARD RULE 4 deterministic) ------
+    # Âm hư = hư NHIỆT: định nghĩa phải kèm dấu nhiệt. Quét KG: 87% (40/46) hội chứng âm-hư có dấu
+    # nhiệt trong triệu chứng -> ca âm-hư THẬT gần như luôn khai dấu nhiệt. Nếu core chốt ra là âm-hư
+    # mà lời khai KHÔNG có dấu nhiệt/khô nào VÀ CÓ dấu hư-hàn/thấp (mệt/nặng nề/sợ lạnh/lưỡi trắng-nhợt)
+    # -> gần như chắc chắn KHÔNG phải âm hư -> hạ bậc, chọn ứng viên non-âm-hư kế. 'Mồ hôi trộm'/'đạo
+    # hãn' đơn độc KHÔNG tính là nhiệt (có thể do khí/dương hư). Trước đây luật này chỉ nằm trong prompt
+    # LLM (mềm, bị 'mồ hôi trộm' kéo lệch); nay là cổng CỨNG.
+    _AMHU_HEAT_SIGNS = (
+        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát", "khô họng", "họng khô", "khô miệng",
+        "miệng khô", "khô mũi", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "lưỡi thon đỏ", "ít rêu",
+        "không rêu", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ", "má đỏ", "hai gò má đỏ", "bốc hỏa",
+        "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "bàn tay chân nóng", "nóng trong", "phiền nhiệt",
+        "tâm phiền", "nước tiểu vàng", "tiểu vàng", "nước tiểu đỏ", "táo bón", "đại tiện táo",
+    )
+    _AMHU_HUHAN_SIGNS = (
+        "mệt mỏi", "mệt", "uể oải", "người nặng nề", "nặng nề", "nặng đầu", "không muốn hoạt động",
+        "sợ lạnh", "sợ gió", "tay chân lạnh", "chân tay lạnh", "rêu trắng", "rêu lưỡi trắng",
+        "lưỡi nhợt", "lưỡi nhạt", "lưỡi hồng nhạt", "chất lưỡi nhợt", "đàm", "đờm", "phù",
+        "đại tiện lỏng", "tiểu trong", "nước tiểu trong", "hụt hơi", "đoản khí",
+    )
+
+    @staticmethod
+    def _is_amhu_syndrome(name: str) -> bool:
+        nl = (name or "").lower()
+        return ("âm hư" in nl or "âm hỏa" in nl or "âm hoả" in nl) and "dương" not in nl
+
+    def _demote_amhu_without_heat(self, syndromes: list, case_text: str):
+        """Hạ bậc core âm-hư khi KHÔNG có dấu nhiệt + CÓ dấu hư-hàn/thấp. Trả (danh sách mới, lý do|None)."""
+        if not syndromes:
+            return syndromes, None
+        core = syndromes[0]
+        if not self._is_amhu_syndrome(core):
+            return syndromes, None
+        t = (case_text or "").lower()
+        if any(k in t for k in self._AMHU_HEAT_SIGNS):
+            return syndromes, None                       # có dấu nhiệt/khô -> âm hư có thể đúng
+        if not any(k in t for k in self._AMHU_HUHAN_SIGNS):
+            return syndromes, None                       # không có dấu hư-hàn -> không đủ cơ sở, để yên
+        alt = next((s for s in syndromes[1:] if not self._is_amhu_syndrome(s)), None)
+        if not alt:
+            return syndromes, None
+        new = [alt] + [s for s in syndromes if s != alt]
+        return new, f"hạ bậc core âm-hư '{core}' -> '{alt}' (lời khai không dấu nhiệt + có dấu hư-hàn/thấp)"
+
     def _matched_terms_by_syndrome(self, terms: list, syndromes: list) -> dict:
         """{syndrome: [term...]} — term khớp (ranh giới từ + bắc cầu nhóm đồng nghĩa như chấm điểm)
         với >=1 biểu hiện của hội chứng. Nuôi ĐỒ THỊ LẬP LUẬN: chỉ nối triệu chứng THẬT SỰ khớp
@@ -3123,6 +3167,14 @@ class TCMFusionPipeline:
             all_syndromes = [item["syndrome"] for item in detailed_kg_data]
             
         all_syndromes = self._filter_hierarchical_redundancies(all_syndromes)
+        # [CỔNG ÂM-HƯ KHÔNG NHIỆT] GUARD RULE 4 deterministic: core âm-hư mà lời khai KHÔNG có dấu
+        # nhiệt/khô (sốt/khát/lưỡi đỏ/rêu vàng/gò má đỏ/ngũ tâm phiền nhiệt...; 'mồ hôi trộm' đơn độc
+        # KHÔNG tính) VÀ CÓ dấu hư-hàn/thấp -> hạ bậc, chọn ứng viên non-âm-hư kế. Âm hư THẬT gần như
+        # luôn kèm dấu nhiệt (87% KG) nên cổng không đụng nhầm. Chèn TRƯỚC final_primary để định vị
+        # bệnh danh + Bát Cương + Mục 5 dùng core đã sửa.
+        all_syndromes, _amhu_reason = self._demote_amhu_without_heat(all_syndromes, symptoms_lower)
+        if _amhu_reason:
+            logger.info(f"[CỔNG ÂM-HƯ KHÔNG NHIỆT] {_amhu_reason}")
         # Các Guard rules đặc biệt - Khởi tạo sớm để tránh lỗi UnboundLocalError
         overridden = False
         final_primary = all_syndromes[0] if all_syndromes else "Chưa rõ"
