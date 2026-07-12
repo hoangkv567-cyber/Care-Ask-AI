@@ -19,6 +19,7 @@ import argparse
 import collections
 import csv
 import os
+import re
 import shutil
 import sys
 
@@ -53,16 +54,32 @@ def main():
     def nherb(c):
         return len([x for x in c[7].split(",") if x.strip()])
 
+    def hset(c):
+        return {re.sub(r"\s+", " ", x.strip().lower()) for x in c[7].split(",") if x.strip()}
+
     drop = set()
+    kept_diff = []                             # bài TRÙNG TÊN nhưng vị KHÁC (không gộp)
     for (b, h, n), v in grp.items():
         if len(v) <= 1:
             continue
         # giữ dòng nhiều vị nhất; tiebreak dòng đầu
         keep, *rest = sorted(v, key=lambda t: (-nherb(t[1]), t[0]))
-        for idx, _ in rest:
-            drop.add(idx)
-        print(f"  {b} × {h} -> {n}: {len(v)} dòng; giữ dòng {keep[0]+1} "
-              f"({nherb(keep[1])} vị), xóa {[i+1 for i, _ in rest]}")
+        kh = hset(keep[1])
+        dropped = []
+        for idx, c in rest:
+            rh = hset(c)
+            jac = len(kh & rh) / len(kh | rh) if (kh | rh) else 1.0
+            if jac >= 0.6:                     # chỉ gộp khi GẦN TRÙNG (biến thể chính tả/bào chế)
+                drop.add(idx)
+                dropped.append(idx)
+            else:                              # KHÁC bài thật (cùng principle-name) -> GIỮ
+                kept_diff.append((b, h, n, idx, jac))
+        if dropped:
+            print(f"  {b} × {h} -> {n}: giữ dòng {keep[0]+1} ({nherb(keep[1])} vị), "
+                  f"xóa {[i+1 for i in dropped]}")
+    for b, h, n, idx, jac in kept_diff:
+        print(f"  ⚠️ GIỮ (khác bài, overlap {jac:.0%}): {b} × {h} -> {n} dòng {idx+1} "
+              f"(bài trùng tên nhưng vị thuốc khác — KHÔNG gộp)")
 
     print(f"\nTổng dòng trùng sẽ XÓA: {len(drop)}")
     if not drop:

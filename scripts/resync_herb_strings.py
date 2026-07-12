@@ -50,24 +50,27 @@ def main():
     try:
         for t in targets:
             b, h = t["benh"], t["hc"]
-            csv_h = None
+            # map theo BÀI (một cặp bệnh×hội chứng có thể có NHIỀU bài khác nhau)
+            csv_by_bai = {}
             for r in rows:
                 if r["tên_bệnh"].strip() == b and r["hội_chứng"].strip() == h:
-                    csv_h = split_herbs(r["vị_thuốc"])
-                    break
-            if not csv_h:
+                    csv_by_bai[r["bài_thuốc"].strip()] = split_herbs(r["vị_thuốc"])
+            if not csv_by_bai:
                 continue
             nodes = run_read(driver, """
                 MATCH (p:BaiThuoc {benh_ly:$b, hoi_chung:$h})
                 OPTIONAL MATCH (p)-[:BAO_GỒM]->(v:ViThuoc)
-                RETURN elementId(p) AS eid, collect(DISTINCT v.name) AS hb
+                RETURN elementId(p) AS eid, p.name AS name, collect(DISTINCT v.name) AS hb
             """, b=b, h=h)
             for nd in nodes:
+                csv_h = csv_by_bai.get(nd["name"])
+                if csv_h is None:            # node graph không có dòng CSV cùng bài -> bỏ qua
+                    continue
                 if set(nd["hb"]) == set(csv_h):
                     continue
                 miss = sorted(set(csv_h) - set(nd["hb"]))
                 extra = sorted(set(nd["hb"]) - set(csv_h))
-                print(f"[{b} × {h}] gắn: {miss}  |  gỡ: {extra}")
+                print(f"[{b} × {h}] «{nd['name']}» gắn: {miss}  |  gỡ: {extra}")
                 changed += 1
                 if args.apply:
                     run_write(driver, """
