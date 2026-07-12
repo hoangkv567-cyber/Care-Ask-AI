@@ -4126,27 +4126,41 @@ class TCMFusionPipeline:
                         and self._syndrome_is_exterior_wind(_hc)
                         and (_hc_toks & _patho_toks) == (_core_toks & _patho_toks)
                     )
-                    if not (_subset_ok or _ext_sig_ok):
+                    # [BẮC CẦU DƯƠNG HƯ → KHÍ HƯ] 阳虚 = 气虚 + hàn: cốt lõi 'X dương hư' MƯỢN ĐƯỢC bài
+                    # 'X khí hư' (bổ/nạp khí) CÙNG TẠNG của bệnh khi KB thiếu thể dương hư — kèm ghi chú
+                    # gia ôn dương. MỘT CHIỀU (chỉ dương->khí; khí hư KHÔNG mượn ngược vì không cần ôn
+                    # dương). Cùng tạng = token định vị (bỏ dương/khí/hư) TRÙNG (Thận dương hư↔Thận khí hư,
+                    # KHÔNG Thận dương hư↔Phế khí hư). Ca thật: COPD × Thận dương hư -> Bổ thận nạp khí.
+                    _duong_khi_ok = (
+                        not (_subset_ok or _ext_sig_ok) and bool(_hc_toks)
+                        and "dương" in _core_toks and "khí" in _hc_toks
+                        and "dương" not in _hc_toks and "âm" not in _hc_toks
+                        and (_core_toks - {"dương", "khí", "hư"}) == (_hc_toks - {"dương", "khí", "hư"})
+                    )
+                    if not (_subset_ok or _ext_sig_ok or _duong_khi_ok):
                         continue
                     if not (_hc_toks & _patho_toks):
                         continue
                     # Token dư của cốt lõi chỉ được là từ ĐỊNH VỊ (tạng phủ: phế/tỳ/thận...),
                     # KHÔNG được là token bệnh lý — nếu không, thể KB chỉ là MỘT THÀNH PHẦN của
                     # chứng hỗn hợp chứ không phải thể tổng quát (vd cốt lõi 'Khí hư huyết trệ'
-                    # mà nhận thể 'Khí hư' thì bỏ rơi tà thực 'huyết trệ').
-                    if (_core_toks - _hc_toks) & _patho_toks:
+                    # mà nhận thể 'Khí hư' thì bỏ rơi tà thực 'huyết trệ'). BỎ QUA cho cầu dương->khí
+                    # (token dư 'dương' là phần được thay bằng 'khí', không phải thành phần bị rơi).
+                    if not _duong_khi_ok and (_core_toks - _hc_toks) & _patho_toks:
                         continue
                     if self._syndrome_is_hu(_hc) != self._syndrome_is_hu(final_primary):
                         continue
-                    _gen_rows.append((_hc, _b, _bt, _row.get("vi_thuoc", "").strip(), _subset_ok))
+                    _gen_rows.append((_hc, _b, _bt, _row.get("vi_thuoc", "").strip(), _subset_ok, _duong_khi_ok))
                 # Thể sát cốt lõi nhất trước (nhiều âm tiết hơn = ít khái quát hơn); tối đa 2 bài
                 _gen_rows.sort(key=lambda t: -len(re.findall(r'[^\W\d_]+', t[0])))
-                for _hc, _b, _bt, _vi, _was_subset in _gen_rows[:2]:
+                for _hc, _b, _bt, _vi, _was_subset, _dk in _gen_rows[:2]:
                     _printed_pairs.add((_b.lower(), _bt.lower()))
-                    _rel_word = "bao quát" if _was_subset else "tương ứng"
+                    _rel_word = "bao quát" if _was_subset else ("dạng khí hư của" if _dk else "tương ứng")
+                    _dk_note = (" — *thể DƯƠNG hư: gia thêm vị ôn dương (Phụ tử/Nhục quế/Can khương)*"
+                                if _dk else "")
                     core_lines.append(
                         f"- Trị Bệnh **{_b}** — *Bản – thể tổng quát của hội chứng cốt lõi* "
-                        f"(Hội chứng {_hc} — {_rel_word} {final_primary}) → Dùng bài **{_bt}**\n"
+                        f"(Hội chứng {_hc} — {_rel_word} {final_primary}) → Dùng bài **{_bt}**{_dk_note}\n"
                         f"  - *Vị thuốc:* {self._dedupe_herbs(_vi) or '(chưa cập nhật vị thuốc)'}\n"
                     )
 
