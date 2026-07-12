@@ -57,10 +57,15 @@ def norm(s):
 
 
 def split_herbs(vi):
-    """GIỐNG scripts/audit_thermal_polarity.py: bỏ ghi chú ngoặc, tách , ; . ; loại mệnh đề chú thích."""
+    """Tách vị thuốc: GIỮ ngoặc BÀO CHẾ (tẩm/sao/chế/thán/sinh/nướng/bào/chích — có ý
+    nghĩa lâm sàng, vd 'Tri mẫu (tẩm muối)' 盐制 cho thanh quang), BỎ ngoặc CHÚ THÍCH
+    (gia giảm/nếu/hoặc/thay...). Trước đây bỏ SẠCH ngoặc -> reconcile làm mất chú thích
+    bào chế trên graph (Thanh quang: Tri mẫu/Hoàng bá tẩm muối -> plain). Tách , ; ."""
     if not vi:
         return []
-    vi = re.sub(r"\([^)]*\)", " ", vi)
+    # chỉ xóa ngoặc KHÔNG chứa từ bào chế
+    vi = re.sub(r"\((?![^)]*(?:tẩm|sao|chế|chích|thán|sinh|nướng|bào)\b)[^)]*\)", " ", vi,
+                flags=re.IGNORECASE)
     out = []
     for p in re.split(r"[,;.]", vi):
         h = p.strip().strip(".").strip()
