@@ -17,11 +17,12 @@ def main():
     o = F.__new__(F)
     cases = []
 
-    # 1. Ca thật: Thận âm hư + không nhiệt + có hư-hàn/thấp -> HẠ BẬC sang Đờm Trọc
+    # 1. Ca thật: Thận âm hư + không nhiệt + có hư-hàn/thấp -> LOẠI HẲN âm-hư, core sang Đờm Trọc
     syn = ["Thận âm hư", "Đờm Trọc Ngăn Trở", "Khí hư"]
     txt = "không muốn hoạt động, người nặng nề, mồ hôi trộm, nặng đầu, mệt mỏi, quầng đen dưới mắt, rêu trắng mỏng"
     new, reason = o._demote_amhu_without_heat(syn, txt)
-    cases.append(("Thận âm hư + không nhiệt + hư-hàn -> hạ bậc", new[0] == "Đờm Trọc Ngăn Trở" and reason))
+    cases.append(("Thận âm hư + không nhiệt + hư-hàn -> LOẠI HẲN âm-hư",
+                  new[0] == "Đờm Trọc Ngăn Trở" and "Thận âm hư" not in new and reason))
 
     # 2. Âm hư CÓ dấu nhiệt (gò má đỏ, ngũ tâm phiền nhiệt) -> GIỮ NGUYÊN (âm hư thật)
     new2, r2 = o._demote_amhu_without_heat(

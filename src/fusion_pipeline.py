@@ -2102,7 +2102,10 @@ class TCMFusionPipeline:
         return ("âm hư" in nl or "âm hỏa" in nl or "âm hoả" in nl) and "dương" not in nl
 
     def _demote_amhu_without_heat(self, syndromes: list, case_text: str):
-        """Hạ bậc core âm-hư khi KHÔNG có dấu nhiệt + CÓ dấu hư-hàn/thấp. Trả (danh sách mới, lý do|None)."""
+        """Khi core là âm-hư mà lời khai KHÔNG có dấu nhiệt + CÓ dấu hư-hàn/thấp -> LOẠI HẲN mọi hội
+        chứng âm-hư (ca này không phải âm hư). Phải loại hẳn chứ không chỉ hạ xuống kèm-theo: Đờm
+        trọc/thực lên core thì logic Bản-Tiêu sẽ kéo âm-hư (Hư duy nhất) TRỞ LẠI làm Bản -> 'Nhiệt'
+        oan vẫn còn + Mục 3 vẫn biện âm hư. Trả (danh sách mới, lý do|None)."""
         if not syndromes:
             return syndromes, None
         core = syndromes[0]
@@ -2113,11 +2116,12 @@ class TCMFusionPipeline:
             return syndromes, None                       # có dấu nhiệt/khô -> âm hư có thể đúng
         if not any(k in t for k in self._AMHU_HUHAN_SIGNS):
             return syndromes, None                       # không có dấu hư-hàn -> không đủ cơ sở, để yên
-        alt = next((s for s in syndromes[1:] if not self._is_amhu_syndrome(s)), None)
-        if not alt:
-            return syndromes, None
-        new = [alt] + [s for s in syndromes if s != alt]
-        return new, f"hạ bậc core âm-hư '{core}' -> '{alt}' (lời khai không dấu nhiệt + có dấu hư-hàn/thấp)"
+        kept = [s for s in syndromes if not self._is_amhu_syndrome(s)]
+        if not kept:
+            return syndromes, None                       # toàn âm-hư -> không có gì thay, để yên
+        removed = [s for s in syndromes if self._is_amhu_syndrome(s)]
+        return kept, (f"loại hội chứng âm-hư {removed} (lời khai không dấu nhiệt + có dấu hư-hàn/thấp) "
+                      f"-> core '{kept[0]}'")
 
     def _matched_terms_by_syndrome(self, terms: list, syndromes: list) -> dict:
         """{syndrome: [term...]} — term khớp (ranh giới từ + bắc cầu nhóm đồng nghĩa như chấm điểm)
