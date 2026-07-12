@@ -3306,6 +3306,33 @@ class TCMFusionPipeline:
                 valid_syndromes = [final_primary.lower().strip()]
                 if final_concurrent and final_concurrent != "Không có":
                     valid_syndromes.append(final_concurrent.lower().strip())
+            # [CỔNG ÂM-HƯ/THERMAL SAU RE-GROUND] _reground_core có thể ÉP core về thể âm-hư/nhiệt của
+            # bệnh danh cho ca KHÔNG dấu nhiệt (vd Nhĩ minh chỉ có thể 'Can thận âm hư' -> ép core 'Âm
+            # hư' dù lưỡi bệu/rêu nhớt/mặt nhợt = đàm-thấp/khí-huyết-hư). Cổng chạy sớm không bắt vì
+            # âm-hư được promote SAU nó. Re-áp: core mới âm-hư/nhiệt + lời khai 0 dấu nhiệt + có hư-hàn
+            # -> hạ sang ứng viên non-âm-hư/non-nhiệt (chấp nhận core 'ngoại lai' bệnh danh — đúng cực
+            # nhiệt quan trọng hơn grounded sai cực). Chỉ đụng ca no-heat; âm-hư/nhiệt THẬT không sao.
+            _pg = [final_primary] + [s for s in all_syndromes
+                                     if s.lower().strip() != final_primary.lower().strip()]
+            _pg, _pgr1 = self._demote_amhu_without_heat(_pg, symptoms_lower)
+            _pg, _pgr2 = self._demote_nhiet_without_heat(_pg, symptoms_lower)
+            if (_pgr1 or _pgr2) and _pg and _pg[0].lower().strip() != final_primary.lower().strip():
+                logger.info(f"[CỔNG ÂM-HƯ/THERMAL SAU RE-GROUND] {_pgr1 or ''} {_pgr2 or ''}")
+                final_primary = _pg[0]
+                all_syndromes = _pg
+                _fpl3 = final_primary.lower().strip()
+                _fpf3 = _fold_vn(final_primary)
+                final_concurrent = "Không có"
+                for _c in all_syndromes:
+                    _clx3 = _c.lower().strip()
+                    if _clx3 == _fpl3:
+                        continue
+                    if (_clx3 in _fpl3 or _fpl3 in _clx3 or _fold_vn(_c) in _fpf3 or _fpf3 in _fold_vn(_c)):
+                        continue
+                    final_concurrent = _c
+                    break
+                valid_syndromes = [_fpl3] + ([final_concurrent.lower().strip()]
+                                            if final_concurrent != "Không có" else [])
             core_matched = [
                 m for m in _window
                 if any(self._are_syndromes_related(final_primary.lower().strip(), hc)
