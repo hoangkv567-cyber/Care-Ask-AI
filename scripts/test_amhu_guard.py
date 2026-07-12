@@ -50,6 +50,28 @@ def main():
     cases.append(("_is_amhu('Thận dương hư')=False", F._is_amhu_syndrome("Thận dương hư") is False))
     cases.append(("_is_amhu('Đờm thấp')=False", F._is_amhu_syndrome("Đờm thấp") is False))
 
+    # ===== CỔNG THERMAL-POLARITY =====
+    # T1. Ca thật: Phong nhiệt phạm phế + rêu trắng + tay chân lạnh + 0 dấu nhiệt -> loại nhiệt
+    txt_cold = "ho tiếng thô nặng hoặc ho khan, tay chân lạnh, ra mồ hôi, khó thở, quầng đen dưới mắt, rêu trắng mỏng"
+    n1, nr1 = o._demote_nhiet_without_heat(["Phong nhiệt phạm phế", "Phong hàn", "Đàm thấp"], txt_cold)
+    cases.append(("Phong nhiệt + rêu trắng + tay chân lạnh + 0 nhiệt -> LOẠI nhiệt",
+                  n1[0] == "Phong hàn" and "Phong nhiệt phạm phế" not in n1 and nr1))
+    # T2. Phong nhiệt CÓ dấu nhiệt (họng đỏ sưng, sốt) -> GIỮ
+    n2, nr2 = o._demote_nhiet_without_heat(
+        ["Phong nhiệt phạm phế", "Phong hàn"], "ho, họng đỏ sưng đau, sốt, khát nước, rêu vàng")
+    cases.append(("Phong nhiệt + họng đỏ/sốt/rêu vàng -> GIỮ", n2[0] == "Phong nhiệt phạm phế" and nr2 is None))
+    # T3. Nhiệt + KHÔNG dấu hàn -> GIỮ (không đủ cơ sở)
+    n3, nr3 = o._demote_nhiet_without_heat(["Thấp nhiệt", "Khí trệ"], "người mệt, đầy bụng")
+    cases.append(("Nhiệt + không dấu hàn -> GIỮ", n3[0] == "Thấp nhiệt" and nr3 is None))
+    # T4. Core không phải nhiệt -> GIỮ
+    n4, nr4 = o._demote_nhiet_without_heat(["Phong hàn", "Đàm thấp"], "tay chân lạnh, rêu trắng")
+    cases.append(("Core Phong hàn (không nhiệt) -> GIỮ", n4[0] == "Phong hàn" and nr4 is None))
+    # T5. helper _is_nhiet_syndrome
+    cases.append(("_is_nhiet('Phong nhiệt phạm phế')=True", F._is_nhiet_syndrome("Phong nhiệt phạm phế") is True))
+    cases.append(("_is_nhiet('Phong hàn')=False", F._is_nhiet_syndrome("Phong hàn") is False))
+    cases.append(("_is_nhiet('Thượng nhiệt hạ hàn')=False (tạp)", F._is_nhiet_syndrome("Thượng nhiệt hạ hàn") is False))
+    cases.append(("_is_nhiet('Thận âm hư')=False (để cổng âm-hư lo)", F._is_nhiet_syndrome("Thận âm hư") is False))
+
     ok = 0
     for d, c in cases:
         print(f"  [{'PASS' if c else 'FAIL'}] {d}")

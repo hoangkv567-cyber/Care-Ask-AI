@@ -2123,6 +2123,55 @@ class TCMFusionPipeline:
         return kept, (f"loại hội chứng âm-hư {removed} (lời khai không dấu nhiệt + có dấu hư-hàn/thấp) "
                       f"-> core '{kept[0]}'")
 
+    # ------ CỔNG THERMAL-POLARITY: hạ core NHIỆT khi lời khai toàn dấu HÀN ------
+    # Song song cổng âm-hư nhưng cho trục HÀN/NHIỆT ngoại cảm+nội. Quét KG: 90% (136/151) hội chứng
+    # NHIỆT thuần (không dấu lạnh) — NHƯNG phong nhiệt SỚM có thể kèm 恶寒/sợ lạnh chính đáng -> luật
+    # "có dấu lạnh -> không nhiệt" KHÔNG chuẩn. Discriminator an toàn = "KHÔNG có dấu nhiệt NÀO":
+    # phong nhiệt THẬT gần như luôn có họng đỏ/sốt/khát/rêu vàng. Nếu core NHIỆT mà lời khai 0 dấu
+    # nhiệt + CÓ dấu hàn (tay chân lạnh/rêu trắng) -> gần chắc là HÀN -> loại nhiệt, chọn non-nhiệt.
+    _NHIET_HEAT_SIGNS = (
+        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát", "khô họng", "họng khô", "khô miệng",
+        "miệng khô", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ",
+        "má đỏ", "mặt đỏ", "bốc hỏa", "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "nóng trong",
+        "phiền nhiệt", "tâm phiền", "nước tiểu vàng", "tiểu vàng", "nước tiểu đỏ", "táo bón",
+        "đại tiện táo", "họng đỏ", "họng sưng", "sưng đau họng", "đau rát họng", "amidan sưng",
+        "hạnh nhân sưng", "đờm vàng", "đờm đặc vàng", "mũi vàng", "nước mũi vàng", "sưng đỏ",
+        "sưng nóng đỏ", "mụn đỏ", "mụn viêm", "nóng rát", "nhiệt miệng", "loét miệng",
+    )
+    _NHIET_COLD_SIGNS = (
+        "tay chân lạnh", "chân tay lạnh", "tay chân quyết lạnh", "chi lạnh", "sợ lạnh", "úy hàn",
+        "người lạnh", "rêu trắng", "rêu lưỡi trắng", "lưỡi nhợt", "chất lưỡi nhợt", "đờm trắng",
+        "đờm loãng trắng", "đờm loãng", "nước mũi trong", "chảy nước mũi trong", "tiểu trong",
+        "nước tiểu trong", "đại tiện lỏng",
+    )
+
+    @staticmethod
+    def _is_nhiet_syndrome(name: str) -> bool:
+        nl = (name or "").lower()
+        # có 'nhiệt/hỏa' trong tên; loại thể HÀN-NHIỆT-tạp ('hàn' trong tên) và âm-hư (đã có cổng riêng)
+        return (("nhiệt" in nl or "hỏa" in nl or "hoả" in nl)
+                and "hàn" not in nl and "âm hư" not in nl and "âm hoả" not in nl)
+
+    def _demote_nhiet_without_heat(self, syndromes: list, case_text: str):
+        """Core NHIỆT mà lời khai KHÔNG có dấu nhiệt + CÓ dấu hàn -> LOẠI HẲN hội chứng nhiệt (giữ
+        >=1 non-nhiệt). Trả (danh sách mới, lý do|None)."""
+        if not syndromes:
+            return syndromes, None
+        core = syndromes[0]
+        if not self._is_nhiet_syndrome(core):
+            return syndromes, None
+        t = (case_text or "").lower()
+        if any(k in t for k in self._NHIET_HEAT_SIGNS):
+            return syndromes, None                       # có dấu nhiệt -> nhiệt có thể đúng
+        if not any(k in t for k in self._NHIET_COLD_SIGNS):
+            return syndromes, None                       # không dấu hàn -> không đủ cơ sở, để yên
+        kept = [s for s in syndromes if not self._is_nhiet_syndrome(s)]
+        if not kept:
+            return syndromes, None                       # toàn nhiệt -> không có gì thay
+        removed = [s for s in syndromes if self._is_nhiet_syndrome(s)]
+        return kept, (f"loại hội chứng NHIỆT {removed} (lời khai không dấu nhiệt + có dấu hàn) "
+                      f"-> core '{kept[0]}'")
+
     def _matched_terms_by_syndrome(self, terms: list, syndromes: list) -> dict:
         """{syndrome: [term...]} — term khớp (ranh giới từ + bắc cầu nhóm đồng nghĩa như chấm điểm)
         với >=1 biểu hiện của hội chứng. Nuôi ĐỒ THỊ LẬP LUẬN: chỉ nối triệu chứng THẬT SỰ khớp
@@ -3179,6 +3228,12 @@ class TCMFusionPipeline:
         all_syndromes, _amhu_reason = self._demote_amhu_without_heat(all_syndromes, symptoms_lower)
         if _amhu_reason:
             logger.info(f"[CỔNG ÂM-HƯ KHÔNG NHIỆT] {_amhu_reason}")
+        # [CỔNG THERMAL-POLARITY] core NHIỆT (nhiệt/hỏa/phong nhiệt) mà lời khai 0 dấu nhiệt + có dấu
+        # hàn (tay chân lạnh/rêu trắng) -> loại nhiệt, chọn non-nhiệt (vd Phong nhiệt phạm phế -> Phong
+        # hàn cho ca rêu trắng + tay chân lạnh). Discriminator '0 dấu nhiệt' để không đụng phong-nhiệt thật.
+        all_syndromes, _nhiet_reason = self._demote_nhiet_without_heat(all_syndromes, symptoms_lower)
+        if _nhiet_reason:
+            logger.info(f"[CỔNG THERMAL-POLARITY] {_nhiet_reason}")
         # Các Guard rules đặc biệt - Khởi tạo sớm để tránh lỗi UnboundLocalError
         overridden = False
         final_primary = all_syndromes[0] if all_syndromes else "Chưa rõ"
