@@ -1699,6 +1699,13 @@ class TCMFusionPipeline:
             if not h:
                 continue
             key = re.sub(r"\s+", " ", h.lower()).strip()
+            # Bỏ NGOẶC chú thích/bào chế và HẬU TỐ bào chế để gộp biến thể cùng vị: 'Tri mẫu
+            # (tẩm muối)' == 'Tri mẫu Tẩm muối' == 'Tri mẫu'; '(kết hợp bột X)' -> rỗng -> bỏ (là
+            # ghi chú, không phải vị). Trước đây chỉ hạ hoa-thường nên các biến thể này lọt trùng.
+            key = re.sub(r"\s*\([^)]*\)", "", key).strip()
+            key = re.sub(r"\s+(tẩm\s+\S+|sao(?:\s+\S+)?|thán|chế|sống|tươi|phi|nướng|bào)$", "", key).strip()
+            if not key:
+                continue
             prefixed = False
             for p in cls._HERB_PREFIXES:
                 if key.startswith(p):
