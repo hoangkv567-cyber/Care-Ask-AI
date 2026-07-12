@@ -1087,6 +1087,83 @@ class TCMFusionPipeline:
             return 0.0
         return math.log(self._N_dis / (1 + df.get(field_lower, 0)))
 
+    # ------ Khớp CHỦ_CHỨNG (chủ chứng cardinal) — bù lỗ hổng bệnh 'bị chôn' ------
+    # Cột chủ_chứng (tách riêng, xem [[data-driven-gates-and-test-harness]]) là các CHỦ CHỨNG định
+    # danh bệnh nhưng _find_matching_diseases trước chỉ chấm triệu_chứng -> khai đúng chủ chứng
+    # (vd 'liệt dương') vẫn trượt ngưỡng ratio (105/147 bệnh bị chôn). Nay khớp chủ_chứng ĐA-TỪ
+    # (>=2 âm tiết, tránh đơn-âm 'kinh'/'ho'/'da' khớp bừa) và nạp bệnh làm ứng viên với ratio theo
+    # ĐỘ ĐẶC HIỆU (IDF chủ chứng): 'liệt dương' (ít bệnh) ratio cao -> vượt match triệu chung chung.
+    _CC_FLOOR = 0.50
+    _CC_CEIL = 0.80
+
+    def _build_chu_chung_index(self):
+        from collections import defaultdict
+        import math
+        rows = getattr(self, "csv_rows", []) or []
+        # Văn bản gộp (triệu_chứng + chủ_chứng) THEO BỆNH để đo ĐỘ ĐẶC HIỆU THẬT của chủ chứng:
+        # df = số BỆNH mà keyword xuất hiện Ở BẤT KỲ ĐÂU (không chỉ cột chủ_chứng). 'ăn kém'/'mệt
+        # mỏi' là chủ_chứng của 1 bệnh nhưng có mặt ở TRIỆU CHỨNG rất nhiều bệnh -> df cao -> ratio
+        # THẤP (đúng: chúng generic). 'liệt dương' chỉ ~3 bệnh -> df thấp -> ratio cao (cardinal thật).
+        dis_text = defaultdict(str)
+        cc_keywords = set()
+        for r in rows:
+            b = r.get("benh_ly", "").strip().lower()
+            if not b:
+                continue
+            dis_text[b] += " " + r.get("triệu_chứng", "").lower() + " " + r.get("chu_chung", "").lower()
+            for k in r.get("chu_chung", "").split(","):
+                k = k.strip().lower()
+                if k and len(k.split()) >= 2:
+                    cc_keywords.add(k)
+        n = len(dis_text) or 1
+        cc_df = {}
+        for k in cc_keywords:
+            cc_df[k] = sum(1 for b in dis_text if k in dis_text[b]) or 1
+        self._cc_df = cc_df
+        self._cc_ndis = n
+        self._cc_idf_max = max((math.log(n / (1 + df)) for df in cc_df.values()), default=1.0) or 1.0
+
+    def _cc_ratio(self, keyword: str) -> float:
+        """Ratio nạp ứng viên theo độ đặc hiệu của chủ chứng khớp (0 nếu không phải chủ chứng đa-từ)."""
+        import math
+        cc_df = getattr(self, "_cc_df", None)
+        if cc_df is None:
+            self._build_chu_chung_index()
+            cc_df = self._cc_df
+        df = cc_df.get(keyword)
+        if not df:
+            return 0.0
+        idf = math.log(self._cc_ndis / (1 + df))
+        frac = min(1.0, idf / self._cc_idf_max) if self._cc_idf_max else 0.0
+        return self._CC_FLOOR + (self._CC_CEIL - self._CC_FLOOR) * frac
+
+    def _cc_match_ratio(self, row, patient_symptoms_lower, raw_text_lower):
+        """Ratio chủ_chứng cao nhất khớp cho row (0 nếu không khớp). PHẠM VI: CHỈ nạp chủ chứng
+        cardinal ĐẶC THÙ GIỚI (nam/phụ khoa — liệt dương/di tinh/kinh nguyệt/thống kinh...). Đây là
+        các dấu định danh MẠNH (khớp -> gần như chắc chắn đúng họ bệnh) nên nạp an toàn KHÔNG hồi quy
+        gold (đã đo: 78.6% == baseline). Chủ chứng chung chung (ợ chua/biếng ăn) KHÔNG nạp vì chúng là
+        triệu chứng chia sẻ, dễ soán ngôi match triệu_chứng thật (đã đo Option A tụt 75%). Mở rộng sang
+        chủ chứng cardinal khác -> thêm vào _cc_admit_set (curated) sau khi đo hồi quy."""
+        cc_str = row.get("chu_chung", "")
+        if not cc_str:
+            return 0.0, None
+        admit = getattr(self, "_cc_admit_set", None)
+        if admit is None:
+            admit = set(self._SEX_MARK_MALE) | set(self._SEX_MARK_FEMALE)
+            self._cc_admit_set = admit
+        best, hit = 0.0, None
+        for k in cc_str.split(","):
+            k = k.strip().lower()
+            if len(k.split()) < 2 or k not in admit:
+                continue
+            present = (raw_text_lower and k in raw_text_lower) or \
+                any(k == s or k in s or s in k for s in patient_symptoms_lower)
+            if present:
+                r = self._cc_ratio(k)
+                if r > best:
+                    best, hit = r, k
+        return best, hit
+
     def _get_disease_gates(self) -> list:
         """Cổng an toàn bệnh danh nạp từ data/disease_gates.json (data-hóa từ luật hard-code cũ).
         Cache trên instance. Rỗng nếu thiếu file -> _validate_disease_safety cho qua tất (an toàn:
@@ -1151,15 +1228,31 @@ class TCMFusionPipeline:
             return "nu"
         return None
 
+    # Dấu giới ĐẶC HIỆU (đa-từ/giải phẫu, tránh mơ hồ) để suy giới từ TRIỆU CHỨNG khi không khai form.
+    _SEX_MARK_MALE = ("liệt dương", "dương nuy", "di tinh", "mộng tinh", "tảo tiết", "xuất tinh",
+                      "hoạt tinh", "dương vật", "tinh trùng", "rối loạn cương", "cường dương",
+                      "bìu", "tinh hoàn", "dịch hoàn")
+    _SEX_MARK_FEMALE = ("kinh nguyệt", "thống kinh", "bế kinh", "rong kinh", "băng huyết", "đới hạ",
+                        "huyết trắng", "âm đạo", "âm hộ", "tử cung", "mang thai", "có thai",
+                        "thai nghén", "sản hậu", "hành kinh", "kinh trước kỳ", "kinh sau kỳ",
+                        "buồng trứng", "tắc tia sữa")
+
     @classmethod
     def _infer_sex(cls, text: str):
-        """Suy giới từ text lời khai (đã ghép 'nam giới'/'nữ giới' bởi compose_interview_text).
-        Chỉ khớp CỤM RÕ để tránh dương tính giả. Trả 'nam'|'nu'|None."""
+        """Suy giới từ text lời khai: (1) cụm form 'nam giới'/'nữ giới' (ưu tiên), (2) dấu giới ĐẶC
+        HIỆU trong triệu chứng ('liệt dương'->nam, 'thống kinh'->nữ). Nếu có dấu CẢ HAI giới (mơ hồ,
+        vd nhắc người khác) -> None. Trả 'nam'|'nu'|None."""
         t = (text or "").lower()
         if "nữ giới" in t:
             return "nu"
         if "nam giới" in t:
             return "nam"
+        male = any(k in t for k in cls._SEX_MARK_MALE)
+        female = any(k in t for k in cls._SEX_MARK_FEMALE)
+        if male and not female:
+            return "nam"
+        if female and not male:
+            return "nu"
         return None
 
     def _sex_conflict(self, disease_name: str, patient_sex: str) -> bool:
@@ -1318,16 +1411,20 @@ class TCMFusionPipeline:
             # còn triệu chứng đặc hiệu (IDF cao) chỉ cần ít vẫn qua. _idf_min tinh chỉnh qua eval harness.
             idf_min = getattr(self, "_idf_min", 0.0)
             peak_min = getattr(self, "_idf_peak_min", 0.0)
-            if match_ratio >= 0.30 and matched_count >= 2 and specific_matched >= 1 \
-                    and matched_idf >= idf_min and peak_idf >= peak_min:
+            _triage_ok = (match_ratio >= 0.30 and matched_count >= 2 and specific_matched >= 1
+                          and matched_idf >= idf_min and peak_idf >= peak_min)
+            # [KHỚP CHỦ_CHỨNG] Nạp bệnh có CHỦ CHỨNG (cardinal) khớp lời khai dù triệu_chứng chưa đủ
+            # ngưỡng (bù 105/147 bệnh 'bị chôn' — nam khoa/phụ khoa chỉ tiếp cận được qua chủ chứng).
+            _cc_ratio_v, _ = self._cc_match_ratio(row, patient_symptoms_lower, raw_text_lower)
+            if _triage_ok or _cc_ratio_v > 0:
                 # Áp dụng bộ lọc an toàn lâm sàng + cổng giới tính ngăn chẩn đoán sai lệch
                 if self._validate_disease_safety(row["benh_ly"], patient_symptoms, raw_user_text) \
                         and not self._sex_conflict(row["benh_ly"], _patient_sex):
                     matched_candidates.append({
                         "benh_ly": row["benh_ly"],
                         "hoi_chung": row["hoi_chung"],
-                        "ratio": match_ratio,
-                        "matched_count": matched_count,
+                        "ratio": max(match_ratio, _cc_ratio_v),
+                        "matched_count": max(matched_count, 1 if _cc_ratio_v > 0 else 0),
                         "matched_idf": round(matched_idf, 2)
                     })
         
