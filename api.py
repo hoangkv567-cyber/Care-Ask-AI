@@ -94,9 +94,10 @@ async def diagnose(
 
         # Gọi hệ thống hợp nhất chẩn đoán
         result = fusion_engine.run_diagnosis(
-            user_symptoms=symptoms, 
-            face_img_path=face_path, 
-            tongue_img_path=tongue_path
+            user_symptoms=symptoms,
+            face_img_path=face_path,
+            tongue_img_path=tongue_path,
+            sex=sex,   # [CỔNG GIỚI TÍNH] khai báo giới -> loại bệnh khác giới ở tầng khớp
         )
         return {"status": "success", "data": result}
     except HTTPException:

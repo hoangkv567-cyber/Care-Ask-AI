@@ -1111,6 +1111,65 @@ class TCMFusionPipeline:
         self._disease_gates = gates
         return gates
 
+    def _get_disease_sex(self) -> dict:
+        """Nạp data/disease_sex.json -> {tên_bệnh_chuẩn_hoá: 'nam'|'nu'}. Cache trên instance.
+        Rỗng nếu thiếu file (an toàn: không lọc oan). Bệnh không có trong map = cả 2 giới."""
+        cached = getattr(self, "_disease_sex_map", None)
+        if cached is not None:
+            return cached
+        import json
+        import os
+        m = {}
+        path = os.getenv("TCM_DISEASE_SEX_PATH", "data/disease_sex.json")
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                for _sx in ("nam", "nu"):
+                    for _name in d.get(_sx, []):
+                        m[self._norm_disease_name(_name)] = _sx
+                logger.info(f"Đã nạp cổng giới tính: {len(m)} bệnh đặc thù giới từ {path}")
+            else:
+                logger.warning(f"Không thấy {path} — bỏ qua cổng giới tính.")
+        except Exception as e:
+            logger.error(f"Lỗi nạp cổng giới tính: {e}")
+            m = {}
+        self._disease_sex_map = m
+        return m
+
+    @staticmethod
+    def _norm_disease_name(name: str) -> str:
+        return re.sub(r"\s+", " ", (name or "").strip().lower())
+
+    @staticmethod
+    def _norm_sex(sex) -> str:
+        """Chuẩn hoá giá trị giới về 'nam'|'nu'|None."""
+        s = str(sex or "").strip().lower()
+        if s in ("nam", "male", "m", "nam giới", "nam gioi", "trai"):
+            return "nam"
+        if s in ("nu", "nữ", "female", "f", "nữ giới", "nu gioi", "nữ giơi", "gái"):
+            return "nu"
+        return None
+
+    @classmethod
+    def _infer_sex(cls, text: str):
+        """Suy giới từ text lời khai (đã ghép 'nam giới'/'nữ giới' bởi compose_interview_text).
+        Chỉ khớp CỤM RÕ để tránh dương tính giả. Trả 'nam'|'nu'|None."""
+        t = (text or "").lower()
+        if "nữ giới" in t:
+            return "nu"
+        if "nam giới" in t:
+            return "nam"
+        return None
+
+    def _sex_conflict(self, disease_name: str, patient_sex: str) -> bool:
+        """True khi bệnh thuộc giới KHÁC bệnh nhân đã khai -> phải LOẠI. patient_sex rỗng ->
+        không lọc (False). Bệnh không đặc thù giới -> không lọc (False)."""
+        if not patient_sex:
+            return False
+        ds = self._get_disease_sex().get(self._norm_disease_name(disease_name))
+        return ds is not None and ds != patient_sex
+
     def _validate_disease_safety(self, disease_name: str, patient_symptoms: list, raw_user_text: str) -> bool:
         """Bộ lọc an toàn lâm sàng (DATA-HÓA): loại bệnh danh chuyên khoa nếu lời khai không có triệu
         chứng chỉ điểm tương ứng. Luật đọc từ data/disease_gates.json (thay ~460 dòng if/else cũ —
@@ -1187,6 +1246,11 @@ class TCMFusionPipeline:
 
         patient_symptoms_lower = [s.lower().strip() for s in patient_symptoms] if patient_symptoms else []
         raw_text_lower = raw_user_text.lower() if raw_user_text else ""
+        # [CỔNG GIỚI TÍNH] Giới lấy từ tham số cấu trúc (self._patient_sex, do run_diagnosis đặt từ
+        # form) hoặc suy từ text ('nam giới'/'nữ giới' đã ghép bởi compose_interview_text). Nếu biết
+        # giới -> loại thẳng bệnh khác giới (phụ khoa cho nam, nam khoa cho nữ) bất kể triệu chứng.
+        _patient_sex = getattr(self, "_patient_sex", None) or self._infer_sex(raw_user_text) \
+            or self._infer_sex(" ".join(patient_symptoms_lower))
         # [CHỐNG PHỦ ĐỊNH KHỚP MỀM] Che vùng bị phủ định trên lời khai TRƯỚC khi tách phân đoạn, để
         # field CSV không soft-match nhầm triệu chứng người bệnh đã phủ nhận ('không sốt' -> field
         # 'sốt cao' không được khớp). Bảo vệ các cụm CSV vốn chứa 'không' ('tay chân không ấm'...)
@@ -1256,8 +1320,9 @@ class TCMFusionPipeline:
             peak_min = getattr(self, "_idf_peak_min", 0.0)
             if match_ratio >= 0.30 and matched_count >= 2 and specific_matched >= 1 \
                     and matched_idf >= idf_min and peak_idf >= peak_min:
-                # Áp dụng bộ lọc an toàn lâm sàng ngăn chặn chẩn đoán sai lệch
-                if self._validate_disease_safety(row["benh_ly"], patient_symptoms, raw_user_text):
+                # Áp dụng bộ lọc an toàn lâm sàng + cổng giới tính ngăn chẩn đoán sai lệch
+                if self._validate_disease_safety(row["benh_ly"], patient_symptoms, raw_user_text) \
+                        and not self._sex_conflict(row["benh_ly"], _patient_sex):
                     matched_candidates.append({
                         "benh_ly": row["benh_ly"],
                         "hoi_chung": row["hoi_chung"],
@@ -4173,10 +4238,14 @@ class TCMFusionPipeline:
                     # trang điểm dương tính sau nó -> chỉ makeup-negation mới set neg_seen (ở nhánh trên).
         return False
 
-    def run_diagnosis(self, user_symptoms: str = "", face_img_path: str = None, tongue_img_path: str = None) -> dict:
+    def run_diagnosis(self, user_symptoms: str = "", face_img_path: str = None, tongue_img_path: str = None,
+                      sex: str = None) -> dict:
         vision_analysis_text = ""
         raw_vision_data = None
         self._has_makeup = False
+        # [CỔNG GIỚI TÍNH] Giới khai báo (cấu trúc) từ form -> _find_matching_diseases loại bệnh khác
+        # giới. Đặt lại mỗi lần chạy (tránh dính giới ca trước); rỗng -> suy từ text làm dự phòng.
+        self._patient_sex = self._norm_sex(sex)
 
         if face_img_path or tongue_img_path:
             logger.info("Bắt đầu phân tích hình ảnh qua mô hình vision...")
