@@ -4572,6 +4572,22 @@ class TCMFusionPipeline:
             _score_terms = self.qa_pipeline._preprocess_question(combined_query)
         _grounded = self._score_syndromes_grounded(_score_terms)
 
+        # [CỔNG ÂM-HƯ + THERMAL — CHẠY SỚM] Hạ core âm-hư/nhiệt SAI cực NGAY trên _grounded, TRƯỚC các
+        # gác biểu/chủ-chứng (chúng loại ứng viên thay thế non-nhiệt khi core là ngoại cảm thuần ->
+        # cổng ở _generate_explainable_answer không còn ứng viên mà đưa lên). Discriminator '0 dấu
+        # nhiệt' (xem _demote_*). Giữ điểm gốc để ranking tiếp theo không lệch.
+        if _grounded:
+            _g_names = [s for s, _ in _grounded]
+            _case_txt = (user_symptoms + " " + combined_query).lower()
+            _g_names, _amhu_r = self._demote_amhu_without_heat(_g_names, _case_txt)
+            if _amhu_r:
+                logger.info(f"[CỔNG ÂM-HƯ KHÔNG NHIỆT] {_amhu_r}")
+            _g_names, _nhiet_r = self._demote_nhiet_without_heat(_g_names, _case_txt)
+            if _nhiet_r:
+                logger.info(f"[CỔNG THERMAL-POLARITY] {_nhiet_r}")
+            _score_map = dict(_grounded)
+            _grounded = [(s, _score_map.get(s, 0.0)) for s in _g_names]
+
         # [FIX TRUY HỒI NHẤT QUÁN — CỔNG CHỦ CHỨNG] Hội chứng KÈM THEO không được chốt chỉ bằng vài
         # dấu lưỡi/mặt chung chung: node hội chứng hẹp/ít triệu chứng (vd 'Đờm Trọc Ngưng Kết' — bệnh
         # nam khoa, chỉ cần 'lưỡi nhạt + rìa lưỡi có vết răng' là khớp 2 hits) sẽ leo hạng nhì và lật
