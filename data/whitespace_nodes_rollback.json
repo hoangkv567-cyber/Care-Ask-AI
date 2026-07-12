@@ -1,0 +1,1039 @@
+[
+ {
+  "label": "BenhLy",
+  "name": "\tĐầu thống",
+  "props": {
+   "name": "\tĐầu thống"
+  },
+  "out": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Thử thấp",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Khí hư",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Huyết ứ",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Phong thấp",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Phong hàn",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Huyết hư",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Đàm thấp",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Phong nhiệt",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Can dương thượng cang",
+    "rp": {}
+   }
+  ],
+  "in": []
+ },
+ {
+  "label": "BenhLy",
+  "name": "Nhĩ lung ",
+  "props": {
+   "name": "Nhĩ lung "
+  },
+  "out": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Huyết ứ",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Khí hư hạ hãm",
+    "rp": {}
+   },
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "HoiChung",
+    "mn": "Can nhiệt",
+    "rp": {}
+   }
+  ],
+  "in": []
+ },
+ {
+  "label": "HoiChung",
+  "name": "Thấp nhiệt ",
+  "props": {
+   "name": "Thấp nhiệt "
+  },
+  "out": [
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "táo bón",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "rêu vàng",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "tính nóng nảy",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "Âm đạo ngứa đau",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ban đêm càng đau",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "khí hư màu vàng",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hay cáu giận",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "tiểu đỏ",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "miệng lưỡi nhiệt đau",
+    "rp": {
+     "benh_ly": "Ngứa âm hộ"
+    }
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Long đởm tả can thang ",
+    "rp": {}
+   },
+   {
+    "t": "CÓ_TÍNH_CHẤT",
+    "ml": "BatCuong",
+    "mn": "Nhiệt",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "BenhLy",
+    "mn": "Ngứa âm hộ",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "HoiChung",
+  "name": "Đờm thấp ngăn trở kinh mạch ",
+  "props": {
+   "name": "Đờm thấp ngăn trở kinh mạch "
+  },
+  "out": [
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "nói khó",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ngực đầy",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "khó nuốt",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "đau đầu",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "mất ngủ",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "đi lại khó",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "run",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "Các khớp cứng",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "đi chậm",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hai tay cứng",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "không viết được",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hông sườn đầy",
+    "rp": {
+     "benh_ly": "Parkinson"
+    }
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Bán Hạ Hậu Phác Thang gia giảm",
+    "rp": {}
+   },
+   {
+    "t": "CÓ_TÍNH_CHẤT",
+    "ml": "BatCuong",
+    "mn": "Hàn",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "BenhLy",
+    "mn": "Parkinson",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "HoiChung",
+  "name": "Can tâm khí uất kết ",
+  "props": {
+   "name": "Can tâm khí uất kết "
+  },
+  "out": [
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "đầy bụng trướng",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ăn kém",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hay thở dài",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "Tinh thần uất ức hoặc phiền muộn",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "đầy tức",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Lý Khí Giải Uất Thang",
+    "rp": {}
+   },
+   {
+    "t": "THUỘC_TẠNG",
+    "ml": "TangPhu",
+    "mn": "Tâm",
+    "rp": {}
+   },
+   {
+    "t": "THUỘC_TẠNG",
+    "ml": "TangPhu",
+    "mn": "Can",
+    "rp": {}
+   },
+   {
+    "t": "TRẠNG_THÁI",
+    "ml": "BatCuong",
+    "mn": "Thực",
+    "rp": {}
+   },
+   {
+    "t": "VỊ_TRÍ",
+    "ml": "BatCuong",
+    "mn": "Lý",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "BenhLy",
+    "mn": "Suy nhược thần kinh",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "HoiChung",
+  "name": "Âm hư hỏa vượng ",
+  "props": {
+   "name": "Âm hư hỏa vượng "
+  },
+  "out": [
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "táo bón",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "Hoa mắt",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ù tai",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hay quên",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "chóng mặt",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hồi hộp",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "nhức đầu",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "nóng bừng",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "tiểu đỏ",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hay xúc động",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "vui buồn thất thường",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ít ngủ hay mơ",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "khô miệng khô họng",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Chu Sa An Thần Hoàn gia giảm",
+    "rp": {}
+   },
+   {
+    "t": "CÓ_TÍNH_CHẤT",
+    "ml": "BatCuong",
+    "mn": "Nhiệt",
+    "rp": {}
+   },
+   {
+    "t": "TRẠNG_THÁI",
+    "ml": "BatCuong",
+    "mn": "Hư",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "BenhLy",
+    "mn": "Suy nhược thần kinh",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "HoiChung",
+  "name": "Tâm can thận âm hư ",
+  "props": {
+   "name": "Tâm can thận âm hư "
+  },
+  "out": [
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "táo bón",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ù tai",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "di tinh",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "hồi hộp",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ít ngủ",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "đau lưng",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "nước tiểu trong",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "nhức đầu",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "miệng ít khô",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "mạch Tế",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Lục Vị Quy Thược Thang gia vị",
+    "rp": {}
+   },
+   {
+    "t": "THUỘC_TẠNG",
+    "ml": "TangPhu",
+    "mn": "Tâm",
+    "rp": {}
+   },
+   {
+    "t": "THUỘC_TẠNG",
+    "ml": "TangPhu",
+    "mn": "Can",
+    "rp": {}
+   },
+   {
+    "t": "THUỘC_TẠNG",
+    "ml": "TangPhu",
+    "mn": "Thận",
+    "rp": {}
+   },
+   {
+    "t": "TRẠNG_THÁI",
+    "ml": "BatCuong",
+    "mn": "Hư",
+    "rp": {}
+   },
+   {
+    "t": "VỊ_TRÍ",
+    "ml": "BatCuong",
+    "mn": "Lý",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "BenhLy",
+    "mn": "Suy nhược thần kinh",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "HoiChung",
+  "name": "Âm dương đều hư ",
+  "props": {
+   "name": "Âm dương đều hư "
+  },
+  "out": [
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "tay chân lạnh",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "di tinh",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "sợ lạnh",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "liệt dương",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "ít ngủ",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "đau lưng",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "tiểu nhiều",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "gối mỏi",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "tinh thần uể oải",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "nước tiểu trong dài",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "Sắc mặt trắng",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "lưỡi trắng nhạt",
+    "rp": {
+     "benh_ly": "Suy nhược thần kinh"
+    }
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Hữu Quy Hoàn gia giảm",
+    "rp": {}
+   },
+   {
+    "t": "TRẠNG_THÁI",
+    "ml": "BatCuong",
+    "mn": "Hư",
+    "rp": {}
+   },
+   {
+    "t": "VỊ_TRÍ",
+    "ml": "BatCuong",
+    "mn": "Lý",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "BenhLy",
+    "mn": "Suy nhược thần kinh",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "HoiChung",
+  "name": "Khí trệ huyết ứ ",
+  "props": {
+   "name": "Khí trệ huyết ứ "
+  },
+  "out": [
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "mạch sáp",
+    "rp": {
+     "benh_ly": "Ung thư thận"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "Đau nhiều",
+    "rp": {
+     "benh_ly": "Ung thư thận"
+    }
+   },
+   {
+    "t": "CÓ_BIỂU_HIỆN",
+    "ml": "TrieuChung",
+    "mn": "lưỡi có vết bầm tím",
+    "rp": {
+     "benh_ly": "Ung thư thận"
+    }
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Hành khí hoạt huyết, hóa ứ chỉ thống",
+    "rp": {}
+   },
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "BaiThuoc",
+    "mn": "Hoạt huyết hóa ứ, thanh nhiệt giải độc",
+    "rp": {}
+   },
+   {
+    "t": "TRẠNG_THÁI",
+    "ml": "BatCuong",
+    "mn": "Thực",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "CHIA_THÀNH",
+    "ml": "BenhLy",
+    "mn": "Ung thư thận",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "BaiThuoc",
+  "name": "Long đởm tả can thang ",
+  "props": {
+   "hoi_chung": "Thấp nhiệt ",
+   "benh_ly": "Ngứa âm hộ",
+   "name": "Long đởm tả can thang "
+  },
+  "out": [
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Hoàng cầm",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Cam thảo",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Sài hồ",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Sinh địa",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Trạch tả",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Đương qui",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Chi tử",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Mộc thông",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Long đởm thảo",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Xa tiền",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "HoiChung",
+    "mn": "Thấp nhiệt ",
+    "rp": {}
+   }
+  ]
+ },
+ {
+  "label": "BaiThuoc",
+  "name": "Bổ âm chỉ dưỡng phương ",
+  "props": {
+   "hoi_chung": "Âm hư huyết táo",
+   "benh_ly": "Ngứa âm hộ",
+   "name": "Bổ âm chỉ dưỡng phương "
+  },
+  "out": [
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Hoàng cầm",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Bạch thược",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Trích thảo",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Đan sâm",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Trạch tả",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Hương phụ",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Long đởm thảo",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Phòng phong",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Bạch chỉ",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Kinh giới",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Xa tiền tử",
+    "rp": {}
+   },
+   {
+    "t": "BAO_GỒM",
+    "ml": "ViThuoc",
+    "mn": "Xà sàng tử",
+    "rp": {}
+   }
+  ],
+  "in": [
+   {
+    "t": "ĐƯỢC_ĐIỀU_TRỊ_BẰNG",
+    "ml": "HoiChung",
+    "mn": "Âm hư huyết táo",
+    "rp": {}
+   }
+  ]
+ }
+]
