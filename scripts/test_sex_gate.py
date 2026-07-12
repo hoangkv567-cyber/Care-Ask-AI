@@ -77,6 +77,16 @@ def main():
     cases.append(("_sex_conflict(Thống kinh, nu)=False", F._sex_conflict(o, "Thống kinh", "nu") is False))
     cases.append(("_sex_conflict(Cảm mạo, nam)=False (trung tính)", F._sex_conflict(o, "Cảm mạo", "nam") is False))
 
+    # 6. Cảnh báo MÂU THUẪN giới ↔ triệu chứng (nhập liệu sai)
+    def conflict(sex, raw):
+        o._patient_sex = sex
+        return o._sex_symptom_conflict(raw)
+    cases.append(("Nam + 'âm hộ' -> báo mâu thuẫn", conflict("nam", "ngứa âm hộ") == ["âm hộ"]))
+    cases.append(("Nữ + 'liệt dương' -> báo mâu thuẫn", conflict("nu", "liệt dương") == ["liệt dương"]))
+    cases.append(("Nam + 'ngứa' thường -> KHÔNG mâu thuẫn", conflict("nam", "ngứa, mẩn") is None))
+    cases.append(("Nữ + 'kinh nguyệt' -> KHÔNG mâu thuẫn", conflict("nu", "thống kinh") is None))
+    cases.append(("Không khai giới -> KHÔNG mâu thuẫn", conflict(None, "ngứa âm hộ") is None))
+
     ok = 0
     for desc, cond in cases:
         print(f"  [{'PASS' if cond else 'FAIL'}] {desc}")

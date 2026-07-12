@@ -1255,6 +1255,18 @@ class TCMFusionPipeline:
             return "nu"
         return None
 
+    def _sex_symptom_conflict(self, raw_text: str):
+        """Giới KHAI BÁO (form, self._patient_sex) MÂU THUẪN với dấu đặc thù giới KHÁC trong lời khai
+        (vd khai Nam nhưng có 'âm hộ'/'kinh nguyệt', hoặc khai Nữ nhưng 'liệt dương'/'dương vật').
+        Trả danh sách dấu mâu thuẫn (để cảnh báo nhập liệu), None nếu không mâu thuẫn / không khai giới."""
+        sex = getattr(self, "_patient_sex", None)
+        if not sex or not raw_text:
+            return None
+        t = raw_text.lower()
+        opp = self._SEX_MARK_FEMALE if sex == "nam" else self._SEX_MARK_MALE
+        found = [k for k in opp if k in t]
+        return found or None
+
     def _sex_conflict(self, disease_name: str, patient_sex: str) -> bool:
         """True khi bệnh thuộc giới KHÁC bệnh nhân đã khai -> phải LOẠI. patient_sex rỗng ->
         không lọc (False). Bệnh không đặc thù giới -> không lọc (False)."""
@@ -4781,6 +4793,19 @@ class TCMFusionPipeline:
             detailed_kg_data=detailed_kg_data,
             search_terms=search_terms
         )
+
+        # [CẢNH BÁO MÂU THUẪN GIỚI] Khai giới nhưng lời khai có dấu đặc thù giới KHÁC (vd Nam + 'âm
+        # hộ'): cổng giới đã LOẠI bệnh khác giới nên kết quả có thể lệch/generic (Mục 5 trắng) — báo
+        # rõ để người dùng sửa nhập liệu thay vì tin chẩn đoán sai.
+        _sx_conflict = self._sex_symptom_conflict(user_symptoms)
+        if _sx_conflict:
+            _sex_vn = "Nam" if getattr(self, "_patient_sex", None) == "nam" else "Nữ"
+            final_markdown = (
+                f"> ⚠️ **Mâu thuẫn giới tính ↔ triệu chứng:** bạn khai giới **{_sex_vn}** nhưng lời "
+                f"khai có triệu chứng đặc thù giới KHÁC: **{', '.join(_sx_conflict)}**. Hệ đã LOẠI "
+                f"bệnh không phù hợp giới khai báo — kết quả bên dưới có thể chưa sát. Vui lòng kiểm "
+                f"tra lại **giới tính** hoặc **triệu chứng**.\n\n"
+            ) + final_markdown
 
         # [AN TOÀN Y TẾ] Luôn chèn cảnh báo cấp cứu (nếu có cờ đỏ) + miễn trừ trách nhiệm
         final_markdown = self._append_medical_disclaimer(
