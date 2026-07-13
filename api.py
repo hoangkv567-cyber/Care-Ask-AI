@@ -170,8 +170,23 @@ async def get_related_symptoms_endpoint(req: SymptomsRequest):
         if not matched_db_names:
             return {"status": "success", "data": []}
             
-        # 3. Tìm các triệu chứng liên quan đồng xuất hiện trong cùng Hội chứng (HoiChung)
-        cypher = """
+        # 3. Tìm triệu chứng liên quan ĐỒNG XUẤT HIỆN trong CÙNG (hội chứng × BỆNH) — scope theo
+        #    benh_ly trên cạnh CÓ_BIỂU_HIỆN. Node HoiChung CHUNG ('Thận âm hư'/'Thận dương hư') ôm
+        #    hợp triệu chứng của MỌI bệnh dùng nhãn đó, nên co-occur không-scope RÒ triệu chứng của
+        #    BỆNH KHÁC: 'tiểu nhiều' (Đái tháo nhạt) từng kéo 'mù màu / sắc manh / dị thường sắc giác'
+        #    (bệnh Sắc manh 色盲, cũng gán nhãn Thận âm/dương hư) làm gợi ý. Scope theo benh_ly (phủ
+        #    99.2% cạnh) diệt tận gốc rò chéo-bệnh + xếp hạng theo SỐ BỆNH cùng biểu hiện.
+        cypher_scoped = """
+        MATCH (h:HoiChung)-[r1:CÓ_BIỂU_HIỆN]->(t:TrieuChung)
+        WHERE toLower(t.name) IN $matched_names AND r1.benh_ly IS NOT NULL
+        MATCH (h)-[r2:CÓ_BIỂU_HIỆN]->(t_other:TrieuChung)
+        WHERE NOT toLower(t_other.name) IN $matched_names AND r2.benh_ly = r1.benh_ly
+        RETURN t_other.name AS symptom, count(DISTINCT r1.benh_ly) AS frequency
+        ORDER BY frequency DESC
+        LIMIT 100
+        """
+        # Fallback KHÔNG scope (dùng khi cạnh của triệu chứng khớp thiếu benh_ly -> scoped rỗng).
+        cypher_unscoped = """
         MATCH (h:HoiChung)-[:CÓ_BIỂU_HIỆN]->(t:TrieuChung)
         WHERE toLower(t.name) IN $matched_names
         MATCH (h)-[:CÓ_BIỂU_HIỆN]->(t_other:TrieuChung)
@@ -186,8 +201,9 @@ async def get_related_symptoms_endpoint(req: SymptomsRequest):
         #   - Thiết chẩn MẠCH (người bệnh không tự bắt mạch)
         #   - TÊN BỆNH / chẩn đoán lọt vào nhãn TrieuChung (ung thư, u não, "bệnh ...", hội chứng)
         EXCLUDE_KEYWORDS = (
-            # Vọng chẩn lưỡi / sắc mặt / da
-            "lưỡi", "rêu", "sắc mặt", "sắc da", "gò má", "má đỏ", "ửng đỏ", "ửng hồng",
+            # Vọng chẩn lưỡi / sắc mặt / da ('vết răng'/'hằn răng' = rìa lưỡi in răng, cũng là dấu
+            # quan sát lưỡi nhưng không chứa chữ 'lưỡi' nên phải liệt riêng)
+            "lưỡi", "rêu", "vết răng", "hằn răng", "sắc mặt", "sắc da", "gò má", "má đỏ", "ửng đỏ", "ửng hồng",
             "mặt đỏ", "mặt nhợt", "mặt nhạt", "mặt vàng", "mặt trắng", "mặt xanh",
             "mặt sạm", "mặt xạm", "mặt xám", "mặt tái",
             # Thiết chẩn mạch
@@ -210,7 +226,10 @@ async def get_related_symptoms_endpoint(req: SymptomsRequest):
             return any(len(k.split()) >= 2 and k in key and k != key for k in kept_keys)
 
         with fusion_engine.qa_pipeline.driver.session() as session:
-            for rec in session.run(cypher, matched_names=matched_db_names):
+            rows = list(session.run(cypher_scoped, matched_names=matched_db_names))
+            if not rows:                                      # cạnh thiếu benh_ly -> bay mù, không-scope
+                rows = list(session.run(cypher_unscoped, matched_names=matched_db_names))
+            for rec in rows:
                 name = (rec["symptom"] or "").strip()
                 key = name.lower()
                 if not key or key in seen:                       # bỏ trùng (không phân biệt hoa/thường)
