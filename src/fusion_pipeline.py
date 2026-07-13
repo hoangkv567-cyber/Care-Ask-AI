@@ -5063,6 +5063,22 @@ class TCMFusionPipeline:
                 f"tra lại **giới tính** hoặc **triệu chứng**.\n\n"
             ) + final_markdown
 
+        # [CẢNH BÁO INPUT MỎNG] Đông y chẩn bằng TỨ CHẨN (nhiều dấu). Chỉ 1-2 triệu chứng — nhất là
+        # dấu CHUNG ('tiểu nhiều','mệt mỏi'...) — KHÔNG đủ chốt bệnh danh+hội chứng tin cậy (cùng 1
+        # dấu gặp ở nhiều bệnh). Không hỏi lại (cơ chế hỏi động đã gỡ) -> CẢNH BÁO input mỏng, nêu rõ
+        # kết quả chỉ ĐỊNH HƯỚNG SƠ BỘ + gợi ý bổ sung. Đếm dấu THẬT (lời khai + vọng chẩn ảnh).
+        _n_signs = len(all_symptoms_list)
+        if _n_signs <= 2:
+            _sl = ", ".join(all_symptoms_list) if all_symptoms_list else "(trống)"
+            final_markdown = (
+                f"> ⚠️ **Lời khai quá ít triệu chứng ({_n_signs} dấu: {_sl}).** Đông y chẩn đoán bằng "
+                f"TỨ CHẨN (vọng–văn–vấn–thiết); một–hai dấu đơn lẻ (nhất là dấu CHUNG) KHÔNG đủ để chốt "
+                f"bệnh danh + hội chứng tin cậy — cùng một triệu chứng có thể gặp ở NHIỀU bệnh khác nhau. "
+                f"Kết quả bên dưới chỉ là **ĐỊNH HƯỚNG SƠ BỘ**, độ tin cậy thấp. Vui lòng bổ sung: hàn/nhiệt "
+                f"(sợ lạnh/sợ nóng), khát nước, mồ hôi, ăn–ngủ, đại–tiểu tiện (màu/lượng), vị trí đau, thời "
+                f"gian mắc, và ảnh lưỡi/sắc mặt… để chẩn đoán chính xác hơn.\n\n"
+            ) + final_markdown
+
         # [AN TOÀN Y TẾ] Luôn chèn cảnh báo cấp cứu (nếu có cờ đỏ) + miễn trừ trách nhiệm
         final_markdown = self._append_medical_disclaimer(
             final_markdown, raw_text=f"{user_symptoms} {combined_query}"
