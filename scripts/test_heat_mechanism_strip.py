@@ -49,6 +49,10 @@ def main():
     # 7. Core âm hư -> GIỮ NGUYÊN (không gỡ)
     n7 = o._strip_no_coating_yin_claims(txt, "Thận âm hư", "Lý - Nhiệt - Hư")
     cases.append(("Lưỡi-không-rêu + core âm hư -> GIỮ nguyên", n7 == txt))
+    # 8. Core Phong nhiệt + Bát Cương Biểu-Nhiệt-Thực -> 'nhiệt hao tân dịch' (KHÔNG 'âm hư')
+    n8 = o._strip_no_coating_yin_claims(txt, "Phong nhiệt", "Biểu - Nhiệt - Thực")
+    cases.append(("Lưỡi-không-rêu + Phong nhiệt Thực -> 'nhiệt hao tân dịch', KHÔNG 'âm hư'",
+                  "nhiệt làm hao tân dịch" in n8.lower() and "dấu âm hư" not in n8.lower()))
 
     ok = 0
     for d, c in cases:

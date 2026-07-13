@@ -1653,10 +1653,16 @@ class TCMFusionPipeline:
                                    or re.search(r'\b(khí hư|dương hư|tỳ hư|vị hư|khí huyết)\b', _fp)):
             sanctioned = ("Lưỡi không (ít) rêu ở thể hư-hàn phản ánh VỊ KHÍ hư tổn không đủ huân chưng "
                           "sinh rêu, KHÔNG phải âm hư/nội nhiệt; là dấu nền nên theo dõi thêm.")
+        elif "nhiệt" in _bc and ("thực" in _bc or "biểu" in _bc):
+            # THỰC NHIỆT / ngoại cảm nhiệt: lưỡi ít rêu do NHIỆT HAO TÂN DỊCH (cấp), KHÔNG phải âm hư
+            # sẵn có (âm hư = HƯ chứng, mâu thuẫn 'Thực chứng thuần túy' ở Mục 3); là dấu nền theo dõi.
+            sanctioned = ("Lưỡi không (ít) rêu trong thể thực-nhiệt phản ánh NHIỆT làm hao tân dịch nhẹ, "
+                          "KHÔNG phải âm hư sẵn có; là dấu nền nên theo dõi thêm.")
         else:
             sanctioned = ("Lưỡi không (ít) rêu phản ánh âm dịch/tân dịch hao tổn nhẹ (dấu âm hư), "
                           "không phải biểu hiện của huyết hư; là dấu nền nên theo dõi thêm.")
-        has_sanctioned = "âm dịch" in text.lower() or "vị khí hư tổn" in text.lower()
+        has_sanctioned = ("âm dịch" in text.lower() or "vị khí hư tổn" in text.lower()
+                          or "nhiệt làm hao tân dịch" in text.lower())
         out_lines = []
         for line in text.split("\n"):
             sentences = re.split(r'(?<=[.!?])\s+', line)
