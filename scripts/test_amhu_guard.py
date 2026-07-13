@@ -45,6 +45,22 @@ def main():
     new6, r6 = o._demote_amhu_without_heat(["Thận âm hư", "Can thận âm hư"], "mệt mỏi, sợ lạnh, rêu trắng")
     cases.append(("Âm hư + chỉ toàn âm hư -> GIỮ", new6[0] == "Thận âm hư" and r6 is None))
 
+    # 6b. [REGRESSION] Ca thật Nhĩ minh (đàm-thấp bị ép Can thận âm hư): KHÔNG có token 'mệt' nào,
+    # vẫn phải LOẠI âm-hư qua dấu đàm-thấp/lưỡi (rêu trắng/lưỡi hồng nhạt/lưỡi bệu) — chốt fix B
+    # (bỏ 'mệt') không làm ca này hồi quy.
+    nhimin = "ù tai, rêu lưỡi trắng nhớt, lưỡi bệu, lưỡi hồng nhạt, rêu trắng mỏng, rìa lưỡi có hằn răng, mặt nhợt nhạt"
+    new6b, r6b = o._demote_amhu_without_heat(["Can thận âm hư", "Khí huyết lưỡng hư", "Đờm thấp"], nhimin)
+    cases.append(("Nhĩ minh (đàm-thấp, KHÔNG có 'mệt') -> vẫn LOẠI âm-hư",
+                  "Can thận âm hư" not in new6b and bool(r6b)))
+
+    # 6c. [REGRESSION] Ca hưởng lợi fix B: 'tiểu nhiều, lượng ít, mệt mỏi, ít ngủ' — dấu hư-hàn DUY
+    # NHẤT là 'mệt' (đã bỏ) -> KHÔNG được loại Thận âm hư (trước đây loại oan -> core Huyết hư ngoại
+    # lai + Mục 5 trắng). Giữ Thận âm hư làm cốt lõi.
+    new6c, r6c = o._demote_amhu_without_heat(["Thận âm hư", "Huyết hư", "Khí hư"],
+                                             "tiểu nhiều, lượng ít, mệt mỏi, ít ngủ")
+    cases.append(("Thận âm hư + chỉ 'mệt' (không dấu hư-hàn khác) -> GIỮ (không loại oan)",
+                  new6c[0] == "Thận âm hư" and r6c is None))
+
     # 7. helper _is_amhu_syndrome
     cases.append(("_is_amhu('Thận âm hư')=True", F._is_amhu_syndrome("Thận âm hư") is True))
     cases.append(("_is_amhu('Thận dương hư')=False", F._is_amhu_syndrome("Thận dương hư") is False))
