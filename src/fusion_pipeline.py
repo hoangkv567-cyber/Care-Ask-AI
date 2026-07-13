@@ -1876,12 +1876,39 @@ class TCMFusionPipeline:
     _HERB_PREFIXES = ("sinh ", "sao ", "chích ", "thán ", "than ", "bào ", "nướng ", "tẩm ", "chế ")
     _HERB_ALIASES = {"màn kinh": "mạn kinh tử", "mạn kinh": "mạn kinh tử"}
 
+    # Ghi chú ĐUÔI trong field vị_thuốc (bài thay thế / gia giảm điều kiện) — phải CẮT trước khi tách
+    # theo dấu phẩy, nếu không _dedupe_herbs xé ngoặc (dấu phẩy nội bộ) thành token rác ('gia: Trần
+    # bì', 'Nếu có đờm trệ') + hỏng vị base cuối ('Sinh Cam thảo. (Hoặc dùng...'). Ngoặc BÀO CHẾ (a:
+    # chích/tẩm muối/sao... dính liền tên vị, KHÔNG sau '. ') và ALIAS (e: '(Đương quy)') KHÔNG bị cắt.
+    # Marker gia:/nếu bắt buộc dạng 'gia:'(có dấu hai chấm) hoặc 'nếu' để KHÔNG cắt nhầm 'Sa tiền
+    # (gia thêm)'/'Thạch cao (có thể)'. Không có ngoặc lồng trong data (đã quét) nên [^)]* an toàn.
+    _HERB_TAIL_CUT = re.compile(
+        r'\.\s*\('
+        r'|[,;]\s*\(\s*(?:hoặc\s+dùng|kết\s+hợp|nếu\b|gia\s*:|tam\s+tử|chân\s+vũ|tham\s+khảo|sau\s+khi|không\s+liệt|có\s+thể\s+phối)'
+        r'|\(\s*(?:hoặc\s+dùng|kết\s+hợp\s+bột|nếu\b|gia\s*:)'
+        r'|[.;]\s*(?:nếu\b|gia\s*:|có\s+thể\s+phối\s+hợp|sau\s+khi\b|thể\s+(?:thực|hư|âm|dương)\b)'
+        r'|[.;]\s*[^.;,()]{2,26}?\s(?:thang|tán|hoàn|ẩm|đan|tễ)\s*:',
+        re.IGNORECASE)
+    _HERB_INLINE_SUB = re.compile(r'\s*\(\s*(?:hoặc|thay|nay\s+thay)\b[^)]*\)', re.IGNORECASE)
+
+    @classmethod
+    def _strip_herb_tail_notes(cls, vi_str: str) -> str:
+        """Cắt ghi chú đuôi (bài thay thế/gia giảm điều kiện) + rút gọn thay-vị inline 'X (hoặc Y)'->'X'
+        khỏi chuỗi vị_thuốc. GIỮ ngoặc bào chế + alias. Xem _HERB_TAIL_CUT."""
+        if not vi_str or ("(" not in vi_str and "." not in vi_str and ";" not in vi_str):
+            return vi_str
+        m = cls._HERB_TAIL_CUT.search(vi_str)
+        s = vi_str[:m.start()] if m else vi_str
+        s = cls._HERB_INLINE_SUB.sub("", s)
+        return s.strip().rstrip(".,; ").strip()
+
     @classmethod
     def _dedupe_herbs(cls, vi_str: str) -> str:
         """Khử trùng vị thuốc (gộp biến thể bào chế/chính tả), GIỮ VỊ TRÍ đầu tiên nhưng ưu tiên
         hiển thị dạng CHUẨN (không tiền tố bào chế, không phải alias-sai)."""
         if not vi_str:
             return vi_str
+        vi_str = cls._strip_herb_tail_notes(vi_str)   # cắt ghi chú đuôi TRƯỚC khi split ',' (chống blob)
         order, best = [], {}
         for h in vi_str.split(","):
             h = h.strip()
