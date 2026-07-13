@@ -1634,7 +1634,7 @@ class TCMFusionPipeline:
     # Cốt lõi liên quan âm/tân/táo -> quy lưỡi-không-rêu cho nó là ĐÚNG (không gỡ).
     _CORE_YIN_RE = re.compile(r'\b(âm|tân dịch|dịch|táo|khô)\b')
 
-    def _strip_no_coating_yin_claims(self, text: str, final_primary: str = "") -> str:
+    def _strip_no_coating_yin_claims(self, text: str, final_primary: str = "", bat_cuong_hint: str = "") -> str:
         """[NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Lưỡi không/ít rêu (kính diện thiệt) = ÂM HƯ / TÂN DỊCH KHUY,
         KHÔNG phải huyết hư/khí hư/thấp/huyết ứ. LLM Mục 4 hay over-fit (vd core Huyết hư -> 'lưỡi
         không có rêu là biểu hiện của huyết hư' — SAI; chính KG map lưỡi-không-rêu vào Can thận âm
@@ -1645,9 +1645,18 @@ class TCMFusionPipeline:
             return text
         if self._CORE_YIN_RE.search((final_primary or "").lower()):
             return text
-        sanctioned = ("Lưỡi không (ít) rêu phản ánh âm dịch/tân dịch hao tổn nhẹ (dấu âm hư), "
-                      "không phải biểu hiện của huyết hư; là dấu nền nên theo dõi thêm.")
-        has_sanctioned = "âm dịch" in text.lower()
+        # [THERMAL-AWARE] Bát Cương HÀN / core khí-dương hư -> lưỡi ít rêu là VỊ KHÍ HƯ TỔN (không đủ
+        # huân chưng sinh rêu), KHÔNG phải âm dịch hao tổn/âm hư (âm hư = hư nhiệt, trái Bát Cương Hàn).
+        _bc = (bat_cuong_hint or "").lower()
+        _fp = (final_primary or "").lower()
+        if "nhiệt" not in _bc and ("hàn" in _bc
+                                   or re.search(r'\b(khí hư|dương hư|tỳ hư|vị hư|khí huyết)\b', _fp)):
+            sanctioned = ("Lưỡi không (ít) rêu ở thể hư-hàn phản ánh VỊ KHÍ hư tổn không đủ huân chưng "
+                          "sinh rêu, KHÔNG phải âm hư/nội nhiệt; là dấu nền nên theo dõi thêm.")
+        else:
+            sanctioned = ("Lưỡi không (ít) rêu phản ánh âm dịch/tân dịch hao tổn nhẹ (dấu âm hư), "
+                          "không phải biểu hiện của huyết hư; là dấu nền nên theo dõi thêm.")
+        has_sanctioned = "âm dịch" in text.lower() or "vị khí hư tổn" in text.lower()
         out_lines = []
         for line in text.split("\n"):
             sentences = re.split(r'(?<=[.!?])\s+', line)
@@ -3010,6 +3019,39 @@ class TCMFusionPipeline:
             logger.info("[NHẤT QUÁN HÀN] Viết lại cơ chế 'hàn ngưng' bịa trong ca không có căn cứ Hàn.")
         return llm_text
 
+    def _strip_unfounded_heat_mechanism(self, llm_text: str, bat_cuong_hint: str,
+                                        primary: str, concurrent: str, symptoms_str: str) -> str:
+        """[NHẤT QUÁN NHIỆT] MIRROR của _strip_unfounded_cold_mechanism cho trục NHIỆT. LLM hay viện
+        'âm hư sinh nội nhiệt / nhiệt bức tân dịch' để giải thích MỒ HÔI (đạo hãn/tự hãn) trong ca
+        THUẦN HƯ-HÀN không hề có căn cứ Nhiệt (vd core Khí hư/Dương hư + Bát Cương Hàn: mồ hôi là TỰ
+        HÃN do VỆ KHÍ BẤT CỐ, không phải hư nhiệt bức tân dịch — viện nội nhiệt là trái Bát Cương Hàn
+        và trái bài ôn dương). Chốt bằng lưới TẤT ĐỊNH: CHỈ viết lại khi KHÔNG có bất kỳ căn cứ Nhiệt
+        nào — Bát Cương không 'Nhiệt', core không nhiệt/âm-hư, lời khai không dấu nhiệt. Ca âm-hư/nhiệt
+        thật (Bát Cương Nhiệt) hàm này KHÔNG đụng."""
+        if not llm_text:
+            return llm_text
+        bc = (bat_cuong_hint or "").lower()
+        syn = ((primary or "") + " " + (concurrent or "")).lower()
+        sym = (symptoms_str or "").lower()
+        if ("nhiệt" in bc or self._syndrome_thermal_sign(primary) == "nhiet" or "âm hư" in syn
+                or "âm hoả" in syn or "âm hỏa" in syn
+                or any(k in sym for k in ("sốt", "khát", "rêu vàng", "rêu lưỡi vàng", "họng đỏ",
+                                          "họng sưng", "mặt đỏ", "gò má đỏ", "đờm vàng", "tiểu vàng",
+                                          "nước tiểu vàng", "lưỡi đỏ", "ngũ tâm phiền nhiệt", "táo bón"))):
+            return llm_text  # có căn cứ Nhiệt -> giữ nguyên biện luận
+        before = llm_text
+        # 'âm hư sinh/gây/làm nội nhiệt' -> khí (dương) hư khiến vệ biểu bất cố
+        llm_text = re.sub(r'(?i)âm\s+hư\s+(?:sinh(?:\s+ra)?|gây(?:\s+ra)?|làm|dẫn\s+đến)?\s*nội\s+nhiệt',
+                          "khí (dương) hư khiến vệ biểu bất cố", llm_text)
+        # 'nhiệt bức tân dịch (tiết ra ngoài)' -> tân dịch không được cố nhiếp mà tự thoát
+        llm_text = re.sub(r'(?i)nhiệt\s+bức\s+(?:tân\s+dịch|mồ\s+hôi|tấu\s+lý)\s*(?:tiết(?:\s+ra\s+ngoài)?|thoát(?:\s+ra)?)?',
+                          "tân dịch không được cố nhiếp mà tự thoát", llm_text)
+        # 'nội nhiệt' còn sót -> khí (dương) hư không cố nhiếp
+        llm_text = re.sub(r'(?i)\bnội\s+nhiệt\b', "khí (dương) hư không cố nhiếp", llm_text)
+        if llm_text != before:
+            logger.info("[NHẤT QUÁN NHIỆT] Viết lại cơ chế 'âm hư nội nhiệt' bịa trong ca không căn cứ Nhiệt.")
+        return llm_text
+
     def _sync_tieu_thuc_with_bat_cuong(self, llm_text: str, bat_cuong_hint: str, symptoms_str: str) -> str:
         """[ĐỒNG BỘ BÁT CƯƠNG <-> MỤC 4] Bát Cương ở Mục 2 là kết quả deterministic (đồ thị + từ khóa)
         còn thân Mục 4 do LLM viết, nên hai bên thỉnh thoảng vênh nhau theo cả 2 chiều:
@@ -4025,13 +4067,17 @@ class TCMFusionPipeline:
         # [NHẤT QUÁN HÀN] Gỡ cơ chế 'hàn ngưng' bịa khi ca không có căn cứ Hàn (chạy sau cùng)
         llm_explanation = self._strip_unfounded_cold_mechanism(
             llm_explanation, bat_cuong_hint, final_primary, final_concurrent, symptoms_str)
+        # [NHẤT QUÁN NHIỆT] MIRROR: gỡ cơ chế 'âm hư (sinh) nội nhiệt / nhiệt bức tân dịch' bịa cho
+        # mồ hôi khi ca THUẦN HƯ-HÀN không có căn cứ Nhiệt (mồ hôi = tự hãn do vệ khí bất cố).
+        llm_explanation = self._strip_unfounded_heat_mechanism(
+            llm_explanation, bat_cuong_hint, final_primary, final_concurrent, symptoms_str)
         # [NHẤT QUÁN RÊU MỎNG] Gỡ câu quy 'rêu trắng mỏng' cho thấp/đàm hoặc quy nhân trực tiếp
         # (vi phạm luật 14 — Mục 3 từng mâu thuẫn thẳng với Mục 4 'vị khí còn tốt'); truyền
         # final_primary để CHỪA ca ngoại cảm biểu (được phép 'tà mới xâm nhập -> rêu trắng mỏng')
         llm_explanation = self._strip_thin_coating_damp_claims(llm_explanation, final_primary)
         # [NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Chặn LLM quy 'lưỡi không/ít rêu' (= âm hư/tân dịch khuy) cho
         # huyết hư/khí hư/thấp/huyết ứ khi cốt lõi không liên quan âm/tân (over-fit theo core).
-        llm_explanation = self._strip_no_coating_yin_claims(llm_explanation, final_primary)
+        llm_explanation = self._strip_no_coating_yin_claims(llm_explanation, final_primary, bat_cuong_hint)
 
         final_markdown += f"{llm_explanation}\n\n"
 
