@@ -2140,10 +2140,17 @@ class TCMFusionPipeline:
         "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "bàn tay chân nóng", "nóng trong", "phiền nhiệt",
         "tâm phiền", "nước tiểu vàng", "tiểu vàng", "nước tiểu đỏ", "táo bón", "đại tiện táo",
     )
+    # CHỈ dấu hư-hàn/thấp ĐẶC HIỆU (hàn: sợ lạnh/tay chân lạnh/tiểu trong; thấp: nặng nề/đàm/phù/rêu
+    # nhớt; khí-dương hư: đại tiện lỏng/hụt hơi...). KHÔNG gồm 'mệt mỏi/mệt/uể oải' — mệt là dấu TRUNG
+    # TÍNH (mọi thể hư đều có, kể cả âm hư), dùng nó làm bằng chứng NGHỊCH âm-hư sẽ loại oan thể âm-hư
+    # THẬT chỉ vì bệnh nhân kêu mệt (ca 'tiểu nhiều, mệt mỏi, ít ngủ' -> Thận âm hư của Đái tháo nhạt bị
+    # loại, core rơi về Huyết hư ngoại lai + Mục 5 trắng). Thêm dấu ĐÀM-THẤP (lưỡi bệu/rêu nhớt/rêu dày)
+    # để cổng vẫn bắt ca đàm-thấp bị ép âm-hư (vd Nhĩ minh lưỡi bệu/rêu nhớt) mà KHÔNG cần dựa vào 'mệt'.
     _AMHU_HUHAN_SIGNS = (
-        "mệt mỏi", "mệt", "uể oải", "người nặng nề", "nặng nề", "nặng đầu", "không muốn hoạt động",
+        "người nặng nề", "nặng nề", "nặng đầu", "không muốn hoạt động",
         "sợ lạnh", "sợ gió", "tay chân lạnh", "chân tay lạnh", "rêu trắng", "rêu lưỡi trắng",
         "lưỡi nhợt", "lưỡi nhạt", "lưỡi hồng nhạt", "chất lưỡi nhợt", "đàm", "đờm", "phù",
+        "lưỡi bệu", "lưỡi to bè", "rêu nhớt", "rêu dày", "rêu dính", "rêu nhờn",
         "đại tiện lỏng", "tiểu trong", "nước tiểu trong", "hụt hơi", "đoản khí",
     )
 
