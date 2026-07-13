@@ -389,7 +389,10 @@ class TCMFusionPipeline:
         # "phát sinh X") — tức LLM đang KHẲNG ĐỊNH bệnh nhân có triệu chứng đó. Không gỡ danh từ
         # xuất hiện trong văn cơ chế thông thường (vd "vận hóa thức ăn") để tránh phá câu đúng.
         text_lower = text.lower()
-        _causal = r'(?:gây ra|gây nên|dẫn đến|dẫn tới|gây|phát sinh|sinh ra|biểu hiện qua|biểu hiện bằng|xuất hiện|thể hiện qua|thể hiện bằng|thể hiện ở)'
+        # 'cảm thấy|cảm nhận|cảm giác' = LLM KHẲNG ĐỊNH bệnh nhân CÓ cảm giác đó ('làm cho bệnh nhân
+        # cảm thấy khó thở') -> nếu triệu chứng sau nó không có trong lời khai thì là bịa, gỡ như các
+        # động từ nhân-quả khác. (Triệu chứng CÓ trong input đã được _is_input_symptom chừa.)
+        _causal = r'(?:gây ra|gây nên|dẫn đến|dẫn tới|gây|phát sinh|sinh ra|biểu hiện qua|biểu hiện bằng|xuất hiện|thể hiện qua|thể hiện bằng|thể hiện ở|cảm thấy|cảm nhận|cảm giác)'
         # Mệnh đề nhân-quả MẠNH cho vị trí chủ ngữ ("Chóng mặt và đau đầu LÀ DO..."). Cố ý KHÔNG
         # dùng 'khiến/gây' đứng sau dấu phẩy và không cho lookahead băng qua ,.; — tránh gỡ nhầm
         # danh từ cơ chế ("vận hóa tân dịch và thức ăn, khiến cho...").
@@ -424,6 +427,16 @@ class TCMFusionPipeline:
             if new_text != text:
                 text = new_text
                 text_lower = text.lower()
+
+        # Dọn mệnh đề nhân-quả MỒ CÔI còn trơ động từ sau khi gỡ triệu chứng bịa: 'làm cho bệnh
+        # nhân cảm thấy khó thở và mệt mỏi' -> (gỡ khó thở/mệt mỏi) -> 'làm cho bệnh nhân .' -> gỡ
+        # nốt cụm dẫn 'làm cho/khiến [bệnh nhân/người bệnh/cơ thể] [cảm thấy]' khi KHÔNG còn tân ngữ
+        # (theo ngay sau là dấu câu/hết chuỗi). KHÔNG đụng 'làm cho Phế khí bế tắc' (còn tân ngữ).
+        text = re.sub(
+            r'(?i)[,;]?\s*(?:làm cho|khiến cho|khiến)\s+'
+            r'(?:bệnh nhân|người bệnh|cơ thể|người)?\s*'
+            r'(?:cảm thấy|cảm nhận|cảm giác)?\s*(?=[.;]|$)',
+            '', text)
 
         # Làm sạch các khoảng trắng và dấu câu thừa sau khi xóa
         text = re.sub(r'[ \t]+([,.])', r'\1', text)
