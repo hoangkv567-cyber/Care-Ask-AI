@@ -1886,19 +1886,28 @@ class TCMFusionPipeline:
         r'\.\s*\('
         r'|[,;]\s*\(\s*(?:hoặc\s+dùng|kết\s+hợp|nếu\b|gia\s*:|tam\s+tử|chân\s+vũ|tham\s+khảo|sau\s+khi|không\s+liệt|có\s+thể\s+phối)'
         r'|\(\s*(?:hoặc\s+dùng|kết\s+hợp\s+bột|nếu\b|gia\s*:)'
-        r'|[.;]\s*(?:nếu\b|gia\s*:|có\s+thể\s+phối\s+hợp|sau\s+khi\b|thể\s+(?:thực|hư|âm|dương)\b)'
-        r'|[.;]\s*[^.;,()]{2,26}?\s(?:thang|tán|hoàn|ẩm|đan|tễ)\s*:',
+        r'|[.;]\s*(?:nếu\b|gia\s*:|thường\s+gia|có\s+thể\s+phối\s+hợp|sau\s+khi\b|thể\s+(?:thực|hư|âm|dương)\b)'
+        # header bài thứ 2 sau '.'/'; ': '<cụm ngắn>:' (kể cả tên bài KHÔNG kết thúc formula-word,
+        # vd 'Thập toàn đại bổ:'); an toàn vì vị thuốc base không có 'dấu hai chấm'.
+        r'|[.;]\s*[^.;,():]{2,30}:'
+        # bất kỳ ';' ở đuôi có kèm cụm điều kiện (nếu/gia/thêm/hàn/nhiệt/kiêm) -> note gia giảm không ngoặc
+        r'|;\s*[^;]*?\b(?:nếu|gia\b|thêm\b|bỏ\b|kiêm\b|hàn\s+thấp|thấp\s+nhiệt)',
         re.IGNORECASE)
-    _HERB_INLINE_SUB = re.compile(r'\s*\(\s*(?:hoặc|thay|nay\s+thay)\b[^)]*\)', re.IGNORECASE)
+    # thay-vị/loại-vị inline: 'X (hoặc/nay thay bằng/thay/bỏ/bớt ...)' -> 'X'. Lookahead loại 'hoặc dùng/bài'.
+    _HERB_INLINE_SUB = re.compile(
+        r'\s*\(\s*(?:hoặc(?!\s+dùng)(?!\s+bài)|nay\s+thay\s+bằng|thay|bỏ|bớt)\b[^)]*\)', re.IGNORECASE)
+    # ngoặc CHÚ THÍCH đứng ĐẦU field ('(Tùy bài chọn) Nhân sâm...') -> bỏ ngoặc dẫn đầu.
+    _HERB_LEAD_NOTE = re.compile(r'^\s*\([^)]*\)\s*', re.IGNORECASE)
 
     @classmethod
     def _strip_herb_tail_notes(cls, vi_str: str) -> str:
         """Cắt ghi chú đuôi (bài thay thế/gia giảm điều kiện) + rút gọn thay-vị inline 'X (hoặc Y)'->'X'
-        khỏi chuỗi vị_thuốc. GIỮ ngoặc bào chế + alias. Xem _HERB_TAIL_CUT."""
+        + bỏ ngoặc chú thích đầu field. GIỮ ngoặc bào chế + alias. Xem _HERB_TAIL_CUT."""
         if not vi_str or ("(" not in vi_str and "." not in vi_str and ";" not in vi_str):
             return vi_str
-        m = cls._HERB_TAIL_CUT.search(vi_str)
-        s = vi_str[:m.start()] if m else vi_str
+        s = cls._HERB_LEAD_NOTE.sub("", vi_str)       # bỏ ngoặc note dẫn đầu (nếu có)
+        m = cls._HERB_TAIL_CUT.search(s)
+        s = s[:m.start()] if m else s
         s = cls._HERB_INLINE_SUB.sub("", s)
         return s.strip().rstrip(".,; ").strip()
 
