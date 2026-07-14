@@ -3436,12 +3436,15 @@ class TCMFusionPipeline:
         bc = (bat_cuong_hint or "").lower()
         syn = ((primary or "") + " " + (concurrent or "")).lower()
         sym = (symptoms_str or "").lower()
-        if ("nhiệt" in bc or self._syndrome_thermal_sign(primary) == "nhiet" or "âm hư" in syn
-                or "âm hoả" in syn or "âm hỏa" in syn
+        # Có thành phần ÂM (từ độc lập 'âm' trong tên hội chứng: 'Khí âm lưỡng hư', 'Âm dương lưỡng
+        # hư', '* âm hư'...) -> có căn cứ âm hư -> mồ hôi trộm (đạo hãn) là do âm hư, KHÔNG viết lại
+        # sang khí-dương. \bâm\b để KHÔNG dính 'âm' trong 'tâm' ('Tâm khí hư' = khí hư thuần).
+        _has_am = bool(re.search(r'\bâm\b', syn)) or "âm hoả" in syn or "âm hỏa" in syn
+        if ("nhiệt" in bc or self._syndrome_thermal_sign(primary) == "nhiet" or _has_am
                 or any(k in sym for k in ("sốt", "khát", "rêu vàng", "rêu lưỡi vàng", "họng đỏ",
                                           "họng sưng", "mặt đỏ", "gò má đỏ", "đờm vàng", "tiểu vàng",
                                           "nước tiểu vàng", "lưỡi đỏ", "ngũ tâm phiền nhiệt", "táo bón"))):
-            return llm_text  # có căn cứ Nhiệt -> giữ nguyên biện luận
+            return llm_text  # có căn cứ Nhiệt/Âm -> giữ nguyên biện luận
         before = llm_text
         # 'âm hư sinh/gây/làm nội nhiệt' -> khí (dương) hư khiến vệ biểu bất cố
         llm_text = re.sub(r'(?i)âm\s+hư\s+(?:sinh(?:\s+ra)?|gây(?:\s+ra)?|làm|dẫn\s+đến)?\s*nội\s+nhiệt',
