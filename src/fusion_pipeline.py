@@ -1384,6 +1384,77 @@ class TCMFusionPipeline:
             return f"Dùng bài theo pháp **{bai}**" if self._is_bare_treatment_principle(bai) else m.group(0)
         return re.sub(r'Dùng bài \*\*([^*]+)\*\*', _repl, markdown or "")
 
+    # ------ CỔNG THERMAL BÀI/THỂ: đổi bài HÀN sang thể ẤM cho ca lời khai nghiêng HÀN, 0 dấu nhiệt ------
+    # Dùng từ điển tính vị data/herb_thermal.json (score: nhiệt=2 ôn=1 bình=0 lương=-1 hàn=-2). Ca có
+    # dấu HÀN (nước tiểu trong/tay chân lạnh...) + KHÔNG dấu nhiệt mà bài core nghiêng HÀN mạnh = kê
+    # thanh nhiệt tư âm cho người hàn (lệch cực). Nếu bệnh có thể/bài ẤM hơn (Thận dương hư...) -> đổi.
+    _herb_thermal_map = None
+    _THERMAL_COLD_SIGNS = (
+        "nước tiểu trong", "tiểu trong", "tiểu tiện trong", "nước tiểu trong dài", "tiểu trong dài",
+        "sợ lạnh", "úy hàn", "sợ gió", "rét run", "tay chân lạnh", "chân tay lạnh", "chi lạnh",
+        "lưng lạnh", "bụng lạnh", "lạnh bụng", "tiểu đêm", "ngũ canh", "phân sống", "liệt dương",
+        "đại tiện lỏng", "phân lỏng", "rêu trắng dày", "rêu trắng nhớt")
+    # KHÔNG gồm 'khát/uống nhiều' (mơ hồ trong tiêu khát): dấu nhiệt phải RÕ (sốt/lưỡi đỏ/rêu vàng...).
+    _THERMAL_HEAT_SIGNS = (
+        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ",
+        "rêu vàng", "rêu lưỡi vàng", "gò má đỏ", "má đỏ", "ngũ tâm phiền nhiệt", "lòng bàn tay chân nóng",
+        "bốc hỏa", "tiểu vàng", "nước tiểu vàng", "đại tiện táo", "táo bón", "họng đỏ", "đờm vàng",
+        "mặt đỏ", "đỏ bừng", "khô họng", "họng khô")
+
+    @classmethod
+    def _load_herb_thermal(cls):
+        if cls._herb_thermal_map is not None:
+            return cls._herb_thermal_map
+        import json as _json
+        import os as _os
+        path = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))),
+                             "data", "herb_thermal.json")
+        try:
+            cls._herb_thermal_map = _json.load(open(path, encoding="utf-8")).get("herbs", {})
+        except Exception as e:
+            logger.warning(f"Không nạp được herb_thermal.json: {e}")
+            cls._herb_thermal_map = {}
+        return cls._herb_thermal_map
+
+    @classmethod
+    def _formula_thermal_mean(cls, herbs_str):
+        """Điểm tính vị TRUNG BÌNH của bài (âm = hàn/lương, dương = ôn/nhiệt). None nếu không tra được vị nào."""
+        H = cls._load_herb_thermal()
+        if not H:
+            return None
+        scores = []
+        for h in re.split(r'[,;]', herbs_str or ""):
+            hl = re.sub(r'\([^)]*\)', '', h).strip().lower()
+            if not hl:
+                continue
+            for k, v in H.items():
+                kl = k.lower()
+                if kl == hl or (len(kl) >= 3 and (kl in hl or hl in kl)):
+                    scores.append(v.get("score", 0) if isinstance(v, dict) else v)
+                    break
+        return sum(scores) / len(scores) if scores else None
+
+    def _warmest_alt_warm_formula(self, disease_names, cur_score):
+        """Tìm bài ẤM NHẤT (thể KHÔNG phải nhiệt/hỏa/táo) trong các bệnh đã chốt, ẤM hơn cur_score
+        đủ nhiều + không còn quá hàn. Trả (benh, hoi_chung, bai, vi, score) hoặc None."""
+        dl = {d.strip().lower() for d in (disease_names or [])}
+        best = None
+        for row in (getattr(self, "csv_rows", None) or []):
+            b = (row.get("benh_ly", "") or "").strip()
+            hc = (row.get("hoi_chung", "") or "").strip()
+            bt = (row.get("bai_thuoc", "") or "").strip()
+            vi = (row.get("vi_thuoc", "") or "").strip()
+            if not b or not hc or not bt or not vi or b.lower() not in dl:
+                continue
+            if any(k in hc.lower() for k in ("nhiệt", "hỏa", "hoả", "táo")):  # thể nhiệt -> bài hàn, bỏ
+                continue
+            s = self._formula_thermal_mean(vi)
+            if s is None or s < cur_score + 0.5 or s < -0.3:
+                continue
+            if best is None or s > best[4]:
+                best = (b, hc, bt, vi, s)
+        return best
+
     def _compute_deep_inquiry(self, user_symptoms: str, patient_terms: list,
                               all_symptoms_list: list) -> dict:
         """[VẤN CHẨN CHUYÊN SÂU] Sau khi ĐÃ có chẩn đoán trực tiếp (KHÔNG chặn), gợi ý các yếu tố
@@ -4600,6 +4671,41 @@ class TCMFusionPipeline:
                             f"(Hội chứng {data['syndrome']}) → Dùng bài **{tb['bai_thuoc']}**\n"
                             f"  - *Vị thuốc:* {vi_str or '(chưa cập nhật vị thuốc)'}\n"
                         )
+
+        # [CỔNG THERMAL BÀI/THỂ] Lời khai nghiêng HÀN (nước tiểu trong/tay chân lạnh...) + KHÔNG dấu
+        # nhiệt RÕ mà bài core nghiêng HÀN mạnh -> lệch cực (kê thanh nhiệt tư âm cho người hàn). Nếu
+        # bệnh có thể/bài ẤM hơn (Thận dương hư...) -> thay bài core hàn bằng bài ấm; giữ bài core
+        # KHÔNG-quá-hàn. Không tìm được thể ấm mà bài rất hàn -> cảnh báo lệch cực (giữ nguyên).
+        if core_lines:
+            _has_cold = self._kw_hit_clean(symptoms_lower, self._THERMAL_COLD_SIGNS)
+            _has_heat = self._kw_hit_clean(symptoms_lower, self._THERMAL_HEAT_SIGNS)
+            if _has_cold and not _has_heat:
+                def _line_score(_l):
+                    _m = re.search(r'\*Vị thuốc:\* (.+)', _l)
+                    return self._formula_thermal_mean(_m.group(1)) if _m else None
+                _scored = [(l, _line_score(l)) for l in core_lines]
+                _cold_ls = [(l, s) for l, s in _scored if s is not None and s <= -0.6]
+                _keep = [l for l, s in _scored if s is None or s > -0.6]
+                if _cold_ls:
+                    _worst = min(s for _, s in _cold_ls)
+                    _alt = self._warmest_alt_warm_formula(disease_names, _worst)
+                    if _alt:
+                        _ab, _ahc, _abt, _avi, _asc = _alt
+                        _already = any(f"**{_ab}**" in l and _abt in l for l in _keep)
+                        _warm_line = "" if _already else (
+                            f"- Trị Bệnh **{_ab}** — *Bản – thể ẤM hợp bệnh cảnh HÀN (điều chỉnh hàn–nhiệt)* "
+                            f"(Hội chứng {_ahc}) → Dùng bài **{_abt}**\n"
+                            f"  - *Vị thuốc:* {self._dedupe_herbs(_avi) or '(chưa cập nhật vị thuốc)'}\n"
+                            f"  - *(Lời khai nghiêng HÀN — nước tiểu trong/tay chân lạnh… + không dấu nhiệt "
+                            f"— nên bài thanh nhiệt–tư âm ban đầu đã được thay bằng thể ẤM để không lệch cực.)*\n")
+                        logger.info(f"[CỔNG THERMAL BÀI] Ca hàn/0-nhiệt + bài core hàn ({_worst:.2f}) "
+                                    f"-> thay bằng {_ab} × {_ahc} ({_abt}, {_asc:.2f}).")
+                        core_lines = ([_warm_line] if _warm_line else []) + _keep
+                    elif not _keep:  # toàn bài hàn, không có thể ấm -> cảnh báo (giữ nguyên bài)
+                        _c0 = _cold_ls[0][0].rstrip()
+                        core_lines = [_c0 + "\n  - *⚠️ Cảnh báo hàn–nhiệt: bài nghiêng HÀN mạnh trong "
+                                      "khi lời khai có dấu hàn (nước tiểu trong…) + không dấu nhiệt — "
+                                      "cân nhắc kỹ, nên tham khảo thầy thuốc Đông y.*\n"] + [l for l, _ in _cold_ls[1:]]
 
         has_treatment = bool(core_lines or branch_lines or related_lines)
 
