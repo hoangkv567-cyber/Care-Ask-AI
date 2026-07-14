@@ -3417,6 +3417,28 @@ class TCMFusionPipeline:
             logger.info("[NHẤT QUÁN NHIỆT] Viết lại cơ chế 'âm hư nội nhiệt' bịa trong ca không căn cứ Nhiệt.")
         return llm_text
 
+    # 'sợ lạnh do dương hư / mất cân bằng âm dương' bịa cho core NGOẠI CẢM BIỂU (Phong nhiệt/Phong
+    # hàn phạm biểu/phế) — với biểu chứng, sợ lạnh (ố hàn) là do tà ở BIỂU, vệ khí bị UẤT, KHÔNG phải
+    # dương hư. LLM hay bịa 'phong nhiệt -> dương khí không đủ ấm -> sợ lạnh' (trái cực). Viết lại.
+    _COLD_SIGN_YANGDEF_RE = re.compile(
+        r'(?i)[^.!?]*\b(?:sợ lạnh|ố hàn)\b[^.!?]*?'
+        r'(?:dương\s*khí\s*(?:không\s*đủ|suy|hư|bất\s*túc)|dương\s*hư|dương\s*suy|'
+        r'mất\s*cân\s*bằng[^.!?]*?dương|âm\s*dương\s*(?:mất\s*cân\s*bằng|thất\s*điều)|'
+        r'dương[^.!?]*?không\s*đủ[^.!?]*?ấm)[^.!?]*[.!?]')
+
+    def _fix_cold_sign_in_exterior(self, llm_text: str, primary: str) -> str:
+        """Core NGOẠI CẢM BIỂU: viết lại câu giải thích 'sợ lạnh' bằng cơ chế DƯƠNG HƯ/âm-dương-mất-
+        cân-bằng (bịa, trái cực) thành cơ chế BIỂU đúng (tà ở biểu, vệ khí uất). Ca dương-hư/nội thương
+        KHÔNG đụng (không phải exterior-wind)."""
+        if not llm_text or not self._syndrome_is_exterior_wind(primary):
+            return llm_text
+        _fix = (" Sợ lạnh (ố hàn nhẹ) là do tà khí phạm phần Biểu khiến vệ khí bị uất, chính–tà giao "
+                "tranh ở biểu — biểu hiện biểu chứng giai đoạn đầu của ngoại cảm, KHÔNG phải do dương hư.")
+        new = self._COLD_SIGN_YANGDEF_RE.sub(_fix, llm_text)
+        if new != llm_text:
+            logger.info("[NHẤT QUÁN BIỂU] Viết lại cơ chế 'sợ lạnh do dương hư' bịa cho core ngoại cảm biểu.")
+        return new
+
     def _sync_tieu_thuc_with_bat_cuong(self, llm_text: str, bat_cuong_hint: str, symptoms_str: str) -> str:
         """[ĐỒNG BỘ BÁT CƯƠNG <-> MỤC 4] Bát Cương ở Mục 2 là kết quả deterministic (đồ thị + từ khóa)
         còn thân Mục 4 do LLM viết, nên hai bên thỉnh thoảng vênh nhau theo cả 2 chiều:
@@ -4455,6 +4477,9 @@ class TCMFusionPipeline:
         # [NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Chặn LLM quy 'lưỡi không/ít rêu' (= âm hư/tân dịch khuy) cho
         # huyết hư/khí hư/thấp/huyết ứ khi cốt lõi không liên quan âm/tân (over-fit theo core).
         llm_explanation = self._strip_no_coating_yin_claims(llm_explanation, final_primary, bat_cuong_hint)
+        # [NHẤT QUÁN BIỂU] Core ngoại cảm biểu: 'sợ lạnh' là dấu BIỂU (vệ khí uất), viết lại nếu LLM
+        # bịa cơ chế dương-hư (trái cực, vd Phong nhiệt -> 'dương khí không đủ ấm -> sợ lạnh').
+        llm_explanation = self._fix_cold_sign_in_exterior(llm_explanation, final_primary)
 
         final_markdown += f"{llm_explanation}\n\n"
 
