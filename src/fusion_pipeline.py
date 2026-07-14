@@ -1384,6 +1384,34 @@ class TCMFusionPipeline:
             return f"Dùng bài theo pháp **{bai}**" if self._is_bare_treatment_principle(bai) else m.group(0)
         return re.sub(r'Dùng bài \*\*([^*]+)\*\*', _repl, markdown or "")
 
+    def _dedup_formula_lines(self, lines):
+        """Khử trùng dòng bài Mục 5: CÙNG bệnh + CÙNG BỘ VỊ (tên chỉ khác hậu tố 'phương'/'gia giảm'
+        hay bản relabel 'theo pháp') -> giữ MỘT, ưu tiên dòng có PHƯƠNG DANH thật (có phương/thang/
+        hoàn...). Chống in 2 dòng cùng một bài (vd 'Bổ dương cố sáp' vs 'Bổ dương cố sáp phương')."""
+        result, index = [], {}
+        for _l in lines:
+            _mv = re.search(r'\*Vị thuốc:\* (.+)', _l)
+            _md = re.search(r'Trị Bệnh \*\*([^*]+)\*\*', _l)
+            if not _mv or not _md:
+                result.append(_l)
+                continue
+            herbs = frozenset(h.strip().lower() for h in re.split(r'[,;]', _mv.group(1)) if h.strip())
+            if not herbs:
+                result.append(_l)
+                continue
+            key = (_md.group(1).strip().lower(), herbs)
+            _mb = re.search(r'Dùng bài(?: theo pháp)?\s*\*\*([^*]+)\*\*', _l)
+            _proper = bool(_mb and self._FORMULA_TYPE_WORD.search(_mb.group(1)))
+            if key not in index:
+                index[key] = len(result)
+                result.append(_l)
+            elif _proper:  # trùng bộ vị + dòng mới có phương danh thật -> thay dòng cũ (nếu cũ là bare)
+                _old = result[index[key]]
+                _ob = re.search(r'Dùng bài(?: theo pháp)?\s*\*\*([^*]+)\*\*', _old)
+                if not (_ob and self._FORMULA_TYPE_WORD.search(_ob.group(1))):
+                    result[index[key]] = _l
+        return result
+
     # ------ CỔNG THERMAL BÀI/THỂ: đổi bài HÀN sang thể ẤM cho ca lời khai nghiêng HÀN, 0 dấu nhiệt ------
     # Dùng từ điển tính vị data/herb_thermal.json (score: nhiệt=2 ôn=1 bình=0 lương=-1 hàn=-2). Ca có
     # dấu HÀN (nước tiểu trong/tay chân lạnh...) + KHÔNG dấu nhiệt mà bài core nghiêng HÀN mạnh = kê
@@ -4798,6 +4826,10 @@ class TCMFusionPipeline:
                         "(nước tiểu trong/tay chân lạnh…) + không dấu nhiệt — cân nhắc kỹ, nên tham "
                         "khảo thầy thuốc Đông y trước khi dùng.*\n")
             core_lines = _new_core
+
+        # [KHỬ TRÙNG BÀI] Bỏ dòng cùng bệnh + cùng bộ vị (tên chỉ khác 'phương'/'gia giảm'/'theo pháp').
+        core_lines = self._dedup_formula_lines(core_lines)
+        branch_lines = self._dedup_formula_lines(branch_lines)
 
         has_treatment = bool(core_lines or branch_lines or related_lines)
 
