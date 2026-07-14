@@ -444,6 +444,14 @@ class TCMFusionPipeline:
         text = re.sub(
             r'(?i)\s+(?:nhưng(?:\s+vẫn)?|và(?:\s+vẫn)?|mà|hoặc|cùng(?:\s+với)?|kèm(?:\s+theo)?)\s*(?=[.;]|$)',
             '', text)
+        # MỆNH ĐỀ 'do/vì/khiến...' MỒ CÔI: tân ngữ bị gỡ để lại 'uống nhiều do cơ thể luôn.' / 'khiến
+        # cơ thể.' -> gỡ khi sau liên từ chỉ còn ĐỘN TỪ (cơ thể/bệnh nhân/nó) + trạng từ (luôn/vẫn...)
+        # rồi hết câu. KHÔNG đụng 'do <lý do thật>.' (vd 'do khí hư.') vì sau 'do' là danh từ thật.
+        text = re.sub(
+            r'(?i)\s+(?:do|vì|bởi(?:\s+vì)?|khiến(?:\s+cho)?|làm(?:\s+cho)?|gây(?:\s+ra)?|để)\s+'
+            r'(?:cho\s+)?(?:cơ thể|bệnh nhân|người bệnh|nó)\s*'
+            r'(?:luôn|vẫn|còn|mãi|rất|hơi|khá)?\s*(?=[.;]|$)',
+            '', text)
 
         # Làm sạch các khoảng trắng và dấu câu thừa sau khi xóa
         text = re.sub(r'[ \t]+([,.])', r'\1', text)
@@ -1353,6 +1361,28 @@ class TCMFusionPipeline:
         """True nếu cụm là PHÁP TRỊ (dưỡng âm/bổ thận/hoạt huyết hóa ứ...) chứ KHÔNG phải triệu chứng.
         Bắt đầu bằng động từ pháp-trị -> loại khỏi mọi nơi hiển thị 'triệu chứng' cho người bệnh."""
         return (phrase or "").strip().lower().startswith(cls._TREATMENT_PRINCIPLE_PREFIXES)
+
+    # Hậu tố PHƯƠNG DANH: tên bài có các từ này là PHƯƠNG DANH THẬT (dù mở đầu bằng động từ pháp-trị,
+    # vd 'Ôn thận nạp khí phương', 'Dưỡng vị thang', 'Bổ Trung Ích Khí gia giảm') -> KHÔNG coi là 'trần'.
+    _FORMULA_TYPE_WORD = re.compile(
+        r'\b(thang|hoàn|hoàng|tán|tan|ẩm|đơn|đan|cao|tễ|phương|dịch|hợp|trà|cốm|thần)\b|gia giảm',
+        re.IGNORECASE)
+
+    @classmethod
+    def _is_bare_treatment_principle(cls, name: str) -> bool:
+        """True nếu TÊN BÀI thực chất chỉ là PHÁP TRỊ TRẦN (mở đầu động từ pháp-trị + KHÔNG có hậu tố
+        phương/thang/hoàn/tán/ẩm/đơn/gia giảm...). Dùng để đổi nhãn Mục 5 'Dùng bài <X>' -> 'Dùng bài
+        THEO PHÁP <X>' cho dễ hiểu (X là công năng, không phải phương danh). 'Ôn thận nạp khí phương',
+        'Bổ Trung Ích Khí gia giảm' -> False (giữ 'Dùng bài')."""
+        return cls._is_treatment_principle(name) and not cls._FORMULA_TYPE_WORD.search(name or "")
+
+    def _relabel_bare_phaptri_bai(self, markdown: str) -> str:
+        """Đổi 'Dùng bài **<pháp trị trần>**' -> 'Dùng bài theo pháp **<...>**' trên toàn Mục 5 (một
+        chỗ, phủ mọi call-site). Chỉ đụng tên bài là pháp-trị TRẦN; phương danh thật giữ nguyên."""
+        def _repl(m):
+            bai = m.group(1)
+            return f"Dùng bài theo pháp **{bai}**" if self._is_bare_treatment_principle(bai) else m.group(0)
+        return re.sub(r'Dùng bài \*\*([^*]+)\*\*', _repl, markdown or "")
 
     def _compute_deep_inquiry(self, user_symptoms: str, patient_terms: list,
                               all_symptoms_list: list) -> dict:
@@ -5246,6 +5276,9 @@ class TCMFusionPipeline:
             detailed_kg_data=detailed_kg_data,
             search_terms=search_terms
         )
+        # [NHÃN BÀI = PHÁP TRỊ] Tên bài là pháp-trị TRẦN (vd 'Dưỡng âm thanh nhiệt hoạt huyết') ->
+        # 'Dùng bài <X>' đọc khó hiểu; đổi thành 'Dùng bài theo pháp <X>'. Phương danh thật giữ nguyên.
+        final_markdown = self._relabel_bare_phaptri_bai(final_markdown)
 
         # [CẢNH BÁO MÂU THUẪN GIỚI] Khai giới nhưng lời khai có dấu đặc thù giới KHÁC (vd Nam + 'âm
         # hộ'): cổng giới đã LOẠI bệnh khác giới nên kết quả có thể lệch/generic (Mục 5 trắng) — báo
