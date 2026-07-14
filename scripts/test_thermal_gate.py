@@ -48,6 +48,22 @@ def main():
     chk("dấu KHÓA gồm 'mồ hôi trộm' (âm hư)", "mồ hôi trộm" in F._THERMAL_NO_SWAP_SIGNS)
     chk("dấu KHÓA gồm 'lưỡi đỏ'", "lưỡi đỏ" in F._THERMAL_NO_SWAP_SIGNS)
 
+    # (4) CHẶN cổng khi CORE là NHIỆT (bài hàn đúng cực -> không cảnh báo lệch cực)
+    chk("_syndrome_thermal_sign('Thấp nhiệt')=='nhiet' (chặn cổng)", F._syndrome_thermal_sign("Thấp nhiệt") == "nhiet")
+    chk("_syndrome_thermal_sign('Thận dương hư')!='nhiet'", F._syndrome_thermal_sign("Thận dương hư") != "nhiet")
+
+    # (5) viết lại 'sợ lạnh do dương hư/âm-dương' bịa theo LOẠI core
+    o2 = F.__new__(F)
+    r_thap = o2._fix_contradictory_cold_mechanism(
+        "Thấp nhiệt làm cơ thể mất cân bằng giữa âm và dương, gây ra sợ lạnh.", "Thấp nhiệt", "Lý - Nhiệt")
+    chk("core Thấp nhiệt: sợ lạnh -> THẤP khốn dương (không dương hư)", "khốn át" in r_thap and "dương hư" not in r_thap.split("KHÔNG")[0])
+    r_bieu = o2._fix_contradictory_cold_mechanism(
+        "Sợ lạnh do phong nhiệt làm dương khí không đủ ấm cơ thể.", "Phong nhiệt phạm phế", "Biểu - Nhiệt")
+    chk("core ngoại cảm: sợ lạnh -> BIỂU (vệ khí uất)", "phần Biểu" in r_bieu)
+    s_dh = "Sợ lạnh là do dương khí không đủ ấm, thận dương hư."
+    chk("core DƯƠNG HƯ thật: GIỮ NGUYÊN (sợ lạnh do dương hư là đúng)",
+        o2._fix_contradictory_cold_mechanism(s_dh, "Thận dương hư", "Lý - Hàn - Hư") == s_dh)
+
     ok = 0
     for d, c in cases:
         print(f"  [{'PASS' if c else 'FAIL'}] {d}")

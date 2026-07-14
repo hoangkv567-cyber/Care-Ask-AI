@@ -3417,26 +3417,39 @@ class TCMFusionPipeline:
             logger.info("[NHẤT QUÁN NHIỆT] Viết lại cơ chế 'âm hư nội nhiệt' bịa trong ca không căn cứ Nhiệt.")
         return llm_text
 
-    # 'sợ lạnh do dương hư / mất cân bằng âm dương' bịa cho core NGOẠI CẢM BIỂU (Phong nhiệt/Phong
-    # hàn phạm biểu/phế) — với biểu chứng, sợ lạnh (ố hàn) là do tà ở BIỂU, vệ khí bị UẤT, KHÔNG phải
-    # dương hư. LLM hay bịa 'phong nhiệt -> dương khí không đủ ấm -> sợ lạnh' (trái cực). Viết lại.
-    _COLD_SIGN_YANGDEF_RE = re.compile(
-        r'(?i)[^.!?]*\b(?:sợ lạnh|ố hàn)\b[^.!?]*?'
-        r'(?:dương\s*khí\s*(?:không\s*đủ|suy|hư|bất\s*túc)|dương\s*hư|dương\s*suy|'
-        r'mất\s*cân\s*bằng[^.!?]*?dương|âm\s*dương\s*(?:mất\s*cân\s*bằng|thất\s*điều)|'
-        r'dương[^.!?]*?không\s*đủ[^.!?]*?ấm)[^.!?]*[.!?]')
+    # Câu giải thích 'sợ lạnh' bằng cơ chế DƯƠNG HƯ / mất-cân-bằng-âm-dương (bịa, TRÁI CỰC) khi core
+    # KHÔNG phải dương-hư/hàn: nhiệt/thấp/ngoại-cảm không thể sinh 'dương khí không đủ ấm'. Bắt câu
+    # theo CẢ HAI thứ tự: '...sợ lạnh...dương hư...' và '...mất cân bằng âm dương...sợ lạnh...'.
+    _CMECH = (r'(?:dương\s*khí\s*(?:không\s*đủ|suy|hư|bất\s*túc)|dương\s*hư|dương\s*suy|'
+              r'mất\s*cân\s*bằng[^.!?]*?(?:âm|dương)|âm\s*dương[^.!?]*?(?:mất\s*cân\s*bằng|thất\s*điều|'
+              r'không\s*(?:cân\s*bằng|điều\s*hòa))|dương[^.!?]*?không\s*đủ[^.!?]*?ấm)')
+    _COLD_CONTRADICT_RE = re.compile(
+        r'(?i)[^.!?]*(?:(?:sợ lạnh|ố hàn)[^.!?]*?' + _CMECH + r'|'
+        + _CMECH + r'[^.!?]*?(?:sợ lạnh|ố hàn))[^.!?]*[.!?]')
 
-    def _fix_cold_sign_in_exterior(self, llm_text: str, primary: str) -> str:
-        """Core NGOẠI CẢM BIỂU: viết lại câu giải thích 'sợ lạnh' bằng cơ chế DƯƠNG HƯ/âm-dương-mất-
-        cân-bằng (bịa, trái cực) thành cơ chế BIỂU đúng (tà ở biểu, vệ khí uất). Ca dương-hư/nội thương
-        KHÔNG đụng (không phải exterior-wind)."""
-        if not llm_text or not self._syndrome_is_exterior_wind(primary):
+    def _fix_contradictory_cold_mechanism(self, llm_text: str, primary: str, bat_cuong: str = "") -> str:
+        """Viết lại câu 'sợ lạnh do dương hư/âm-dương mất cân bằng' (bịa, trái cực) khi core KHÔNG phải
+        dương-hư/hàn. Theo TỪNG loại core: ngoại cảm biểu -> tà ở BIỂU (vệ khí uất); thể THẤP -> THẤP
+        khốn át dương khí; core NHIỆT khác -> dấu hư-hàn/kèm theo (hàn nhiệt thác tạp). Core dương-hư/
+        hàn thật ('sợ lạnh do dương hư' là ĐÚNG) -> KHÔNG đụng."""
+        if not llm_text:
             return llm_text
-        _fix = (" Sợ lạnh (ố hàn nhẹ) là do tà khí phạm phần Biểu khiến vệ khí bị uất, chính–tà giao "
-                "tranh ở biểu — biểu hiện biểu chứng giai đoạn đầu của ngoại cảm, KHÔNG phải do dương hư.")
-        new = self._COLD_SIGN_YANGDEF_RE.sub(_fix, llm_text)
+        pl = (primary or "").lower()
+        bc = (bat_cuong or "").lower()
+        if self._syndrome_is_exterior_wind(primary):
+            fix = (" Sợ lạnh (ố hàn nhẹ) là do tà khí phạm phần Biểu khiến vệ khí bị uất, chính–tà giao "
+                   "tranh ở biểu — biểu chứng giai đoạn đầu của ngoại cảm, KHÔNG phải do dương hư.")
+        elif "thấp" in pl:
+            fix = (" Sợ lạnh ở đây do THẤP tà khốn át, dương khí bị vướng không tuyên thông ra bì phu — "
+                   "KHÔNG phải do dương hư.")
+        elif self._syndrome_thermal_sign(primary) == "nhiet" or ("nhiệt" in bc and "hàn" not in bc):
+            fix = (" Sợ lạnh KHÔNG do nhiệt (nhiệt không thể sinh hàn) — có thể là dấu hư-hàn/biểu KÈM "
+                   "THEO (hàn–nhiệt thác tạp), cần đối chiếu thêm mạch–lưỡi.")
+        else:
+            return llm_text
+        new = self._COLD_CONTRADICT_RE.sub(fix, llm_text)
         if new != llm_text:
-            logger.info("[NHẤT QUÁN BIỂU] Viết lại cơ chế 'sợ lạnh do dương hư' bịa cho core ngoại cảm biểu.")
+            logger.info("[NHẤT QUÁN HÀN-NHIỆT] Viết lại cơ chế 'sợ lạnh do dương hư/nhiệt' bịa (core không dương-hư).")
         return new
 
     def _sync_tieu_thuc_with_bat_cuong(self, llm_text: str, bat_cuong_hint: str, symptoms_str: str) -> str:
@@ -4477,9 +4490,9 @@ class TCMFusionPipeline:
         # [NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Chặn LLM quy 'lưỡi không/ít rêu' (= âm hư/tân dịch khuy) cho
         # huyết hư/khí hư/thấp/huyết ứ khi cốt lõi không liên quan âm/tân (over-fit theo core).
         llm_explanation = self._strip_no_coating_yin_claims(llm_explanation, final_primary, bat_cuong_hint)
-        # [NHẤT QUÁN BIỂU] Core ngoại cảm biểu: 'sợ lạnh' là dấu BIỂU (vệ khí uất), viết lại nếu LLM
-        # bịa cơ chế dương-hư (trái cực, vd Phong nhiệt -> 'dương khí không đủ ấm -> sợ lạnh').
-        llm_explanation = self._fix_cold_sign_in_exterior(llm_explanation, final_primary)
+        # [NHẤT QUÁN HÀN-NHIỆT] Core KHÔNG phải dương-hư/hàn (ngoại cảm biểu / thấp / nhiệt): 'sợ lạnh'
+        # KHÔNG do dương hư — viết lại nếu LLM bịa cơ chế dương-hư/âm-dương-mất-cân-bằng (trái cực).
+        llm_explanation = self._fix_contradictory_cold_mechanism(llm_explanation, final_primary, bat_cuong_hint)
 
         final_markdown += f"{llm_explanation}\n\n"
 
@@ -4741,7 +4754,13 @@ class TCMFusionPipeline:
         # Chỉ chạy khi có dấu HÀN/DƯƠNG-HƯ ĐỊNH TÍNH mạnh (nước tiểu trong/tay chân lạnh...) VÀ KHÔNG
         # có bất kỳ dấu KHÓA nào (nhiệt rõ HOẶC âm-hư: mồ hôi trộm/lưỡi đỏ/ít rêu) — chặn loạn thể
         # âm-hư thật. Đổi TỪNG dòng core hàn sang thể WARM-DEF của CHÍNH bệnh đó; không có thì CẢNH BÁO.
-        if core_lines and self._kw_hit_clean(symptoms_lower, self._THERMAL_COLD_STRONG) \
+        # [CHẶN] KHÔNG chạy khi CORE là hội chứng NHIỆT (Thấp nhiệt/Phong nhiệt...) hoặc Bát Cương chốt
+        # NHIỆT: khi đó bài HÀN (thanh nhiệt) là ĐÚNG cực với core, 'sợ lạnh' lẻ không làm bài lệch cực.
+        _core_is_heat = (self._syndrome_thermal_sign(final_primary) == "nhiet"
+                         or ("nhiệt" in (bat_cuong_hint or "").lower()
+                             and "hàn" not in (bat_cuong_hint or "").lower()))
+        if core_lines and not _core_is_heat \
+                and self._kw_hit_clean(symptoms_lower, self._THERMAL_COLD_STRONG) \
                 and not self._kw_hit_clean(symptoms_lower, self._THERMAL_NO_SWAP_SIGNS):
             _new_core = []
             for _l in core_lines:
