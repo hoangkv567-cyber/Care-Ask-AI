@@ -1407,6 +1407,16 @@ class TCMFusionPipeline:
         "ngũ tâm phiền nhiệt", "lòng bàn tay chân nóng", "bàn tay chân nóng", "bốc hỏa", "tiểu vàng",
         "nước tiểu vàng", "đại tiện táo", "táo bón", "họng đỏ", "đờm vàng", "mặt đỏ", "đỏ bừng",
         "khô họng", "họng khô", "mồ hôi trộm", "đạo hãn", "ít rêu", "không rêu", "lưỡi khô")
+    # Dấu HÀN vs NHIỆT cho CẢNH BÁO hàn-nhiệt LẪN LỘN (ca ít dấu mà có ĐỒNG THỜI 2 cực -> khó chốt).
+    # 'khát/uống nhiều' TÍNH là nhiệt ở đây (khác cổng swap): mục tiêu là phát hiện MÂU THUẪN, không kê bài.
+    _MIXED_COLD_SIGNS = (
+        "sợ lạnh", "úy hàn", "rét run", "lạnh run", "tay chân lạnh", "chân tay lạnh", "chi lạnh",
+        "lưng lạnh", "bụng lạnh", "lạnh bụng", "nước tiểu trong", "tiểu trong", "tiểu tiện trong",
+        "phân sống", "đại tiện lỏng", "phân lỏng", "ngũ canh", "rêu trắng dày", "rêu trắng nhớt")
+    _MIXED_HEAT_SIGNS = (
+        "sốt", "phát nhiệt", "triều nhiệt", "khát", "khát nước", "lưỡi đỏ", "chất lưỡi đỏ",
+        "rêu vàng", "rêu lưỡi vàng", "tiểu vàng", "nước tiểu vàng", "họng đỏ", "đờm vàng", "mặt đỏ",
+        "gò má đỏ", "ngũ tâm phiền nhiệt", "lòng bàn tay chân nóng", "bốc hỏa", "táo bón", "khô miệng")
     _WARM_DEF_THE_RE = re.compile(r'dương\s*hư|hư\s*hàn|hàn\s*(?:thấp|ngưng|trệ)|khí\s*hư|tỳ\s*vị\s*hư|thận\s*dương|tỳ\s*dương|dương\s*suy', re.IGNORECASE)
     _NON_DEF_PATHO_RE = re.compile(r'huyết\s*ứ|\bứ\b|đàm|đờm|thấp\s*nhiệt|khí\s*trệ|\btrệ\b|\buất\b|\bkết\b|\btích\b|nghịch', re.IGNORECASE)
 
@@ -5496,6 +5506,24 @@ class TCMFusionPipeline:
                 f"(sợ lạnh/sợ nóng), khát nước, mồ hôi, ăn–ngủ, đại–tiểu tiện (màu/lượng), vị trí đau, thời "
                 f"gian mắc, và ảnh lưỡi/sắc mặt… để chẩn đoán chính xác hơn.\n\n"
             ) + final_markdown
+        else:
+            # [CẢNH BÁO HÀN-NHIỆT LẪN LỘN] Lời khai ÍT dấu (<=5 lời khai) mà có ĐỒNG THỜI dấu HÀN +
+            # dấu NHIỆT -> bệnh cảnh mâu thuẫn cực, chưa đủ dữ kiện chốt thuần một cực (có thể hàn-nhiệt
+            # thác tạp / bản-hư tiêu-thực). Không hỏi lại -> CẢNH BÁO nêu rõ + gợi ý phân định hàn/nhiệt.
+            _mix_txt = self._norm_color_filler((user_symptoms + " " + combined_query).lower())
+            _cold_hits = [k for k in self._MIXED_COLD_SIGNS if self._kw_hit_clean(_mix_txt, [k])]
+            _heat_hits = [k for k in self._MIXED_HEAT_SIGNS if self._kw_hit_clean(_mix_txt, [k])]
+            _n_text = len(_display_terms0)
+            if _cold_hits and _heat_hits and _n_text <= 5:
+                final_markdown = (
+                    f"> ⚠️ **Bệnh cảnh HÀN–NHIỆT lẫn lộn với ít triệu chứng.** Lời khai vừa có dấu HÀN "
+                    f"(**{', '.join(_cold_hits[:3])}**) vừa có dấu NHIỆT (**{', '.join(_heat_hits[:3])}**) "
+                    f"nhưng còn ít dấu — chưa đủ để phân định bệnh nghiêng HÀN hay NHIỆT (có thể là "
+                    f"**hàn–nhiệt thác tạp** hoặc **bản hư tiêu thực**). Kết quả bên dưới chỉ **ĐỊNH HƯỚNG "
+                    f"SƠ BỘ**; vui lòng cho biết rõ hơn: sốt hay sợ lạnh bên nào nổi trội, khát nước "
+                    f"thích uống NÓNG hay LẠNH, màu nước tiểu, rêu lưỡi (trắng/vàng, mỏng/dày nhớt), "
+                    f"đại tiện (táo/lỏng)… để phân định hàn–nhiệt chính xác hơn.\n\n"
+                ) + final_markdown
 
         # [AN TOÀN Y TẾ] Luôn chèn cảnh báo cấp cứu (nếu có cờ đỏ) + miễn trừ trách nhiệm
         final_markdown = self._append_medical_disclaimer(
