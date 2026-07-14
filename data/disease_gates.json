@@ -1340,6 +1340,31 @@
     },
     {
       "names": [
+        "suyễn chứng",
+        "hen phế quản",
+        "hen suyễn",
+        "háo suyễn",
+        "háo chứng"
+      ],
+      "kw_wb": true,
+      "requires": [
+        "suyễn",
+        "khò khè",
+        "thở khò khè",
+        "thở rít",
+        "khó thở",
+        "khí suyễn",
+        "hen",
+        "cơn hen",
+        "thở gấp",
+        "thở dốc",
+        "hụt hơi",
+        "đoản khí",
+        "tức ngực"
+      ]
+    },
+    {
+      "names": [
         "viêm họng",
         "yết hầu",
         "hầu tý",
