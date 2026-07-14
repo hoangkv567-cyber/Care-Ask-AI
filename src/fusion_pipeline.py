@@ -2253,11 +2253,23 @@ class TCMFusionPipeline:
 
     @classmethod
     def _kw_hit_clean(cls, text_lower: str, kws) -> bool:
-        """Khớp keyword theo ranh giới từ (\\b) sau khi gỡ cụm bạn-hữu-giả VÀ che vùng phủ định."""
+        """Khớp keyword theo ranh giới từ (\\b) sau khi gỡ cụm bạn-hữu-giả, TỪ ĐỆM 'màu/mầu' VÀ che
+        vùng phủ định."""
         for _ff in cls._FALSE_FRIEND_PHRASES:
             text_lower = text_lower.replace(_ff, " ")
+        text_lower = cls._norm_color_filler(text_lower)
         text_lower = cls._mask_negated_text(text_lower)
         return any(re.search(r"\b" + re.escape(k) + r"\b", text_lower) for k in kws)
+
+    # Từ ĐỆM 'màu/mầu' đứng TRƯỚC tên màu -> gỡ để 'đờm màu vàng' khớp keyword 'đờm vàng' (rêu/nước
+    # tiểu/nước mũi/da màu X cũng vậy). Có lookahead tên-màu để KHÔNG đụng 'màu sắc'/'mù màu'.
+    _COLOR_FILLER_RE = re.compile(
+        r'\b(?:màu|mầu)\s+(?=(?:vàng|đỏ|trắng|xanh|đen|nâu|tím|hồng|xám|nhạt|đục|trong|sẫm|sậm|nhợt|tái|bạc))')
+
+    @classmethod
+    def _norm_color_filler(cls, text: str) -> str:
+        """Bỏ từ đệm 'màu/mầu' trước tên màu ('đờm màu vàng' -> 'đờm vàng') cho khớp keyword hàn/nhiệt."""
+        return cls._COLOR_FILLER_RE.sub('', text or '')
 
     @staticmethod
     def _syndrome_is_hu(name: str) -> bool:
@@ -2473,7 +2485,7 @@ class TCMFusionPipeline:
         core = syndromes[0]
         if not self._is_amhu_syndrome(core):
             return syndromes, None
-        t = (case_text or "").lower()
+        t = self._norm_color_filler((case_text or "").lower())
         if any(k in t for k in self._AMHU_HEAT_SIGNS):
             return syndromes, None                       # có dấu nhiệt/khô -> âm hư có thể đúng
         if not any(k in t for k in self._AMHU_HUHAN_SIGNS):
@@ -2522,7 +2534,7 @@ class TCMFusionPipeline:
         core = syndromes[0]
         if not self._is_nhiet_syndrome(core):
             return syndromes, None
-        t = (case_text or "").lower()
+        t = self._norm_color_filler((case_text or "").lower())
         if any(k in t for k in self._NHIET_HEAT_SIGNS):
             return syndromes, None                       # có dấu nhiệt -> nhiệt có thể đúng
         if not any(k in t for k in self._NHIET_COLD_SIGNS):
