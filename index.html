@@ -804,6 +804,28 @@
                             `;
                         }
 
+                        // [VẤN CHẨN CHUYÊN SÂU] Gợi ý (KHÔNG bắt buộc) yếu tố bối cảnh (mang thai/giới)
+                        // + triệu chứng đặc hiệu bệnh nghi. Bấm -> gộp lời khai + tự phân tích lại.
+                        let deepInquiryHTML = "";
+                        const di = data.deep_inquiry;
+                        if (di && di.show && Array.isArray(di.factors) && di.factors.length) {
+                            const stateF = di.factors.filter(f => f.type === 'state');
+                            const symF = di.factors.filter(f => f.type === 'symptom');
+                            const stateChips = stateF.map(f => `
+                                <button type="button" class="deep-chip px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-100 hover:bg-indigo-200 text-indigo-800 border border-indigo-300 transition-all"
+                                    data-add="${escapeHtml(f.add)}" data-key="${escapeHtml(f.key || '')}" title="${escapeHtml(f.note || '')}">${escapeHtml(f.label)}</button>`).join("");
+                            const symChips = symF.map(f => `
+                                <button type="button" class="deep-chip px-3 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-indigo-50 text-slate-700 border border-slate-300 transition-all"
+                                    data-add="${escapeHtml(f.add)}" data-key="sym">+ ${escapeHtml(f.label)}</button>`).join("");
+                            deepInquiryHTML = `
+                                <div id="deepInquirySection" class="mt-6 p-5 bg-indigo-50 border border-indigo-200 rounded-2xl shadow-sm">
+                                    <h4 class="text-indigo-900 font-bold text-sm mb-1 flex items-center gap-2">🔎 <span>Vấn chẩn chuyên sâu</span></h4>
+                                    <p class="text-xs text-indigo-700 opacity-80 mb-3">Chọn mục sát với tình trạng của bạn — hệ sẽ tự phân tích lại để chính xác hơn (không bắt buộc).</p>
+                                    ${stateF.length ? `<div class="mb-2.5"><p class="text-[11px] font-bold text-indigo-800 uppercase tracking-wide mb-1.5">Bối cảnh quan trọng</p><div class="flex flex-wrap gap-2">${stateChips}</div></div>` : ""}
+                                    ${symF.length ? `<div><p class="text-[11px] font-bold text-indigo-800 uppercase tracking-wide mb-1.5">Bạn có gặp thêm triệu chứng nào?</p><div class="flex flex-wrap gap-2">${symChips}</div></div>` : ""}
+                                </div>`;
+                        }
+
                         textResult.innerHTML = `
                             ${warningHTML}
                             <div class="mb-4 text-xs bg-teal-50 p-3 rounded-lg text-teal-800 border border-teal-100">
@@ -812,8 +834,36 @@
                             <div>
                                 ${formattedHTML}
                             </div>
+                            ${deepInquiryHTML}
                             ${questionsHTML}
                         `;
+
+                        // Gán sự kiện chip vấn chẩn chuyên sâu: gộp cụm vào ô lời khai (gỡ cụm đối
+                        // lập nếu có: mang thai <-> hành kinh, nam <-> nữ) rồi tự phân tích lại.
+                        setTimeout(() => {
+                            const complMap = { pregnancy: "đang hành kinh", menstruating: "đang mang thai",
+                                               sex_nu: "nam giới", sex_nam: "nữ giới" };
+                            document.querySelectorAll('#deepInquirySection .deep-chip').forEach(btn => {
+                                btn.addEventListener('click', () => {
+                                    const add = btn.getAttribute('data-add');
+                                    if (!add) return;
+                                    const symptomsInput = document.getElementById('symptoms');
+                                    let cur = symptomsInput.value.trim();
+                                    const compl = complMap[btn.getAttribute('data-key')];
+                                    if (compl) {
+                                        const esc = compl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                        cur = cur.replace(new RegExp(',?\\s*' + esc, 'ig'), '')
+                                                 .replace(/^\s*,\s*/, '').replace(/,\s*,/g, ',').trim();
+                                    }
+                                    if (!cur.toLowerCase().includes(add.toLowerCase())) {
+                                        cur += (cur ? ", " : "") + add;
+                                    }
+                                    symptomsInput.value = cur;
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    document.getElementById('diagnoseForm').dispatchEvent(new Event('submit'));
+                                });
+                            });
+                        }, 100);
 
                         // Tự động gán sự kiện cho nút gửi câu trả lời
                         if (data.status === "pending_questions" && data.questions) {

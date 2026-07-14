@@ -1318,6 +1318,110 @@ class TCMFusionPipeline:
         is_preg_postpartum = any(k in t for k in self._PREGNANCY_MARKS)
         return is_menstruating and not is_preg_postpartum
 
+    # Dấu vọng/thiết + tên bệnh lọt nhãn triệu chứng — KHÔNG hỏi lại trong vấn chẩn chuyên sâu (người
+    # bệnh không tự quan sát lưỡi/mạch). Đồng bộ với bộ lọc /api/related-symptoms.
+    _DEEP_INQUIRY_EXCLUDE = ("lưỡi", "rêu", "mạch", "sắc mặt", "sắc da", "gò má", "má đỏ", "mặt đỏ",
+                             "mặt nhợt", "mặt vàng", "mặt trắng", "vết răng", "hằn răng", "ung thư",
+                             "u não", "khối u", "hội chứng", "bệnh ")
+
+    def _compute_deep_inquiry(self, user_symptoms: str, patient_terms: list,
+                              all_symptoms_list: list) -> dict:
+        """[VẤN CHẨN CHUYÊN SÂU] Sau khi ĐÃ có chẩn đoán trực tiếp (KHÔNG chặn), gợi ý các yếu tố
+        ĐÁNG HỎI để tinh chỉnh: (1) BỐI CẢNH quyết định (mang thai / giới) — làm ĐỔI bệnh danh/bài
+        thuốc; (2) triệu chứng ĐẶC HIỆU của bệnh đang nghi mà người dùng CHƯA khai. Chỉ hiện khi
+        thật sự đáng hỏi (có nhánh bối cảnh, hoặc nhiều bệnh hòa nhau, hoặc lời khai còn mỏng).
+        Trả {show, factors:[{type,label,add,note}]}. Mỗi factor.add = cụm sẽ GỘP vào lời khai khi
+        người dùng chọn -> hệ tự phân tích lại."""
+        try:
+            raw = (user_symptoms or "").lower()
+            terms = [t for t in (patient_terms or []) if t and t.strip()]
+            matched = self._find_matching_diseases(terms, raw_user_text=user_symptoms)
+            if not matched:
+                return {"show": False, "factors": []}
+            gb = matched[0].get("ratio", 0.0)
+            window = [m for m in matched if m.get("ratio", 0.0) >= gb - 0.15 and m.get("ratio", 0.0) >= 0.30]
+            window_names = [m.get("benh_ly", "") for m in window]
+            factors = []
+
+            # --- (1a) BỐI CẢNH: MANG THAI — chỉ hỏi khi (i) trạng thái sinh sản CÒN MỞ (không dấu
+            #     mang thai/hành kinh), (ii) không phải nam, VÀ (iii) chẩn đoán ĐANG XOAY quanh phụ
+            #     khoa/sinh sản (cửa sổ top có bệnh kinh nguyệt/thai sản) HOẶC có dấu TRỄ/MẤT KINH
+            #     (chỉ điểm mang thai kinh điển). KHÔNG dựa vào trùng triệu chứng CHUNG (sốt/đau mình
+            #     của 'Sản hậu phát nhiệt') để tránh mời 'mang thai' cho ca hô hấp. Chọn 'đang mang
+            #     thai' -> xét bệnh thai sản + tránh vị chống chỉ định thai kỳ; 'đang hành kinh' ->
+            #     loại bệnh thai sản (xem _reproductive_state_conflict).
+            sex = getattr(self, "_patient_sex", None) or self._infer_sex(user_symptoms)
+            has_preg = any(k in raw for k in self._PREGNANCY_MARKS)
+            has_mens = any(k in raw for k in self._MENSTRUATION_MARKS)
+            _repro_dz_kw = ("kinh nguyệt", "nguyệt kinh", "thống kinh", "bế kinh", "băng lậu",
+                            "canh niên", "tử cung", "buồng trứng", "đới hạ", "sản", "thai", "nhâm thần")
+            repro_window = any(
+                any(k in (m.get("benh_ly", "") or "").lower() for k in _repro_dz_kw)
+                for m in window[:3])
+            missed_period = any(k in raw for k in ("chậm kinh", "trễ kinh", "mất kinh", "tắt kinh"))
+            if sex != "nam" and not has_preg and not has_mens and (repro_window or missed_period):
+                factors.append({"type": "state", "key": "pregnancy", "label": "Đang mang thai",
+                                "add": "đang mang thai",
+                                "note": "Xét các bệnh thai sản (động thai...) và tránh vị thuốc chống chỉ định thai kỳ."})
+                factors.append({"type": "state", "key": "menstruating",
+                                "label": "Đang trong kỳ kinh (không mang thai)",
+                                "add": "đang hành kinh",
+                                "note": "Loại các bệnh thai sản không phù hợp."})
+
+            # --- (1b) BỐI CẢNH: GIỚI — chỉ khi CHƯA rõ giới VÀ cửa sổ có CẢ bệnh nam LẪN nữ (giới
+            #     thật sự phân biệt ứng viên). Nếu chỉ toàn bệnh một giới thì giới đã ngầm định -> bỏ.
+            if not sex:
+                dz_sex = self._get_disease_sex()
+                sset = {dz_sex.get(self._norm_disease_name(n)) for n in window_names}
+                if "nam" in sset and "nu" in sset:
+                    factors.append({"type": "state", "key": "sex_nu", "label": "Nữ giới",
+                                    "add": "nữ giới", "note": ""})
+                    factors.append({"type": "state", "key": "sex_nam", "label": "Nam giới",
+                                    "add": "nam giới", "note": ""})
+
+            # --- (2) TRIỆU CHỨNG ĐẶC HIỆU của bệnh nghi (chưa khai) — gom từ CSV các bệnh trong cửa
+            #     sổ, loại đã khai + vọng/thiết + generic, xếp theo IDF (đặc hiệu lên trước).
+            input_join = (" ".join(terms) + " " + raw).lower()
+            sym_idf, sym_disp = {}, {}
+            for m in window[:4]:
+                bl = m.get("benh_ly", "")
+                for row in self.csv_rows:
+                    if row.get("benh_ly") != bl:
+                        continue
+                    for s in (row.get("triệu_chứng", "") or "").split(","):
+                        s = s.strip()
+                        sl = s.lower()
+                        if not sl or len(s) > 28:
+                            continue
+                        if any(k in sl for k in self._DEEP_INQUIRY_EXCLUDE) or self._is_pulse_field(sl):
+                            continue
+                        if self._is_generic_symptom(sl):
+                            continue
+                        if sl in input_join or any(sl in t or t in sl for t in terms):
+                            continue
+                        if sl not in sym_idf:
+                            sym_idf[sl] = self._symptom_idf(sl)
+                            sym_disp[sl] = s
+            ranked = sorted(sym_idf.keys(), key=lambda k: sym_idf[k], reverse=True)
+            kept_syms = []
+            for k in ranked:
+                if any(len(o.split()) >= 2 and o in k and o != k for o in kept_syms):
+                    continue  # bỏ cụm dài trùng bộ phận cụm ngắn đã giữ
+                kept_syms.append(k)
+                factors.append({"type": "symptom", "key": k, "label": sym_disp[k],
+                                "add": sym_disp[k], "note": ""})
+                if len(kept_syms) >= 6:
+                    break
+
+            has_state = any(f["type"] == "state" for f in factors)
+            ambiguous = len(window) >= 2
+            thin = len(all_symptoms_list or []) <= 3
+            show = bool(factors) and (has_state or ambiguous or thin)
+            return {"show": show, "factors": factors[:9]}
+        except Exception:
+            logger.exception("Lỗi tính vấn chẩn chuyên sâu")
+            return {"show": False, "factors": []}
+
     def _validate_disease_safety(self, disease_name: str, patient_symptoms: list, raw_user_text: str) -> bool:
         """Bộ lọc an toàn lâm sàng (DATA-HÓA): loại bệnh danh chuyên khoa nếu lời khai không có triệu
         chứng chỉ điểm tương ứng. Luật đọc từ data/disease_gates.json (thay ~460 dòng if/else cũ —
@@ -5151,6 +5255,11 @@ class TCMFusionPipeline:
         # — chỉ triệu chứng người dùng thật nhập + vọng chẩn, KHÔNG bung synonym nội bộ).
         input_fusion_str = ", ".join(all_symptoms_list) if all_symptoms_list else (combined_query or "Không xác định")
 
+        # [VẤN CHẨN CHUYÊN SÂU] KHÔNG chặn kết quả (khác hẳn 'hỏi bệnh động' đã gỡ): tính SAU khi đã
+        # có chẩn đoán trực tiếp, chỉ GỢI Ý yếu tố đáng hỏi (mang thai/giới + triệu chứng đặc hiệu
+        # bệnh nghi) để người dùng chọn -> frontend gộp vào lời khai + tự phân tích lại tinh chỉnh.
+        deep_inquiry = self._compute_deep_inquiry(user_symptoms, all_symptoms_list, all_symptoms_list)
+
         # [ĐÃ BỎ] Cơ chế sinh câu hỏi hỏi bệnh động (Dynamic Fallback) đã được gỡ theo yêu cầu:
         # hệ thống LUÔN trả kết quả chẩn đoán trực tiếp, không hỏi thêm lâm sàng (bỏ 1 lượt gọi LLM
         # ~30s và luồng pending_questions). Giữ 2 khóa status/questions (rỗng) để tương thích ngược frontend.
@@ -5163,6 +5272,7 @@ class TCMFusionPipeline:
                 "answer": final_markdown,
                 "data": detailed_kg_data
             },
+            "deep_inquiry": deep_inquiry,
             "status": "completed",
             "questions": []
         }
