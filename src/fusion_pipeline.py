@@ -1288,6 +1288,36 @@ class TCMFusionPipeline:
         ds = self._get_disease_sex().get(self._norm_disease_name(disease_name))
         return ds is not None and ds != patient_sex
 
+    # [CỔNG TRẠNG THÁI SINH SẢN] Bệnh THAI SẢN / HẬU SẢN chỉ xảy ra khi ĐANG MANG THAI hoặc MỚI SINH.
+    # Tên tự chỉ điểm nên khớp theo keyword (bền hơn liệt kê từng bệnh; bắt cả bệnh thêm sau này).
+    _PREG_POSTPARTUM_DISEASE_KWS = (
+        "động thai", "lưu sản", "tiểu sản", "hoạt thai", "quỷ thai", "thai phù", "thai lậu",
+        "sản hậu", "hậu sản", "nhâm thần", "tử giản", "sản giật", "ố trở", "dọa sảy", "sảy thai")
+    # Dấu ĐANG HÀNH KINH (đang có kinh -> chắc chắn KHÔNG mang thai). CỐ Ý KHÔNG gồm 'bế kinh/chậm
+    # kinh/trễ kinh' — tắt/trễ kinh có thể là DẤU MANG THAI SỚM, không đủ khẳng định không mang thai.
+    _MENSTRUATION_MARKS = (
+        "kinh nguyệt", "hành kinh", "thống kinh", "rong kinh", "chu kỳ kinh",
+        "kinh trước kỳ", "kinh sau kỳ", "kinh ra", "ra kinh")
+    # Dấu ĐANG MANG THAI / HẬU SẢN -> TẮT cổng (giữ bệnh thai sản).
+    _PREGNANCY_MARKS = (
+        "có thai", "mang thai", "có bầu", "mang bầu", "thai nghén", "thai kỳ", "đang nghén",
+        "ốm nghén", "mới sinh", "sau sinh", "mới đẻ", "sau đẻ", "hậu sản", "cho con bú", "sinh con")
+
+    def _reproductive_state_conflict(self, disease_name: str, raw_user_text: str,
+                                     patient_symptoms=None) -> bool:
+        """True khi bệnh THAI SẢN/HẬU SẢN nhưng lời khai cho thấy đang HÀNH KINH + KHÔNG dấu mang
+        thai/hậu sản -> phải LOẠI (đang có kinh thì không thể mang thai; 'Động thai/Lưu sản' vô lý,
+        'Sản hậu ...' lạc bối cảnh). Bệnh không phải thai sản -> False. Xem _PREG_POSTPARTUM_DISEASE_KWS."""
+        dl = (disease_name or "").lower()
+        if not any(k in dl for k in self._PREG_POSTPARTUM_DISEASE_KWS):
+            return False
+        t = (raw_user_text or "").lower()
+        if patient_symptoms:
+            t += " " + " ".join(patient_symptoms).lower()
+        is_menstruating = any(k in t for k in self._MENSTRUATION_MARKS)
+        is_preg_postpartum = any(k in t for k in self._PREGNANCY_MARKS)
+        return is_menstruating and not is_preg_postpartum
+
     def _validate_disease_safety(self, disease_name: str, patient_symptoms: list, raw_user_text: str) -> bool:
         """Bộ lọc an toàn lâm sàng (DATA-HÓA): loại bệnh danh chuyên khoa nếu lời khai không có triệu
         chứng chỉ điểm tương ứng. Luật đọc từ data/disease_gates.json (thay ~460 dòng if/else cũ —
@@ -1444,7 +1474,8 @@ class TCMFusionPipeline:
             if _triage_ok or _cc_ratio_v > 0:
                 # Áp dụng bộ lọc an toàn lâm sàng + cổng giới tính ngăn chẩn đoán sai lệch
                 if self._validate_disease_safety(row["benh_ly"], patient_symptoms, raw_user_text) \
-                        and not self._sex_conflict(row["benh_ly"], _patient_sex):
+                        and not self._sex_conflict(row["benh_ly"], _patient_sex) \
+                        and not self._reproductive_state_conflict(row["benh_ly"], raw_user_text, patient_symptoms):
                     matched_candidates.append({
                         "benh_ly": row["benh_ly"],
                         "hoi_chung": row["hoi_chung"],
@@ -3692,9 +3723,21 @@ class TCMFusionPipeline:
         # (mũi hoặc phát sốt/đau mình): giáo khoa định nghĩa biểu chứng bằng Ố HÀN PHÁT NHIỆT đồng thời.
         _bieu_specific = ["ngạt mũi", "hắt hơi", "sổ mũi", "chảy nước mũi", "chảy mũi", "nghẹt mũi", "rét run"]
         _bieu_cold = ["sợ gió", "sợ lạnh", "úy phong", "úy hàn"]
-        has_bieu_indicator = any(kw in symptoms_lower_all for kw in _bieu_specific) or (
-            any(kw in symptoms_lower_all for kw in _bieu_cold)
-            and any(kw in symptoms_lower_all for kw in ["sốt", "phát nhiệt", "đau mình", "mình mẩy đau", "nhức mỏi toàn thân"])
+        # [CHỐNG BIỂU OAN CHO CORE NỘI THƯƠNG HƯ] 'sợ lạnh + đau mình' (KHÔNG sốt, KHÔNG dấu mũi họng)
+        # KHÔNG phải biểu khi CỐT LÕI là nội thương HƯ: với hư core, sợ lạnh = úy hàn do dương/vệ khí
+        # hư, đau mình = cơ nhục thất dưỡng (khí huyết hư) — đều LÝ. Tính là biểu -> dán 'Biểu - Hư'
+        # mâu thuẫn (Khí huyết hư vốn Lý; Mục 3 tự nói 'sợ lạnh do dương khí hư'). VẪN giữ biểu cho:
+        # (a) dấu mũi họng đặc hiệu (ngoại cảm chắc chắn, kể cả trên nền hư -> biểu-lý đồng bệnh);
+        # (b) sợ lạnh + PHÁT SỐT đồng thời (ố hàn phát nhiệt kinh điển) — kể cả core hư.
+        _core_internal_def = self._syndrome_is_hu(final_primary) \
+            and not self._syndrome_is_exterior_wind(final_primary)
+        _has_bieu_cold = any(kw in symptoms_lower_all for kw in _bieu_cold)
+        _has_fever = any(kw in symptoms_lower_all for kw in ["sốt", "phát nhiệt"])
+        _has_bieu_ache = any(kw in symptoms_lower_all for kw in ["đau mình", "mình mẩy đau", "nhức mỏi toàn thân"])
+        has_bieu_indicator = (
+            any(kw in symptoms_lower_all for kw in _bieu_specific)
+            or (_has_bieu_cold and _has_fever)
+            or (_has_bieu_cold and _has_bieu_ache and not _core_internal_def)
         )
         # Dấu LÝ: chỉ điểm nội thương/tạng phủ CỤ THỂ. KHÔNG đếm 'mệt mỏi'/'chóng mặt' — triệu chứng
         # phổ quát có cả trong cảm mạo biểu chứng cấp; bản cũ đếm chúng khiến ca thuần biểu (Phong
