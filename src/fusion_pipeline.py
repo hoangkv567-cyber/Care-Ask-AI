@@ -438,6 +438,13 @@ class TCMFusionPipeline:
             r'(?:cảm thấy|cảm nhận|cảm giác)?\s*(?=[.;]|$)',
             '', text)
 
+        # LIÊN TỪ MỒ CÔI cuối câu: gỡ triệu chứng bịa sau 'nhưng vẫn/và...' để lại đuôi cụt ('uống
+        # nhiều nhưng vẫn.', 'mất ngủ và.') — cũng bắt trường hợp LLM 7B tự sinh câu cụt. Chỉ gỡ khi
+        # liên từ đứng NGAY trước dấu chấm/phẩy/hết chuỗi (không còn vế sau) -> không phá 'A và B.'.
+        text = re.sub(
+            r'(?i)\s+(?:nhưng(?:\s+vẫn)?|và(?:\s+vẫn)?|mà|hoặc|cùng(?:\s+với)?|kèm(?:\s+theo)?)\s*(?=[.;]|$)',
+            '', text)
+
         # Làm sạch các khoảng trắng và dấu câu thừa sau khi xóa
         text = re.sub(r'[ \t]+([,.])', r'\1', text)
         text = re.sub(r'[ \t]*,[ \t]*,', ',', text)
@@ -1324,6 +1331,29 @@ class TCMFusionPipeline:
                              "mặt nhợt", "mặt vàng", "mặt trắng", "vết răng", "hằn răng", "ung thư",
                              "u não", "khối u", "hội chứng", "bệnh ")
 
+    # PHÁP TRỊ / công năng bài thuốc (dưỡng âm/bổ thận/hoạt huyết hóa ứ...) — data CSV/graph đôi khi
+    # nhét lẫn vào field triệu_chứng. Đây là việc THẦY THUỐC LÀM, KHÔNG phải triệu chứng người bệnh
+    # -> CẤM hiển thị như 'triệu chứng' ở vấn chẩn chuyên sâu / gợi ý liên quan. Nhận diện = cụm BẮT
+    # ĐẦU bằng động từ pháp-trị (bigram đặc trưng, không mở đầu triệu chứng thật -> tránh bắt nhầm).
+    _TREATMENT_PRINCIPLE_PREFIXES = (
+        "dưỡng ", "bổ ", "tư âm", "tư bổ", "tư dưỡng", "thanh nhiệt", "thanh can", "thanh phế",
+        "thanh tâm", "thanh vị", "thanh thấp", "ôn dương", "ôn trung", "ôn kinh", "ôn bổ", "ôn thận",
+        "lương huyết", "hoạt huyết", "hóa ứ", "hóa đàm", "hóa thấp", "kiện tỳ", "kiện vận", "sơ can",
+        "sơ phong", "ích khí", "ích âm", "ích thận", "cố thận", "cố tinh", "cố sáp", "liễm hãn",
+        "sáp tinh", "thăng dương", "giáng nghịch", "giáng hỏa", "bình can", "tiềm dương", "trấn kinh",
+        "trấn tâm", "an thần", "định thần", "khai khiếu", "sinh tân", "nhuận táo", "nhuận tràng",
+        "táo thấp", "khu phong", "tán hàn", "tán ứ", "trừ thấp", "trừ đàm", "trừ phong", "lợi thủy",
+        "lợi niệu", "lợi tiểu", "lý khí", "hành khí", "chỉ thống", "chỉ khái", "chỉ huyết", "chỉ tả",
+        "giải biểu", "giải độc", "giải cơ", "tả hỏa", "hòa giải", "điều hòa", "bổ huyết", "bổ khí",
+        "bổ trung", "bổ âm", "bổ dương", "trừ hàn", "khứ hàn", "tuyên phế", "túc giáng", "nạp khí",
+    )
+
+    @classmethod
+    def _is_treatment_principle(cls, phrase: str) -> bool:
+        """True nếu cụm là PHÁP TRỊ (dưỡng âm/bổ thận/hoạt huyết hóa ứ...) chứ KHÔNG phải triệu chứng.
+        Bắt đầu bằng động từ pháp-trị -> loại khỏi mọi nơi hiển thị 'triệu chứng' cho người bệnh."""
+        return (phrase or "").strip().lower().startswith(cls._TREATMENT_PRINCIPLE_PREFIXES)
+
     def _compute_deep_inquiry(self, user_symptoms: str, patient_terms: list,
                               all_symptoms_list: list) -> dict:
         """[VẤN CHẨN CHUYÊN SÂU] Sau khi ĐÃ có chẩn đoán trực tiếp (KHÔNG chặn), gợi ý các yếu tố
@@ -1395,7 +1425,7 @@ class TCMFusionPipeline:
                             continue
                         if any(k in sl for k in self._DEEP_INQUIRY_EXCLUDE) or self._is_pulse_field(sl):
                             continue
-                        if self._is_generic_symptom(sl):
+                        if self._is_treatment_principle(s) or self._is_generic_symptom(sl):
                             continue
                         if sl in input_join or any(sl in t or t in sl for t in terms):
                             continue

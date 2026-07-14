@@ -239,6 +239,8 @@ async def get_related_symptoms_endpoint(req: SymptomsRequest):
                     continue
                 if any(kw in key for kw in EXCLUDE_KEYWORDS):     # bỏ lưỡi/sắc mặt/mạch/tên bệnh
                     continue
+                if fusion_engine._is_treatment_principle(name):   # bỏ PHÁP TRỊ (dưỡng âm/bổ thận...) lọt nhãn triệu chứng
+                    continue
                 if _is_redundant(key):                            # bỏ cụm-con trùng nghĩa
                     continue
                 related_symptoms.append(name)
