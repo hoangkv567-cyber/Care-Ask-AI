@@ -4466,8 +4466,10 @@ class TCMFusionPipeline:
            - Bạn TUYỆT ĐỐI KHÔNG ĐƯỢC tự ý lôi kéo các hội chứng tạng phủ suy nhược khác không được chốt ở Bước 1 vào lập luận. Ví dụ: Nếu chẩn đoán cốt lõi và hội chứng kèm theo ở Bước 1 ({final_primary}, {final_concurrent}) KHÔNG có 'Thận âm hư', 'Tỳ dương hư' hay 'Can âm hư', bạn TUYỆT ĐỐI CẤM (PROHIBITED) sử dụng các thuật ngữ đó làm nguyên nhân gây hư hỏa hay bốc hỏa ở Mục 3 và Mục 4. Hãy giải thích cơ chế bốc hỏa/đỏ mặt dựa trên chính khí huyết hư (Ví dụ: huyết hư bất năng nhiếp dương, khiến hư hỏa/hư dương nổi lên trên) để đảm bảo tính nhất quán tuyệt đối giữa các bước chẩn đoán.
            - CỤ THỂ VỚI DẤU HẰN RĂNG / LƯỠI NHẠT: nếu chẩn đoán đã chốt ({final_primary}, {final_concurrent}) KHÔNG chứa 'Tỳ khí hư' hay 'Tỳ hư', TUYỆT ĐỐI CẤM (PROHIBITED) viết câu kết luận chẩn đoán kiểu "... cho thấy Tỳ khí hư" / "chứng tỏ Tỳ hư". Chỉ được diễn đạt hằn răng như CƠ CHẾ (Tỳ chủ vận hóa thủy thấp kém) bám theo đúng hội chứng cốt lõi, không nâng nó thành một hội chứng chẩn đoán riêng.
            - CỤ THỂ VỚI KHÍ HƯ TỔNG QUÁT: nếu hội chứng cốt lõi là 'Khí hư' / 'Khí huyết lưỡng hư' (tên KHÔNG mang tạng phủ cụ thể), cơ chế sinh khí phải quy về Tỳ (nguồn hóa sinh khí huyết, hậu thiên chi bản) và Phế (chủ khí). TUYỆT ĐỐI CẤM (PROHIBITED) viết "khí của tạng Can suy yếu" hay "Can khí hư" — bệnh lý điển hình của Can là KHÍ TRỆ/KHÍ UẤT (Thực chứng, thuộc Mục 4), Can KHÔNG phải nguồn Bản Hư của khí. Nếu hội chứng kèm theo là Can khí uất kết/Can khí uất trệ, nó chỉ được biện luận ở Mục 4 (Tiêu Thực), TUYỆT ĐỐI CẤM lấy nó làm nguyên nhân gốc của Bản Hư ở Mục 3.
-        16. CHỐT CHẶN MỒ HÔI (ĐẠO HÃN vs TỰ HÃN) (MỚI):
-           - ĐẠO HÃN (mồ hôi trộm — ra mồ hôi lúc ngủ, tỉnh dậy thì hết): BẮT BUỘC là biểu hiện của ÂM HƯ. Cơ chế: âm hư sinh nội nhiệt (hư hỏa), nhiệt bức tân dịch tiết ra ngoài về đêm. Phải giải thích ở "### 3. Phân tích Cơ chế Gốc (Bản Hư)" theo cơ chế âm hư → hư nhiệt → bức mồ hôi. TUYỆT ĐỐI CẤM (PROHIBITED) giải thích đạo hãn bằng cơ chế "khí hư/khí huyết hư/dương hư không giữ được mồ hôi" (đó là cơ chế của TỰ HÃN), và CẤM xếp đạo hãn vào "### 4. Phân tích Cơ chế Ngọn (Tiêu Thực)".
+        16. CHỐT CHẶN MỒ HÔI (ĐẠO HÃN vs TỰ HÃN) — CHỌN CƠ CHẾ THEO HỘI CHỨNG CỐT LÕI ĐÃ CHỐT ({final_primary}):
+           - ĐẠO HÃN (mồ hôi trộm — ra mồ hôi lúc ngủ, tỉnh dậy thì hết): TUYỆT ĐỐI CẤM (PROHIBITED) giải thích bằng cơ chế "vệ (khí/dương) biểu bất cố không giữ được mồ hôi" (đó là cơ chế của TỰ HÃN ban ngày) và CẤM xếp đạo hãn vào "### 4. Phân tích Cơ chế Ngọn (Tiêu Thực)". Cơ chế ĐÚNG chọn theo cốt lõi:
+             (a) Cốt lõi là ÂM HƯ, HOẶC lời khai CÓ dấu nhiệt (lưỡi đỏ/ít rêu/khô, khát, ngũ tâm phiền nhiệt, triều nhiệt): đạo hãn do âm hư sinh nội nhiệt (hư hỏa), nhiệt bức tân dịch tiết ra ngoài về đêm.
+             (b) Cốt lõi là HUYẾT HƯ / KHÍ HUYẾT HƯ / TÂM (TỲ) HUYẾT HƯ VÀ lời khai KHÔNG có dấu nhiệt nào (lưỡi hồng nhạt, rêu trắng mỏng nhuận): đạo hãn thuộc thể HƯ theo lối "HÃN VI TÂM CHI DỊCH" (mồ hôi là dịch của Tâm) — tâm huyết/doanh âm bất túc, đêm ngủ vệ khí nhập lý khiến phần biểu tạm sơ hở, doanh âm hư KHÔNG liễm nhiếp được tân dịch nên mồ hôi rỉ ra khi ngủ, KHÔNG kèm nội nhiệt. Đây là đạo hãn THỂ HUYẾT HƯ (không phải âm hư hỏa vượng, cũng không phải vệ biểu bất cố) — tuân luật 15, KHÔNG tự thêm hội chứng âm hư mới ngoài Bước 1. Pháp đi kèm: dưỡng Tâm bổ huyết + cố biểu liễm hãn.
            - TỰ HÃN (mồ hôi tự ra ban ngày, vận động càng ra nhiều): mới là biểu hiện KHÍ HƯ/DƯƠNG HƯ (vệ khí bất cố, tấu lý không kín) → giải thích theo cơ chế khí hư bất cố nhiếp ở phần Bản Hư.
         17. QUẦNG THÂM MẮT / QUẦNG ĐEN DƯỚI MẮT — XÉT THEO ĐÚNG THỨ TỰ ƯU TIÊN (a) → (b) → (c), CHỌN NHÁNH ĐẦU TIÊN KHỚP:
            (a) NẾU bệnh danh đã chốt là viêm mũi dị ứng (Tỵ cứu) HOẶC lời khai có bộ ba mũi dị ứng (ngứa mũi + hắt hơi + nghẹt/tắc mũi): quầng thâm dưới mắt là "QUẦNG THÂM DỊ ỨNG" (allergic shiner) — niêm mạc mũi-xoang sung huyết mạn gây ứ trệ tĩnh mạch quanh ổ mắt. Đây là dấu VỌNG CHẨN ĐI KÈM ỦNG HỘ chính bệnh mũi dị ứng và phản ánh nền Phế/Vệ khí hư. BẮT BUỘC diễn giải theo hướng này. TUYỆT ĐỐI CẤM (PROHIBITED) trong nhánh này viết các cụm phủ nhận như "không thuộc bệnh cảnh", "không liên quan bệnh cảnh lần này", "chỉ do thiếu ngủ/mệt mỏi/huyết ứ nhẹ" — vì quầng thâm ở đây CHÍNH LÀ một biểu hiện của bệnh. (Tuân luật 15: không tự biên hội chứng mới ngoài Bước 1.)
@@ -4836,6 +4838,37 @@ class TCMFusionPipeline:
                         "(nước tiểu trong/tay chân lạnh…) + không dấu nhiệt — cân nhắc kỹ, nên tham "
                         "khảo thầy thuốc Đông y trước khi dùng.*\n")
             core_lines = _new_core
+
+        # [CỔNG THERMAL NGƯỢC — BÀI BỔ DƯƠNG NÓNG cho ca ÂM-HƯ/0-HÀN] Đối xứng cổng trên: bài bổ DƯƠNG
+        # tính NÓNG (thermal_mean >= +0.6, vd Hữu quy hoàn Phụ tử/Nhục quế ~+1.0) kê cho ca CÓ dấu âm-hư/
+        # nhiệt (đạo hãn/lưỡi đỏ… trong _THERMAL_NO_SWAP_SIGNS) + KHÔNG dấu hàn (_THERMAL_COLD_STRONG) =
+        # LỆCH CỰC (trợ hỏa hại âm, nặng mồ hôi trộm). Bệnh danh khớp thể 'Thận hư' TỔNG QUÁT tra nhầm cả
+        # bài bổ Thận DƯƠNG (nóng) lẫn Thận ÂM (mát) -> loại bài NÓNG khỏi nhánh Tiêu nếu VẪN còn bài trị
+        # khác (Bản/Tiêu mát hơn/related); dòng Bản thì CẢNH BÁO (không xóa bài chính). Chỉ chạy khi có dấu
+        # âm-hư/nhiệt RÕ + VẮNG dấu hàn -> KHÔNG đụng ca dương-hư thật (có dấu hàn thì bài nóng đúng cực).
+        if (self._kw_hit_clean(symptoms_lower, self._THERMAL_NO_SWAP_SIGNS)
+                and not self._kw_hit_clean(symptoms_lower, self._THERMAL_COLD_STRONG)):
+            def _is_hot_yang_line(_l):
+                _m = re.search(r'\*Vị thuốc:\*\s*(.+)', _l)
+                return bool(_m) and self._formula_thermal_mean(_m.group(1)) >= 0.6
+            _kept_branch = [_l for _l in branch_lines if not _is_hot_yang_line(_l)]
+            if len(_kept_branch) < len(branch_lines) and (core_lines or _kept_branch or related_lines):
+                for _l in branch_lines:
+                    if _is_hot_yang_line(_l):
+                        logger.info(f"[CỔNG THERMAL NGƯỢC] Loại bài bổ dương NÓNG khỏi Tiêu "
+                                    f"(ca âm-hư/nhiệt, 0 dấu hàn): {_l.strip()[:70]}")
+                branch_lines = _kept_branch
+            if core_lines:
+                _cc = []
+                for _l in core_lines:
+                    if _is_hot_yang_line(_l):
+                        _cc.append(_l.rstrip() +
+                            "\n  - *⚠️ Lưu ý hàn–nhiệt: bài bổ dương tính NÓNG trong khi lời khai có dấu "
+                            "âm-hư/nhiệt (mồ hôi trộm/lưỡi đỏ…) và KHÔNG dấu hàn — dễ trợ hỏa hại âm; nên "
+                            "cân nhắc bài bổ ÂM (Lục vị/Kỷ cúc địa hoàng) và tham khảo thầy thuốc Đông y.*\n")
+                    else:
+                        _cc.append(_l)
+                core_lines = _cc
 
         # [KHỬ TRÙNG BÀI] Bỏ dòng cùng bệnh + cùng bộ vị (tên chỉ khác 'phương'/'gia giảm'/'theo pháp').
         core_lines = self._dedup_formula_lines(core_lines)
