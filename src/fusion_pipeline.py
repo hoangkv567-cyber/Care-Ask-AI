@@ -3536,31 +3536,68 @@ class TCMFusionPipeline:
         # Chiều 2: Bát Cương khẳng định có Thực nhưng Mục 4 chối 'Không có' -> dựng lại thân
         # Mục 4 deterministic từ template Thực chứng khớp với triệu chứng thực sự có mặt.
         if hint_has_thuc and body_says_none:
-            symptoms_l = (symptoms_str or "").lower()
-            # Khớp key template; bỏ key CON nằm trong key dài hơn ('tiếng nấc' ⊂ 'tiếng nấc nhanh
-            # mà không liên tục') để không chèn 2 câu gần trùng cho cùng một triệu chứng.
-            matched = [(k, t) for k, t in self._THUC_TEMPLATES.items() if k in symptoms_l]
-            matched = [(k, t) for k, t in matched
-                       if not any(k != k2 and k in k2 for k2, _ in matched)]
-            parts, seen = [], set()
-            for _k, tmpl in matched:
-                if tmpl not in seen:
-                    parts.append(tmpl)
-                    seen.add(tmpl)
-            if not parts:
-                # Không khớp template nào -> câu chung chung, nhưng KHÔNG khẳng định 'Bản Hư' nếu
-                # Bát Cương là Thực thuần túy (không có chữ Hư) — tránh mâu thuẫn với Mục 3.
-                if hint_has_hu:
-                    parts = ["Trên nền chính khí hư suy (Bản Hư), định vị Bát Cương cho thấy còn tồn tại "
-                             "yếu tố Thực (tà khí/đàm thấp ứ trệ) chưa được giải quyết; các biểu hiện "
-                             "liên quan đã được biện giải ở phần trên."]
-                else:
-                    parts = ["Định vị Bát Cương cho thấy còn yếu tố Thực (tà khí/đàm thấp ứ trệ) "
-                             "chi phối bệnh cảnh; các biểu hiện liên quan đã được biện giải ở phần trên."]
+            prose = self._build_tieu_thuc_prose(symptoms_str, hint_has_hu)
             logger.info("[ĐỒNG BỘ MỤC 4] Bát Cương có Thực nhưng Mục 4 ghi 'Không có' -> dựng lại từ template.")
-            return head.rstrip() + "\n\n" + marker + "\n- " + " ".join(parts) + "\n"
+            return head.rstrip() + "\n\n" + marker + "\n- " + prose + "\n"
 
         return llm_text
+
+    def _build_tieu_thuc_prose(self, symptoms_str: str, has_hu: bool) -> str:
+        """Dựng thân Mục 4 (Tiêu Thực) deterministic từ _THUC_TEMPLATES khớp triệu chứng thật của ca.
+        Không khớp template nào -> câu chung chung (có/không 'Bản Hư' tùy Bát Cương có chữ Hư)."""
+        symptoms_l = (symptoms_str or "").lower()
+        # Khớp key template; bỏ key CON nằm trong key dài hơn ('tiếng nấc' ⊂ 'tiếng nấc nhanh...').
+        matched = [(k, t) for k, t in self._THUC_TEMPLATES.items() if k in symptoms_l]
+        matched = [(k, t) for k, t in matched
+                   if not any(k != k2 and k in k2 for k2, _ in matched)]
+        parts, seen = [], set()
+        for _k, tmpl in matched:
+            if tmpl not in seen:
+                parts.append(tmpl)
+                seen.add(tmpl)
+        if not parts:
+            if has_hu:
+                parts = ["Trên nền chính khí hư suy (Bản Hư), định vị Bát Cương cho thấy còn tồn tại "
+                         "yếu tố Thực (tà khí/đàm thấp ứ trệ) chưa được giải quyết; các biểu hiện "
+                         "liên quan đã được biện giải ở phần trên."]
+            else:
+                parts = ["Định vị Bát Cương cho thấy còn yếu tố Thực (tà khí/đàm thấp ứ trệ) "
+                         "chi phối bệnh cảnh; các biểu hiện liên quan đã được biện giải ở phần trên."]
+        return " ".join(parts)
+
+    def _sync_muc4_with_muc5_tieu(self, md: str, symptoms_str: str) -> str:
+        """[ĐỒNG BỘ MỤC 4 ↔ MỤC 5 — GROUND TRUTH = ĐIỀU TRỊ] Nếu Mục 5 ĐÃ kê bài TIÊU (nhánh/kèm
+        theo) mà Mục 4 vẫn chốt 'Không có Tiêu Thực' -> TỰ MÂU THUẪN (đã kê bài tả Tiêu tức là CÓ
+        Tiêu). Bắt cả hội chứng HỖN HỢP (vd 'Âm hư táo nhiệt') mà _syndrome_is_thuc_pure bỏ sót ->
+        Bát Cương suy Hư/Thực trượt. Lấy Mục 5 làm CHUẨN: nâng Bát Cương 'Hư' -> 'Bản Hư Tiêu Thực'
+        và viết lại Mục 4 mô tả phần Tiêu. Chạy MUỘN (sau khi ráp Mục 5) trên toàn markdown."""
+        if not re.search(r"Trị Bệnh[^\n]*Tiêu\s*[–\-]\s*(nhánh|thể KB khớp hội chứng kèm)",
+                         md, re.IGNORECASE):
+            return md  # Mục 5 không có bài Tiêu -> không cần đồng bộ
+        m4 = re.search(r"(### 4\.[^\n]*\n)(.*?)(?=\n### |\Z)", md, re.DOTALL)
+        if not m4:
+            return md
+        body4 = m4.group(2).strip().lstrip("-*• ").strip().lower()
+        if not self._muc4_denies_tieu_thuc(body4):
+            return md  # Mục 4 đã mô tả Tiêu -> nhất quán
+        mbc = re.search(r"\*\*Thuộc chứng:\*\*\s*([^\n]*)", md)
+        bc_l = mbc.group(1).lower() if mbc else ""
+        has_hu = bool(re.search(r"\bhư\b", bc_l))
+        # 1) Nâng Bát Cương: 'Hư' đứng riêng -> 'Bản Hư Tiêu Thực'; nếu không có Hư riêng -> thêm 'Thực'.
+        if mbc and "bản hư tiêu thực" not in bc_l and not re.search(r"\bthực\b", bc_l):
+            new_bc = re.sub(r"(-\s*)Hư(?=\s|\(|$)", r"\1Bản Hư Tiêu Thực", mbc.group(0), count=1)
+            if new_bc == mbc.group(0):
+                new_bc = re.sub(r"(\s*\(tổng cương)", r" - Thực\1", mbc.group(0), count=1)
+                if new_bc == mbc.group(0):
+                    new_bc = mbc.group(0).rstrip() + " - Thực"
+            md = md[:mbc.start()] + new_bc + md[mbc.end():]
+            m4 = re.search(r"(### 4\.[^\n]*\n)(.*?)(?=\n### |\Z)", md, re.DOTALL)  # offset dịch
+        # 2) Viết lại thân Mục 4 mô tả phần Tiêu (từ template khớp triệu chứng).
+        prose = self._build_tieu_thuc_prose(symptoms_str, has_hu)
+        md = md[:m4.start()] + m4.group(1) + "- " + prose + "\n" + md[m4.end():]
+        logger.info("[ĐỒNG BỘ MỤC 4↔5] Mục 5 có bài Tiêu nhưng Mục 4 chối 'Không có Tiêu Thực' "
+                    "-> nâng Bản Hư Tiêu Thực + viết lại Mục 4.")
+        return md
 
     @staticmethod
     def _append_prose_to_muc3(head: str, prose: str) -> str:
@@ -4961,7 +4998,11 @@ class TCMFusionPipeline:
                 final_markdown += "\n- **Lời khuyên bổ sung:** Ôn bổ Tỳ Thận, phù trợ dương khí.\n"
         elif "Khí huyết đều hư" in final_primary:
             final_markdown += "\n- **Lời khuyên bổ sung:** Ích khí kiện Tỳ, bổ huyết dưỡng Tâm để phục hồi từ gốc.\n"
-            
+
+        # [ĐỒNG BỘ MỤC 4↔5 — MUỘN] Chốt cuối: nếu Mục 5 đã kê bài TIÊU mà Mục 4 vẫn 'Không có Tiêu
+        # Thực' -> nâng Bát Cương Bản Hư Tiêu Thực + viết lại Mục 4 (bắt hội chứng hỗn hợp thuc_pure sót).
+        final_markdown = self._sync_muc4_with_muc5_tieu(final_markdown, symptoms_str)
+
         return final_markdown
 
 
