@@ -4243,6 +4243,15 @@ class TCMFusionPipeline:
             all_bat_cuong.discard("Hư")
             all_bat_cuong.discard("Thực")
             all_bat_cuong.add("Bản Hư Tiêu Thực")
+        elif "Hư" in all_bat_cuong and any(self._syndrome_is_thuc_pure(n) for n in _chosen_names):
+            # [BẢN HƯ TIÊU THỰC — KÈM THEO THỰC mà metadata THIẾU tag 'Thực'] Cốt lõi HƯ + hội chứng
+            # KÈM THEO là THỰC thuần (vd 'Hàn thấp'/'Đàm thấp'/'Thực trệ'/'Vị khí nghịch' — thấp/đàm/
+            # trệ/nghịch là tà Thực) nhưng metadata Neo4j của kèm-theo chỉ tag Hàn/Lý mà THIẾU 'Thực'
+            # -> Bát Cương ra 'Hư' thuần -> Mục 4 chốt OAN 'Không có Tiêu Thực' dù có tà Thực rõ VÀ Mục 5
+            # kê bài trị Tiêu (Bảo hòa hoàn...). Nâng thành Bản Hư Tiêu Thực để Mục 4 mô tả đúng phần Tiêu.
+            all_bat_cuong.discard("Hư")
+            all_bat_cuong.discard("Thực")
+            all_bat_cuong.add("Bản Hư Tiêu Thực")
         # (2) Trục HÀN/NHIỆT không được đứng cạnh nhau rời rạc: hai phía đều có căn cứ THẬT
         #     (triệu chứng chủ quan/tên hội chứng) -> 'Hàn Nhiệt Thác Tạp'; một phía -> giữ phía đó;
         #     tag chỉ đến từ metadata không căn cứ -> bỏ cả hai.
