@@ -89,6 +89,14 @@ QUY TẮC:
 - CHỈ dùng đúng các giá trị liệt kê. Không chắc chắn -> "không rõ" (KHÔNG đoán, KHÔNG bịa).
 - Chú ý ánh sáng ấm làm lưỡi trông đỏ hơn thực: nếu hồng nhạt/bình thường thì để "hồng nhạt".
 - Vết lõm gợn sóng ở mép lưỡi = "dau_rang": "có" (dù nhẹ). Mép trơn nhẵn hoàn toàn = "không".
+- "reu_mau"="không rêu" CHỈ KHI mặt lưỡi NHẴN BÓNG như gương (kính diện thiệt): đỏ/đỏ sẫm, thấy rõ
+  gai nhú, TUYỆT ĐỐI không có lớp màng phủ. Lưỡi BÌNH THƯỜNG luôn có lớp rêu trắng mỏng — nếu thấy
+  BẤT KỲ lớp màng/rêu nào (dù mỏng, dù chỉ ở giữa hoặc gốc lưỡi) -> "reu_mau"="trắng" + "reu_day"="mỏng".
+  MẶC ĐỊNH nghiêng "trắng", KHÔNG chọn "không rêu" trừ khi chắc chắn nhẵn bóng không màng.
+- NHẤT QUÁN: nếu "reu_mau"="không rêu" thì "reu_day" và "reu_chat" PHẢI ="không rõ" (không có rêu thì
+  không có độ dày/chất rêu). Nếu mô tả được chất rêu (nhuận/nhớt/khô) tức là CÓ rêu -> KHÔNG được ="không rêu".
+- "vet_nut"="có" CHỈ KHI thấy RÃNH NỨT SÂU rõ ràng (đường nứt dọc/ngang hằn sâu trên thân lưỡi). Bề mặt
+  lấm tấm gai/nhú, nếp gợn nông, hạt li ti, hay ánh phản chiếu ướt -> KHÔNG phải vết nứt -> "không".
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
 
@@ -107,5 +115,10 @@ QUY TẮC:
 - CHỈ dùng đúng các giá trị liệt kê. Không chắc chắn -> "không rõ" (KHÔNG đoán, KHÔNG bịa).
 - Chú ý ánh sáng/nền ấm làm da trông vàng: nếu da vốn trắng nhợt thì để "trắng nhợt", KHÔNG "vàng úa".
 - Có son/phấn/kẻ mắt rõ -> "trang_diem": "có" (vì trang điểm che sắc mặt thật).
+- "go_ma_do"="có" CHỈ KHI thấy RÕ hai MẢNG ĐỎ KHU TRÚ ngay trên hai gò má (ửng đỏ từng vùng nổi bật
+  trên nền da nhợt — dấu "lưỡng quyền hồng" của âm hư). Da đều màu / hồng tự nhiên nhẹ / má chỉ hơi ấm /
+  đỏ ở QUANH MŨI-MIỆNG-CẰM (mụn, kích ứng, mao mạch) -> KHÔNG phải gò má đỏ -> "không". MẶC ĐỊNH "không"
+  trừ khi mảng đỏ khu trú ở gò má thật rõ.
+- "quang_tham"="có" chỉ khi quầng dưới mắt sẫm màu rõ; bóng đổ do ánh sáng -> "không".
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
