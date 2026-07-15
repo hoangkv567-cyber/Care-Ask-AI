@@ -4469,12 +4469,10 @@ class TCMFusionPipeline:
         16. CHỐT CHẶN MỒ HÔI (ĐẠO HÃN vs TỰ HÃN) (MỚI):
            - ĐẠO HÃN (mồ hôi trộm — ra mồ hôi lúc ngủ, tỉnh dậy thì hết): BẮT BUỘC là biểu hiện của ÂM HƯ. Cơ chế: âm hư sinh nội nhiệt (hư hỏa), nhiệt bức tân dịch tiết ra ngoài về đêm. Phải giải thích ở "### 3. Phân tích Cơ chế Gốc (Bản Hư)" theo cơ chế âm hư → hư nhiệt → bức mồ hôi. TUYỆT ĐỐI CẤM (PROHIBITED) giải thích đạo hãn bằng cơ chế "khí hư/khí huyết hư/dương hư không giữ được mồ hôi" (đó là cơ chế của TỰ HÃN), và CẤM xếp đạo hãn vào "### 4. Phân tích Cơ chế Ngọn (Tiêu Thực)".
            - TỰ HÃN (mồ hôi tự ra ban ngày, vận động càng ra nhiều): mới là biểu hiện KHÍ HƯ/DƯƠNG HƯ (vệ khí bất cố, tấu lý không kín) → giải thích theo cơ chế khí hư bất cố nhiếp ở phần Bản Hư.
-        17. CHỐT CHẶN QUẦNG THÂM MẮT / QUẦNG ĐEN DƯỚI MẮT (MỚI):
-           - Quầng thâm (quầng đen) dưới mắt là dấu hiệu NỀN MẠN TÍNH — trong Đông y thường liên quan Thận hư, huyết ứ hoặc mất ngủ/mệt mỏi kéo dài. Nó KHÔNG phải triệu chứng của ngoại cảm cấp.
-           - TUYỆT ĐỐI CẤM (PROHIBITED) bịa cơ chế gán quầng thâm mắt cho ngoại tà cấp tính (kiểu "ngoại tà ức chế làm khí huyết không lưu thông vùng dưới mắt") — tà khí mới phạm Biểu vài ngày không kịp tạo quầng thâm.
-           - NGOẠI LỆ VIÊM MŨI DỊ ỨNG (ưu tiên xét TRƯỚC hai gạch đầu dòng dưới): NẾU bệnh danh đã chốt là viêm mũi dị ứng (Tỵ cứu) HOẶC lời khai có bộ ba mũi dị ứng (ngứa mũi + hắt hơi + nghẹt/tắc mũi) — thì quầng thâm dưới mắt nhiều khả năng là "quầng thâm dị ứng" (allergic shiner): niêm mạc mũi-xoang sung huyết mạn gây ứ trệ tĩnh mạch quanh ổ mắt. Đây là dấu VỌNG CHẨN ĐI KÈM ỦNG HỘ chính bệnh mũi dị ứng (thường phản ánh nền Phế/Vệ khí hư), TUYỆT ĐỐI KHÔNG được gạt thành "dấu nền không liên quan bệnh cảnh". Hãy nhận định nó là biểu hiện gắn với bệnh mũi dị ứng; nếu chẩn đoán có nền hư thì coi là chỉ điểm bản hư Phế/Vệ khí, không tự biên hội chứng mới ngoài Bước 1 (theo luật 15).
-           - Nếu chẩn đoán đã chốt ({final_primary}, {final_concurrent}) là ngoại cảm biểu chứng (KHÔNG phải viêm mũi dị ứng) và KHÔNG có hội chứng nội thương kèm theo: chỉ được nhận định trung tính rằng quầng thâm mắt là dấu hiệu nền có từ trước (có thể do thiếu ngủ, mệt mỏi kéo dài hoặc huyết ứ nhẹ), KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này và nên theo dõi thêm; CẤM dùng nó làm bằng chứng cho tà khí ở Biểu.
-           - CHỈ KHI chẩn đoán đã chốt có hội chứng Thận hư/huyết ứ/mất ngủ lâu ngày: mới được giải thích quầng thâm mắt theo đúng cơ chế của hội chứng đó, và tuân thủ luật 15 (không tự biên hội chứng mới ngoài Bước 1).
+        17. QUẦNG THÂM MẮT / QUẦNG ĐEN DƯỚI MẮT — XÉT THEO ĐÚNG THỨ TỰ ƯU TIÊN (a) → (b) → (c), CHỌN NHÁNH ĐẦU TIÊN KHỚP:
+           (a) NẾU bệnh danh đã chốt là viêm mũi dị ứng (Tỵ cứu) HOẶC lời khai có bộ ba mũi dị ứng (ngứa mũi + hắt hơi + nghẹt/tắc mũi): quầng thâm dưới mắt là "QUẦNG THÂM DỊ ỨNG" (allergic shiner) — niêm mạc mũi-xoang sung huyết mạn gây ứ trệ tĩnh mạch quanh ổ mắt. Đây là dấu VỌNG CHẨN ĐI KÈM ỦNG HỘ chính bệnh mũi dị ứng và phản ánh nền Phế/Vệ khí hư. BẮT BUỘC diễn giải theo hướng này. TUYỆT ĐỐI CẤM (PROHIBITED) trong nhánh này viết các cụm phủ nhận như "không thuộc bệnh cảnh", "không liên quan bệnh cảnh lần này", "chỉ do thiếu ngủ/mệt mỏi/huyết ứ nhẹ" — vì quầng thâm ở đây CHÍNH LÀ một biểu hiện của bệnh. (Tuân luật 15: không tự biên hội chứng mới ngoài Bước 1.)
+           (b) NẾU KHÔNG thuộc (a) VÀ chẩn đoán đã chốt ({final_primary}, {final_concurrent}) CÓ hội chứng nội thương phù hợp (Thận hư / huyết ứ / Phế khí hư / Tỳ hư / mất ngủ lâu ngày): giải thích quầng thâm mắt theo ĐÚNG cơ chế của hội chứng nội thương đó (vd Phế/Thận khí hư → khí huyết không vinh nhuận vùng dưới mắt), tuân luật 15.
+           (c) NẾU KHÔNG thuộc (a),(b) — tức chẩn đoán là ngoại cảm biểu chứng cấp THUẦN TÚY, KHÔNG kèm nội thương: chỉ nhận định trung tính rằng quầng thâm mắt là dấu hiệu nền có từ trước (có thể do thiếu ngủ, mệt mỏi kéo dài hoặc huyết ứ nhẹ), KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này và nên theo dõi thêm. TUYỆT ĐỐI CẤM (PROHIBITED) bịa cơ chế gán quầng thâm cho ngoại tà cấp (tà mới phạm Biểu vài ngày không kịp tạo quầng thâm) và CẤM dùng nó làm bằng chứng cho tà khí ở Biểu.
         """
         
         try:
@@ -5332,6 +5330,12 @@ class TCMFusionPipeline:
                 "đoản khí", "hụt hơi", "đuối sức", "hay cảm", "dễ cảm", "cảm vặt",
                 "tái đi tái lại", "tái phát", "đau lưng mỏi gối", "mỏi gối", "tiểu đêm",
                 "mạch vi nhược", "gầy sút",
+                # Quầng thâm/đen dưới mắt = dấu MẠN TÍNH (ứ trệ tĩnh mạch quanh ổ mắt) — trong bệnh
+                # cảnh mũi dị ứng là 'allergic shiner' phản ánh nền Phế/Vệ khí hư. Giữ hội chứng HƯ
+                # trong danh sách để reground core về thể bản-hư của bệnh (vd Tỵ cứu × Phế khí hư hàn)
+                # thay vì đóng khung thành ngoại cảm cấp thuần Thực. Vô hại cho cảm mạo cấp thật: hội
+                # chứng Hư chỉ lên cốt lõi nếu GROUNDED vào bệnh danh (cảm mạo không có thể Hư -> giữ Biểu).
+                "quầng thâm", "quầng đen", "thâm quầng",
             ]
             if not any(k in symptoms_lower_all for k in _chronic_hu_signs):
                 _kept = [s for s in final_syndromes if not self._syndrome_is_hu(s)]
