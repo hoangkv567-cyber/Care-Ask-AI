@@ -1177,7 +1177,7 @@ class TCMFusionPipeline:
             return 0.0, None
         admit = getattr(self, "_cc_admit_set", None)
         if admit is None:
-            admit = set(self._SEX_MARK_MALE) | set(self._SEX_MARK_FEMALE)
+            admit = set(self._SEX_MARK_MALE) | set(self._SEX_MARK_FEMALE) | set(self._CARDINAL_MARK_EXTRA)
             self._cc_admit_set = admit
         best, hit = 0.0, None
         for k in cc_str.split(","):
@@ -1264,6 +1264,14 @@ class TCMFusionPipeline:
                         "huyết trắng", "âm đạo", "âm hộ", "tử cung", "mang thai", "có thai",
                         "thai nghén", "sản hậu", "hành kinh", "kinh trước kỳ", "kinh sau kỳ",
                         "buồng trứng", "tắc tia sữa")
+
+    # Chủ chứng CARDINAL đặc hiệu KHÁC (curated, ngoài dấu giới) nạp vào _cc_admit_set để CỨU bệnh bị
+    # pha loãng ratio khi khớp đúng chủ chứng đặc hiệu (matched/total loãng do danh mục triệu chứng dài).
+    # CHỈ nhận dấu ĐẶC HIỆU MẠNH (df thấp, gần như định danh 1 họ bệnh): 'ngứa mũi' df=2 (chỉ Tỵ cứu &
+    # Viêm xoang) là dấu phân biệt VIÊM MŨI DỊ ỨNG — KHÔNG xuất hiện ở Cảm mạo/Khái thấu thường, nên
+    # boost an toàn. Bài học tuning: dấu mũi CHUNG ('hắt hơi' df=6, 'ngạt mũi' df=11) KHÔNG nạp vì có ở
+    # cảm mạo -> dễ soán ngôi oan. Mở rộng tập này PHẢI đo lại eval_gold recall trước/sau. [[chu-chung-cardinal-matching]]
+    _CARDINAL_MARK_EXTRA = ("ngứa mũi",)
 
     @classmethod
     def _infer_sex(cls, text: str):
@@ -4464,7 +4472,8 @@ class TCMFusionPipeline:
         17. CHỐT CHẶN QUẦNG THÂM MẮT / QUẦNG ĐEN DƯỚI MẮT (MỚI):
            - Quầng thâm (quầng đen) dưới mắt là dấu hiệu NỀN MẠN TÍNH — trong Đông y thường liên quan Thận hư, huyết ứ hoặc mất ngủ/mệt mỏi kéo dài. Nó KHÔNG phải triệu chứng của ngoại cảm cấp.
            - TUYỆT ĐỐI CẤM (PROHIBITED) bịa cơ chế gán quầng thâm mắt cho ngoại tà cấp tính (kiểu "ngoại tà ức chế làm khí huyết không lưu thông vùng dưới mắt") — tà khí mới phạm Biểu vài ngày không kịp tạo quầng thâm.
-           - Nếu chẩn đoán đã chốt ({final_primary}, {final_concurrent}) là ngoại cảm biểu chứng và KHÔNG có hội chứng nội thương kèm theo: chỉ được nhận định trung tính rằng quầng thâm mắt là dấu hiệu nền có từ trước (có thể do thiếu ngủ, mệt mỏi kéo dài hoặc huyết ứ nhẹ), KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này và nên theo dõi thêm; CẤM dùng nó làm bằng chứng cho tà khí ở Biểu.
+           - NGOẠI LỆ VIÊM MŨI DỊ ỨNG (ưu tiên xét TRƯỚC hai gạch đầu dòng dưới): NẾU bệnh danh đã chốt là viêm mũi dị ứng (Tỵ cứu) HOẶC lời khai có bộ ba mũi dị ứng (ngứa mũi + hắt hơi + nghẹt/tắc mũi) — thì quầng thâm dưới mắt nhiều khả năng là "quầng thâm dị ứng" (allergic shiner): niêm mạc mũi-xoang sung huyết mạn gây ứ trệ tĩnh mạch quanh ổ mắt. Đây là dấu VỌNG CHẨN ĐI KÈM ỦNG HỘ chính bệnh mũi dị ứng (thường phản ánh nền Phế/Vệ khí hư), TUYỆT ĐỐI KHÔNG được gạt thành "dấu nền không liên quan bệnh cảnh". Hãy nhận định nó là biểu hiện gắn với bệnh mũi dị ứng; nếu chẩn đoán có nền hư thì coi là chỉ điểm bản hư Phế/Vệ khí, không tự biên hội chứng mới ngoài Bước 1 (theo luật 15).
+           - Nếu chẩn đoán đã chốt ({final_primary}, {final_concurrent}) là ngoại cảm biểu chứng (KHÔNG phải viêm mũi dị ứng) và KHÔNG có hội chứng nội thương kèm theo: chỉ được nhận định trung tính rằng quầng thâm mắt là dấu hiệu nền có từ trước (có thể do thiếu ngủ, mệt mỏi kéo dài hoặc huyết ứ nhẹ), KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này và nên theo dõi thêm; CẤM dùng nó làm bằng chứng cho tà khí ở Biểu.
            - CHỈ KHI chẩn đoán đã chốt có hội chứng Thận hư/huyết ứ/mất ngủ lâu ngày: mới được giải thích quầng thâm mắt theo đúng cơ chế của hội chứng đó, và tuân thủ luật 15 (không tự biên hội chứng mới ngoài Bước 1).
         """
         

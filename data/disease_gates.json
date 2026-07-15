@@ -1391,13 +1391,32 @@
       "names": [
         "xoang"
       ],
+      "kw_wb": true,
       "requires": [
         "xoang",
-        "mũi",
-        "ngạt mũi",
-        "chảy nước mũi",
-        "sổ mũi",
-        "tịt mũi"
+        "đau nhức vùng mặt",
+        "nhức vùng mặt",
+        "đau vùng mặt",
+        "đau vùng má",
+        "đau má",
+        "đau gò má",
+        "đau trán",
+        "nhức trán",
+        "đau vùng trán",
+        "đau đầu vùng trán",
+        "nặng mặt",
+        "nặng đầu",
+        "chảy mủ",
+        "dịch mủ",
+        "chảy dịch mủ",
+        "nước mũi vàng",
+        "nước mũi xanh",
+        "mũi vàng",
+        "mũi đặc",
+        "nước mũi đặc",
+        "đau nhức xoang",
+        "nhức xoang",
+        "ê ẩm vùng mặt"
       ]
     },
     {
