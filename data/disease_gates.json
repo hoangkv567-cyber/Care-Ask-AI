@@ -1895,19 +1895,16 @@
       "kw_wb": true,
       "requires": [
         "ho",
-        "đờm",
-        "đàm",
-        "khạc",
-        "khó thở",
         "khò khè",
+        "thở khò khè",
+        "thở rít",
+        "khạc đờm",
+        "khạc đàm",
+        "khạc",
         "suyễn",
-        "đoản khí",
-        "hụt hơi",
-        "tức ngực",
-        "thở",
-        "phổi",
-        "phế",
-        "hô hấp"
+        "khó thở gắng sức",
+        "khó thở khi gắng sức",
+        "hen phế quản"
       ]
     },
     {
