@@ -4231,11 +4231,14 @@ class TCMFusionPipeline:
         _any_hu_chosen = any(self._syndrome_is_hu(n) for n in _chosen_names)
         _any_thuc_evidence = has_thuc or any(self._syndrome_is_thuc_pure(n) for n in _chosen_names)
         if not _any_hu_chosen:
-            if "Bản Hư Tiêu Thực" in all_bat_cuong or "Hư" in all_bat_cuong:
-                all_bat_cuong.discard("Bản Hư Tiêu Thực")
-                all_bat_cuong.discard("Hư")
-                if _any_thuc_evidence:
-                    all_bat_cuong.add("Thực")
+            # Không hội chứng HƯ nào được chọn -> bỏ mọi tag Hư/Bản-Hư-Tiêu-Thực (dù metadata có).
+            all_bat_cuong.discard("Bản Hư Tiêu Thực")
+            all_bat_cuong.discard("Hư")
+            # Có bằng chứng THỰC (cốt lõi thuc_pure như 'Hàn thấp'/'Thấp nhiệt' HOẶC has_thuc) -> thêm
+            # 'Thực' KỂ CẢ khi metadata của cốt lõi THIẾU tag 'Thực' (nếu không Bát Cương rụng trục
+            # Hư/Thực, ra 'Lý - Hàn' cụt trong khi Mục 3 chốt 'Thực chứng thuần túy').
+            if _any_thuc_evidence:
+                all_bat_cuong.add("Thực")
         elif "Bản Hư Tiêu Thực" in all_bat_cuong:
             all_bat_cuong.discard("Hư")
             all_bat_cuong.discard("Thực")
