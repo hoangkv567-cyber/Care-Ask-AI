@@ -3565,15 +3565,30 @@ class TCMFusionPipeline:
                          "chi phối bệnh cảnh; các biểu hiện liên quan đã được biện giải ở phần trên."]
         return " ".join(parts)
 
+    # Token TÀ THỰC / sản vật bệnh lý (dùng phân biệt kèm-theo THỰC thật với kèm-theo HƯ thuần).
+    _THUC_COMPONENT_TOKS = {"nhiệt", "hỏa", "hoả", "thấp", "đàm", "đờm", "trọc", "ẩm", "ứ", "trệ",
+                            "uất", "kết", "tích", "nghịch", "độc", "táo", "thực"}
+
+    @classmethod
+    def _syndrome_has_thuc_component(cls, syn: str) -> bool:
+        """True nếu TÊN hội chứng chứa token tà THỰC/sản vật bệnh lý (nhiệt/thấp/đàm/ứ/trệ/tích/táo/
+        nghịch...), KỂ CẢ khi cũng có 'hư' — vd 'Âm hư táo nhiệt' (táo/nhiệt) = có Tiêu; 'Khí huyết
+        lưỡng hư' = KHÔNG có tà thực. Chặt hơn _syndrome_is_thuc_pure (vốn đòi THỰC thuần, bỏ sót hỗn hợp)."""
+        toks = set(re.findall(r'[^\W\d_]+', (syn or '').lower()))
+        return bool(toks & cls._THUC_COMPONENT_TOKS)
+
     def _sync_muc4_with_muc5_tieu(self, md: str, symptoms_str: str) -> str:
-        """[ĐỒNG BỘ MỤC 4 ↔ MỤC 5 — GROUND TRUTH = ĐIỀU TRỊ] Nếu Mục 5 ĐÃ kê bài TIÊU (nhánh/kèm
-        theo) mà Mục 4 vẫn chốt 'Không có Tiêu Thực' -> TỰ MÂU THUẪN (đã kê bài tả Tiêu tức là CÓ
-        Tiêu). Bắt cả hội chứng HỖN HỢP (vd 'Âm hư táo nhiệt') mà _syndrome_is_thuc_pure bỏ sót ->
-        Bát Cương suy Hư/Thực trượt. Lấy Mục 5 làm CHUẨN: nâng Bát Cương 'Hư' -> 'Bản Hư Tiêu Thực'
-        và viết lại Mục 4 mô tả phần Tiêu. Chạy MUỘN (sau khi ráp Mục 5) trên toàn markdown."""
-        if not re.search(r"Trị Bệnh[^\n]*Tiêu\s*[–\-]\s*(nhánh|thể KB khớp hội chứng kèm)",
-                         md, re.IGNORECASE):
-            return md  # Mục 5 không có bài Tiêu -> không cần đồng bộ
+        """[ĐỒNG BỘ MỤC 4 ↔ MỤC 5 — GROUND TRUTH = ĐIỀU TRỊ] Nếu Mục 5 ĐÃ kê bài TIÊU cho một hội
+        chứng CÓ TÀ THỰC (đàm/thấp/nhiệt/ứ/trệ/táo-nhiệt...) mà Mục 4 vẫn chốt 'Không có Tiêu Thực'
+        -> TỰ MÂU THUẪN. Bắt cả hội chứng HỖN HỢP (vd 'Âm hư táo nhiệt') mà _syndrome_is_thuc_pure bỏ
+        sót. NHƯNG bài 'Tiêu – nhánh/kèm theo' cho kèm-theo HƯ THUẦN ('Khí huyết lưỡng hư') KHÔNG phải
+        Tiêu Thực (nhãn 'Tiêu' ở Mục 5 chỉ nghĩa 'kèm theo', không phải tà thực) -> KHÔNG nâng. Lấy Mục
+        5 làm chuẩn: nâng Bát Cương 'Hư' -> 'Bản Hư Tiêu Thực' + viết lại Mục 4. Chạy MUỘN trên markdown."""
+        # Trích hội chứng của các dòng bài TIÊU; chỉ đồng bộ nếu CÓ hội chứng Tiêu mang tà THỰC thật.
+        _tieu_syns = re.findall(
+            r"Trị Bệnh[^\n]*?Tiêu\s*[–\-][^\n(]*\(\s*Hội chứng\s+([^)]+?)\s*[)—]", md, re.IGNORECASE)
+        if not any(self._syndrome_has_thuc_component(s) for s in _tieu_syns):
+            return md  # không có bài Tiêu cho tà THỰC -> Mục 4 'Không có Tiêu Thực' là ĐÚNG
         m4 = re.search(r"(### 4\.[^\n]*\n)(.*?)(?=\n### |\Z)", md, re.DOTALL)
         if not m4:
             return md
