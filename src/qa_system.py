@@ -30,10 +30,16 @@ class TCMQA:
             self.llm_model = model_id
             
             class SiliconFlowChatClient:
-                def __init__(self, token_val: str, model_val: str, proxy: str = None):
+                def __init__(self, token_val: str, model_val: str, proxy: str = None,
+                             fallback_model: str = None, fallback_host: str = None):
                     self.token = token_val
                     self.model_id = model_val
                     self.url = "https://api.siliconflow.com/v1/chat/completions"
+                    # [FALLBACK LOCAL] Model ollama dùng khi cloud lỗi (403 hết số dư/mạng) để TEXT LLM
+                    # (Mục 3/4 + trích xuất hội chứng) vẫn chạy — đối xứng fallback LLaVA của phần ảnh.
+                    self.fallback_model = fallback_model
+                    self.fallback_host = fallback_host
+                    self._ollama = None
                     import httpx
                     headers = {
                         "Authorization": f"Bearer {self.token}",
@@ -76,11 +82,48 @@ class TCMQA:
                         logger.error(f"Lỗi gọi SiliconFlow API: {e}")
                         if 'response' in locals() and response is not None:
                             logger.error(f"Chi tiết phản hồi lỗi: {response.text}")
+                        # [FALLBACK OLLAMA LOCAL] Cloud lỗi (403 hết số dư / mạng) -> chuyển TEXT LLM
+                        # sang ollama local để Mục 3/4 + trích xuất hội chứng KHÔNG chết (miễn phí,
+                        # độc lập số dư). Chỉ raise nếu ollama cũng lỗi.
+                        if self.fallback_model:
+                            try:
+                                if self._ollama is None:
+                                    if self.fallback_host:
+                                        from ollama import Client as _OllamaClient
+                                        self._ollama = _OllamaClient(host=self.fallback_host)
+                                    else:
+                                        import ollama as _ollama_mod
+                                        self._ollama = _ollama_mod
+                                _opts = {"temperature": temperature}
+                                if options and "seed" in options:
+                                    _opts["seed"] = options["seed"]
+                                if options and "max_tokens" in options:
+                                    _opts["num_predict"] = options["max_tokens"]
+                                logger.warning(f"[FALLBACK LLM] SiliconFlow lỗi -> chuyển ollama local "
+                                               f"'{self.fallback_model}' cho TEXT LLM.")
+                                _resp = self._ollama.chat(model=self.fallback_model, messages=messages,
+                                                          options=_opts)
+                                _content = (_resp["message"]["content"] if isinstance(_resp, dict)
+                                            else _resp.message.content)
+                                # Model local 7B hay thêm lời rào ("Tôi hiểu... Dưới đây là ví dụ...
+                                # ---") trước nội dung thật -> cắt preamble để không lọt vào Mục 3/4.
+                                import re as _re_fb
+                                _content = _re_fb.sub(
+                                    r'^\s*(?:(?:tôi hiểu|dưới đây|chắc chắn|vâng|được|tất nhiên|sure|'
+                                    r'certainly|here (?:is|are)|okay|ok)[^\n]*\n)+\s*(?:[-–—]{3,}\s*\n)?',
+                                    '', _content, flags=_re_fb.IGNORECASE).strip()
+                                return {"message": {"role": "assistant", "content": _content}}
+                            except Exception as e2:
+                                logger.error(f"[FALLBACK LLM] ollama local cũng lỗi: {e2}")
                         raise e
 
             proxy = siliconflow_cfg.get("proxy")
-            self.client = SiliconFlowChatClient(token, model_id, proxy)
-            logger.info("TCMQA kết nối SiliconFlow thành công!")
+            # Model ollama local làm fallback khi cloud lỗi (mặc định theo llm_model của config).
+            _fb_model = (siliconflow_cfg.get("fallback_ollama_model")
+                         or self.config.get("llm_model") or "qwen2.5:7b")
+            _fb_host = self.config.get("host") or self.config.get("ollama", {}).get("host")
+            self.client = SiliconFlowChatClient(token, model_id, proxy, _fb_model, _fb_host)
+            logger.info(f"TCMQA kết nối SiliconFlow thành công! (fallback ollama: {_fb_model})")
             
         elif openrouter_cfg.get("use_cloud", False):
             token = os.environ.get("OPENROUTER_API_KEY") or openrouter_cfg.get("api_key")
@@ -149,10 +192,15 @@ class TCMQA:
             self.llm_model = model_id
             
             class HuggingFaceChatClient:
-                def __init__(self, token_val: str, model_val: str, proxy: str = None):
+                def __init__(self, token_val: str, model_val: str, proxy: str = None,
+                             fallback_model: str = None, fallback_host: str = None):
                     self.token = token_val
                     self.model_id = model_val
                     self.url = "https://router.huggingface.co/v1/chat/completions"
+                    # [FALLBACK LOCAL] ollama khi HF lỗi (403 thiếu quyền / hết credit / mạng).
+                    self.fallback_model = fallback_model
+                    self.fallback_host = fallback_host
+                    self._ollama = None
                     import httpx
                     if proxy:
                         self.http_client = httpx.Client(proxies=proxy, timeout=60.0)
@@ -195,11 +243,44 @@ class TCMQA:
                         logger.error(f"Lỗi gọi Hugging Face Serverless API: {e}")
                         if 'response' in locals() and response is not None:
                             logger.error(f"Chi tiết phản hồi lỗi: {response.text}")
+                        # [FALLBACK OLLAMA LOCAL] HF lỗi (403/credit/mạng) -> ollama local để TEXT LLM
+                        # không chết. Chỉ raise nếu ollama cũng lỗi.
+                        if self.fallback_model:
+                            try:
+                                if self._ollama is None:
+                                    if self.fallback_host:
+                                        from ollama import Client as _OllamaClient
+                                        self._ollama = _OllamaClient(host=self.fallback_host)
+                                    else:
+                                        import ollama as _ollama_mod
+                                        self._ollama = _ollama_mod
+                                _opts = {"temperature": temperature}
+                                if options and "seed" in options:
+                                    _opts["seed"] = options["seed"]
+                                if options and "max_tokens" in options:
+                                    _opts["num_predict"] = options["max_tokens"]
+                                logger.warning(f"[FALLBACK LLM] HF lỗi -> chuyển ollama local "
+                                               f"'{self.fallback_model}' cho TEXT LLM.")
+                                _resp = self._ollama.chat(model=self.fallback_model, messages=messages,
+                                                          options=_opts)
+                                _content = (_resp["message"]["content"] if isinstance(_resp, dict)
+                                            else _resp.message.content)
+                                import re as _re_fb
+                                _content = _re_fb.sub(
+                                    r'^\s*(?:(?:tôi hiểu|dưới đây|chắc chắn|vâng|được|tất nhiên|sure|'
+                                    r'certainly|here (?:is|are)|okay|ok)[^\n]*\n)+\s*(?:[-–—]{3,}\s*\n)?',
+                                    '', _content, flags=_re_fb.IGNORECASE).strip()
+                                return {"message": {"role": "assistant", "content": _content}}
+                            except Exception as e2:
+                                logger.error(f"[FALLBACK LLM] ollama local cũng lỗi: {e2}")
                         raise e
 
             proxy = hf_cfg.get("proxy")
-            self.client = HuggingFaceChatClient(token, model_id, proxy)
-            logger.info("TCMQA kết nối Hugging Face Cloud Inference API thành công!")
+            _fb_model = (hf_cfg.get("fallback_ollama_model")
+                         or self.config.get("llm_model") or "qwen2.5:7b")
+            _fb_host = self.config.get("host") or self.config.get("ollama", {}).get("host")
+            self.client = HuggingFaceChatClient(token, model_id, proxy, _fb_model, _fb_host)
+            logger.info(f"TCMQA kết nối Hugging Face thành công! (fallback ollama: {_fb_model})")
         else:
             # Hỗ trợ host remote
             self.ollama_host = self.config.get("host") or self.config.get("ollama", {}).get("host")

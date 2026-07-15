@@ -14,13 +14,13 @@ qa:
   top_p: 0.9
 
 huggingface:
-  use_cloud: false
+  use_cloud: true    # TEXT LLM chính (Qwen2.5-7B qua HF router). Fallback ollama local nếu HF lỗi.
   token: ""      # Lấy từ HUGGINGFACE_TOKEN trong .env
   model: "Qwen/Qwen2.5-7B-Instruct"
 
 
 siliconflow:
-  use_cloud: true
+  use_cloud: false   # Đã hết số dư -> tắt. (Vision vẫn thử siliconflow rồi fallback LLaVA — xem 'vision'.)
   api_key: ""    # Lấy từ SILICONFLOW_API_KEY trong .env
   model: "Qwen/Qwen2.5-72B-Instruct"
 
