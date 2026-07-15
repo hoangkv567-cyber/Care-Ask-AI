@@ -4951,6 +4951,64 @@ class TCMFusionPipeline:
             )
             final_markdown += "".join(related_lines)
 
+        # [FALLBACK THỂ GẦN NHẤT CỦA BỆNH — CHỐT CHẶN MỤC 5 TRẮNG] Core không ground được thể KB nào
+        # của bệnh đã đặt tên qua 5 tầng trên (core 'ngoại lai'/tổng quát vs thể đặc hiệu tạng — audit
+        # 40 bệnh: 25% trắng oan dù CSV CÓ bài). Thay vì bỏ trắng: chọn thể KB của CHÍNH bệnh danh mà
+        # (a) THERMAL-COMPAT với core/Bát Cương (không trái cực — tự bảo vệ ca bệnh-danh-sai: thể trái
+        # cực bị loại -> vẫn trắng, an toàn), (b) tả >=1 triệu chứng ca, (c) khớp nhiều triệu chứng nhất,
+        # ưu tiên cùng cực Hư/Thực. In rõ 'thể gần nhất (tham khảo)' — KHÔNG phải bài đặc trị cốt lõi.
+        # CHỈ kích khi CORE là hội chứng TỔNG QUÁT thuần bệnh lý (mọi token ∈ patho, KHÔNG mang tạng
+        # phủ) — đây mới là ca 'grounding gap' THẬT (core chung khớp thể đặc hiệu tạng của bệnh, vd
+        # 'Huyết ứ' -> Hung tý × Tâm huyết ứ trở). Core ĐẶC HIỆU TẠNG ('Can dương thượng cang') không
+        # ground được = nghi bệnh danh SAI (vd input mắt -> Nha thống) -> KHÔNG fallback (giữ trắng an
+        # toàn, thà 'tham khảo thầy thuốc' còn hơn hoàn tất chẩn đoán sai bằng bài của bệnh sai).
+        _patho_toks_fb = {"hư", "suy", "nhược", "tổn", "nhiệt", "hàn", "thấp", "đàm", "đờm", "trọc",
+                          "ẩm", "hỏa", "hoả", "ứ", "trệ", "uất", "kết", "tích", "nghịch", "độc",
+                          "táo", "thử", "phong", "khí", "huyết", "âm", "dương",
+                          "lưỡng", "đều", "song", "cả", "chứng"}
+        _core_toks_fb = set(re.findall(r'[^\W\d_]+', primary_key))
+        _core_is_general = bool(_core_toks_fb) and _core_toks_fb <= _patho_toks_fb
+        if not has_treatment and _core_is_general and disease_names and len(disease_names) <= 3 \
+                and primary_key not in ("chưa rõ", "", "không có"):
+            _cs = self._syndrome_thermal_sign(final_primary)
+            _bcl = (bat_cuong_hint or "").lower()
+            if _cs is None:
+                _cs = "nhiet" if ("nhiệt" in _bcl and "hàn" not in _bcl) else \
+                      ("han" if ("hàn" in _bcl and "nhiệt" not in _bcl) else None)
+            _csyms = [c.lower() for c in list(dict.fromkeys((search_terms or []) + (detected_symptoms or [])))]
+            _fb_best = None
+            for _row in (getattr(self, "csv_rows", None) or []):
+                _b = _row.get("benh_ly", "").strip()
+                _hc = _row.get("hoi_chung", "").strip()
+                _bt = _row.get("bai_thuoc", "").strip()
+                if not _b or not _bt or not _hc or _b.lower() not in _diseases_lower:
+                    continue
+                if (_b.lower(), _bt.lower()) in _printed_pairs:
+                    continue
+                _mean = self._formula_thermal_mean(_row.get("vi_thuoc", ""))
+                if (_cs == "han" and _mean <= -0.6) or (_cs == "nhiet" and _mean >= 0.6):
+                    continue
+                if self._syndromes_thermal_conflict(final_primary, _hc):
+                    continue
+                _rsyms = [s.strip().lower() for s in _row.get("triệu_chứng", "").split(",") if s.strip()]
+                _nm = sum(1 for rs in _rsyms if any(rs in cs or cs in rs for cs in _csyms))
+                if _nm < 1:
+                    continue
+                _hu_ok = 1 if (self._syndrome_is_hu(_hc) == self._syndrome_is_hu(final_primary)) else 0
+                _rank = (_hu_ok, _nm)
+                if _fb_best is None or _rank > _fb_best[0]:
+                    _fb_best = (_rank, _row)
+            if _fb_best is not None:
+                _row = _fb_best[1]
+                _b, _hc, _bt = _row["benh_ly"].strip(), _row["hoi_chung"].strip(), _row["bai_thuoc"].strip()
+                _printed_pairs.add((_b.lower(), _bt.lower()))
+                final_markdown += (
+                    f"- Trị Bệnh **{_b}** — *Thể gần nhất khớp bệnh cảnh (tham khảo — chưa khớp chính xác "
+                    f"hội chứng cốt lõi {final_primary})* (Hội chứng {_hc}) → Dùng bài **{_bt}**\n"
+                    f"  - *Vị thuốc:* {self._dedupe_herbs(_row.get('vi_thuoc', '').strip()) or '(chưa cập nhật vị thuốc)'}\n")
+                has_treatment = True
+                logger.info(f"[FALLBACK THỂ GẦN NHẤT] {_b} × {_hc} -> {_bt} (cứu Mục 5 trắng, thermal-compat).")
+
         if not has_treatment:
             if not disease_names or len(disease_names) > 3:
                 # Dùng lại symptoms_lower_all ỔN ĐỊNH đã dựng ở đầu khối Bát Cương — bản gán đè cũ
