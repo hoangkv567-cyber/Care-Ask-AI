@@ -1545,8 +1545,11 @@
         "vảy nến",
         "bạch tiển"
       ],
+      "kw_wb": true,
       "requires": [
-        "ngứa",
+        "ngứa da",
+        "ngứa ngoài da",
+        "da ngứa",
         "mẩn",
         "ban",
         "mụn",
@@ -1718,6 +1721,27 @@
         "chửa",
         "ốm nghén",
         "thai lưu"
+      ]
+    },
+    {
+      "names": [
+        "nhâm thần",
+        "ố trở"
+      ],
+      "kw_wb": true,
+      "requires": [
+        "mang thai",
+        "có thai",
+        "thai",
+        "nghén",
+        "ốm nghén",
+        "thai nghén",
+        "que thử thai",
+        "chửa",
+        "có bầu",
+        "thai máy",
+        "thai động",
+        "bụng bầu"
       ]
     },
     {
