@@ -26,9 +26,9 @@ siliconflow:
 
 # Mô hình phân tích ảnh vọng chẩn (lưỡi/mặt)
 vision:
-  provider: "siliconflow"   # "siliconflow" (Qwen3-VL cloud, mô tả tiếng Việt) | "ollama" (LLaVA local)
-  model: "Qwen/Qwen3-VL-32B-Instruct"
-  classify_model: "Qwen/Qwen3-VL-8B-Instruct"   # bước gác cổng lưỡi/mặt chỉ cần model nhỏ + ảnh 512px
+  provider: "huggingface"   # "huggingface" (Qwen3-VL qua HF router) | "siliconflow" (cloud) | "ollama" (LLaVA local)
+  model: "Qwen/Qwen3-VL-30B-A3B-Instruct"        # HF router phục vụ bản 30B MoE (gần Qwen3-VL-32B nhất; 32B không có provider)
+  classify_model: "Qwen/Qwen3-VL-30B-A3B-Instruct"   # HF không có bản 8B -> dùng luôn 30B cho gác cổng lưỡi/mặt
   temperature: 0.0
   # Vọng chẩn CÓ CẤU TRÚC: VLM trả JSON theo schema -> map triệu chứng deterministic (bỏ bước LLM
   # đọc prose + regex vá ảo giác). Tự fallback về prose nếu VLM không trả JSON hợp lệ. Chỉ áp dụng
