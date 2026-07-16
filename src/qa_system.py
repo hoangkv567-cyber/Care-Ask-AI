@@ -18,13 +18,95 @@ class TCMQA:
         self.seed = self.config.get("qa", {}).get("seed", 42)
         self.top_p = self.config.get("qa", {}).get("top_p", 0.9)
 
-        # Cấu hình sử dụng SiliconFlow, OpenRouter, Hugging Face Cloud hoặc Ollama
+        # Cấu hình sử dụng Requesty, SiliconFlow, OpenRouter, Hugging Face Cloud hoặc Ollama
         siliconflow_cfg = self.config.get("siliconflow", {})
         openrouter_cfg = self.config.get("openrouter", {})
         hf_cfg = self.config.get("huggingface", {})
+        requesty_cfg = self.config.get("requesty", {})
         import os
-        
-        if siliconflow_cfg.get("use_cloud", False):
+
+        if requesty_cfg.get("use_cloud", False):
+            token = os.environ.get("REQUESTY_API_KEY") or requesty_cfg.get("api_key")
+            model_id = requesty_cfg.get("model", "deepinfra/Qwen/Qwen2.5-72B-Instruct")
+            self.llm_model = model_id
+
+            class RequestyChatClient:
+                """Client TEXT LLM qua Requesty.ai (router OpenAI-compatible). Fallback ollama local khi lỗi."""
+                def __init__(self, token_val: str, model_val: str, proxy: str = None,
+                             fallback_model: str = None, fallback_host: str = None):
+                    self.token = token_val
+                    self.model_id = model_val
+                    self.url = "https://router.requesty.ai/v1/chat/completions"
+                    self.fallback_model = fallback_model
+                    self.fallback_host = fallback_host
+                    self._ollama = None
+                    import httpx
+                    headers = {"Authorization": f"Bearer {self.token}", "Content-Type": "application/json"}
+                    # 72B có thể chậm first-token -> timeout rộng (fallback ollama chỉ khi thực sự lỗi).
+                    if proxy:
+                        self.http_client = httpx.Client(proxies=proxy, headers=headers, timeout=180.0)
+                    else:
+                        self.http_client = httpx.Client(headers=headers, timeout=180.0)
+                    logger.info(f"Khởi tạo Requesty Client cho model: {model_val}")
+
+                def chat(self, model: str, messages: list, options: dict = None) -> dict:
+                    temperature = 0.0
+                    if options:
+                        if "temperature" in options:
+                            temperature = options["temperature"]
+                        if temperature == 0.0:
+                            temperature = 0.01
+                    payload = {"model": self.model_id, "messages": messages,
+                               "temperature": temperature, "stream": False}
+                    if options and "max_tokens" in options:
+                        payload["max_tokens"] = options["max_tokens"]
+                    try:
+                        response = self.http_client.post(self.url, json=payload)
+                        response.raise_for_status()
+                        data = response.json()
+                        content = data["choices"][0]["message"]["content"]
+                        return {"message": {"role": "assistant", "content": content}}
+                    except Exception as e:
+                        logger.error(f"Lỗi gọi Requesty API: {e}")
+                        if 'response' in locals() and response is not None:
+                            logger.error(f"Chi tiết phản hồi lỗi: {response.text}")
+                        if self.fallback_model:
+                            try:
+                                if self._ollama is None:
+                                    if self.fallback_host:
+                                        from ollama import Client as _OllamaClient
+                                        self._ollama = _OllamaClient(host=self.fallback_host)
+                                    else:
+                                        import ollama as _ollama_mod
+                                        self._ollama = _ollama_mod
+                                _opts = {"temperature": temperature}
+                                if options and "seed" in options:
+                                    _opts["seed"] = options["seed"]
+                                if options and "max_tokens" in options:
+                                    _opts["num_predict"] = options["max_tokens"]
+                                logger.warning(f"[FALLBACK LLM] Requesty lỗi -> ollama local "
+                                               f"'{self.fallback_model}' cho TEXT LLM.")
+                                _resp = self._ollama.chat(model=self.fallback_model, messages=messages,
+                                                          options=_opts)
+                                _content = (_resp["message"]["content"] if isinstance(_resp, dict)
+                                            else _resp.message.content)
+                                import re as _re_fb
+                                _content = _re_fb.sub(
+                                    r'^\s*(?:(?:tôi hiểu|dưới đây|chắc chắn|vâng|được|tất nhiên|sure|'
+                                    r'certainly|here (?:is|are)|okay|ok)[^\n]*\n)+\s*(?:[-–—]{3,}\s*\n)?',
+                                    '', _content, flags=_re_fb.IGNORECASE).strip()
+                                return {"message": {"role": "assistant", "content": _content}}
+                            except Exception as e2:
+                                logger.error(f"[FALLBACK LLM] ollama local cũng lỗi: {e2}")
+                        raise e
+
+            _fb_model = (requesty_cfg.get("fallback_ollama_model")
+                         or self.config.get("llm_model") or "qwen2.5:7b")
+            _fb_host = self.config.get("host") or self.config.get("ollama", {}).get("host")
+            self.client = RequestyChatClient(token, model_id, requesty_cfg.get("proxy"), _fb_model, _fb_host)
+            logger.info(f"TCMQA kết nối Requesty thành công! (model {model_id}, fallback ollama: {_fb_model})")
+
+        elif siliconflow_cfg.get("use_cloud", False):
             token = os.environ.get("SILICONFLOW_API_KEY") or siliconflow_cfg.get("api_key")
             model_id = siliconflow_cfg.get("model", "Qwen/Qwen2.5-72B-Instruct")
             self.llm_model = model_id
