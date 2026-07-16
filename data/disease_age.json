@@ -1,0 +1,16 @@
+{
+  "description": "Cổng TUỔI CỨNG: bệnh chỉ gặp ở một nhóm tuổi. 'pediatric' = bệnh NHI (loại khi tuổi >= child_max_age); 'adult' = bệnh người lớn (loại khi tuổi < child_max_age). Bệnh nhân có tuổi (form Vấn chẩn 'N tuổi' -> ghép vào lời khai, hoặc self._patient_age) -> _find_matching_diseases LOẠI THẲNG bệnh khác nhóm tuổi bất kể triệu chứng. Bệnh KHÔNG liệt kê = 'any' (mọi tuổi). KHÔNG nhập tuổi -> không lọc (giữ nguyên hành vi cũ). Data-driven: sửa file này là đủ, không cần đụng code.",
+  "note": "BẢO THỦ như cổng giới: chỉ liệt kê bệnh ĐẶC HIỆU tuổi rõ ràng. Sởi/Thủy đậu/Chốc lở (Nùng bào sang)/các loại ban (Ma chẩn/Nhiệt chẩn/Phong chẩn/Ẩn chẩn)/Viêm quầng - người lớn VẪN mắc -> để 'any' tránh loại oan. Nga khẩu sang (tưa lưỡi) người lớn suy giảm miễn dịch cũng gặp -> 'any'.",
+  "child_max_age": 16,
+  "pediatric": [
+    "Bách nhật khái",
+    "Cam tích",
+    "Cam nhãn",
+    "Nhi bại liệt",
+    "Nhi chàm",
+    "Nhi tiết tả",
+    "Tiểu nhi hãn chứng",
+    "Tiểu nhi kinh phong"
+  ],
+  "adult": []
+}

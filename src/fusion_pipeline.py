@@ -1329,6 +1329,55 @@ class TCMFusionPipeline:
         ds = self._get_disease_sex().get(self._norm_disease_name(disease_name))
         return ds is not None and ds != patient_sex
 
+    def _get_disease_age(self) -> dict:
+        """Nạp data/disease_age.json -> {tên_bệnh_chuẩn_hoá: 'pediatric'|'adult'}. Cache trên instance;
+        đặt self._disease_age_child_max (mặc định 16). Rỗng nếu thiếu file (an toàn: không lọc oan).
+        Bệnh không có trong map = mọi tuổi ('any')."""
+        cached = getattr(self, "_disease_age_map", None)
+        if cached is not None:
+            return cached
+        import json
+        import os
+        m = {}
+        self._disease_age_child_max = 16
+        path = os.getenv("TCM_DISEASE_AGE_PATH", "data/disease_age.json")
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                try:
+                    self._disease_age_child_max = int(d.get("child_max_age", 16))
+                except (ValueError, TypeError):
+                    self._disease_age_child_max = 16
+                for _grp in ("pediatric", "adult"):
+                    for _name in d.get(_grp, []):
+                        m[self._norm_disease_name(_name)] = _grp
+                logger.info(f"Đã nạp cổng tuổi: {len(m)} bệnh đặc thù tuổi từ {path} "
+                            f"(ngưỡng nhi <{self._disease_age_child_max})")
+            else:
+                logger.warning(f"Không thấy {path} — bỏ qua cổng tuổi.")
+        except Exception as e:
+            logger.error(f"Lỗi nạp cổng tuổi: {e}")
+            m = {}
+        self._disease_age_map = m
+        return m
+
+    def _age_conflict(self, disease_name: str, patient_age) -> bool:
+        """True khi bệnh KHÔNG hợp nhóm tuổi bệnh nhân đã khai -> phải LOẠI. patient_age None ->
+        không lọc (False). Bệnh không đặc thù tuổi -> không lọc. 'pediatric' (bệnh nhi) loại khi tuổi
+        >= ngưỡng nhi (mặc định 16); 'adult' loại khi tuổi < ngưỡng."""
+        if patient_age is None:
+            return False
+        grp = self._get_disease_age().get(self._norm_disease_name(disease_name))
+        if grp is None:
+            return False
+        thr = getattr(self, "_disease_age_child_max", 16)
+        if grp == "pediatric":
+            return patient_age >= thr    # người lớn -> loại bệnh nhi
+        if grp == "adult":
+            return patient_age < thr     # trẻ em -> loại bệnh người lớn
+        return False
+
     # [CỔNG TRẠNG THÁI SINH SẢN] Bệnh THAI SẢN / HẬU SẢN chỉ xảy ra khi ĐANG MANG THAI hoặc MỚI SINH.
     # Tên tự chỉ điểm nên khớp theo keyword (bền hơn liệt kê từng bệnh; bắt cả bệnh thêm sau này).
     _PREG_POSTPARTUM_DISEASE_KWS = (
@@ -1723,6 +1772,12 @@ class TCMFusionPipeline:
         # giới -> loại thẳng bệnh khác giới (phụ khoa cho nam, nam khoa cho nữ) bất kể triệu chứng.
         _patient_sex = getattr(self, "_patient_sex", None) or self._infer_sex(raw_user_text) \
             or self._infer_sex(" ".join(patient_symptoms_lower))
+        # [CỔNG TUỔI] Tuổi từ self._patient_age (run_diagnosis đặt từ form) hoặc suy 'N tuổi' trong
+        # lời khai (compose_interview_text ghép). Biết tuổi -> loại bệnh khác nhóm tuổi (vd bệnh NHI
+        # 'Bách nhật khái'/'Cam tích' cho người lớn 40 tuổi). Không nhập tuổi -> None -> không lọc.
+        _patient_age = getattr(self, "_patient_age", None)
+        if _patient_age is None:
+            _patient_age = self._infer_age(raw_user_text)
         # [CHỐNG PHỦ ĐỊNH KHỚP MỀM] Che vùng bị phủ định trên lời khai TRƯỚC khi tách phân đoạn, để
         # field CSV không soft-match nhầm triệu chứng người bệnh đã phủ nhận ('không sốt' -> field
         # 'sốt cao' không được khớp). Bảo vệ các cụm CSV vốn chứa 'không' ('tay chân không ấm'...)
@@ -1799,6 +1854,7 @@ class TCMFusionPipeline:
                 # Áp dụng bộ lọc an toàn lâm sàng + cổng giới tính ngăn chẩn đoán sai lệch
                 if self._validate_disease_safety(row["benh_ly"], patient_symptoms, raw_user_text) \
                         and not self._sex_conflict(row["benh_ly"], _patient_sex) \
+                        and not self._age_conflict(row["benh_ly"], _patient_age) \
                         and not self._reproductive_state_conflict(row["benh_ly"], raw_user_text, patient_symptoms):
                     matched_candidates.append({
                         "benh_ly": row["benh_ly"],
