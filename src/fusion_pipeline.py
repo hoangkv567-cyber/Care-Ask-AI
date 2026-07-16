@@ -3765,6 +3765,16 @@ class TCMFusionPipeline:
             s_standardized.extend([s.strip() for s in user_symptoms.split(",") if s.strip()])
 
         symptoms_arr = self._resolve_symptom_conflicts(list(dict.fromkeys(s_standardized)))
+        # [VỌNG CHẨN - CÓ TRANG ĐIỂM] Ảnh mặt có mỹ phẩm -> LOẠI dấu MÀU-SẮC-MẶT khỏi danh sách biện
+        # luận: luật 7 (giải thích 100% triệu chứng) sẽ ÉP LLM bịa cơ chế cho 'mặt nhợt' dù prompt hint
+        # cấm (hint thua luật 7). Cắt thẳng khỏi symptoms_str là cách bền vững (dấu màu sắc mặt không
+        # đáng tin khi trang điểm). GIỮ dấu CẤU TRÚC (quầng thâm/phù) và mọi dấu LƯỠI (không bị makeup).
+        if getattr(self, "_has_makeup", False):
+            _mk_face_color = ("mặt nhợt", "sắc mặt nhợt", "sắc mặt trắng nhợt", "gò má đỏ", "má đỏ",
+                              "hai gò má đỏ", "lưỡng quyền đỏ", "môi đỏ", "môi nhợt", "môi hồng nhợt",
+                              "mặt đỏ", "sắc mặt đỏ")
+            symptoms_arr = [s for s in symptoms_arr
+                            if not any(_c in s.strip().lower() for _c in _mk_face_color)]
         
         # [HARD-RULE] Chặn đứng ảo giác khi không có triệu chứng
         if not symptoms_arr or all(s.strip().lower() in ["undefined", "null", "none", ""] for s in symptoms_arr):
