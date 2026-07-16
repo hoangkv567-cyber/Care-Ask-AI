@@ -29,6 +29,17 @@ check("Bách nhật khái KHÔNG lọc khi tuổi None", p._age_conflict("Bách 
 # Bệnh không đặc thù tuổi -> không lọc
 check("Viêm phế quản KHÔNG lọc (any) cho mọi tuổi", p._age_conflict("Viêm phế quản", 40) is False)
 check("Tiêu khát KHÔNG lọc (any) cho trẻ", p._age_conflict("Tiêu khát", 8) is False)
+# Bệnh ADULT (loại khi < 16)
+check("Liệt dương loại cho trẻ 12 tuổi", p._age_conflict("Liệt dương", 12) is True)
+check("Liệt dương GIỮ cho người lớn 45 tuổi", p._age_conflict("Liệt dương", 45) is False)
+check("Canh niên kỳ (mãn kinh) loại cho trẻ", p._age_conflict("Canh niên kỳ hội chứng", 10) is True)
+check("Parkinson loại cho trẻ", p._age_conflict("Parkinson", 12) is True)
+check("COPD loại cho trẻ", p._age_conflict("Mạn tính tắc nghẽn phế bệnh", 12) is True)
+check("Liệt dương KHÔNG lọc khi tuổi None", p._age_conflict("Liệt dương", None) is False)
+# Di tinh/Mộng tinh CỐ Ý 'any' (hậu dậy thì) — không được loại cho thiếu niên
+check("Di tinh KHÔNG lọc (any) cho 14 tuổi", p._age_conflict("Di tinh", 14) is False)
+# Kinh nguyệt CỐ Ý 'any' (thiếu nữ có kinh) — không được loại
+check("Thống kinh KHÔNG lọc (any) cho 13 tuổi", p._age_conflict("Thống kinh", 13) is False)
 
 print("\n== Tích hợp _find_matching_diseases (ca ho + ho cơn) ==")
 base = "ho ngày càng nặng, đờm mầu vàng, ho đàm dính, khô miệng, ho nhiều, sợ lạnh, ho cơn"
@@ -45,6 +56,15 @@ check("40 tuổi -> LOẠI Bách nhật khái", "Bách nhật khái" not in dise
 check("40 tuổi -> GIỮ Viêm phế quản", "Viêm phế quản" in diseases(base + ", 40 tuổi, nam giới"))
 check("10 tuổi -> GIỮ Bách nhật khái", "Bách nhật khái" in diseases(base + ", 10 tuổi"))
 check("Không nhập tuổi -> GIỮ Bách nhật khái (NO-OP)", "Bách nhật khái" in diseases(base))
+
+_male = "liệt dương, di tinh, lưng gối mỏi, mệt mỏi, sợ lạnh"
+_adult_dz = lambda s: {d for d in s if d in ("Liệt dương", "Dương nuy", "Tảo tiết")}
+check("12 tuổi (nam) -> LOẠI Liệt dương/Dương nuy (bệnh người lớn)",
+      not _adult_dz(diseases(_male + ", 12 tuổi, nam giới")))
+check("45 tuổi (nam) -> GIỮ bệnh nam khoa người lớn",
+      bool(_adult_dz(diseases(_male + ", 45 tuổi, nam giới"))))
+check("12 tuổi -> GIỮ Di tinh (any, hậu dậy thì)",
+      "Di tinh" in diseases(_male + ", 12 tuổi, nam giới"))
 
 print("\n" + ("✅ TẤT CẢ PASS" if not fails else f"❌ {len(fails)} FAIL: {fails}"))
 sys.exit(1 if fails else 0)
