@@ -4709,6 +4709,71 @@ class TCMFusionPipeline:
                 )
                 (core_lines if _is_core else branch_lines).append(_line)
 
+            # [ƯU TIÊN THỂ ĐẶC HIỆU TẠNG CỦA BỆNH CHÍNH — CORE BARE-HƯ] Core hư TRẦN ('Dương hư')
+            # khớp EXACT oan vào bệnh PHỤ ratio thấp có node cùng tên (vd Âm lãnh × 'Dương hư' →
+            # Hữu Quy Hoàn +0.92 RẤT NÓNG) trong khi BỆNH CHÍNH ratio cao gán bài dưới thể ĐẶC HIỆU
+            # TẠNG (core ⊂ thể: Tiêu khát × 'Thận dương hư' → Bổ dương cố sáp +0.14). Vì core_lines đã
+            # đầy, mọi fallback 'if not core_lines' bên dưới bị khoá → kê oan bài cực nóng của bệnh phụ.
+            # → Nếu có bệnh trong CỬA SỔ ratio CAO HƠN mọi bệnh đang cho dòng core, mang thể ĐẶC HIỆU
+            # (core ⊂ thể, thể chỉ thêm token ĐỊNH VỊ tạng — không token bệnh lý, cùng cực Hư, không
+            # xung nhiệt): THAY core_lines bằng bài của bệnh chính (ưu tiên ratio cao, tie → thermal ôn
+            # hoà). Cổng cực HẸP — chỉ kích khi core là BARE pole-hư (không mang tạng phủ).
+            _bare_hu_toks = {"âm", "dương", "khí", "huyết", "hư", "suy", "nhược", "tổn",
+                             "lưỡng", "đều", "song", "cả"}
+            _ct_bh = set(re.findall(r'[^\W\d_]+', primary_key))
+            if (core_lines and _ct_bh and len(_ct_bh) <= 3 and _ct_bh <= _bare_hu_toks
+                    and self._syndrome_is_hu(final_primary) and matched_diseases):
+                _patho_bh = {"hư", "suy", "nhược", "tổn", "nhiệt", "hàn", "thấp", "đàm", "đờm",
+                             "trọc", "ẩm", "hỏa", "hoả", "ứ", "trệ", "uất", "kết", "tích",
+                             "nghịch", "độc", "táo", "thử", "phong", "khí", "huyết", "âm", "dương"}
+                _dzr_bh = {(m.get("benh_ly", "") or "").strip().lower(): m.get("ratio", 0.0)
+                           for m in matched_diseases}
+                _gb_bh = matched_diseases[0].get("ratio", 0.0)
+                _win_bh = {d for d, r in _dzr_bh.items() if r >= _gb_bh - 0.15 and r >= 0.30}
+                # ratio cao nhất trong các bệnh ĐANG cho dòng core hiện tại (đều là exact-match bệnh phụ)
+                _cur_bh = max(
+                    [_dzr_bh.get((m.group(1).strip().lower()), 0.0)
+                     for _l in core_lines
+                     for m in [re.search(r'Trị Bệnh \*\*([^*]+)\*\*', _l)] if m],
+                    default=0.0)
+                _best_bh = None  # ((ratio, -|mean|), benh, hoi_chung, bai_thuoc, vi_thuoc)
+                for _row in (getattr(self, "csv_rows", None) or []):
+                    _b = _row.get("benh_ly", "").strip()
+                    _hc = _row.get("hoi_chung", "").strip()
+                    _bt = _row.get("bai_thuoc", "").strip()
+                    if not _b or not _hc or not _bt:
+                        continue
+                    _bl = _b.lower()
+                    if _bl not in _win_bh or _bl not in _diseases_lower:
+                        continue
+                    if _dzr_bh.get(_bl, 0.0) <= _cur_bh:            # chỉ nhận bệnh CHÍNH ratio cao hơn
+                        continue
+                    if (_bl, _bt.lower()) in _printed_pairs:
+                        continue
+                    _ht_bh = set(re.findall(r'[^\W\d_]+', _hc.lower()))
+                    if not (_ct_bh < _ht_bh):                       # core ⊂ thể (thể đặc hiệu tạng)
+                        continue
+                    if (_ht_bh - _ct_bh) & _patho_bh:               # token thêm chỉ ĐỊNH VỊ, KHÔNG bệnh lý
+                        continue
+                    if self._syndrome_is_hu(_hc) != self._syndrome_is_hu(final_primary):
+                        continue
+                    if self._syndromes_thermal_conflict(final_primary, _hc):
+                        continue
+                    _mean_bh = self._formula_thermal_mean(_row.get("vi_thuoc", "")) or 0.0
+                    _rank_bh = (_dzr_bh.get(_bl, 0.0), -abs(_mean_bh))  # (a) ratio cao (b) thermal ôn hoà
+                    if _best_bh is None or _rank_bh > _best_bh[0]:
+                        _best_bh = (_rank_bh, _b, _hc, _bt, _row.get("vi_thuoc", "").strip())
+                if _best_bh is not None:
+                    _, _b, _hc, _bt, _vi = _best_bh
+                    logger.info(
+                        f"[ƯU TIÊN THỂ ĐẶC HIỆU BỆNH CHÍNH] Core trần '{final_primary}': bỏ bài exact "
+                        f"bệnh phụ (ratio<={_cur_bh:.2f}), dùng {_b} × {_hc} -> {_bt} (ratio cao hơn).")
+                    _printed_pairs.add((_b.lower(), _bt.lower()))
+                    core_lines = [
+                        f"- Trị Bệnh **{_b}** — *Bản – thể đặc hiệu tạng của {final_primary} "
+                        f"(bệnh chính, ưu tiên theo ratio)* (Hội chứng {_hc}) → Dùng bài **{_bt}**\n"
+                        f"  - *Vị thuốc:* {self._dedupe_herbs(_vi) or '(chưa cập nhật vị thuốc)'}\n"]
+
             # [FALLBACK THỂ TỔNG QUÁT] Cốt lõi đặc hiệu theo tạng (vd 'Phế khí hư') nhưng KB gán
             # bài theo thể TỔNG QUÁT của chính nó tại đúng bệnh danh đã chốt (vd 'Viêm yết hầu ×
             # Khí hư' — CSV:1015 'Phương bổ khí thanh hỏa') -> khớp tên chính xác trượt oan và
