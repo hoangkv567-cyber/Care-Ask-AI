@@ -2258,8 +2258,10 @@ class TCMFusionPipeline:
         # header bài thứ 2 sau '.'/'; ': '<cụm ngắn>:' (kể cả tên bài KHÔNG kết thúc formula-word,
         # vd 'Thập toàn đại bổ:'); an toàn vì vị thuốc base không có 'dấu hai chấm'.
         r'|[.;]\s*[^.;,():]{2,30}:'
-        # bất kỳ ';' ở đuôi có kèm cụm điều kiện (nếu/gia/thêm/hàn/nhiệt/kiêm) -> note gia giảm không ngoặc
-        r'|;\s*[^;]*?\b(?:nếu|gia\b|thêm\b|bỏ\b|kiêm\b|hàn\s+thấp|thấp\s+nhiệt)',
+        # bất kỳ ';' ở đuôi có kèm cụm điều kiện (nếu/gia/thêm/hàn/nhiệt/kiêm) -> note gia giảm không ngoặc.
+        # [^;(] (KHÔNG cho vượt vào NGOẶC): tránh vươn tới 'gia' NẰM TRONG ngoặc chú thích của bài chính
+        # (vd 'Mật gà; Ma hoàng, Hạnh nhân... (Đờm nhiều gia: Bán hạ)') -> nếu không chặn, cắt mất cả bài chính.
+        r'|;\s*[^;(]*?\b(?:nếu|gia\b|thêm\b|bỏ\b|kiêm\b|hàn\s+thấp|thấp\s+nhiệt)',
         re.IGNORECASE)
     # thay-vị/loại-vị inline: 'X (hoặc/nay thay bằng/thay/bỏ/bớt ...)' -> 'X'. Lookahead loại 'hoặc dùng/bài'.
     _HERB_INLINE_SUB = re.compile(
@@ -2287,7 +2289,10 @@ class TCMFusionPipeline:
             return vi_str
         vi_str = cls._strip_herb_tail_notes(vi_str)   # cắt ghi chú đuôi TRƯỚC khi split ',' (chống blob)
         order, best = [], {}
-        for h in vi_str.split(","):
+        # Tách theo CẢ ',' và ';' — sau _strip_herb_tail_notes, ';' chỉ còn là ngăn cách nhóm vị
+        # (vd 'Mật gà, đường kính; Ma hoàng, Hạnh nhân') chứ không dính note; tách để không ghép
+        # 'đường kính; Ma hoàng' thành một token rác.
+        for h in re.split(r"[,;]", vi_str):
             h = h.strip()
             if not h:
                 continue
