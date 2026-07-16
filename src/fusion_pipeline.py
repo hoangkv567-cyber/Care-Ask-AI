@@ -4984,8 +4984,22 @@ class TCMFusionPipeline:
                           "ẩm", "hỏa", "hoả", "ứ", "trệ", "uất", "kết", "tích", "nghịch", "độc",
                           "táo", "thử", "phong", "khí", "huyết", "âm", "dương",
                           "lưỡng", "đều", "song", "cả", "chứng"}
+        # Token tạng phủ — dùng để NỚI cổng cho core đặc-hiệu-tạng thuộc HƯ (xem dưới).
+        _organ_toks_fb = {"tỳ", "vị", "can", "tâm", "phế", "thận", "đởm", "đảm", "bàng", "quang",
+                          "tiểu", "đại", "trường", "tràng", "tam", "tiêu", "mệnh", "môn", "tử",
+                          "cung", "bào", "não", "phủ", "tạng"}
         _core_toks_fb = set(re.findall(r'[^\W\d_]+', primary_key))
-        _core_is_general = bool(_core_toks_fb) and _core_toks_fb <= _patho_toks_fb
+        # (a) core TỔNG QUÁT thuần bệnh lý (mọi token ∈ patho, không mang tạng); HOẶC (b) core ĐẶC
+        # HIỆU TẠNG thuộc HƯ — bỏ token tạng phủ, phần bệnh lý còn lại ⊆ patho + là hư (vd 'Tỳ thận
+        # dương hư' -> {dương,hư} ⊆ patho + hư). Đây cũng là grounding-gap THẬT: core hư đặc-hiệu-tạng
+        # khớp thể HƯ thermal-compat của bệnh ĐÃ đặt tên (25% MUC5_TRANG oan). VẪN loại core đặc-hiệu-
+        # tạng KHÔNG-hư/nghịch/hỏa ('Vị hỏa', 'Can dương thượng cang' -> remainder ⊄ patho hoặc not-hư)
+        # -> giữ trắng an toàn (nghi bệnh danh sai). Guard cùng cực Hư/Thực + thermal-compat vẫn ở dưới.
+        _core_nonorgan_fb = _core_toks_fb - _organ_toks_fb
+        _core_is_general = (bool(_core_toks_fb) and _core_toks_fb <= _patho_toks_fb) or (
+            bool(_core_nonorgan_fb) and _core_nonorgan_fb <= _patho_toks_fb
+            and _core_nonorgan_fb != _core_toks_fb
+            and self._syndrome_is_hu(final_primary))
         if not has_treatment and _core_is_general and disease_names and len(disease_names) <= 3 \
                 and primary_key not in ("chưa rõ", "", "không có"):
             _cs = self._syndrome_thermal_sign(final_primary)
