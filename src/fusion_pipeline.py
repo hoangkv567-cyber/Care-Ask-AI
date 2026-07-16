@@ -1291,6 +1291,24 @@ class TCMFusionPipeline:
             return "nu"
         return None
 
+    @classmethod
+    def _infer_age(cls, text: str):
+        """Suy TUỔI (số năm) từ lời khai đã gộp — cụm chuẩn của form Vấn chẩn 'N tuổi' / 'N tháng
+        tuổi'. Trả int số năm, hoặc None nếu không rõ. 'N tháng tuổi' (nhũ nhi) -> 0 năm (chắc chắn
+        là trẻ em). Dùng cho [CỔNG AN TOÀN NHI]: trẻ <16 -> chặn khuyên bài ôn Thận mạnh/độc (Phụ tử)."""
+        t = (text or "").lower()
+        if re.search(r'\d{1,3}\s*tháng\s*tuổi', t):
+            return 0
+        m = re.search(r'(\d{1,3})\s*tuổi', t)
+        if m:
+            try:
+                a = int(m.group(1))
+                if 0 < a < 130:
+                    return a
+            except ValueError:
+                pass
+        return None
+
     def _sex_symptom_conflict(self, raw_text: str):
         """Giới KHAI BÁO (form, self._patient_sex) MÂU THUẪN với dấu đặc thù giới KHÁC trong lời khai
         (vd khai Nam nhưng có 'âm hộ'/'kinh nguyệt', hoặc khai Nữ nhưng 'liệt dương'/'dương vật').
@@ -4761,8 +4779,15 @@ class TCMFusionPipeline:
                 for _hc, _b, _bt, _vi, _was_subset, _dk in _gen_rows[:2]:
                     _printed_pairs.add((_b.lower(), _bt.lower()))
                     _rel_word = "bao quát" if _was_subset else ("dạng khí hư của" if _dk else "tương ứng")
-                    _dk_note = (" — *thể DƯƠNG hư: gia thêm vị ôn dương (Phụ tử/Nhục quế/Can khương)*"
-                                if _dk else "")
+                    _dk_child = getattr(self, "_patient_age", None) is not None and self._patient_age < 16
+                    if not _dk:
+                        _dk_note = ""
+                    elif _dk_child:
+                        # [AN TOÀN NHI] Trẻ <16: không gợi Phụ tử/Ô đầu (độc); chỉ vị ôn dương NHẸ + hỏi thầy thuốc nhi.
+                        _dk_note = (" — *thể DƯƠNG hư: cân nhắc gia vị ôn dương NHẸ (Can khương/Nhục quế liều nhỏ); "
+                                    "TRẺ EM tránh Phụ tử/Ô đầu — cần thầy thuốc Nhi khoa Đông y*")
+                    else:
+                        _dk_note = " — *thể DƯƠNG hư: gia thêm vị ôn dương (Phụ tử/Nhục quế/Can khương)*"
                     core_lines.append(
                         f"- Trị Bệnh **{_b}** — *Bản – thể tổng quát của hội chứng cốt lõi* "
                         f"(Hội chứng {_hc} — {_rel_word} {final_primary}) → Dùng bài **{_bt}**{_dk_note}\n"
@@ -5079,10 +5104,22 @@ class TCMFusionPipeline:
         # cứ thấy 'Tỳ thận dương hư' là kê Tứ thần hoàn/Phụ tử lý trung thang "trị TIÊU CHẢY" cho cả
         # bệnh nhân không hề tiêu chảy (Phụ tử có độc). Chỉ nêu phương tễ tả lỵ khi THẬT SỰ có tiêu chảy.
         if "Tỳ thận dương hư" in final_primary:
+            _age = getattr(self, "_patient_age", None)
+            _is_child = _age is not None and _age < 16
             _has_tieu_chay = any(k in symptoms_lower_all for k in [
                 "tiêu chảy", "đại tiện lỏng", "phân lỏng", "phân nát", "phân sống", "đi lỏng",
                 "tiết tả", "ngũ canh tả", "ỉa chảy", "đi ngoài lỏng"])
-            if _has_tieu_chay:
+            if _is_child:
+                # [AN TOÀN NHI] Trẻ <16: KHÔNG nêu đích danh Phụ tử (ô đầu, có độc) hay bài ôn Thận
+                # mạnh. Tiêu chảy trẻ em phần lớn là Tỳ hư / hàn thấp, không phải hư-tổn Thận-dương
+                # mạn của người lớn -> chỉ nêu pháp trị nhẹ + bắt buộc khám nhi khoa Đông y.
+                final_markdown += (
+                    "\n- **Lời khuyên bổ sung (trẻ em):** Trọng tâm ôn vận kiện Tỳ nhẹ nhàng (kiện tỳ "
+                    "hòa vị; nếu có tích trệ đồ ăn thì tiêu thực đạo trệ). TRẺ EM TUYỆT ĐỐI KHÔNG tự dùng "
+                    "các bài ôn Thận mạnh chứa Phụ tử / Ô đầu (có độc) — bắt buộc khám thầy thuốc Nhi khoa "
+                    "Đông y để được kê bài và liều phù hợp lứa tuổi.\n"
+                )
+            elif _has_tieu_chay:
                 final_markdown += "\n- **Lời khuyên bổ sung:** Ôn bổ Tỳ Thận, Sáp trường chỉ tả. Phương tễ kinh điển nhất để điều trị Tỳ thận dương hư tiêu chảy là Tứ thần hoàn (hoặc Phụ tử lý trung thang gia giảm).\n"
             else:
                 final_markdown += "\n- **Lời khuyên bổ sung:** Ôn bổ Tỳ Thận, phù trợ dương khí.\n"
@@ -5238,6 +5275,9 @@ class TCMFusionPipeline:
         # [CỔNG GIỚI TÍNH] Giới khai báo (cấu trúc) từ form -> _find_matching_diseases loại bệnh khác
         # giới. Đặt lại mỗi lần chạy (tránh dính giới ca trước); rỗng -> suy từ text làm dự phòng.
         self._patient_sex = self._norm_sex(sex)
+        # [CỔNG AN TOÀN NHI] Tuổi lấy từ lời khai đã gộp ('N tuổi' — form Vấn chẩn ghép vào). Trẻ em
+        # (<16) -> chặn khuyên bài ôn Thận mạnh/có độc (Phụ tử/Ô đầu). Đặt lại mỗi lần chạy (tránh dính ca trước).
+        self._patient_age = self._infer_age(user_symptoms)
 
         if face_img_path or tongue_img_path:
             logger.info("Bắt đầu phân tích hình ảnh qua mô hình vision...")
