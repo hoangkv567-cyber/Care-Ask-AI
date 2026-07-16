@@ -4468,6 +4468,18 @@ class TCMFusionPipeline:
                 "và Mục 4 PHẢI mô tả yếu tố nhiệt này, KHÔNG được ghi 'Không có Tiêu Thực'."
             )
 
+        # [VỌNG CHẨN - CÓ TRANG ĐIỂM] Ảnh mặt có mỹ phẩm -> dấu MÀU SẮC da mặt không tin được; cấm
+        # LLM lấy 'mặt nhợt/gò má đỏ/môi đỏ' làm bằng chứng cơ chế (đã hạ trọng số ở tầng vọng chẩn).
+        _makeup_hint = ""
+        if getattr(self, "_has_makeup", False):
+            _makeup_hint = (
+                "\n        [VỌNG CHẨN SẮC MẶT - CÓ TRANG ĐIỂM]: Ảnh mặt phát hiện MỸ PHẨM (trang điểm/son/kẻ mắt) "
+                "nên các dấu MÀU SẮC da mặt (mặt nhợt nhạt / sắc mặt trắng nhợt, gò má đỏ, môi đỏ hoặc nhợt) KHÔNG "
+                "đáng tin. TUYỆT ĐỐI CẤM (PROHIBITED) dùng các dấu màu sắc mặt này làm bằng chứng biện luận cơ chế "
+                "(CẤM kiểu 'mặt nhợt nhạt do khí huyết hư', 'gò má đỏ do âm hư'). Chỉ được dùng dấu CẤU TRÚC (quầng "
+                "thâm mắt, phù nề mặt) nếu có; KHÔNG bịa cơ chế cho màu sắc mặt."
+            )
+
         # BƯỚC 2, 3, 4: GỌI LLM BIỆN CHỨNG THEO CHAIN-OF-THOUGHT
         rag_prompt = f"LÝ GIẢI Y LÝ CHUẨN (BẮT BUỘC BÁM SÁT): {rag_context_str}" if rag_context_str else ""
 
@@ -4540,6 +4552,7 @@ class TCMFusionPipeline:
         {rag_prompt}
         {face_conflict_hint}
         {temp_conflict_hint}
+        {_makeup_hint}
 
         [RÀNG BUỘC PHÂN TÍCH TỪ NEO4J]:
         - Tạng Phủ liên quan trực tiếp: {organs_hint}
@@ -4621,6 +4634,9 @@ class TCMFusionPipeline:
         18. NƯỚC TIỂU VÀNG / SỐT TRONG NGOẠI CẢM CẤP (BIỂU CHỨNG) — GIẢI THÍCH ĐÚNG CƠ CHẾ, CẤM GƯƠNG ÉP QUA PHẾ/THẬN:
            - SỐT (phát nhiệt) ở ngoại cảm biểu chứng giai đoạn đầu là do CHÍNH KHÍ (vệ khí) giao tranh với ngoại tà ở phần Biểu (chính–tà tương tranh). Với phong hàn phạm biểu, đây là cảnh "ố hàn phát nhiệt" (sợ lạnh kèm sốt) ĐẶC TRƯNG của biểu hàn, KHÔNG phải bằng chứng của lý nhiệt hay tạng phủ bên trong đã hóa nhiệt.
            - NƯỚC TIỂU VÀNG (hơi vàng/vàng sẻn) trong ngoại cảm cấp có sốt phải giải thích NGẮN GỌN là: nhiệt của quá trình chính–tà tương tranh (sốt) làm hao và cô đặc tân dịch khiến nước tiểu hơi vàng; HOẶC là dấu tà khí CHỚM HÓA NHIỆT (phong hàn có xu hướng hóa nhiệt) khi bắt đầu vào sâu hơn. TUYỆT ĐỐI CẤM (PROHIBITED) giải thích nước tiểu vàng bằng cơ chế bịa kiểu "tạng Phế rối loạn thông điều thủy đạo làm thủy dịch phân bố không đều rồi tích tụ thành nhiệt", và CẤM quy nước tiểu vàng cho bất kỳ tạng phủ hư suy nào (tuân luật 4 và luật 15). Chỉ nêu đúng một ý cô đọng như trên, không kéo dài thành cơ chế tạng phủ.
+        19. MẤT NGỦ (THẤT MIÊN) — CƠ CHẾ QUY VỀ TÂM (THẦN), CẤM QUY CHO NGOẠI TÀ/VỆ KHÍ:
+           - Cơ chế YHCT của mất ngủ BẮT BUỘC xoay quanh TÂM chủ thần: Tâm thần bất an do Tâm huyết/Tâm âm hư không dưỡng thần, Tâm–Tỳ lưỡng hư, Tâm–Thận bất giao, Can uất hóa hỏa nhiễu tâm, hoặc đàm nhiệt/Vị bất hòa nhiễu tâm. TUYỆT ĐỐI CẤM (PROHIBITED) giải thích mất ngủ bằng "vệ khí không điều hòa được giấc ngủ", "ngoại tà làm mất ngủ" hay quy mất ngủ cho biểu chứng phong hàn/phong nhiệt.
+           - CHỌN CƠ CHẾ THEO HỘI CHỨNG ĐÃ CHỐT ({final_primary}, {final_concurrent}): nếu cốt lõi/kèm theo CÓ hội chứng Tâm/Tâm-Tỳ/Can liên quan, giải thích mất ngủ theo đúng hội chứng đó (tuân luật 15). Nếu chẩn đoán là NGOẠI CẢM BIỂU CHỨNG CẤP thuần túy, KHÔNG có hội chứng Tâm/Tỳ đã chốt: chỉ nhận định trung tính rằng mất ngủ là TRIỆU CHỨNG NỀN có sẵn (có thể do Tâm Tỳ hư / suy nhược / lo nghĩ kéo dài), KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này và nên theo dõi thêm; TUYỆT ĐỐI CẤM bịa cơ chế gán mất ngủ cho ngoại tà biểu và CẤM tự thêm hội chứng Tâm/Tỳ mới ngoài Bước 1 (tuân luật 15).
         """
         
         try:
