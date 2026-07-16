@@ -14,9 +14,12 @@ qa:
   top_p: 0.9
 
 requesty:
-  use_cloud: true    # TEXT LLM CHÍNH — Requesty.ai router (model 72B, mạnh hơn HF 7B). Fallback ollama local.
+  use_cloud: true    # TEXT LLM CHÍNH — Requesty.ai router. Fallback ollama local.
   api_key: ""        # Lấy từ REQUESTY_API_KEY trong .env
-  model: "deepinfra/Qwen/Qwen2.5-72B-Instruct"
+  # qwen3-30b-a3b-2507 (nebius): ~2s/lần (deepinfra 72B cũ ~35-100s -> chậm ~4-5 phút/ca). Qwen mới,
+  # tiếng Việt YHCT tốt, biến thể -instruct (KHÔNG thinking, output sạch). Đổi lại 72B nếu cần chất
+  # lượng biện luận cao hơn: "deepinfra/Qwen/Qwen2.5-72B-Instruct".
+  model: "nebius/qwen/qwen3-30b-a3b-instruct-2507"
 
 huggingface:
   use_cloud: false   # TEXT LLM tắt (đã chuyển Requesty). Token HF VẪN dùng cho VISION (xem mục 'vision').
