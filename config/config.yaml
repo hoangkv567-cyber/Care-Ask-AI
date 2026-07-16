@@ -31,9 +31,12 @@ siliconflow:
 
 # Mô hình phân tích ảnh vọng chẩn (lưỡi/mặt)
 vision:
-  provider: "huggingface"   # "huggingface" (Qwen3-VL qua HF router) | "siliconflow" (cloud) | "ollama" (LLaVA local)
+  provider: "huggingface"   # "huggingface" (Qwen3-VL qua HF router) | "requesty" (Qwen2.5-VL qua Requesty router) | "siliconflow" (cloud) | "ollama" (LLaVA local)
   model: "Qwen/Qwen3-VL-30B-A3B-Instruct"        # HF router phục vụ bản 30B MoE (gần Qwen3-VL-32B nhất; 32B không có provider)
   classify_model: "Qwen/Qwen3-VL-30B-A3B-Instruct"   # HF không có bản 8B -> dùng luôn 30B cho gác cổng lưỡi/mặt
+  # FALLBACK khi HuggingFace lỗi (mất mạng/hết quota): Requesty router -> LLaVA local. Cần
+  # REQUESTY_VISION_API_KEY trong .env. Đổi provider:"requesty" để dùng model này làm CHÍNH.
+  fallback_model: "novita/qwen/qwen2.5-vl-72b-instruct"
   temperature: 0.0
   # Vọng chẩn CÓ CẤU TRÚC: VLM trả JSON theo schema -> map triệu chứng deterministic (bỏ bước LLM
   # đọc prose + regex vá ảo giác). Tự fallback về prose nếu VLM không trả JSON hợp lệ. Chỉ áp dụng

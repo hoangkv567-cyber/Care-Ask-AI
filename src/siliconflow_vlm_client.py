@@ -199,6 +199,32 @@ class SiliconFlowVLMClient:
             raise ValueError(f"Modality '{modality}' không được hỗ trợ")
 
 
+def _make_vision_fallback_chain(config: dict, vision_cfg: dict, ollama_model: str):
+    """Chuỗi FALLBACK khi provider vision chính (HuggingFace) lỗi (mất mạng/hết quota/model gỡ):
+    Requesty router (novita/qwen/qwen2.5-vl-72b-instruct) -> LLaVA local. Requesty chỉ chèn nếu có
+    REQUESTY_VISION_API_KEY (hoặc REQUESTY_API_KEY). Nếu không có key Requesty -> chỉ LLaVA local."""
+    from src.ollama_client import OllamaTCMClient
+    try:
+        ollama_fb = OllamaTCMClient(model_name=ollama_model, config=config)
+    except Exception as e:
+        logger.warning(f"Không khởi tạo được LLaVA local làm fallback: {e}")
+        ollama_fb = None
+    rq_key = (os.environ.get("REQUESTY_VISION_API_KEY")
+              or os.environ.get("REQUESTY_API_KEY")
+              or config.get("requesty", {}).get("vision_api_key"))
+    if rq_key:
+        rq_model = vision_cfg.get("fallback_model", "novita/qwen/qwen2.5-vl-72b-instruct")
+        try:
+            client = SiliconFlowVLMClient(
+                rq_key, rq_model, config=config, fallback_client=ollama_fb,
+                base_url="https://router.requesty.ai/v1/chat/completions")
+            logger.info(f"Vision fallback = Requesty router, model: {rq_model} (rồi mới đến LLaVA local)")
+            return client
+        except Exception as e:
+            logger.warning(f"Không khởi tạo được Requesty vision fallback: {e} -> chỉ LLaVA local.")
+    return ollama_fb
+
+
 def create_vision_client(config: dict):
     """Factory chọn client vision theo config['vision']['provider']:
     - 'siliconflow': Qwen3-VL trên cloud (kèm LLaVA local làm fallback khi lỗi mạng/quota)
@@ -215,17 +241,31 @@ def create_vision_client(config: dict):
         hf_token = (os.environ.get("HUGGINGFACE_TOKEN") or os.environ.get("HF_TOKEN")
                     or config.get("huggingface", {}).get("token"))
         if hf_token:
-            # Model VL trên HF router (vd Qwen/Qwen3-VL-30B-A3B-Instruct). LLaVA local làm fallback.
+            # Model VL trên HF router (vd Qwen/Qwen3-VL-30B-A3B-Instruct). Fallback CHUỖI khi HF lỗi:
+            # Requesty (novita/qwen/qwen2.5-vl-72b-instruct) -> LLaVA local.
             model_name = vision_cfg.get("model", "Qwen/Qwen3-VL-30B-A3B-Instruct")
+            fallback = _make_vision_fallback_chain(config, vision_cfg, ollama_model)
+            logger.info(f"Vision provider = HuggingFace router, model: {model_name}")
+            return SiliconFlowVLMClient(hf_token, model_name, config=config, fallback_client=fallback,
+                                        base_url="https://router.huggingface.co/v1/chat/completions")
+        logger.warning("vision.provider='huggingface' nhưng thiếu HUGGINGFACE_TOKEN -> thử Requesty/LLaVA.")
+        return _make_vision_fallback_chain(config, vision_cfg, ollama_model) \
+            or OllamaTCMClient(model_name=ollama_model, config=config)
+
+    if provider in ("requesty", "requesty-vision"):
+        rq_key = (os.environ.get("REQUESTY_VISION_API_KEY") or os.environ.get("REQUESTY_API_KEY")
+                  or config.get("requesty", {}).get("api_key"))
+        if rq_key:
+            model_name = vision_cfg.get("model", "novita/qwen/qwen2.5-vl-72b-instruct")
             try:
                 fallback = OllamaTCMClient(model_name=ollama_model, config=config)
             except Exception as e:
                 logger.warning(f"Không khởi tạo được LLaVA local làm fallback: {e}")
                 fallback = None
-            logger.info(f"Vision provider = HuggingFace router, model: {model_name}")
-            return SiliconFlowVLMClient(hf_token, model_name, config=config, fallback_client=fallback,
-                                        base_url="https://router.huggingface.co/v1/chat/completions")
-        logger.warning("vision.provider='huggingface' nhưng thiếu HUGGINGFACE_TOKEN -> dùng LLaVA local.")
+            logger.info(f"Vision provider = Requesty router, model: {model_name}")
+            return SiliconFlowVLMClient(rq_key, model_name, config=config, fallback_client=fallback,
+                                        base_url="https://router.requesty.ai/v1/chat/completions")
+        logger.warning("vision.provider='requesty' nhưng thiếu REQUESTY_VISION_API_KEY/REQUESTY_API_KEY -> LLaVA local.")
 
     if provider == "siliconflow":
         api_key = os.environ.get("SILICONFLOW_API_KEY") or config.get("siliconflow", {}).get("api_key")
