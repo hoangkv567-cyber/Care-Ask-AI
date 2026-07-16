@@ -36,6 +36,9 @@ vision:
   # LƯU Ý: 'novita/qwen/qwen2.5-vl-72b-instruct' (user chọn) đang lỗi 500 phía provider (2026-07-16)
   # -> dùng 'parasail/...' (CÙNG Qwen2.5-VL-72B, provider khác, đã test OK). Đổi lại novita khi nó hồi.
   fallback_model: "parasail/parasail-qwen25-vl-72b-instruct"
+  # HF router hay 504 (quá tải) -> timeout THẤP để fail nhanh xuống fallback parasail (giây). Chỉ áp
+  # cho client HF; parasail/Requesty vẫn giữ 120s (72B cần thời gian). Tăng nếu HF ổn định trở lại.
+  hf_timeout: 20
   temperature: 0.0
   # Vọng chẩn CÓ CẤU TRÚC: VLM trả JSON theo schema -> map triệu chứng deterministic (bỏ bước LLM
   # đọc prose + regex vá ảo giác). Tự fallback về prose nếu VLM không trả JSON hợp lệ. Áp dụng cho

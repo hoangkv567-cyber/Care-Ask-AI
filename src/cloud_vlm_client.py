@@ -28,7 +28,7 @@ class CloudVLMClient:
 
     def __init__(self, api_key: str, model_name: str = "Qwen/Qwen3-VL-32B-Instruct",
                  config: dict = None, fallback_client=None, base_url: str = None,
-                 classify_model: str = None):
+                 classify_model: str = None, timeout: float = 120.0):
         import httpx
         self.model_name = model_name
         self.config = config or {}
@@ -47,7 +47,7 @@ class CloudVLMClient:
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
-            timeout=120.0,
+            timeout=timeout,
         )
         logger.info(f"Khởi tạo Cloud VLM client với model: {model_name}")
 
@@ -250,9 +250,13 @@ def create_vision_client(config: dict):
             # Requesty (novita/qwen/qwen2.5-vl-72b-instruct) -> LLaVA local.
             model_name = vision_cfg.get("model", "Qwen/Qwen3-VL-30B-A3B-Instruct")
             fallback = _make_vision_fallback_chain(config, vision_cfg, ollama_model)
-            logger.info(f"Vision provider = HuggingFace router, model: {model_name}")
+            # HF hay 504 (router quá tải) -> đặt timeout THẤP (config vision.hf_timeout, mặc định 20s)
+            # để fail NHANH xuống fallback (Requesty parasail) thay vì chờ ~30s/lần gọi.
+            _hf_timeout = float(vision_cfg.get("hf_timeout", 20.0))
+            logger.info(f"Vision provider = HuggingFace router, model: {model_name} (timeout {_hf_timeout}s)")
             return CloudVLMClient(hf_token, model_name, config=config, fallback_client=fallback,
-                                        base_url="https://router.huggingface.co/v1/chat/completions")
+                                  base_url="https://router.huggingface.co/v1/chat/completions",
+                                  timeout=_hf_timeout)
         logger.warning("vision.provider='huggingface' nhưng thiếu HUGGINGFACE_TOKEN -> thử Requesty/LLaVA.")
         return _make_vision_fallback_chain(config, vision_cfg, ollama_model) \
             or OllamaTCMClient(model_name=ollama_model, config=config)
