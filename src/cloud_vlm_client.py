@@ -1,4 +1,4 @@
-# src/siliconflow_vlm_client.py
+# src/cloud_vlm_client.py — client vision OpenAI-compatible (HuggingFace / Requesty router / ...)
 import os
 import base64
 import logging
@@ -7,7 +7,7 @@ from src.prompts import (
     TONGUE_JSON_PROMPT_VI, FACE_JSON_PROMPT_VI,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("cloud_vlm")
 
 # Cạnh dài tối đa của ảnh gửi lên cloud. Ảnh điện thoại 4000px nén xuống 1280px
 # vẫn thừa chi tiết cho vọng chẩn (LLaVA cũ chỉ nhìn 336px) nhưng payload nhỏ hơn ~10 lần.
@@ -16,8 +16,8 @@ _MAX_IMAGE_EDGE = 1280
 _CLASSIFY_IMAGE_EDGE = 512
 
 
-class SiliconFlowVLMClient:
-    """Client vision qua SiliconFlow (Qwen3-VL), giữ nguyên giao diện của OllamaTCMClient
+class CloudVLMClient:
+    """Client vision OpenAI-compatible (HuggingFace / Requesty router), giữ nguyên giao diện của OllamaTCMClient
     (diagnose_image / verify_image_modality / set_symptom_list) để pipeline thay thế được.
 
     Khác biệt với LLaVA local:
@@ -27,18 +27,21 @@ class SiliconFlowVLMClient:
     """
 
     def __init__(self, api_key: str, model_name: str = "Qwen/Qwen3-VL-32B-Instruct",
-                 config: dict = None, fallback_client=None, base_url: str = None):
+                 config: dict = None, fallback_client=None, base_url: str = None,
+                 classify_model: str = None):
         import httpx
         self.model_name = model_name
         self.config = config or {}
         vision_cfg = self.config.get("vision", {})
         self.temperature = float(vision_cfg.get("temperature", 0.0))
         self.top_p = float(vision_cfg.get("top_p", 1.0))
-        # Model nhỏ cho bước phân loại thô lưỡi/mặt (chỉ trả 1 từ, không cần 32B — tiết kiệm ~40-60s/request)
-        self.classify_model = vision_cfg.get("classify_model", "Qwen/Qwen3-VL-8B-Instruct")
+        # Model bước phân loại thô lưỡi/mặt (chỉ trả 1 từ). Ưu tiên THAM SỐ (mỗi router có tên model
+        # khác nhau — vd Requesty dùng chính model_name; nếu để classify_model tên-HF sẽ 404 trên
+        # Requesty), rồi vision_cfg.classify_model, cuối cùng chính model_name.
+        self.classify_model = classify_model or vision_cfg.get("classify_model") or model_name
         self.fallback_client = fallback_client
-        # base_url cho phép dùng chung client OpenAI-compatible cho SiliconFlow hoặc HF router.
-        self.url = base_url or "https://api.siliconflow.com/v1/chat/completions"
+        # base_url cho phép dùng chung client OpenAI-compatible cho HF / Requesty router.
+        self.url = base_url or "https://router.huggingface.co/v1/chat/completions"
         self.http_client = httpx.Client(
             headers={
                 "Authorization": f"Bearer {api_key}",
@@ -46,7 +49,7 @@ class SiliconFlowVLMClient:
             },
             timeout=120.0,
         )
-        logger.info(f"Khởi tạo SiliconFlow VLM client với model: {model_name}")
+        logger.info(f"Khởi tạo Cloud VLM client với model: {model_name}")
 
         # Danh sách triệu chứng mặc định (giữ tương thích giao diện với OllamaTCMClient)
         self.symptom_list = [
@@ -84,7 +87,7 @@ class SiliconFlowVLMClient:
     def _chat_vision(self, system: str, prompt: str, image_path: str, max_tokens: int = 500,
                      model: str = None, max_edge: int = _MAX_IMAGE_EDGE) -> str:
         """Gọi VLM với 1 ảnh + prompt, trả về text trả lời."""
-        # SiliconFlow trả lỗi/kết quả bất ổn với temperature đúng 0.0 (giống SiliconFlowChatClient)
+        # Một số router trả lỗi/kết quả bất ổn với temperature đúng 0.0 -> nâng nhẹ lên 0.01
         temperature = self.temperature if self.temperature > 0 else 0.01
         payload = {
             "model": model or self.model_name,
@@ -123,7 +126,7 @@ class SiliconFlowVLMClient:
             logger.info(f"{self.model_name} phân tích {modality}: {content}")
             return [content] if content else []
         except Exception as e:
-            logger.error(f"Lỗi gọi SiliconFlow VLM: {e}")
+            logger.error(f"Lỗi gọi Cloud VLM: {e}")
             if self.fallback_client is not None:
                 logger.warning("Cloud VLM lỗi -> chuyển sang LLaVA local (fallback) để phân tích ảnh...")
                 return self.fallback_client.diagnose_image(image_path, modality=modality)
@@ -184,7 +187,7 @@ class SiliconFlowVLMClient:
                 return "face"
             return "other"
         except Exception as e:
-            logger.error(f"Lỗi phân loại ảnh qua SiliconFlow VLM: {e}")
+            logger.error(f"Lỗi phân loại ảnh qua Cloud VLM: {e}")
             if self.fallback_client is not None:
                 return self.fallback_client.verify_image_modality(image_path)
             return None   # lỗi -> fail-open, không chặn
@@ -215,9 +218,10 @@ def _make_vision_fallback_chain(config: dict, vision_cfg: dict, ollama_model: st
     if rq_key:
         rq_model = vision_cfg.get("fallback_model", "novita/qwen/qwen2.5-vl-72b-instruct")
         try:
-            client = SiliconFlowVLMClient(
+            client = CloudVLMClient(
                 rq_key, rq_model, config=config, fallback_client=ollama_fb,
-                base_url="https://router.requesty.ai/v1/chat/completions")
+                base_url="https://router.requesty.ai/v1/chat/completions",
+                classify_model=rq_model)
             logger.info(f"Vision fallback = Requesty router, model: {rq_model} (rồi mới đến LLaVA local)")
             return client
         except Exception as e:
@@ -227,7 +231,8 @@ def _make_vision_fallback_chain(config: dict, vision_cfg: dict, ollama_model: st
 
 def create_vision_client(config: dict):
     """Factory chọn client vision theo config['vision']['provider']:
-    - 'siliconflow': Qwen3-VL trên cloud (kèm LLaVA local làm fallback khi lỗi mạng/quota)
+    - 'huggingface': Qwen3-VL qua HF router (fallback chuỗi: Requesty Qwen2.5-VL -> LLaVA local)
+    - 'requesty': Qwen2.5-VL qua Requesty router (kèm LLaVA local làm fallback)
     - 'ollama' (hoặc không cấu hình): LLaVA local như cũ
     Thiếu API key thì tự hạ về LLaVA local thay vì chết."""
     from src.ollama_client import OllamaTCMClient
@@ -246,7 +251,7 @@ def create_vision_client(config: dict):
             model_name = vision_cfg.get("model", "Qwen/Qwen3-VL-30B-A3B-Instruct")
             fallback = _make_vision_fallback_chain(config, vision_cfg, ollama_model)
             logger.info(f"Vision provider = HuggingFace router, model: {model_name}")
-            return SiliconFlowVLMClient(hf_token, model_name, config=config, fallback_client=fallback,
+            return CloudVLMClient(hf_token, model_name, config=config, fallback_client=fallback,
                                         base_url="https://router.huggingface.co/v1/chat/completions")
         logger.warning("vision.provider='huggingface' nhưng thiếu HUGGINGFACE_TOKEN -> thử Requesty/LLaVA.")
         return _make_vision_fallback_chain(config, vision_cfg, ollama_model) \
@@ -263,20 +268,9 @@ def create_vision_client(config: dict):
                 logger.warning(f"Không khởi tạo được LLaVA local làm fallback: {e}")
                 fallback = None
             logger.info(f"Vision provider = Requesty router, model: {model_name}")
-            return SiliconFlowVLMClient(rq_key, model_name, config=config, fallback_client=fallback,
-                                        base_url="https://router.requesty.ai/v1/chat/completions")
+            return CloudVLMClient(rq_key, model_name, config=config, fallback_client=fallback,
+                                  base_url="https://router.requesty.ai/v1/chat/completions",
+                                  classify_model=model_name)
         logger.warning("vision.provider='requesty' nhưng thiếu REQUESTY_VISION_API_KEY/REQUESTY_API_KEY -> LLaVA local.")
-
-    if provider == "siliconflow":
-        api_key = os.environ.get("SILICONFLOW_API_KEY") or config.get("siliconflow", {}).get("api_key")
-        if api_key:
-            model_name = vision_cfg.get("model", "Qwen/Qwen3-VL-32B-Instruct")
-            try:
-                fallback = OllamaTCMClient(model_name=ollama_model, config=config)
-            except Exception as e:
-                logger.warning(f"Không khởi tạo được LLaVA local làm fallback: {e}")
-                fallback = None
-            return SiliconFlowVLMClient(api_key, model_name, config=config, fallback_client=fallback)
-        logger.warning("vision.provider='siliconflow' nhưng thiếu SILICONFLOW_API_KEY -> dùng LLaVA local.")
 
     return OllamaTCMClient(model_name=ollama_model, config=config)

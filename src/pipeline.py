@@ -1,6 +1,6 @@
 import logging
 from src.mapping import SymptomToSyndromeMapper
-from src.siliconflow_vlm_client import create_vision_client
+from src.cloud_vlm_client import create_vision_client
 from src.neo4j_client import Neo4jTCMClient
 from src.utils import logger
 from src.config_loader import load_config

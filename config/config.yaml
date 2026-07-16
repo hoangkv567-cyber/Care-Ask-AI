@@ -24,23 +24,22 @@ huggingface:
   model: "Qwen/Qwen2.5-7B-Instruct"
 
 
-siliconflow:
-  use_cloud: false   # Đã hết số dư -> tắt. (Vision vẫn thử siliconflow rồi fallback LLaVA — xem 'vision'.)
-  api_key: ""    # Lấy từ SILICONFLOW_API_KEY trong .env
-  model: "Qwen/Qwen2.5-72B-Instruct"
+# (Đã bỏ SiliconFlow — hết số dư, không còn dùng cho text lẫn vision.)
 
 # Mô hình phân tích ảnh vọng chẩn (lưỡi/mặt)
 vision:
-  provider: "huggingface"   # "huggingface" (Qwen3-VL qua HF router) | "requesty" (Qwen2.5-VL qua Requesty router) | "siliconflow" (cloud) | "ollama" (LLaVA local)
+  provider: "huggingface"   # "huggingface" (Qwen3-VL qua HF router) | "requesty" (Qwen2.5-VL qua Requesty router) | "ollama" (LLaVA local)
   model: "Qwen/Qwen3-VL-30B-A3B-Instruct"        # HF router phục vụ bản 30B MoE (gần Qwen3-VL-32B nhất; 32B không có provider)
   classify_model: "Qwen/Qwen3-VL-30B-A3B-Instruct"   # HF không có bản 8B -> dùng luôn 30B cho gác cổng lưỡi/mặt
   # FALLBACK khi HuggingFace lỗi (mất mạng/hết quota): Requesty router -> LLaVA local. Cần
   # REQUESTY_VISION_API_KEY trong .env. Đổi provider:"requesty" để dùng model này làm CHÍNH.
-  fallback_model: "novita/qwen/qwen2.5-vl-72b-instruct"
+  # LƯU Ý: 'novita/qwen/qwen2.5-vl-72b-instruct' (user chọn) đang lỗi 500 phía provider (2026-07-16)
+  # -> dùng 'parasail/...' (CÙNG Qwen2.5-VL-72B, provider khác, đã test OK). Đổi lại novita khi nó hồi.
+  fallback_model: "parasail/parasail-qwen25-vl-72b-instruct"
   temperature: 0.0
   # Vọng chẩn CÓ CẤU TRÚC: VLM trả JSON theo schema -> map triệu chứng deterministic (bỏ bước LLM
-  # đọc prose + regex vá ảo giác). Tự fallback về prose nếu VLM không trả JSON hợp lệ. Chỉ áp dụng
-  # cho provider siliconflow (Qwen3-VL). Đặt false để về nguyên hành vi mô tả văn xuôi cũ.
+  # đọc prose + regex vá ảo giác). Tự fallback về prose nếu VLM không trả JSON hợp lệ. Áp dụng cho
+  # VLM Qwen3-VL/Qwen2.5-VL. Đặt false để về nguyên hành vi mô tả văn xuôi cũ.
   structured: true
 
 # Model vision local — dùng khi vision.provider="ollama", và làm fallback khi cloud lỗi
