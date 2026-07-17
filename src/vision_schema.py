@@ -166,12 +166,18 @@ def tongue_json_to_prose(data: dict) -> str:
 
 
 def face_json_to_prose(data: dict) -> str:
-    """JSON mặt -> câu mô tả tiếng Việt (hiển thị)."""
+    """JSON mặt -> câu mô tả tiếng Việt (hiển thị).
+
+    [HIỂN THỊ ≠ SINH TRIỆU CHỨNG] 'hồng hào bình thường' KHÔNG sinh triệu chứng (face_json_to_symptoms
+    dùng sac_map, không có khóa này) NHƯNG VẪN phải HIỆN — người dùng đã tải ảnh mặt nên cần thấy kết
+    quả vọng chẩn là BÌNH THƯỜNG. Trước đây prose dùng chung _SKIP (vốn để chặn triệu chứng) nên mặt
+    bình thường -> parts rỗng -> mất hẳn mục 'Phân tích sắc mặt', trông như chưa xem ảnh.
+    """
     if not isinstance(data, dict):
         return ""
     parts = []
     sac = _norm(data.get("sac_mat"))
-    if sac and sac not in _SKIP:
+    if sac and sac not in ("", "không rõ"):     # CHỈ bỏ giá trị THẬT SỰ không xác định
         parts.append(f"sắc mặt {sac}")
     if _norm(data.get("go_ma_do")) == "có":
         parts.append("hai gò má đỏ")
