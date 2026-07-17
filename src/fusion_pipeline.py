@@ -5806,6 +5806,37 @@ class TCMFusionPipeline:
                     logger.info("[CỔNG DƯƠNG HƯ] Loại hội chứng dương-hư khỏi kèm theo (không có dấu hàn).")
                     _grounded = _kept
 
+        # [CỔNG YÊU THỐNG CẤP — HÀN THẤP ≠ THẬN DƯƠNG HƯ MẠN] Đau lưng CẤP (onset mới mắc/vài ngày) do
+        # lạnh-ẩm là HÀN THẤP (Thực chứng), KHÁC Thận dương hư (thể HAO MÒN MẠN). Scorer/LLM hay chốt
+        # 'Thận dương hư' cho ca đau lưng + sợ lạnh + lưỡi bệu dù bệnh nhân TRẺ, MỚI MẮC, 0 dấu Thận-mạn
+        # -> kéo bài công-dương-hồi (Phụ tử/Ma hoàng, vd Yêu thống×Dương hư 'Dương thị phì đại tính tích
+        # trục viêm') quá tay cho đau lưng cấp. Hạ core về 'Hàn thấp' (Yêu thống×Hàn thấp -> Phương khu
+        # phong tán hàn trừ thấp, nhẹ, đúng cực). CỔNG CỰC HẸP: acute + đau lưng + core Thận/dương-hư +
+        # VẮNG dấu Thận-mạn (tiểu đêm/ngũ canh/lưng-gối-lạnh/liệt dương/di tinh...). Có dấu Thận-mạn HOẶC
+        # onset mạn tính -> KHÔNG đụng (Thận dương hư thật giữ nguyên).
+        if _grounded:
+            _txt_yt = (user_symptoms + " " + combined_query).lower()
+            _is_acute_yt = self._kw_hit_clean(
+                _txt_yt, ["bệnh mới mắc", "bệnh vài ngày", "bệnh vài tuần", "mới mắc", "vài ngày"]) \
+                and not self._kw_hit_clean(_txt_yt, ["mạn tính", "lâu ngày", "lâu năm", "nhiều năm", "kéo dài nhiều"])
+            _has_backpain_yt = self._kw_hit_clean(_txt_yt, ["đau lưng", "đau thắt lưng", "yêu thống", "mỏi lưng"])
+            _chronic_kidney_yt = self._kw_hit_clean(_txt_yt, [
+                "tiểu đêm", "ngũ canh", "lưng gối lạnh", "gối lạnh", "liệt dương", "di tinh", "hoạt tinh",
+                "xuất tinh", "tiểu nhiều", "tiểu trong dài", "ù tai", "tóc bạc sớm", "răng lung lay",
+                "hoạt thai", "tảo tiết"])
+            _core0_yt = _grounded[0][0].lower()
+            _core_chronic_yang_yt = self._syndrome_is_hu(_grounded[0][0]) and (
+                bool(re.search(r'\bdương\b', _core0_yt)) or 'thận' in _core0_yt)
+            if _is_acute_yt and _has_backpain_yt and _core_chronic_yang_yt and not _chronic_kidney_yt:
+                _ht_idx = next((i for i, (s, _sc) in enumerate(_grounded)
+                                if s.strip().lower() == "hàn thấp"), None)
+                logger.info(f"[CỔNG YÊU THỐNG CẤP] Core '{_grounded[0][0]}' (thể mạn) trên ca đau lưng CẤP "
+                            f"({'promote' if _ht_idx is not None else 'inject'} Hàn thấp) — 0 dấu Thận-mạn.")
+                if _ht_idx is not None:
+                    _grounded.insert(0, _grounded.pop(_ht_idx))
+                else:
+                    _grounded.insert(0, ("Hàn thấp", _grounded[0][1]))
+
         final_syndromes = [s for s, _sc in _grounded] if _grounded else llm_syndromes
 
         # [FIX] Độc lập cưỡng bức Âm Dương Lưỡng Hư lên đầu khi có mâu thuẫn Hàn - Nhiệt lâm sàng
