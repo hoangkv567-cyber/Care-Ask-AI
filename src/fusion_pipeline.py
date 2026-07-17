@@ -1331,7 +1331,7 @@ class TCMFusionPipeline:
     # Viêm xoang) là dấu phân biệt VIÊM MŨI DỊ ỨNG — KHÔNG xuất hiện ở Cảm mạo/Khái thấu thường, nên
     # boost an toàn. Bài học tuning: dấu mũi CHUNG ('hắt hơi' df=6, 'ngạt mũi' df=11) KHÔNG nạp vì có ở
     # cảm mạo -> dễ soán ngôi oan. Mở rộng tập này PHẢI đo lại eval_gold recall trước/sau. [[chu-chung-cardinal-matching]]
-    _CARDINAL_MARK_EXTRA = ("ngứa mũi",)
+    _CARDINAL_MARK_EXTRA = ("ngứa mũi", "đau lưng", "mỏi lưng", "đau thắt lưng")
 
     @classmethod
     def _infer_sex(cls, text: str):
