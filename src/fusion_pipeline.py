@@ -2256,6 +2256,57 @@ class TCMFusionPipeline:
             out_lines.append(" ".join(p for p in new_parts if p) if changed else line)
         return "\n".join(out_lines)
 
+    # [NHẤT QUÁN SẮC MẶT] Sắc mặt nhợt/xanh xao là dấu VỌNG CHẨN (phải quan sát được). Vision cho 'sắc
+    # mặt hồng hào bình thường' (face_json không sinh triệu chứng nhợt) mà LLM Mục 3 hay BỊA 'da xanh
+    # xao' để chống đỡ core huyết/khí hư -> mâu thuẫn thẳng panel Vision. Gỡ CỤM nhợt bịa (giữ phần
+    # câu còn lại có ích). CORE khớp 'da/sắc mặt/khuôn mặt... + xanh xao/nhợt' hoặc 'xanh xao' đứng một
+    # mình (chỉ tả sắc mặt); 'nhợt/tái' đơn CHỈ khớp khi có từ chỉ MẶT trước -> 'lưỡi nhợt' KHÔNG dính.
+    _FACE_WORD_RE = (r'(?:da(?:\s*dẻ|\s*mặt)?|làn\s*da|sắc\s*mặt|sắc\s*diện|nét\s*mặt|gương\s*mặt|'
+                     r'khuôn\s*mặt|(?<![\wàáảãạăằắẳẵặâầấẩẫậ])mặt)')
+    _PALLOR_WORD_RE = (r'(?:xanh\s*xao|nhợt\s*nhạt|trắng\s*nhợt|xanh\s*tái|tái\s*nhợt|tái\s*xanh|'
+                       r'nhợt\s*màu|kém\s*tươi\s*tắn|kém\s*tươi|kém\s*sắc|nhợt|tái|xanh)')
+    _FACE_PALLOR_CORE = (r'(?:' + _FACE_WORD_RE + r'\s*(?:hơi|khá|có\s*phần|trở\s*nên|dần|đôi\s*khi)?\s*'
+                         + _PALLOR_WORD_RE + r'|\bxanh\s*xao\b)')
+    _FACE_PALLOR_DET_RE = re.compile(_FACE_PALLOR_CORE, re.IGNORECASE)
+    _FACE_PALLOR_EVIDENCE_RE = re.compile(
+        _FACE_WORD_RE + r'\s*(?:hơi|khá)?\s*' + _PALLOR_WORD_RE + r'|\bxanh\s*xao\b', re.IGNORECASE)
+    _FACE_PALLOR_LIST_RE = re.compile(
+        _FACE_PALLOR_CORE + r'\s*(?:,|;|–|—|-|\bvà\b|\bhoặc\b|\bcùng\b|\blẫn\b)\s*', re.IGNORECASE)
+    _FACE_PALLOR_LEAD_RE = re.compile(
+        r'(?:\s*(?:,|;|–|—|\bnhư\b|\bvà\b|\bhoặc\b)\s*)' + _FACE_PALLOR_CORE, re.IGNORECASE)
+
+    def _strip_fabricated_pallor(self, text: str, symptoms_str: str = "") -> str:
+        """[NHẤT QUÁN SẮC MẶT] Gỡ cụm 'da/sắc mặt xanh xao/nhợt' do LLM BỊA khi KHÔNG có dấu nhợt mặt
+        trong vọng chẩn/lời khai. Nếu mặt THẬT nhợt -> face_json_to_symptoms đã thêm 'mặt nhợt nhạt'
+        vào symptoms -> gate bỏ qua (không gỡ dấu thật). Chỉ gỡ CỤM nhợt (không xóa cả câu, tránh mất
+        biện luận hợp lệ). Cùng lớp với _strip_thin_coating_damp_claims / _strip_luoi_beu_exterior_claims."""
+        if not text or not self._FACE_PALLOR_DET_RE.search(text):
+            return text
+        if self._FACE_PALLOR_EVIDENCE_RE.search((symptoms_str or "").lower()):
+            return text  # có dấu nhợt mặt THẬT -> không phải bịa, giữ nguyên
+        before = text
+        # (1) Cụm nhợt là MỘT MỤC trong liệt kê (có dấu phẩy/'và'/'như' kề) -> gỡ đúng cụm, giữ câu.
+        text = self._FACE_PALLOR_LIST_RE.sub("", text)     # cụm + dấu phẩy/'và' đứng SAU
+        text = self._FACE_PALLOR_LEAD_RE.sub("", text)     # cụm + 'như/và/,' đứng TRƯỚC
+        # Dọn tàn dư liệt kê trước khi xét câu cụt.
+        text = re.sub(r'\bnhư\s+và\b', 'và', text, flags=re.IGNORECASE)
+        text = re.sub(r'\bnhư\s*(?=[,.;–—])', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'\s+([,.;])', r'\1', text)
+        text = re.sub(r'([,;])\s*(?=[,;])', '', text)
+        # (2) Nếu vẫn còn cụm nhợt TRẦN (nhợt làm chủ ngữ/không ở liệt kê) -> bỏ CẢ CÂU đó (như các
+        # stripper khác), tránh để lại mảnh cụt kiểu 'phản ánh huyết hư.'.
+        if self._FACE_PALLOR_DET_RE.search(text):
+            out_lines = []
+            for line in text.split("\n"):
+                sents = re.split(r'(?<=[.!?])\s+', line)
+                kept = [s for s in sents if not self._FACE_PALLOR_DET_RE.search(s)]
+                out_lines.append(" ".join(kept) if len(kept) != len(sents) else line)
+            text = "\n".join(out_lines)
+        text = re.sub(r'[ \t]{2,}', ' ', text).strip()
+        if text != before:
+            logger.info("[NHẤT QUÁN SẮC MẶT] Gỡ cụm 'sắc mặt/da nhợt' bịa (vọng chẩn hồng hào, không dấu nhợt mặt).")
+        return text
+
     @staticmethod
     def _syndrome_thermal_sign(name):
         """Cực HÀN / NHIỆT của hội chứng theo TÊN. Trả 'han', 'nhiet', hoặc None (trung tính hoặc
@@ -4973,6 +5024,9 @@ class TCMFusionPipeline:
         # [NHẤT QUÁN HÀN-NHIỆT] Core KHÔNG phải dương-hư/hàn (ngoại cảm biểu / thấp / nhiệt): 'sợ lạnh'
         # KHÔNG do dương hư — viết lại nếu LLM bịa cơ chế dương-hư/âm-dương-mất-cân-bằng (trái cực).
         llm_explanation = self._fix_contradictory_cold_mechanism(llm_explanation, final_primary, bat_cuong_hint)
+        # [NHẤT QUÁN SẮC MẶT] Gỡ cụm 'da/sắc mặt xanh xao/nhợt' LLM bịa khi vọng chẩn cho mặt hồng hào
+        # (không dấu nhợt mặt trong triệu chứng) -> tránh Mục 3 mâu thuẫn panel Vision ngay trên nó.
+        llm_explanation = self._strip_fabricated_pallor(llm_explanation, symptoms_str)
 
         final_markdown += f"{llm_explanation}\n\n"
 
