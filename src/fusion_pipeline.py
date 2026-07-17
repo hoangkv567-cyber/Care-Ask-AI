@@ -4009,6 +4009,30 @@ class TCMFusionPipeline:
         all_syndromes, _nhiet_reason = self._demote_nhiet_without_heat(all_syndromes, symptoms_lower)
         if _nhiet_reason:
             logger.info(f"[CỔNG THERMAL-POLARITY] {_nhiet_reason}")
+        # [CỔNG YÊU THỐNG CẤP — promote Hàn thấp lên CORE] Đồng bộ với gate cùng tên ở run_diagnosis
+        # (đã CHÈN 'Hàn thấp' vào final_syndromes cho ca đau lưng cấp). Nhưng all_syndromes ở đây dựng
+        # lại từ detailed_kg_data (Neo4j re-sort theo điểm) nên 'Hàn thấp' (điểm KG thấp/không có) tụt
+        # xuống kèm-theo, core lại về 'Thận dương hư' -> Mục 5 Bản vẫn kê bài công-dương quá tay. Ở đây
+        # (nơi final_primary=all_syndromes[0] thật sự chốt) promote 'Hàn thấp' lên đầu khi HỘI ĐỦ điều
+        # kiện CẤP HẸP: onset acute + đau lưng + core hiện là Thận/dương-hư mạn + VẮNG dấu Thận-mạn.
+        if all_syndromes:
+            _ht_i = next((i for i, s in enumerate(all_syndromes) if s.strip().lower() == "hàn thấp"), None)
+            _c0 = all_syndromes[0].lower()
+            _c0_chronic_yang = self._syndrome_is_hu(all_syndromes[0]) and (
+                bool(re.search(r'\bdương\b', _c0)) or 'thận' in _c0)
+            if _ht_i is not None and _ht_i > 0 and _c0_chronic_yang:
+                _txt_yt2 = (user_symptoms or "").lower()
+                _acute2 = self._kw_hit_clean(
+                    _txt_yt2, ["bệnh mới mắc", "bệnh vài ngày", "bệnh vài tuần", "mới mắc", "vài ngày"]) \
+                    and not self._kw_hit_clean(_txt_yt2, ["mạn tính", "lâu ngày", "lâu năm", "nhiều năm"])
+                _back2 = self._kw_hit_clean(_txt_yt2, ["đau lưng", "đau thắt lưng", "yêu thống", "mỏi lưng"])
+                _ck2 = self._kw_hit_clean(_txt_yt2, [
+                    "tiểu đêm", "ngũ canh", "lưng gối lạnh", "gối lạnh", "liệt dương", "di tinh",
+                    "hoạt tinh", "xuất tinh", "tiểu nhiều", "tiểu trong dài", "ù tai", "tóc bạc sớm"])
+                if _acute2 and _back2 and not _ck2:
+                    logger.info(f"[CỔNG YÊU THỐNG CẤP] Promote 'Hàn thấp' -> CORE (từ hạng {_ht_i}, "
+                                f"thay '{all_syndromes[0]}') — ca đau lưng cấp, 0 dấu Thận-mạn.")
+                    all_syndromes.insert(0, all_syndromes.pop(_ht_i))
         # Các Guard rules đặc biệt - Khởi tạo sớm để tránh lỗi UnboundLocalError
         overridden = False
         final_primary = all_syndromes[0] if all_syndromes else "Chưa rõ"
