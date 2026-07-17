@@ -5717,10 +5717,22 @@ class TCMFusionPipeline:
         # hoán vị xuống dưới ứng viên HƯ không-dương-hư đầu tiên (vẫn giữ trong danh sách kèm theo).
         if _grounded:
             _txt_dh = (user_symptoms + " " + combined_query).lower()
-            _has_cold_sign = self._kw_hit_clean(_txt_dh, [
-                "sợ lạnh", "úy hàn", "rét run", "lạnh run", "tay chân lạnh", "chân tay lạnh",
-                "chi lạnh", "lưng lạnh", "lạnh bụng", "bụng lạnh", "tiểu đêm", "ngũ canh",
-                "phân sống", "liệt dương", "lưng gối lạnh", "sợ gió"])
+            _cold_kws_dh = ["sợ lạnh", "úy hàn", "rét run", "lạnh run", "tay chân lạnh",
+                            "chân tay lạnh", "chi lạnh", "lưng lạnh", "lạnh bụng", "bụng lạnh",
+                            "tiểu đêm", "ngũ canh", "phân sống", "liệt dương", "lưng gối lạnh",
+                            "sợ gió"]
+            # [Ố HÀN ≠ HƯ HÀN] Ca NGOẠI CẢM (cốt lõi phong hàn/phong nhiệt phạm biểu-phế): 'sợ lạnh/
+            # sợ gió/rét run' là Ố HÀN của BIỂU chứng (chính-tà giao tranh), KHÔNG phải bằng chứng
+            # dương hư — CÙNG nguyên tắc `_interior_cold_kws` đã dùng ở khối Bát Cương. Nếu vẫn tính,
+            # ca phong NHIỆT chỉ có mỗi 'sợ lạnh' sẽ kéo 'Thận dương hư' vào KÈM THEO rồi dựng Bát
+            # Cương 'Hàn Nhiệt Thác Tạp' GIẢ và bắt Mục 3 quy oan khô/đau họng cho dương hư (đã xảy
+            # ra thật: ca ho ra máu + đờm vàng + đau họng, 23 tuổi, 0 dấu Thận). Dấu hàn ĐẶC HIỆU NỘI
+            # (tiểu đêm/ngũ canh/tay chân lạnh/lưng gối lạnh/liệt dương...) VẪN tính -> ca dương hư
+            # THẬT kèm ngoại cảm không bị bỏ sót.
+            if self._syndrome_is_exterior_wind(_grounded[0][0]):
+                _cold_kws_dh = [k for k in _cold_kws_dh
+                                if k not in ("sợ lạnh", "sợ gió", "úy hàn", "rét run", "lạnh run")]
+            _has_cold_sign = self._kw_hit_clean(_txt_dh, _cold_kws_dh)
             # Nhận diện họ DƯƠNG HƯ bằng classifier chuẩn (bắt cả 'bất túc'/'nhược'), không chỉ
             # regex 'dương (hư|suy)' — bản cũ bị tên đồng nghĩa 'Thận dương bất túc' lách qua và
             # còn được chọn làm ứng viên THAY THẾ (đề bạt chính từ đồng nghĩa của hội chứng bị hạ).
