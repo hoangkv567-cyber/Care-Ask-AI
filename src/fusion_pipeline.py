@@ -2261,8 +2261,10 @@ class TCMFusionPipeline:
     # xao' để chống đỡ core huyết/khí hư -> mâu thuẫn thẳng panel Vision. Gỡ CỤM nhợt bịa (giữ phần
     # câu còn lại có ích). CORE khớp 'da/sắc mặt/khuôn mặt... + xanh xao/nhợt' hoặc 'xanh xao' đứng một
     # mình (chỉ tả sắc mặt); 'nhợt/tái' đơn CHỈ khớp khi có từ chỉ MẶT trước -> 'lưỡi nhợt' KHÔNG dính.
+    # Bare 'mặt' (khuôn mặt) PHẢI loại 'bề mặt' (surface, vd 'bề mặt lưỡi') và 'về mặt' (in terms of)
+    # — nếu không, 'bề mặt ... nhợt' của LƯỠI bị bắt nhầm là sắc mặt nhợt -> gỡ oan/lỗi ghép câu.
     _FACE_WORD_RE = (r'(?:da(?:\s*dẻ|\s*mặt)?|làn\s*da|sắc\s*mặt|sắc\s*diện|nét\s*mặt|gương\s*mặt|'
-                     r'khuôn\s*mặt|(?<![\wàáảãạăằắẳẵặâầấẩẫậ])mặt)')
+                     r'khuôn\s*mặt|(?<![\wàáảãạăằắẳẵặâầấẩẫậ])(?<!bề\s)(?<!về\s)mặt)')
     _PALLOR_WORD_RE = (r'(?:xanh\s*xao|nhợt\s*nhạt|trắng\s*nhợt|xanh\s*tái|tái\s*nhợt|tái\s*xanh|'
                        r'nhợt\s*màu|kém\s*tươi\s*tắn|kém\s*tươi|kém\s*sắc|nhợt|tái|xanh)')
     _FACE_PALLOR_CORE = (r'(?:' + _FACE_WORD_RE + r'\s*(?:hơi|khá|có\s*phần|trở\s*nên|dần|đôi\s*khi)?\s*'
