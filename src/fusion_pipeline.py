@@ -3772,6 +3772,53 @@ class TCMFusionPipeline:
 
         return llm_text
 
+    # Dấu NHIỆT-liên-quan hay gặp ở HƯ NHIỆT (deficiency-heat) nội thương — để liệt kê trong chú giải.
+    _DEFICIENCY_HEAT_SIGNS = (
+        "ngũ tâm phiền nhiệt", "tâm phiền", "dễ cáu", "bứt rứt", "khát nước", "miệng khô",
+        "họng khô", "táo bón", "mụn trứng cá", "mụn", "mất ngủ", "gò má đỏ")
+
+    def _annotate_deficiency_heat(self, md: str, bat_cuong_hint: str, primary: str,
+                                  symptoms_str: str) -> str:
+        """[ĐỒNG BỘ HƯ NHIỆT] Khi Bát Cương là HƯ NHIỆT (có 'Nhiệt' + 'Hư', KHÔNG 'Thực'/'Bản Hư Tiêu
+        Thực'/'Thác tạp', core NỘI THƯƠNG không ngoại cảm) mà Mục 4 chốt 'Hư chứng thuần túy / không có
+        Tiêu Thực' — đúng về THỰC (không tà thực ngoại lai) nhưng BỎ LỬNG trục 'Nhiệt': đọc thấy Bát
+        Cương có Nhiệt mà biện luận Mục 3/4 né. Gắn CHÚ GIẢI: phần Nhiệt thuộc HƯ NHIỆT (chính khí/âm
+        huyết hư sinh nội nhiệt), KHÔNG phải thực nhiệt — giữ 'không có Tiêu Thực' nhưng NHẬN chữ Nhiệt.
+        Prose-only, deterministic, KHÔNG đụng core/Bát Cương. (Trục Nhiệt chỉ vào Bát Cương khi có dấu
+        nhiệt thật qua [NHIỆT THEO BẰNG CHỨNG]; core hư + không Thực => đó là hư nhiệt, không phải thực nhiệt.)"""
+        if not md:
+            return md
+        bc = (bat_cuong_hint or "").lower()
+        # Gate: hư nhiệt nội thương (Nhiệt + Hư, KHÔNG tà thực, KHÔNG ngoại cảm).
+        if not (re.search(r"\bnhiệt\b", bc) and re.search(r"\bhư\b", bc)):
+            return md
+        if re.search(r"\bthực\b", bc) or "bản hư tiêu thực" in bc or "thác tạp" in bc:
+            return md
+        if self._syndrome_is_exterior_wind(primary):
+            return md
+        m4 = re.search(r"(### 4\.[^\n]*\n)(.*?)(?=\n### |\Z)", md, re.DOTALL)
+        if not m4:
+            return md
+        body4 = m4.group(2).strip().lstrip("-*• ").strip()
+        if not self._muc4_denies_tieu_thuc(body4.lower()):
+            return md  # Mục 4 đã mô tả Tiêu/nhiệt -> không cần chèn
+        # Không lặp nếu markdown đã nhận 'hư nhiệt'/'hư hỏa' ở đâu đó.
+        if re.search(r"hư\s+nhiệt|hư\s+h(?:ỏa|oả)", md.lower()):
+            return md
+        sym_l = (symptoms_str or "").lower()
+        present, seen = [], ""
+        for _s in self._DEFICIENCY_HEAT_SIGNS:
+            if _s in sym_l and _s not in seen:   # bỏ 'mụn' nếu đã bắt 'mụn trứng cá'
+                present.append(_s)
+                seen += _s + "|"
+        _lst = (" (biểu hiện: " + ", ".join(present[:5]) + ")") if present else ""
+        _note = (f" Trục Nhiệt ở Bát Cương thuộc HƯ NHIỆT: trên nền {primary} lâu ngày, âm huyết/chính "
+                 f"khí hư tổn không chế ước được dương, sinh nội nhiệt do hư{_lst} — KHÔNG phải thực "
+                 f"nhiệt (tà thực), nên vẫn 'không có Tiêu Thực'.")
+        new_body = m4.group(2).rstrip() + _note
+        logger.info("[ĐỒNG BỘ HƯ NHIỆT] Gắn chú giải hư nhiệt cho ca Bát Cương Nhiệt+Hư (Mục 4 né trục Nhiệt).")
+        return md[:m4.start(2)] + new_body + md[m4.end(2):]
+
     def _build_tieu_thuc_prose(self, symptoms_str: str, has_hu: bool) -> str:
         """Dựng thân Mục 4 (Tiêu Thực) deterministic từ _THUC_TEMPLATES khớp triệu chứng thật của ca.
         Không khớp template nào -> câu chung chung (có/không 'Bản Hư' tùy Bát Cương có chữ Hư)."""
@@ -4902,6 +4949,10 @@ class TCMFusionPipeline:
         # [ĐỒNG BỘ] Ép Mục 4 nói cùng chiều với Bát Cương đã chốt ở Mục 2 (chạy CUỐI,
         # sau patch triệu chứng sót — patch có thể vừa chèn nội dung Thực vào Mục 4)
         llm_explanation = self._sync_tieu_thuc_with_bat_cuong(llm_explanation, bat_cuong_hint, symptoms_str)
+        # [ĐỒNG BỘ HƯ NHIỆT] Ca Bát Cương 'Nhiệt + Hư' (không Thực) mà Mục 4 chốt 'Hư chứng thuần túy'
+        # -> gắn chú giải phần Nhiệt là HƯ NHIỆT (chính hư sinh nội nhiệt), để nhãn Nhiệt không bỏ lửng.
+        llm_explanation = self._annotate_deficiency_heat(
+            llm_explanation, bat_cuong_hint, final_primary, symptoms_str)
         # [NHẤT QUÁN HÀN] Gỡ cơ chế 'hàn ngưng' bịa khi ca không có căn cứ Hàn (chạy sau cùng)
         llm_explanation = self._strip_unfounded_cold_mechanism(
             llm_explanation, bat_cuong_hint, final_primary, final_concurrent, symptoms_str)
