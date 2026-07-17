@@ -4685,16 +4685,18 @@ class TCMFusionPipeline:
         - [Phân tích Tà khí nào đang tấn công sinh ra các biểu hiện cấp tính nào? Nếu bệnh thuần Hư chứng không có Tiêu thực, ghi "Không có". KHÔNG tự bịa triệu chứng.]
 
         LUẬT BẮT BUỘC (CHAIN-OF-THOUGHT):
-        1. KHÔNG TỰ BỊA — CHỈ ĐƯỢC DÙNG ĐÚNG NHỮNG GÌ CÓ TRONG DANH SÁCH ĐẦU VÀO:
-           - CẤM thêm TRIỆU CHỨNG không có trong danh sách.
-           - CẤM (PROHIBITED) thêm CHI TIẾT cho triệu chứng ĐÃ CÓ mà lời khai KHÔNG hề nêu, gồm:
-             VỊ TRÍ (vd bịa "mồ hôi ra ở vùng thân mình và lưng", "đau vùng thượng vị"), THỜI ĐIỂM
-             (vd bịa "vào buổi chiều", "về đêm", "sáng sớm", "ngũ canh"), HOÀN CẢNH (vd bịa "khi vận
-             động", "sau khi ăn", "khi gắng sức"), MỨC ĐỘ/TÍNH CHẤT (vd bịa "đau quặn từng cơn",
-             "mồ hôi đầm đìa", "phân sống", "phân có nhầy máu").
-           - Lời khai ghi sao thì viết ĐÚNG vậy: nếu chỉ có "ra mồ hôi nhiều" thì CHỈ được nói "ra mồ
-             hôi nhiều" rồi giải thích cơ chế — TUYỆT ĐỐI KHÔNG tô vẽ thêm vị trí/thời điểm/hoàn cảnh
-             để câu văn "sinh động". Thà viết ngắn còn hơn bịa chi tiết lâm sàng không có thật.
+        1. KHÔNG TỰ BỊA — BÁM ĐÚNG DỮ KIỆN ĐẦU VÀO:
+           - CẤM thêm TRIỆU CHỨNG không có trong danh sách đầu vào.
+           - CẤM (PROHIBITED) bịa VỊ TRÍ trên cơ thể mà lời khai không nêu (vd bịa "mồ hôi ra ở vùng
+             thân mình và lưng", "đau ở vùng thượng vị") và bịa TÍNH CHẤT/MỨC ĐỘ (vd bịa "mồ hôi đầm
+             đìa", "đau quặn từng cơn", "phân có nhầy máu").
+           - CẤM THU HẸP hoặc ĐỔI dữ kiện đã cho: lời khai "ra mồ hôi nhiều ban ngày" thì giữ đúng
+             "ban ngày" — TUYỆT ĐỐI KHÔNG đổi thành "buổi chiều"/"sáng sớm"; "đại tiện lỏng" KHÔNG
+             được biến thành "phân sống".
+           - ĐƯỢC PHÉP nêu đặc trưng NẰM TRONG ĐỊNH NGHĨA của chính thuật ngữ mà các luật dưới đã nêu
+             (vd TỰ HÃN: ra ban ngày, vận động càng ra nhiều; ĐẠO HÃN: ra lúc ngủ, tỉnh dậy thì hết) —
+             đó là y lý chuẩn, KHÔNG tính là bịa.
+           - Nguyên tắc: thà viết NGẮN còn hơn tô vẽ chi tiết lâm sàng không có thật.
         2. Tuân thủ tuyệt đối chức năng tạng phủ (VD: Tâm chủ thần minh/huyết mạch; Tỳ chủ vận hóa; Phế chủ khí/hô hấp; Thận chủ cốt tủy).
         3. KHÔNG LIỆT KÊ TẠNG PHỦ THỪA không có triệu chứng.
         4. CHỐT CHẶN HÔ HẤP: Các bệnh ngoại cảm hô hấp/mũi xoang (hắt hơi, sổ mũi, ho, chảy dịch mủ, đau nhức vùng mặt) BẮT BUỘC chỉ dùng các tạng/phủ Phế, Vị, Tỳ, Đởm. CHẶN HOÀN TOÀN Tâm, Can và Thận. Đối với đau nhức vùng mặt, đây là do phong nhiệt làm bít tắc kinh lạc vùng đầu mặt (Kinh Vị, Kinh Đởm), cấm giải thích do Thận hay Tỳ suy yếu.
