@@ -1216,6 +1216,66 @@ class TCMFusionPipeline:
         self._disease_gates = gates
         return gates
 
+    def _get_symptom_concepts(self) -> list:
+        """[KHÁI NIỆM TRIỆU CHỨNG] Nạp data/symptom_concepts.json -> list khái niệm đã biên dịch regex.
+        Cache trên instance. Rỗng nếu thiếu file -> tầng khớp lùi về đúng hành vi cũ (an toàn: chỉ mất
+        lớp bắc cầu đồng nghĩa, không khớp oan thêm)."""
+        cached = getattr(self, "_symptom_concepts", None)
+        if cached is not None:
+            return cached
+        import json
+        import os
+        out = []
+        path = os.getenv("TCM_SYMPTOM_CONCEPTS_PATH", "data/symptom_concepts.json")
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                for c in data.get("concepts", []):
+                    name = (c.get("name") or "").strip()
+                    trig = [t.strip().lower() for t in c.get("triggers", ()) if t and t.strip()]
+                    if not name or not trig:
+                        continue
+                    # Khớp theo RANH GIỚI TỪ để trigger không dính vào từ dài hơn. Python 3 \b là
+                    # unicode-aware nên chữ có dấu được coi là ký tự từ (đã test trên vocab CSV thật).
+                    rx = re.compile("|".join(r'\b' + re.escape(t) + r'\b' for t in sorted(trig, key=len, reverse=True)))
+                    out.append({
+                        "name": name,
+                        "rx": rx,
+                        "veto": tuple(v.strip().lower() for v in c.get("veto", ()) if v and v.strip()),
+                    })
+                logger.info(f"Đã nạp {len(out)} khái niệm triệu chứng từ {path}")
+            else:
+                logger.warning(f"Không thấy {path} — bỏ qua lớp bắc cầu đồng nghĩa triệu chứng.")
+        except Exception as e:
+            logger.error(f"Lỗi nạp khái niệm triệu chứng: {e}")
+            out = []
+        self._symptom_concepts = out
+        return out
+
+    def _concepts_of_text(self, text: str) -> frozenset:
+        """Tập KHÁI NIỆM mà một đoạn text (field CSV hoặc lời khai) biểu đạt. Có veto: text mang dấu
+        ĐỔI NGHĨA ('tiêu chảy ra máu' -> lỵ) KHÔNG được quy về khái niệm đó. Cache theo chuỗi vì
+        _find_matching_diseases quét lại toàn bộ field CSV mỗi lần gọi."""
+        t = (text or "").strip().lower()
+        if not t:
+            return frozenset()
+        cache = getattr(self, "_concept_cache", None)
+        if cache is None:
+            cache = self._concept_cache = {}
+        hit = cache.get(t)
+        if hit is not None:
+            return hit
+        found = set()
+        for c in self._get_symptom_concepts():
+            if c["veto"] and any(v in t for v in c["veto"]):
+                continue
+            if c["rx"].search(t):
+                found.add(c["name"])
+        hit = frozenset(found)
+        cache[t] = hit
+        return hit
+
     def _get_disease_sex(self) -> dict:
         """Nạp data/disease_sex.json -> {tên_bệnh_chuẩn_hoá: 'nam'|'nu'}. Cache trên instance.
         Rỗng nếu thiếu file (an toàn: không lọc oan). Bệnh không có trong map = cả 2 giới."""
@@ -1791,6 +1851,13 @@ class TCMFusionPipeline:
         # xung đau' cho ca hô hấp). Từ của một field phải cùng nằm trong MỘT phân đoạn.
         raw_segments = [seg.strip() for seg in raw_text_lower.split(",") if seg.strip()] if raw_text_lower else []
 
+        # [KHÁI NIỆM TRIỆU CHỨNG] Tập khái niệm người bệnh biểu đạt (lời khai + triệu chứng đã tách).
+        # Dùng cho Cách 3: bắc cầu đồng nghĩa khi người bệnh và CSV gọi CÙNG một triệu chứng bằng hai
+        # tên khác nhau ('ỉa chảy' vs 'đi ngoài nhiều lần') — trường hợp Cách 1/Cách 2 đều trượt.
+        _patient_concepts = set()
+        for _t in list(patient_symptoms_lower) + raw_segments:
+            _patient_concepts |= self._concepts_of_text(_t)
+
         matched_candidates = []
         for row in self.csv_rows:
             db_symptoms_str = row.get("triệu_chứng", "")
@@ -1806,11 +1873,14 @@ class TCMFusionPipeline:
             peak_idf = 0.0         # IDF CAO NHẤT trong các triệu chứng khớp (có ≥1 triệu chứng đặc hiệu?)
             observable_count = 0   # số field QUAN SÁT ĐƯỢC (loại mạch tượng) -> mẫu số tỷ lệ khớp
             matched_pulse = 0      # field mạch khớp được (chỉ khi người dùng TỰ gõ mạch vào lời khai)
-            for ds in db_symptoms:
+
+            # LƯỢT 1: xác định ĐƯỜNG khớp của từng field (đen: khớp chữ / xám: chỉ bắc cầu khái niệm).
+            # Ghi theo CHỈ SỐ field, không theo chuỗi: CSV có dòng lặp lại y hệt một field ('Tiêu khát ×
+            # Âm hư' có 'tiểu nhiều' hai lần) — khoá theo chuỗi sẽ làm luật đếm-1-lần bên dưới bị vô hiệu
+            # cho đúng những dòng như thế (mỗi lần xuất hiện vẫn được chấm lại).
+            _lit_hits, _concept_only = [], []
+            for _i, ds in enumerate(db_symptoms):
                 ds_lower = ds.lower().strip()
-                is_pulse = self._is_pulse_field(ds_lower)
-                if not is_pulse:
-                    observable_count += 1
                 _hit = False
                 # Cách 1: Khớp chính xác hoặc chứa trong tập triệu chứng đã chuẩn hóa
                 if patient_symptoms_lower and any(ds_lower == ps or ds_lower in ps or ps in ds_lower for ps in patient_symptoms_lower):
@@ -1821,6 +1891,37 @@ class TCMFusionPipeline:
                     if ds_words and any(all(w in seg for w in ds_words) for seg in raw_segments):
                         _hit = True
                 if _hit:
+                    _lit_hits.append((_i, ds_lower))
+                # Cách 3: BẮC CẦU ĐỒNG NGHĨA qua khái niệm (data/symptom_concepts.json) — chỉ khi field
+                # và lời khai cùng biểu đạt MỘT khái niệm đã curated. Không hạ ngưỡng nào: field vẫn
+                # chịu nguyên lưới generic/IDF/peak-IDF và mọi cổng an toàn bên dưới.
+                elif _patient_concepts and (self._concepts_of_text(ds_lower) & _patient_concepts):
+                    _concept_only.append((_i, ds_lower))
+
+            # LƯỢT 2: [ĐẾM 1 LẦN/KHÁI NIỆM] Một lời khai ('đại tiện lỏng') bắc cầu được sang NHIỀU field
+            # cùng nghĩa của một dòng ('tiêu chảy kéo dài' + 'phân lỏng nát') -> nếu tính cả hai thì MỘT
+            # triệu chứng thổi ratio lên 2 lần và bệnh sai vượt oan bệnh đúng (tái hiện thật: ca 'Nội
+            # thương phát nhiệt × Dương hư phát nhiệt' bị 'Viêm đại tràng' soán top-1 vì 5/6 thay vì 4/6).
+            # Nên: field khớp CHỮ luôn được tính (giữ nguyên hành vi cũ); field CHỈ bắc cầu khái niệm chỉ
+            # được tính nếu khái niệm đó CHƯA được ghi nhận trên dòng này. Cùng luật 'đếm 1 lần/phát hiện'
+            # mà _SCORING_TERM_GROUPS đang áp ở tầng chấm hội chứng.
+            _credited_concepts = set()
+            for _i, _dsl in _lit_hits:
+                _credited_concepts |= self._concepts_of_text(_dsl)
+            _accepted_idx = {_i for _i, _ in _lit_hits}
+            for _i, _dsl in _concept_only:
+                _cs = self._concepts_of_text(_dsl) & _patient_concepts
+                if _cs <= _credited_concepts:      # khái niệm đã được tính -> KHÔNG cộng thêm lần nữa
+                    continue
+                _credited_concepts |= _cs
+                _accepted_idx.add(_i)
+
+            for _i, ds in enumerate(db_symptoms):
+                ds_lower = ds.lower().strip()
+                is_pulse = self._is_pulse_field(ds_lower)
+                if not is_pulse:
+                    observable_count += 1
+                if _i in _accepted_idx:
                     matched_count += 1
                     if is_pulse:
                         matched_pulse += 1

@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "mo_ta": "KHÁI NIỆM TRIỆU CHỨNG cho tầng khớp bệnh danh (_find_matching_diseases / Cách 3).",
+    "van_de": "Người bệnh khai 'ỉa chảy' còn field CSV ghi 'đi ngoài nhiều lần'/'tiêu chảy kéo dài' — cùng MỘT triệu chứng nhưng Cách 1 (chuỗi con) và Cách 2 (mọi-từ-trong-một-phân-đoạn) đều trượt, khiến bệnh ĐÚNG tụt ratio và thua tie-break trước bệnh lạc đề.",
+    "nguyen_tac": [
+      "CHỈ nạp khái niệm mà mọi trigger là ĐỒNG NGHĨA THẬT ở mức cả cụm — không nạp từ đơn mơ hồ.",
+      "CẤM trigger là chuỗi con của bệnh cảnh khác: 'đi ngoài' trần bị CẤM vì nằm trong 'đi ngoài ra máu' (huyết tiện/trĩ) và 'đi ngoài mót rặn' (lỵ tật).",
+      "Trigger phải NEO vào phân/đại tiện. Tính từ độ đặc trần ('lỏng nhão', 'lỏng loãng') bị CẤM: chúng tả cả đờm/bạch đới/chất nôn nên 'ho đờm trắng lỏng loãng' và 'bạch đới lỏng loãng' bị gán oan là tiêu chảy (đã tái hiện thật). Chúng cũng THỪA — 'đại tiện lỏng nhão/loãng' đã được 'đại tiện lỏng' phủ.",
+      "'phân sống'/'sống phân' (hoàn cốc bất hóa) KHÔNG nạp: là dấu Tỳ hư, không đồng nghĩa tiêu chảy; và cũng thừa vì field CSV chứa nó đều đã có 'đại tiện lỏng'.",
+      "'sôi bụng' (trường minh) KHÔNG thuộc khái niệm tiêu chảy — là triệu chứng riêng, gộp vào sẽ khớp oan.",
+      "veto = dấu ĐỔI NGHĨA: field/lời khai chứa dấu này mô tả bệnh cảnh khác (lỵ, xuất huyết) nên KHÔNG được coi là tiêu chảy đơn thuần, dù có chứa trigger ('tiêu chảy ra máu' -> lỵ tật).",
+      "Khái niệm chỉ BẮC CẦU đồng nghĩa, KHÔNG hạ ngưỡng: field khớp qua đây vẫn chịu nguyên các lưới generic/IDF/peak-IDF và mọi cổng an toàn bệnh danh.",
+      "CỐ Ý: veto chấm theo TỪNG phân đoạn (một triệu chứng), KHÔNG theo cả lời khai. Đừng 'sửa' thành cả câu: ca tiêu chảy mạn kèm trĩ ra máu ('ỉa chảy, ..., trĩ ra máu') sẽ bị một chữ 'ra máu' xoá sạch bắc cầu và tái sinh đúng lỗi mà file này sinh ra để chữa. Ca lỵ thật ('ỉa chảy, ra máu, mót rặn') tuy vẫn được cấp khái niệm nhưng vô hại: Lỵ tật thắng ratio (0.667) và cửa sổ ratio (best-0.15) loại ứng viên 0.400 trước khi tới bệnh danh."
+    ],
+    "kiem_chung": "scripts/test_symptom_concepts.py + eval_gold.py + eval_disease_matching.py (đo trước/sau, không tụt recall, over-match giữ 0)."
+  },
+  "concepts": [
+    {
+      "name": "tiêu chảy",
+      "note": "Đại tiện phân lỏng/nhiều lần. Bao gồm cả field mô tả đại tiện thất thường có PHA lỏng ('táo hoặc ỉa chảy', 'đại tiện lỏng hoặc bón') — vẫn là bằng chứng của pha tiêu chảy.",
+      "triggers": [
+        "ỉa chảy",
+        "ia chảy",
+        "tiêu chảy",
+        "tiết tả",
+        "đi lỏng",
+        "đi tả",
+        "đại tiện lỏng",
+        "đại tiện phân lỏng",
+        "đại tiện nhiều lần",
+        "đi ngoài nhiều lần",
+        "đi ngoài phân lỏng",
+        "đi ngoài lỏng",
+        "phân lỏng",
+        "phân nát",
+        "lỏng nát",
+        "tiêu lỏng",
+        "ỉa lỏng",
+        "phân nhão",
+        "đại tiện nhão",
+        "đại tiện loãng"
+      ],
+      "veto": [
+        "ra máu",
+        "có máu",
+        "lẫn máu",
+        "kèm máu",
+        "máu tươi",
+        "mũi máu",
+        "máu mũi",
+        "mủ máu",
+        "có mủ",
+        "lẫn mủ",
+        "mót rặn",
+        "kiết lỵ"
+      ]
+    }
+  ]
+}
