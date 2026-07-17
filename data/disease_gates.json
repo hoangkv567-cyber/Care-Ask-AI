@@ -2118,6 +2118,55 @@
         "đau thắt ngực",
         "đau trước tim"
       ]
+    },
+    {
+      "names": [
+        "suy nhược thần kinh"
+      ],
+      "requires": [
+        "mất ngủ",
+        "ít ngủ",
+        "khó ngủ",
+        "ngủ ít",
+        "hay mơ",
+        "mơ nhiều",
+        "ngủ hay mơ",
+        "hồi hộp",
+        "trống ngực",
+        "tim đập nhanh",
+        "đánh trống ngực",
+        "hay quên",
+        "giảm trí nhớ",
+        "trí nhớ giảm",
+        "trí nhớ kém",
+        "kém tập trung",
+        "hay quên hay lú",
+        "nhức đầu",
+        "đau đầu",
+        "hoa mắt",
+        "chóng mặt",
+        "ù tai",
+        "váng đầu",
+        "lo âu",
+        "bứt rứt",
+        "dễ hoảng sợ",
+        "hoảng sợ",
+        "phiền muộn",
+        "uất ức",
+        "tinh thần uất",
+        "dễ cáu",
+        "dễ tức giận",
+        "cáu gắt",
+        "hay xúc động",
+        "vui buồn thất thường",
+        "tinh thần uể oải",
+        "di tinh",
+        "liệt dương",
+        "hay thở dài",
+        "thở dài"
+      ],
+      "kw_wb": true,
+      "_note": "Suy nhược thần kinh (神经衰弱) đòi >=1 dấu THẦN KINH/TÂM THẦN/GIẤC NGỦ đặc trưng; mọi thể CSV đều có (mất ngủ/hồi hộp/hay quên/nhức đầu/phiền muộn/di tinh). Chặn over-match ca THUẦN TIÊU HÓA (đại tiện lỏng+đầy bụng+ăn kém+mệt mỏi) khớp qua 'đầy bụng trướng/ăn kém' của thể Can-tâm-khí-uất-kết. KHÔNG dùng 'mệt mỏi' trần làm marker."
     }
   ]
 }
