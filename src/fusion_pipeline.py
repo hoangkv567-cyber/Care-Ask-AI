@@ -2148,6 +2148,48 @@ class TCMFusionPipeline:
             out_lines.append(" ".join(p for p in new_parts if p) if changed else line)
         return "\n".join(out_lines)
 
+    # [NHẤT QUÁN LƯỠI BỆU - NGOẠI CẢM] Lưỡi bệu = Tỳ hư/thủy thấp NỀN (cần thời gian dài mới thành).
+    # Ca NGOẠI CẢM CẤP: LLM hay quy OAN lưỡi bệu cho ngoại tà ('phong nhiệt tà khí làm rối loạn vận
+    # hóa Tỳ gây lưỡi bệu') — tà mới xâm nhập vài ngày KHÔNG sinh lưỡi bệu (luật 20). Chốt bằng code
+    # vì luật 20 (prompt) hay bị model nhanh (qwen3-30b) phớt lờ.
+    _LUOI_BEU_RE = re.compile(r'lưỡi\s+bệu|lưỡi\s+(?:sưng|to|phồng|căng)')
+    _EXT_PATHOGEN_ATTR_RE = re.compile(
+        r'phong\s+nhiệt|phong\s+hàn|phong\s+tà|ngoại\s+tà|ngoại\s+cảm|tà\s+khí|nhiệt\s+tà|hàn\s+tà')
+
+    def _strip_luoi_beu_exterior_claims(self, text: str, final_primary: str = "",
+                                        bat_cuong_hint: str = "") -> str:
+        """[NHẤT QUÁN LƯỠI BỆU] Ca NGOẠI CẢM cấp THUẦN THỰC: gỡ câu quy 'lưỡi bệu' cho ngoại tà (phong
+        nhiệt/phong hàn/tà khí) — lưỡi bệu là dấu thể trạng NỀN (Tỳ hư/thủy thấp), tà mới xâm nhập
+        không sinh ra được (luật 20). CHỈ áp khi core NGOẠI CẢM và Bát Cương THUẦN THỰC (không 'Hư'):
+        ca có thành phần Hư (vd kèm Tỳ khí hư) thì lưỡi bệu giải thích qua hội chứng hư đó (luật 13),
+        KHÔNG gỡ."""
+        if not text or not self._syndrome_is_exterior_wind(final_primary):
+            return text
+        if "hư" in (bat_cuong_hint or "").lower():
+            return text
+        if not self._LUOI_BEU_RE.search(text.lower()):
+            return text
+        sanctioned = ("Lưỡi bệu là dấu thể trạng nền có sẵn (Tỳ hư, thủy thấp chưa vận hóa), "
+                      "không thuộc bệnh cảnh ngoại cảm cấp lần này và nên theo dõi thêm.")
+        has_sanctioned = "dấu thể trạng nền có sẵn" in text
+        out_lines = []
+        for line in text.split("\n"):
+            sentences = re.split(r'(?<=[.!?])\s+', line)
+            changed = False
+            new_parts = []
+            for sent in sentences:
+                sl = sent.lower()
+                if self._LUOI_BEU_RE.search(sl) and self._EXT_PATHOGEN_ATTR_RE.search(sl):
+                    logger.info(f"[NHẤT QUÁN LƯỠI BỆU] Gỡ câu quy lưỡi bệu cho ngoại tà: {sent[:90]!r}")
+                    changed = True
+                    if not has_sanctioned:
+                        new_parts.append(sanctioned)
+                        has_sanctioned = True
+                    continue
+                new_parts.append(sent)
+            out_lines.append(" ".join(p for p in new_parts if p) if changed else line)
+        return "\n".join(out_lines)
+
     # Lưỡi KHÔNG/ÍT rêu (kính diện thiệt, bong rêu) = ÂM HƯ / TÂN DỊCH KHUY. LLM Mục 4 hay quy SAI
     # cho huyết hư/khí hư/thấp/huyết ứ (over-fit theo cốt lõi đã chốt).
     _NO_COAT_RE = re.compile(
@@ -4830,6 +4872,9 @@ class TCMFusionPipeline:
         # [NHẤT QUÁN LƯỠI-KHÔNG-RÊU] Chặn LLM quy 'lưỡi không/ít rêu' (= âm hư/tân dịch khuy) cho
         # huyết hư/khí hư/thấp/huyết ứ khi cốt lõi không liên quan âm/tân (over-fit theo core).
         llm_explanation = self._strip_no_coating_yin_claims(llm_explanation, final_primary, bat_cuong_hint)
+        # [NHẤT QUÁN LƯỠI BỆU] Ca ngoại cảm cấp THUẦN THỰC: gỡ câu quy 'lưỡi bệu' cho ngoại tà (lưỡi
+        # bệu là nền Tỳ/thủy thấp; luật 20 prompt hay bị model nhanh bỏ qua nên chốt bằng code).
+        llm_explanation = self._strip_luoi_beu_exterior_claims(llm_explanation, final_primary, bat_cuong_hint)
         # [NHẤT QUÁN HÀN-NHIỆT] Core KHÔNG phải dương-hư/hàn (ngoại cảm biểu / thấp / nhiệt): 'sợ lạnh'
         # KHÔNG do dương hư — viết lại nếu LLM bịa cơ chế dương-hư/âm-dương-mất-cân-bằng (trái cực).
         llm_explanation = self._fix_contradictory_cold_mechanism(llm_explanation, final_primary, bat_cuong_hint)
