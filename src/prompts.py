@@ -113,7 +113,13 @@ object JSON (không kèm giải thích, không rào ```), theo đúng các khóa
 }
 QUY TẮC:
 - CHỈ dùng đúng các giá trị liệt kê. Không chắc chắn -> "không rõ" (KHÔNG đoán, KHÔNG bịa).
-- Chú ý ánh sáng/nền ấm làm da trông vàng: nếu da vốn trắng nhợt thì để "trắng nhợt", KHÔNG "vàng úa".
+- Ánh sáng/nền ấm dễ làm da trông VÀNG: chỉ chọn "vàng úa" khi vàng thật rõ (thường kèm củng mạc mắt
+  vàng); nếu chỉ do ánh sáng thì đánh giá theo sắc da thật, KHÔNG chọn "vàng úa".
+- "sac_mat"="trắng nhợt" CHỈ KHI da mặt NHỢT RÕ, THIẾU SẮC MÁU — trắng bệch hơn hẳn người bình thường,
+  thường kèm MÔI cũng nhợt. Các thứ sau KHÔNG phải nhợt -> "hồng hào bình thường": da đều màu / hồng
+  tự nhiên / mặt trông sáng do đèn-flash-phơi sáng / bóng dầu vùng trán-mũi-má / người vốn có nước da
+  sáng màu. MẶC ĐỊNH "hồng hào bình thường" trừ khi nhợt thật rõ; không chắc -> "không rõ". (Gọi nhầm
+  "trắng nhợt" sẽ kéo chẩn đoán sang khí/huyết hư OAN — đã xảy ra thật nhiều lần.)
 - Có son/phấn/kẻ mắt rõ -> "trang_diem": "có" (vì trang điểm che sắc mặt thật).
 - "go_ma_do"="có" CHỈ KHI thấy RÕ hai MẢNG ĐỎ KHU TRÚ ngay trên hai gò má (ửng đỏ từng vùng nổi bật
   trên nền da nhợt — dấu "lưỡng quyền hồng" của âm hư). Da đều màu / hồng tự nhiên nhẹ / má chỉ hơi ấm /
