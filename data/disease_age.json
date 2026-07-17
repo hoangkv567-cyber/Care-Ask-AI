@@ -1,7 +1,8 @@
 {
-  "description": "Cổng TUỔI CỨNG: bệnh chỉ gặp ở một nhóm tuổi. 'pediatric' = bệnh NHI (loại khi tuổi >= child_max_age); 'adult' = bệnh người lớn (loại khi tuổi < child_max_age). Bệnh nhân có tuổi (form Vấn chẩn 'N tuổi' -> ghép vào lời khai, hoặc self._patient_age) -> _find_matching_diseases LOẠI THẲNG bệnh khác nhóm tuổi bất kể triệu chứng. Bệnh KHÔNG liệt kê = 'any' (mọi tuổi). KHÔNG nhập tuổi -> không lọc (giữ nguyên hành vi cũ). Data-driven: sửa file này là đủ, không cần đụng code.",
-  "note": "BẢO THỦ như cổng giới (phân loại 236 bệnh qua workflow + rà đối kháng chống loại oan). BẮT BUỘC để 'any' dù nghiêng một tuổi: kinh nguyệt/phụ khoa (thiếu nữ có kinh ~11-13), thai sản (đã có cổng trạng thái sinh sản; teen mang thai vẫn có), tiểu đường (type 1 ở trẻ), ung thư (ung bướu nhi), hen/động kinh/béo phì/huyết áp/gout/lao, nhiễm trùng-da liễu-mắt-TMH-tiêu hóa thông thường, đột quỵ/chấn thương (hiếm ở trẻ nhưng CÓ). ADULT chỉ gồm bệnh người <16 VỀ CƠ BẢN KHÔNG mắc: rối loạn tình dục hậu dậy thì (liệt dương/dương nuy/tảo tiết/cường dương), vô sinh (nam/nữ bất dục), mãn kinh, thoái hoá tuổi già (Alzheimer/Parkinson), xơ vữa/xơ cứng động mạch vành, COPD (đòi phơi nhiễm nhiều năm). Di tinh/Mộng tinh CỐ Ý để 'any' (xuất tinh bắt đầu tuổi dậy thì 13-16).",
+  "description": "Cổng TUỔI CỨNG: bệnh chỉ gặp ở một nhóm tuổi. 'pediatric' = bệnh NHI (loại khi tuổi >= child_max_age); 'adult' = bệnh người lớn (loại khi tuổi < child_max_age); 'mature' = bệnh tuổi trung/cao niên (loại khi tuổi < mature_min_age). Bệnh nhân có tuổi (form Vấn chẩn 'N tuổi' -> ghép vào lời khai, hoặc self._patient_age) -> _find_matching_diseases LOẠI THẲNG bệnh khác nhóm tuổi bất kể triệu chứng. Bệnh KHÔNG liệt kê = 'any' (mọi tuổi). KHÔNG nhập tuổi -> không lọc (giữ nguyên hành vi cũ). Data-driven: sửa file này là đủ, không cần đụng code.",
+  "note": "BẢO THỦ như cổng giới (phân loại 236 bệnh qua workflow + rà đối kháng chống loại oan). BẮT BUỘC để 'any' dù nghiêng một tuổi: kinh nguyệt/phụ khoa (thiếu nữ có kinh ~11-13), thai sản (đã có cổng trạng thái sinh sản; teen mang thai vẫn có), tiểu đường (type 1 ở trẻ), ung thư (ung bướu nhi), hen/động kinh/béo phì/huyết áp/gout/lao, nhiễm trùng-da liễu-mắt-TMH-tiêu hóa thông thường, đột quỵ/chấn thương (hiếm ở trẻ nhưng CÓ). ADULT chỉ gồm bệnh người <16 VỀ CƠ BẢN KHÔNG mắc: rối loạn tình dục hậu dậy thì (liệt dương/dương nuy/tảo tiết/cường dương), vô sinh (nam/nữ bất dục), thoái hoá tuổi già (Alzheimer/Parkinson), xơ vữa/xơ cứng động mạch vành, COPD (đòi phơi nhiễm nhiều năm). Di tinh/Mộng tinh CỐ Ý để 'any' (xuất tinh bắt đầu tuổi dậy thì 13-16). MATURE (ngưỡng >=mature_min_age): mãn kinh/tiền mãn kinh (Canh niên kỳ hội chứng) — sinh lý bị chặn dưới ~40, ca nữ 22t KHÔNG thể mắc; POI (suy buồng trứng sớm) là bệnh danh KHÁC (Bế kinh/suy buồng trứng), không phải 'Canh niên kỳ'.",
   "child_max_age": 16,
+  "mature_min_age": 40,
   "pediatric": [
     "Bách nhật khái",
     "Cam tích",
@@ -15,7 +16,6 @@
   "adult": [
     "Alzheimer",
     "Parkinson",
-    "Canh niên kỳ hội chứng",
     "Liệt dương",
     "Dương nuy",
     "Cường dương",
@@ -25,5 +25,8 @@
     "Mạn tính tắc nghẽn phế bệnh",
     "Xơ cứng động mạch vành",
     "Nhiễm mỡ xơ mạch"
+  ],
+  "mature": [
+    "Canh niên kỳ hội chứng"
   ]
 }

@@ -1400,6 +1400,7 @@ class TCMFusionPipeline:
         import os
         m = {}
         self._disease_age_child_max = 16
+        self._disease_age_mature_min = 40
         path = os.getenv("TCM_DISEASE_AGE_PATH", "data/disease_age.json")
         try:
             if os.path.exists(path):
@@ -1409,11 +1410,15 @@ class TCMFusionPipeline:
                     self._disease_age_child_max = int(d.get("child_max_age", 16))
                 except (ValueError, TypeError):
                     self._disease_age_child_max = 16
-                for _grp in ("pediatric", "adult"):
+                try:
+                    self._disease_age_mature_min = int(d.get("mature_min_age", 40))
+                except (ValueError, TypeError):
+                    self._disease_age_mature_min = 40
+                for _grp in ("pediatric", "adult", "mature"):
                     for _name in d.get(_grp, []):
                         m[self._norm_disease_name(_name)] = _grp
                 logger.info(f"Đã nạp cổng tuổi: {len(m)} bệnh đặc thù tuổi từ {path} "
-                            f"(ngưỡng nhi <{self._disease_age_child_max})")
+                            f"(ngưỡng nhi <{self._disease_age_child_max}, trung/cao niên >={self._disease_age_mature_min})")
             else:
                 logger.warning(f"Không thấy {path} — bỏ qua cổng tuổi.")
         except Exception as e:
@@ -1425,7 +1430,8 @@ class TCMFusionPipeline:
     def _age_conflict(self, disease_name: str, patient_age) -> bool:
         """True khi bệnh KHÔNG hợp nhóm tuổi bệnh nhân đã khai -> phải LOẠI. patient_age None ->
         không lọc (False). Bệnh không đặc thù tuổi -> không lọc. 'pediatric' (bệnh nhi) loại khi tuổi
-        >= ngưỡng nhi (mặc định 16); 'adult' loại khi tuổi < ngưỡng."""
+        >= ngưỡng nhi (mặc định 16); 'adult' loại khi tuổi < ngưỡng; 'mature' (mãn kinh/trung-cao niên)
+        loại khi tuổi < mature_min_age (mặc định 40) — ca nữ 22t KHÔNG thể mắc 'Canh niên kỳ hội chứng'."""
         if patient_age is None:
             return False
         grp = self._get_disease_age().get(self._norm_disease_name(disease_name))
@@ -1436,6 +1442,8 @@ class TCMFusionPipeline:
             return patient_age >= thr    # người lớn -> loại bệnh nhi
         if grp == "adult":
             return patient_age < thr     # trẻ em -> loại bệnh người lớn
+        if grp == "mature":
+            return patient_age < getattr(self, "_disease_age_mature_min", 40)  # trẻ/thanh niên -> loại bệnh mãn kinh
         return False
 
     # [CỔNG TRẠNG THÁI SINH SẢN] Bệnh THAI SẢN / HẬU SẢN chỉ xảy ra khi ĐANG MANG THAI hoặc MỚI SINH.
