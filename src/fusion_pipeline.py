@@ -4031,8 +4031,20 @@ class TCMFusionPipeline:
                     "hoạt tinh", "xuất tinh", "tiểu nhiều", "tiểu trong dài", "ù tai", "tóc bạc sớm"])
                 if _acute2 and _back2 and not _ck2:
                     logger.info(f"[CỔNG YÊU THỐNG CẤP] Promote 'Hàn thấp' -> CORE (từ hạng {_ht_i}, "
-                                f"thay '{all_syndromes[0]}') — ca đau lưng cấp, 0 dấu Thận-mạn.")
-                    all_syndromes.insert(0, all_syndromes.pop(_ht_i))
+                                f"thay '{all_syndromes[0]}') + loại Bản-hư mạn khỏi kèm — "
+                                f"ca đau lưng cấp, 0 dấu Thận-mạn.")
+                    # Đưa 'Hàn thấp' lên [0] VÀ loại luôn Bản-hư mạn (Thận/dương hư) khỏi kèm theo: ca
+                    # CẤP đã quyết định Thận dương hư là OVER-REACH. Giữ nó -> final_concurrent nhặt lại
+                    # -> dẫn xuất Bát Cương (~L4557) thấy core Hàn thấp thuc_pure + kèm Hư => gắn 'Bản Hư
+                    # Tiêu Thực' (mâu thuẫn Mục 3 'không phải do dương hư'). Loại đi -> _any_hu_chosen=False
+                    # -> Bát Cương ra 'Lý - Hàn - Thực' sạch, Mục 3 'Thực chứng thuần túy'.
+                    _ht_name = all_syndromes[_ht_i]
+                    all_syndromes = [_ht_name] + [
+                        s for i, s in enumerate(all_syndromes)
+                        if i != _ht_i and not (
+                            self._syndrome_is_hu(s)
+                            and (re.search(r'\bdương\b', s.lower()) or 'thận' in s.lower()))
+                    ]
         # Các Guard rules đặc biệt - Khởi tạo sớm để tránh lỗi UnboundLocalError
         overridden = False
         final_primary = all_syndromes[0] if all_syndromes else "Chưa rõ"
