@@ -1,8 +1,8 @@
 AUDIT XUNG CỰC HÀN/NHIỆT (nhãn hội chứng vs tính vị thuốc) — data/Medicine_clean.csv
-Tổng dòng: 1038 | Từ điển tính vị: 435 vị
-Loại HƯ (ngoài phạm vi, tư bổ): 411
-Trung tính/không cực: 329
-THỰC + cực rõ + có bài/vị (phạm vi soi): 298
+Tổng dòng: 1027 | Từ điển tính vị: 435 vị
+Loại HƯ (ngoài phạm vi, tư bổ): 406
+Trung tính/không cực: 326
+THỰC + cực rõ + có bài/vị (phạm vi soi): 295
 Bỏ vì thiếu phủ tính vị (<3 vị biết hoặc <40%): 4
 => NGHI VẤN: 7  (STRONG=0, REVIEW=7)
 
@@ -17,7 +17,7 @@ XEM LẠI (REVIEW)
     Vị HÀN/LƯƠNG: Ngân hoa, Phòng kỉ
     Vị ÔN/NHIỆT: Quế chi
 
-[dòng 475] Sắc manh × Hỏa uất kết  (cần bài LẠNH (thanh/lương))
+[dòng 468] Sắc manh × Hỏa uất kết  (cần bài LẠNH (thanh/lương))
     Bài: Khoan Hung Lợi Cách Hoàn   herb-mean=0.278  (biết 18/18 vị)
     Vị HÀN/LƯƠNG: Bạch thược, Chỉ sác, Đại hoàng chế, Xuyên bối
     Vị ÔN/NHIỆT: Binh lang, Mao Xương truật, Quảng hoắc hương, Quảng Mộc hương, Sa nhân, Sơn tra, Thảo quả, Thần khúc, Trần bì, Hậu phác
@@ -27,12 +27,12 @@ XEM LẠI (REVIEW)
     Vị HÀN/LƯƠNG: Chỉ sác, Bằng sa
     Vị ÔN/NHIỆT: Trần bì, Bán hạ, Nam tinh, Tạo giác
 
-[dòng 826] Bất mị × Đàm nhiệt  (cần bài LẠNH (thanh/lương))
+[dòng 815] Bất mị × Đàm nhiệt  (cần bài LẠNH (thanh/lương))
     Bài: Ôn đởm thang   herb-mean=0.25  (biết 8/8 vị)
     Vị HÀN/LƯƠNG: Chỉ thực, Trúc nhự
     Vị ÔN/NHIỆT: Trần bì, Bán hạ, Sinh khương, Đại táo
 
-[dòng 335] Tam thoa thần kinh thống × Phong nhiệt đờm  (cần bài LẠNH (thanh/lương))
+[dòng 329] Tam thoa thần kinh thống × Phong nhiệt đờm  (cần bài LẠNH (thanh/lương))
     Bài: Khung Chỉ Thạch Cao Thang gia vị   herb-mean=0.231  (biết 13/13 vị)
     Vị HÀN/LƯƠNG: Thạch cao, Cát căn, Cúc hoa, Ngân hoa
     Vị ÔN/NHIỆT: Xuyên khung, Bạch chỉ, Phụ tử, Nam tinh, Bán hạ, Kinh giới, Khương hoạt, Cảo bản
@@ -42,7 +42,7 @@ XEM LẠI (REVIEW)
     Vị HÀN/LƯƠNG: Xích thược, Trạch tả
     Vị ÔN/NHIỆT: Mộc qua, Xương truật, Kê huyết đằng, Ô dược, Trạch lan
 
-[dòng 639] Tĩnh mạch viêm tắc × Thấp nhiệt  (cần bài LẠNH (thanh/lương))
+[dòng 630] Tĩnh mạch viêm tắc × Thấp nhiệt  (cần bài LẠNH (thanh/lương))
     Bài: Thanh hoá thấp nhiệt, thông kinh hoạt huyết chỉ thống   herb-mean=0.222  (biết 9/9 vị)
     Vị HÀN/LƯƠNG: Xích thược, Trạch tả
     Vị ÔN/NHIỆT: Mộc qua, Xương truật, Kê huyết đằng, Ô dược, Trạch lan

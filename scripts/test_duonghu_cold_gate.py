@@ -152,10 +152,56 @@ def test_grounding_extra_tokens():
     return n, f
 
 
+def test_bat_tuc_equiv_hu():
+    """'bất túc' (不足) và 'hư' (虚) là MỘT hội chứng viết hai cách — cổng grounding phải nhận.
+
+    Ca thật (nữ 45t, tiểu nhiều + sợ lạnh + tay chân lạnh + đau lưng): bộ chấm điểm xếp
+    'Thận dương bất túc' HẠNG 1 (5.693) nhưng cửa sổ KB ghi 'Thận dương hư' -> không khớp chữ
+    -> thể đúng mất grounding -> core rơi sang thể trái cực, kê bài mean -1.000 (16 vị hàn) cho
+    bệnh nhân HƯ HÀN. Sau khi nhận đồng nghĩa: -> 'Bổ dương cố sáp phương' (Nhục quế, Đại hồi).
+
+    RANH GIỚI (quan trọng): CHỈ khớp CHÍNH XÁC sau quy đổi. Đo trên KB thật: exact-only nạp
+    thêm 22 cặp, cả 22 đều đúng; nếu nới sang CHUỖI CON thì vọt lên 143 cặp, đa số là rác.
+    """
+    print("\n== (5) 'bất túc' ≡ 'hư' (exact-only) ==")
+    n = f = 0
+    win = [{"benh_ly": "Tiêu khát",
+            "hoi_chung_all": ["Âm hư táo nhiệt", "Phế nhiệt", "Vị nhiệt",
+                              "Thận âm hư", "Thận dương hư", "Âm hư"]}]
+    for syn in ("Thận dương bất túc", "Thận Dương Bất Túc", "Thận dương  bất  túc"):
+        ok = F._core_grounded_in_window(syn, win)
+        n += _chk(f"NHẬN đồng nghĩa: {syn!r} ≡ 'Thận dương hư'", ok)
+        f += (not ok)
+    # ⚠ KHÔNG được nới thành chuỗi con: 'Khí hư' không có trong cửa sổ này, và một thể
+    # 'X bất túc' chỉ khớp khi PHẦN CÒN LẠI trùng khít, không phải chỉ chứa nhau.
+    for syn in ("Khí bất túc", "Tiên thiên bất túc", "Thận âm dương bất túc"):
+        ok = not F._core_grounded_in_window(syn, win)
+        n += _chk(f"CHẶN (không khớp khít): {syn}", ok)
+        f += (not ok)
+    # Quy đổi không được đụng chữ khác: 'túc' (chân) trong 'thủ túc' phải nguyên vẹn
+    for a, b in [("Thủ túc quyết lãnh", "Thủ túc quyết lãnh"),
+                 ("Thận dương bất túc", "thận dương hư"),
+                 ("Can thận bất túc", "can thận hư")]:
+        ok = F._norm_deficiency_name(a) == F._norm_deficiency_name(b)
+        n += _chk(f"quy đổi: {a!r} ≡ {b!r}", ok, F._norm_deficiency_name(a))
+        f += (not ok)
+    ok = F._norm_deficiency_name("Thủ túc quyết lãnh") != F._norm_deficiency_name("Thủ hư quyết lãnh")
+    n += _chk("KHÔNG đụng 'túc' lẻ (thủ túc = tay chân, không phải bất túc)", ok)
+    f += (not ok)
+    # Chốt end-to-end: core ngoại lai -> re-rank về đúng thể dương hư (không phải thể âm hư)
+    new, reason = F._reground_core(
+        "Âm Dương Lưỡng Hư",
+        ["Âm Dương Lưỡng Hư", "Thận dương bất túc", "Khí hư", "Âm hư thấp nhiệt"], win)
+    ok = new == "Thận dương bất túc" and reason
+    n += _chk("re-rank ca Tiêu khát -> thể DƯƠNG hư (chống trái cực)", ok, repr(new))
+    f += (not ok)
+    return n, f
+
+
 def main():
     tp = tf = 0
     for fn in (test_source_list_intact, test_cold_detection, test_reground_core,
-               test_grounding_extra_tokens):
+               test_grounding_extra_tokens, test_bat_tuc_equiv_hu):
         p, q = fn()
         tp += p
         tf += q
