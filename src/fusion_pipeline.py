@@ -433,9 +433,15 @@ class TCMFusionPipeline:
             # — không có động từ nhân-quả phía trước (a) cũng không nằm trong liệt kê (b)/(c) nên
             # 3 khối trên đều lọt. Cả câu là một khẳng định triệu chứng bịa -> gỡ TRỌN câu (giới
             # hạn [^.] để không ăn lan sang câu bên cạnh; nhánh $ xử lý câu cuối không có dấu chấm).
+            # ⚠ Term PHẢI thật sự đứng ĐẦU câu/mệnh đề. Lookbehind `(?<![\wÀ-ỹ])` chỉ chặn dính
+            # GIỮA TỪ, KHÔNG chặn dính GIỮA CÂU -> luật từng nổ ở giữa câu và nuốt trọn phần đuôi,
+            # bỏ lại phần đầu cụt lủn. Tái hiện thật: "Rêu trắng mỏng trên lưỡi nhợt là dấu hiệu của
+            # Tỳ dương hư. Mất ngủ xuất phát từ..." -> "Rêu trắng mỏng trên Mất ngủ xuất phát từ..."
+            # (đầu câu dính liền câu sau). Nay đòi phía trước là ĐẦU CHUỖI / kết câu / ngắt mệnh đề.
             new_text = re.sub(
-                rf'(?i)(?<![\wÀ-ỹ]){pat}\s+[^.;]{{0,40}}?\b{_subj_causal}\b[^.]*?(?:\.\s*|$)',
-                '', new_text)
+                rf'(?i)(?:(?<=^)|(?<=[.!?;:])|(?<=\n))(\s*){pat}\s+[^.;]{{0,40}}?'
+                rf'\b{_subj_causal}\b[^.]*?(?:\.\s*|$)',
+                r'\1', new_text)
             if new_text != text:
                 text = new_text
                 text_lower = text.lower()
@@ -1539,6 +1545,22 @@ class TCMFusionPipeline:
             return f"Dùng bài theo pháp **{bai}**" if self._is_bare_treatment_principle(bai) else m.group(0)
         return re.sub(r'Dùng bài \*\*([^*]+)\*\*', _repl, markdown or "")
 
+    @staticmethod
+    def _herb_sets_equivalent(a, b):
+        """Hai bộ vị coi là MỘT khi cùng số vị và ghép được 1-1, cho phép tên viết TẮT (một tên là
+        TIỀN TỐ theo TỪ của tên kia: 'Ngũ vị' ~ 'Ngũ vị tử'). Đòi tiền tố theo ranh giới TỪ nên
+        'Bạch truật' KHÔNG khớp 'Bạch thược'."""
+        if len(a) != len(b):
+            return False
+        remain = set(b)
+        for x in a:
+            m = next((y for y in remain
+                      if x == y or x.startswith(y + " ") or y.startswith(x + " ")), None)
+            if m is None:
+                return False
+            remain.discard(m)
+        return True
+
     def _dedup_formula_lines(self, lines):
         """Khử trùng dòng bài Mục 5: CÙNG bệnh + CÙNG BỘ VỊ (tên chỉ khác hậu tố 'phương'/'gia giảm'
         hay bản relabel 'theo pháp') -> giữ MỘT, ưu tiên dòng có PHƯƠNG DANH thật (có phương/thang/
@@ -1554,10 +1576,17 @@ class TCMFusionPipeline:
             if not herbs:
                 result.append(_l)
                 continue
-            key = (_md.group(1).strip().lower(), herbs)
+            _dis = _md.group(1).strip().lower()
             _mb = re.search(r'Dùng bài(?: theo pháp)?\s*\*\*([^*]+)\*\*', _l)
             _proper = bool(_mb and self._FORMULA_TYPE_WORD.search(_mb.group(1)))
-            if key not in index:
+            # So bộ vị theo TIỀN TỐ: KB có dòng trùng chỉ khác tên viết tắt của MỘT vị
+            # ('Ngũ vị' ~ 'Ngũ vị tử', 'Thổ phục' ~ 'Thổ phục (linh)') -> so khớp CHÍNH XÁC trượt và
+            # Mục 5 in CÙNG một bài hai lần (đã gặp: Ách nghịch × Tỳ thận dương hư). Đo trên toàn KB:
+            # chỉ 2 cặp được gộp thêm, cả hai đều đúng là một bài viết hai lần — 0 gộp nhầm.
+            key = next((k for k in index
+                        if k[0] == _dis and self._herb_sets_equivalent(k[1], herbs)), None)
+            if key is None:
+                key = (_dis, herbs)
                 index[key] = len(result)
                 result.append(_l)
             elif _proper:  # trùng bộ vị + dòng mới có phương danh thật -> thay dòng cũ (nếu cũ là bare)
@@ -2351,9 +2380,15 @@ class TCMFusionPipeline:
     _TONGUE_PALLOR_WORD_RE = (r'(?<!hồng\s)(?<!đỏ\s)(?:nhợt\s*nhạt|nhợt\s*màu|nhợt\s*bệch|'
                               r'trắng\s*bệch|đạm\s*bạch|nhạt\s*màu|'
                               r'(?:nhợt|đạm|nhạt)(?!\s*(?:hồng|đỏ)))')
-    _TONGUE_PALLOR_CORE = (_TONGUE_WORD_RE +
-                           r'\s*(?:hơi|khá|có\s*phần|trở\s*nên|dần|ngày\s*càng|đã)?\s*'
-                           + _TONGUE_PALLOR_WORD_RE)
+    # Giữa từ chỉ LƯỠI và từ chỉ NHỢT có thể chen cả một MỆNH ĐỀ, không chỉ trạng từ ngắn:
+    # 'chất lưỡi KHÔNG ĐỦ VINH NHUẬN, nhạt' (gặp thật, lọt lưới bản đầu). Cho phép khoảng chen
+    # nhưng chặn theo CẤU TRÚC: không vượt dấu chấm/chấm phẩy, và TUYỆT ĐỐI không băng qua từ chỉ
+    # BỘ PHẬN KHÁC (rêu/mặt/mạch/da/môi/mắt) — nếu không sẽ vắt sang mệnh đề của bộ phận đó và gỡ
+    # nhầm (vd 'lưỡi hồng nhạt, rêu trắng mỏng, sắc mặt nhợt' -> tưởng lưỡi nhợt). Chặn bằng cấu
+    # trúc chứ KHÔNG dựa vào giới hạn độ dài, vì độ dài chỉ chặn được nhờ may rủi.
+    _TONGUE_GAP_RE = (r'(?:\s*(?:hơi|khá|có\s*phần|trở\s*nên|dần|ngày\s*càng|đã)?\s*'
+                      r'|(?:(?!rêu|mặt|mạch|\bda\b|môi|mắt)[^.;]){0,34}?)')
+    _TONGUE_PALLOR_CORE = _TONGUE_WORD_RE + _TONGUE_GAP_RE + _TONGUE_PALLOR_WORD_RE
     _TONGUE_PALLOR_DET_RE = re.compile(_TONGUE_PALLOR_CORE, re.IGNORECASE)
     _TONGUE_PALLOR_EVIDENCE_RE = re.compile(
         _TONGUE_WORD_RE + r'\s*(?:hơi|khá)?\s*' + _TONGUE_PALLOR_WORD_RE, re.IGNORECASE)
@@ -2406,6 +2441,10 @@ class TCMFusionPipeline:
                 s2 = self._TONGUE_PALLOR_LEAD_RE.sub("", s2)
                 s2 = re.sub(r'\bnhư\s+và\b', 'và', s2, flags=re.IGNORECASE)
                 s2 = re.sub(r'\bnhư\s*(?=[,.;–—])', '', s2, flags=re.IGNORECASE)
+                # Gỡ cụm lưỡi-nhợt nằm SAU giới từ ('rêu trắng mỏng TRÊN lưỡi nhợt là...') để lại
+                # giới từ treo trước động từ -> 'trên là'. Bỏ giới từ khi ngay sau nó là vị ngữ.
+                s2 = re.sub(r'\s+(?:trên|ở|tại|trong|nơi)\s+(?=(?:là|cho\s+thấy|phản\s+ánh|'
+                            r'biểu\s+hiện|chứng\s+tỏ|thể\s+hiện)\b)', ' ', s2, flags=re.IGNORECASE)
                 s2 = re.sub(r'\s+([,.;])', r'\1', s2)
                 s2 = re.sub(r'([,;])\s*(?=[,;])', '', s2)
                 changed = True
@@ -2417,6 +2456,9 @@ class TCMFusionPipeline:
                     s3 = self._TONGUE_PALLOR_DET_RE.sub("", s2)
                     s3 = re.sub(r'^\s*(?:kèm(?:\s+theo)?|đi\s+kèm|cùng(?:\s+với)?|trong\s+khi|'
                                 r'còn|mà|và|với|,|;|-)\s*', '', s3, flags=re.IGNORECASE)
+                    # Giới từ treo trước vị ngữ sau khi gỡ cụm ('...mỏng TRÊN là dấu hiệu...') -> bỏ.
+                    s3 = re.sub(r'\s+(?:trên|ở|tại|trong|nơi)\s+(?=(?:là|cho\s+thấy|phản\s+ánh|'
+                                r'biểu\s+hiện|chứng\s+tỏ|thể\s+hiện)\b)', ' ', s3, flags=re.IGNORECASE)
                     s3 = re.sub(r'\s+([,.;])', r'\1', s3)
                     s3 = re.sub(r'\s{2,}', ' ', s3).strip()
                     # Chỉ GIỮ phần còn lại nếu nó thật sự chở DẤU CHẨN ĐOÁN khác (rêu vàng, mạch,
@@ -2490,6 +2532,30 @@ class TCMFusionPipeline:
         if text != before:
             logger.info("[DỌN HẬU XỬ LÝ] Chuẩn hóa dấu treo / liên từ lặp sau các tầng gỡ cụm.")
         return text
+
+    # [THUẬT NGỮ MỒ HÔI] 'tinh dịch' (精液 — dịch sinh dục nam) bị dùng thay 'tân dịch' (津液 — dịch
+    # thể) khi giải thích MỒ HÔI. Lệch một nguyên âm nhưng nghĩa khác hẳn; trên bệnh án bệnh nhân NỮ
+    # thì vô nghĩa. Chuỗi 'tinh dịch' KHÔNG tồn tại trong toàn bộ KB (0 lần) — luôn là chữ LLM tự sinh.
+    # CHỈ sửa khi biết chắc bệnh nhân là NỮ: với nam, 'tinh dịch' có thể ĐÚNG (di tinh/hoạt tinh —
+    # 39 dòng KB), và ta không đoán ngữ cảnh câu.
+    _SWEAT_SEMEN_RE = re.compile(r'\btinh\s+dịch\b', re.IGNORECASE)
+
+    def _fix_semen_fluid_term(self, text: str) -> str:
+        """Đổi 'tinh dịch' -> 'tân dịch' trong câu nói về MỒ HÔI, chỉ cho bệnh nhân NỮ."""
+        if not text or self._SWEAT_SEMEN_RE.search(text) is None:
+            return text
+        if (getattr(self, "_patient_sex", None) or "").strip().lower() not in ("nu", "nữ"):
+            return text                     # không biết giới hoặc là NAM -> không đoán
+        out, changed = [], False
+        for sent in re.split(r'(?<=[.!?])\s+', text):
+            if self._SWEAT_SEMEN_RE.search(sent) and re.search(
+                    r'mồ\s*hôi|đạo\s*hãn|tự\s*hãn', sent, re.IGNORECASE):
+                sent = self._SWEAT_SEMEN_RE.sub("tân dịch", sent)
+                changed = True
+            out.append(sent)
+        if changed:
+            logger.info("[THUẬT NGỮ MỒ HÔI] Sửa 'tinh dịch' -> 'tân dịch' (bệnh nhân nữ, câu về mồ hôi).")
+        return " ".join(out)
 
     def _strip_meta_commentary(self, text: str) -> str:
         """[CHỐNG NHẠI RUBRIC] Gỡ câu model tự nói VỀ bài trả lời (tuân luật / không bỏ sót / giải
@@ -3922,6 +3988,76 @@ class TCMFusionPipeline:
             logger.info("[NHẤT QUÁN HÀN] Viết lại cơ chế 'hàn ngưng' bịa trong ca không có căn cứ Hàn.")
         return llm_text
 
+    # Cụm cơ chế HÀN-NGƯNG = tà thực (hàn tà) làm NGƯNG KẾT/BẾ TẮC kinh mạch. Chỉ bắt cụm có chữ
+    # 'hàn' đi kèm động từ ngưng/bế — KHÔNG bắt 'ngưng trệ'/'lưu thông kém' trần, vì "nhân hư trí ứ"
+    # (khí hư -> huyết hành vô lực -> trệ) là cơ chế HỢP LỆ trong ca thuần Hư.
+    _COLD_STAGNATION_RE = re.compile(
+        r'(?i)(?:âm\s+)?hàn\s+(?:tà\s+|khí\s+)?'
+        r'(?:ngưng\s*(?:trệ|kết|tụ)?|bế\s*(?:tắc|trở)?|trở\s*trệ)(?:\s+huyết\s+ứ)?')
+
+    # Thể DƯƠNG HƯ (sinh nội hàn) — khớp theo MẪU vì chữ đệm hay chen vào giữa 'dương' và 'hư':
+    # dương hư / dương khí hư / dương khí hư thoát / dương khí suy nhược / dương bất túc /
+    # âm dương đều-lưỡng-câu hư. KHÔNG khớp 'dương cang|xung|thịnh' (âm hư dương vượng — không hàn).
+    _YANG_DEFICIENCY_RE = re.compile(
+        r'\bdương\s+(?:khí\s+)?(?:đều\s+|lưỡng\s+|câu\s+)?(?:hư|suy|nhược|thoát|bất\s*túc)',
+        re.IGNORECASE)
+
+    # Dấu HƯ HÀN dùng cho cổng DƯƠNG HƯ (dương hư định nghĩa bằng hư hàn). Đặt ở cấp LỚP để test
+    # kiểm ĐÚNG danh sách thật, không phải bản sao chép tay dễ lệch.
+    # Nhóm 'mát': y văn Việt dùng 'mát' cho mức nhẹ của 'lạnh' — CHÍNH KB viết thể dương hư bằng chữ
+    # này ('Ách nghịch × Tỳ thận dương hư': "...tay chân mát, ăn ít, mệt mỏi..."; 3 dòng dùng
+    # 'tay chân mát'). Thiếu chúng thì cổng coi ca dương hư THẬT là "không có dấu hàn", hạ bậc hội
+    # chứng đúng và đẩy core sang hội chứng NGOẠI LAI của bệnh khác -> Mục 5 TRẮNG (đã xảy ra thật).
+    # BẮT BUỘC neo vào BỘ PHẬN: 'mát' trần là dấu NHIỆT ở nửa số cụm KB ('thích uống nước mát',
+    # 'khát thích uống nước mát', 'thích chườm mát') — thêm 'mát' trần sẽ ĐẢO CỰC hàn/nhiệt.
+    _DUONGHU_COLD_KWS = (
+        "sợ lạnh", "úy hàn", "rét run", "lạnh run", "tay chân lạnh", "chân tay lạnh",
+        "chi lạnh", "lưng lạnh", "lạnh bụng", "bụng lạnh", "tiểu đêm", "ngũ canh",
+        "phân sống", "liệt dương", "lưng gối lạnh", "sợ gió",
+        "tay chân mát", "chân tay mát", "tứ chi mát", "chi mát", "da mát", "mát lạnh",
+    )
+
+    def _strip_thuc_cold_stagnation_in_pure_hu(self, llm_text: str, bat_cuong_hint: str,
+                                               primary: str, concurrent: str) -> str:
+        """[NHẤT QUÁN HƯ/THỰC — MỤC 3] Bổ khuyết cho _strip_unfounded_cold_mechanism: hàm kia lùi ngay
+        khi LỜI KHAI có dấu lạnh ('sợ lạnh'), nên trong ca Bát Cương chốt 'Lý - Hư' (KHÔNG dựng trục
+        Hàn, KHÔNG có Thực) + Mục 4 'Hư chứng thuần túy' mà Mục 3 vẫn viết 'kèm theo ÂM HÀN NGƯNG TRỆ'
+        thì câu đó lọt lưới. Cái SAI ở đây KHÔNG phải chữ 'hàn' mà là mệnh đề NGƯNG TRỆ DO TÀ HÀN —
+        một khẳng định THỰC chứng, mâu thuẫn thẳng với Mục 2 và Mục 4 hiển thị ngay cạnh nó.
+
+        Neo vào BÁT CƯƠNG (kết quả deterministic) chứ KHÔNG vào lời khai, nên KHÔNG chạm ca hàn thật:
+        ngoại cảm phong hàn (Biểu-Hàn-Thực), dương hư (Lý-Hàn-Hư), Bản Hư Tiêu Thực, Hàn Nhiệt Thác Tạp
+        đều rơi khỏi cổng ngay ở Bát Cương. Cổng 2 chặn thêm ca Bát Cương thiếu tag: hội chứng đã chốt
+        mang hàn/dương-hư/ngoại-cảm hoặc bản thân là thể ngưng-trệ (huyết ứ, khí trệ, đàm, thấp).
+        LƯU Ý: hàm này chỉ dọn PROSE cho khớp Bát Cương. Nếu Bát Cương ĐÁNG LẼ phải có trục Hàn mà
+        tầng Bát Cương bỏ sót, chỗ phải sửa là tầng Bát Cương, không phải nới hàm này."""
+        if not llm_text:
+            return llm_text
+        bc = (bat_cuong_hint or "").lower()
+        syn = ((primary or "") + " " + (concurrent or "")).lower()
+        # Cổng 1 — Bát Cương phải là HƯ THUẦN: có 'Hư', KHÔNG 'Thực'/'thác tạp', KHÔNG 'Hàn'.
+        if not re.search(r'\bhư\b', bc):
+            return llm_text
+        if re.search(r'\bthực\b', bc) or "thác tạp" in bc or re.search(r'\bhàn\b', bc):
+            return llm_text
+        # Cổng 2 — hội chứng đã chốt không được mang căn cứ hàn/ngoại cảm/ngưng-trệ thật.
+        # ⚠ Dương-hư phải khớp theo MẪU, không phải chuỗi con: "dương hư" trần TRƯỢT các thể có chữ
+        # chen giữa — 'Dương khí hư', 'Dương khí hư thoát', 'Dương Khí Suy Nhược', 'Thận dương bất
+        # túc', 'Tâm dương bất túc', 'Âm dương đều/lưỡng/câu hư' (đo được: 22 dòng KB). Trượt nghĩa là
+        # GỠ MẤT cơ chế hàn ở đúng ca dương hư — lớp lỗi "mù hàn" mà dự án đã dính nhiều lần.
+        # Cố ý KHÔNG bắt 'dương cang/xung/thịnh' (âm hư dương vượng — KHÔNG phải hàn).
+        if (re.search(r'\bhàn\b', syn) or self._YANG_DEFICIENCY_RE.search(syn)
+                or self._syndrome_is_exterior_wind(primary)
+                or self._syndrome_is_exterior_wind(concurrent)
+                or any(k in syn for k in ("huyết ứ", "khí trệ", "khí uất", "đàm", "thấp",
+                                          "thực trệ", "ứ trệ", "ngưng", "bế"))):
+            return llm_text
+        new = self._COLD_STAGNATION_RE.sub("chính khí hư nhược, huyết hành vô lực", llm_text)
+        if new != llm_text:
+            logger.info("[NHẤT QUÁN HƯ/THỰC] Gỡ mệnh đề THỰC 'hàn ngưng trệ' ở Mục 3 trong ca "
+                        "Bát Cương thuần Hư (không Hàn, không Thực).")
+        return new
+
     def _strip_unfounded_heat_mechanism(self, llm_text: str, bat_cuong_hint: str,
                                         primary: str, concurrent: str, symptoms_str: str) -> str:
         """[NHẤT QUÁN NHIỆT] MIRROR của _strip_unfounded_cold_mechanism cho trục NHIỆT. LLM hay viện
@@ -4079,6 +4215,89 @@ class TCMFusionPipeline:
                  f"nhiệt (tà thực), nên vẫn 'không có Tiêu Thực'.")
         new_body = m4.group(2).rstrip() + _note
         logger.info("[ĐỒNG BỘ HƯ NHIỆT] Gắn chú giải hư nhiệt cho ca Bát Cương Nhiệt+Hư (Mục 4 né trục Nhiệt).")
+        return md[:m4.start(2)] + new_body + md[m4.end(2):]
+
+    # [ONSET CẤP ↔ CỐT LÕI HƯ MẠN] Dấu THỰC TRỆ / thương thực: ợ chua (thôn toan) là chứng chỉ điểm
+    # kinh điển của thực tích, đi kèm chướng/đầy bụng, đau bụng, ợ hơi thối.
+    _FOOD_STAGNATION_SIGNS = (
+        "ợ chua", "ợ hơi", "thôn toan", "ợ hăng", "ợ thối", "nuốt chua",
+        "chướng bụng", "đầy bụng", "trướng bụng", "bụng đầy", "ăn không tiêu",
+        "chán ăn", "đau bụng",
+    )
+    _ACUTE_ONSET_SIGNS = ("bệnh mới mắc", "bệnh vài ngày", "bệnh vài tuần", "mới mắc")
+    _CHRONIC_ONSET_SIGNS = ("mạn tính", "lâu ngày", "lâu năm", "nhiều năm", "kéo dài nhiều")
+    # Dấu NGOẠI CẢM BIỂU: phải có ố hàn/sợ lạnh (bắt buộc) KÈM ít nhất một dấu biểu khác.
+    # Riêng 'sợ lạnh' KHÔNG đủ — nó cũng là dấu dương hư nội thương.
+    _EXTERIOR_CHILL_SIGNS = ("sợ lạnh", "ố hàn", "sợ gió", "ố phong", "rét run")
+    _EXTERIOR_COMPANION_SIGNS = ("đau đầu", "nhức đầu", "đau mình", "đau người", "mỏi người",
+                                 "người nặng", "thân trọng", "ngạt mũi", "nghẹt mũi", "hắt hơi",
+                                 "chảy nước mũi", "sốt", "phát sốt", "gáy cứng", "đau gáy", "ho")
+
+    def _annotate_acute_onset_caution(self, md: str, primary: str, symptoms_str: str) -> str:
+        """[ONSET CẤP ↔ CỐT LÕI HƯ MẠN] Người bệnh khai bệnh MỚI PHÁT (vài ngày/vài tuần) nhưng cốt lõi
+        chốt là thể HƯ — vốn là bệnh cảnh MẠN (Tỳ khí hư cần thời gian dài mới thành). Nếu lời khai còn
+        mang dấu THỰC TRỆ (ợ chua/chướng bụng/đau bụng) thì bệnh cảnh cấp rất có thể là thương thực/
+        thực trệ trên nền hư — tức BẢN HƯ TIÊU THỰC, không phải 'Hư chứng thuần túy'.
+
+        CỐ Ý chỉ GẮN CHÚ GIẢI, KHÔNG đổi cốt lõi/Bát Cương/bài thuốc: hội chứng kèm theo phải được neo
+        vào bệnh trong cửa sổ ratio (xem _gate_concurrent_by_disease), nên ép nhãn Thực ở đây sẽ mâu
+        thuẫn thẳng Mục 2 — đúng lớp lỗi mà _sync_tieu_thuc_with_bat_cuong sinh ra để chặn. Trước bản
+        vá này, trường 'Thời gian mắc' của form bị BỎ QUA hoàn toàn (đo được: kết quả y hệt khi có và
+        khi không có 'bệnh vài ngày') — đây là chỗ tín hiệu đó bắt đầu có tác dụng."""
+        if not md:
+            return md
+        sym_l = (symptoms_str or "").lower()
+        if not any(k in sym_l for k in self._ACUTE_ONSET_SIGNS):
+            return md
+        if any(k in sym_l for k in self._CHRONIC_ONSET_SIGNS):
+            return md                      # lời khai tự mâu thuẫn -> không đoán, giữ nguyên
+        if not self._syndrome_is_hu(primary):
+            return md                      # cốt lõi đã là Thực -> không có gì để cảnh báo
+        if self._syndrome_is_exterior_wind(primary):
+            return md                      # cốt lõi đã là ngoại cảm biểu -> đang đúng, không cảnh báo
+
+        # Hai bệnh cảnh CẤP hay bị bỏ sót khi cốt lõi chốt vào thể hư (vốn mạn):
+        #   (a) THƯƠNG THỰC/THỰC TRỆ — cần >=2 dấu (ợ chua, chướng bụng, đau bụng...);
+        #   (b) NGOẠI CẢM BIỂU — bắt buộc có ố hàn/sợ lạnh KÈM >=1 dấu biểu khác (đau đầu, người
+        #       nặng, ngạt mũi, sốt...). 'Sợ lạnh' đứng một mình KHÔNG đủ vì cũng là dấu dương hư.
+        # Khớp theo RANH GIỚI TỪ, không phải chuỗi con: dấu ngắn như 'ho' (ho) từng khớp nhầm bên
+        # trong 'hoa mắt' -> cảnh báo dẫn chứng sai. \b của Python là unicode-aware.
+        def _hits(bag):
+            return [s for s in bag if re.search(r'\b' + re.escape(s) + r'\b', sym_l)]
+
+        food = _hits(self._FOOD_STAGNATION_SIGNS)
+        chill = _hits(self._EXTERIOR_CHILL_SIGNS)
+        comp = _hits(self._EXTERIOR_COMPANION_SIGNS)
+        if len(food) >= 2:
+            kind, present = "food", food
+        elif chill and comp:
+            kind, present = "exterior", (chill[:1] + comp[:3])
+        else:
+            return md
+        m4 = re.search(r"(### 4\.[^\n]*\n)(.*?)(?=\n### |\Z)", md, re.DOTALL)
+        if not m4:
+            return md
+        # Chống lặp CHỈ trong phạm vi Mục 4 — chính chỗ đang khẳng định 'Không có Tiêu Thực'.
+        # Quét TOÀN VĂN là sai: Mục 3 hay nhắc 'thực trệ'/'khí trệ' khi mô tả cơ chế Tỳ hư, và điều
+        # đó KHÔNG có nghĩa Mục 4 đã thừa nhận phần Tiêu (đo được: cảnh báo bị chặn oan ở ca thật).
+        _b4 = m4.group(2).lower()
+        _already = ("thực trệ", "thương thực") if kind == "food" else ("ngoại cảm", "giải biểu")
+        if any(k in _b4 for k in _already):
+            return md                      # Mục 4 đã nêu -> không lặp
+        _head = (f" ⚠️ Lưu ý: người bệnh khai bệnh MỚI PHÁT trong khi cốt lõi '{primary}' là thể hư "
+                 f"thường hình thành lâu ngày; lời khai lại có dấu "
+                 + ("thực trệ (" if kind == "food" else "ngoại cảm biểu (")
+                 + ", ".join(present[:4]) + "). ")
+        if kind == "food":
+            _note = _head + ("Cần cân nhắc THƯƠNG THỰC / THỰC TRỆ cấp trên nền hư (bản hư tiêu thực) "
+                             "— nếu đúng thì phải phối thêm pháp tiêu thực đạo trệ, chứ không chỉ "
+                             "kiện tỳ đơn thuần.")
+        else:
+            _note = _head + ("Cần cân nhắc NGOẠI CẢM cấp (phong hàn, kèm thấp nếu có người nặng/đau "
+                             "mình) trên nền hư — nếu đúng thì phải giải biểu trước hoặc phù chính "
+                             "giải biểu, chứ không chỉ bổ hư đơn thuần (bổ sớm dễ lưu tà).")
+        new_body = m4.group(2).rstrip() + _note
+        logger.info("[ONSET CẤP] Gắn cảnh báo thực trệ: bệnh mới phát nhưng cốt lõi là thể hư mạn.")
         return md[:m4.start(2)] + new_body + md[m4.end(2):]
 
     def _build_tieu_thuc_prose(self, symptoms_str: str, has_hu: bool) -> str:
@@ -5215,9 +5434,18 @@ class TCMFusionPipeline:
         # -> gắn chú giải phần Nhiệt là HƯ NHIỆT (chính hư sinh nội nhiệt), để nhãn Nhiệt không bỏ lửng.
         llm_explanation = self._annotate_deficiency_heat(
             llm_explanation, bat_cuong_hint, final_primary, symptoms_str)
+        # [ONSET CẤP] Bệnh MỚI PHÁT + cốt lõi thể hư (vốn mạn) + dấu thực trệ -> cảnh báo cân nhắc
+        # thương thực/thực trệ cấp. Dùng symptoms_lower (chứa 'bệnh vài ngày' do form ghép vào).
+        llm_explanation = self._annotate_acute_onset_caution(
+            llm_explanation, final_primary, symptoms_lower)
         # [NHẤT QUÁN HÀN] Gỡ cơ chế 'hàn ngưng' bịa khi ca không có căn cứ Hàn (chạy sau cùng)
         llm_explanation = self._strip_unfounded_cold_mechanism(
             llm_explanation, bat_cuong_hint, final_primary, final_concurrent, symptoms_str)
+        # [NHẤT QUÁN HƯ/THỰC] Bổ khuyết: hàm trên lùi khi lời khai có 'sợ lạnh'. Nếu Bát Cương đã chốt
+        # THUẦN HƯ (không Hàn, không Thực) thì mệnh đề 'hàn ngưng trệ' ở Mục 3 vẫn là khẳng định THỰC
+        # mâu thuẫn Mục 2/Mục 4 -> gỡ, neo vào Bát Cương chứ không vào lời khai.
+        llm_explanation = self._strip_thuc_cold_stagnation_in_pure_hu(
+            llm_explanation, bat_cuong_hint, final_primary, final_concurrent)
         # [NHẤT QUÁN NHIỆT] MIRROR: gỡ cơ chế 'âm hư (sinh) nội nhiệt / nhiệt bức tân dịch' bịa cho
         # mồ hôi khi ca THUẦN HƯ-HÀN không có căn cứ Nhiệt (mồ hôi = tự hãn do vệ khí bất cố).
         llm_explanation = self._strip_unfounded_heat_mechanism(
@@ -5245,6 +5473,9 @@ class TCMFusionPipeline:
         # [CHỐNG NHẠI RUBRIC] Gỡ câu model tự-chấm-điểm nhại chữ luật 7 ('giải thích mạch lạc',
         # 'không bỏ sót/tự ý thêm') — rác trong bệnh án và thường SAI (khẳng định đủ khi vẫn thiếu).
         llm_explanation = self._strip_meta_commentary(llm_explanation)
+        # [THUẬT NGỮ MỒ HÔI] 'tinh dịch' (dịch sinh dục nam) dùng nhầm cho 'tân dịch' khi giải thích
+        # mồ hôi — chỉ sửa khi bệnh nhân là NỮ (với nam từ này có thể đúng: di tinh/hoạt tinh).
+        llm_explanation = self._fix_semen_fluid_term(llm_explanation)
         # [DỌN DẤU CÂU] Chạy CUỐI CÙNG: các tầng kiểm duyệt/stripper phía trên gỡ cụm giữa câu nên
         # có thể để lại dấu treo ('..., – biểu hiện...', ' ,', ',,'). Chỉ chuẩn hóa dấu câu, KHÔNG
         # đụng nội dung (gạch dài phụ chú, số thập phân '1,5g', gạch đầu dòng markdown giữ nguyên).
@@ -6139,10 +6370,7 @@ class TCMFusionPipeline:
         # hoán vị xuống dưới ứng viên HƯ không-dương-hư đầu tiên (vẫn giữ trong danh sách kèm theo).
         if _grounded:
             _txt_dh = (user_symptoms + " " + combined_query).lower()
-            _cold_kws_dh = ["sợ lạnh", "úy hàn", "rét run", "lạnh run", "tay chân lạnh",
-                            "chân tay lạnh", "chi lạnh", "lưng lạnh", "lạnh bụng", "bụng lạnh",
-                            "tiểu đêm", "ngũ canh", "phân sống", "liệt dương", "lưng gối lạnh",
-                            "sợ gió"]
+            _cold_kws_dh = list(self._DUONGHU_COLD_KWS)
             # [Ố HÀN ≠ HƯ HÀN] Ca NGOẠI CẢM (cốt lõi phong hàn/phong nhiệt phạm biểu-phế): 'sợ lạnh/
             # sợ gió/rét run' là Ố HÀN của BIỂU chứng (chính-tà giao tranh), KHÔNG phải bằng chứng
             # dương hư — CÙNG nguyên tắc `_interior_cold_kws` đã dùng ở khối Bát Cương. Nếu vẫn tính,
