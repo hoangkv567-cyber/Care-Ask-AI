@@ -1,0 +1,18 @@
+{
+ "disease": "Kinh hành đầu thống",
+ "added": [
+  {
+   "hoi_chung": "Âm hư",
+   "tc": "Đau đầu khi hành kinh"
+  }
+ ],
+ "removed": [
+  {
+   "hoi_chung": "Âm hư",
+   "tc": "Đau đầu",
+   "props": {
+    "benh_ly": "Kinh hành đầu thống"
+   }
+  }
+ ]
+}
