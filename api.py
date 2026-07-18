@@ -1,5 +1,5 @@
 # api.py
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import shutil
@@ -9,6 +9,11 @@ import logging
 
 from src.fusion_pipeline import TCMFusionPipeline
 from src.interview import compose_interview_text, merge_symptoms
+from src import auth as _auth
+from src.auth import (
+    ROLE_DOCTOR, ROLE_USER, get_current_user, require_doctor, get_store,
+    create_token, validate_credentials, verify_password,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -29,14 +34,101 @@ app.add_middleware(
 # Khởi tạo bộ não AI
 logger.info("Đang khởi động AI Backend...")
 fusion_engine = TCMFusionPipeline()
+# [XÁC THỰC] Tái dùng driver Neo4j của pipeline làm kho tài khoản (node :User) — không thêm hạ tầng
+# và chạy được trên Vercel serverless (filesystem chỉ đọc nên không dùng được SQLite/file).
+try:
+    _auth.init_auth(fusion_engine.qa_pipeline.driver)
+    logger.info("Tầng xác thực đã sẵn sàng (kho tài khoản: Neo4j :User).")
+except Exception:
+    logger.exception("Không khởi tạo được tầng xác thực — các API sẽ trả 503 khi đăng nhập.")
 try:
     os.makedirs("temp_uploads", exist_ok=True)  # Thư mục lưu ảnh tạm (chỉ dùng khi chạy local)
 except OSError:
     pass  # Serverless (Vercel) filesystem read-only — ảnh upload đã lưu vào tempfile.gettempdir()
 logger.info("Sẵn sàng!")
 
+from pydantic import BaseModel, Field
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(default="", max_length=64)
+    password: str = Field(default="", max_length=256)
+
+
+class RegisterRequest(BaseModel):
+    username: str = Field(default="", max_length=64)
+    password: str = Field(default="", max_length=256)
+    full_name: str = Field(default="", max_length=120)
+
+
+@app.post("/api/auth/register")
+async def register(req: RegisterRequest):
+    """Tự đăng ký — LUÔN tạo vai 'user'. Tài khoản bác sĩ phải do quản trị tạo bằng
+    scripts/seed_users.py; nếu cho tự chọn vai thì ai cũng tự nhận là bác sĩ để mở khoá
+    tính năng chuyên môn."""
+    uname = (req.username or "").strip().lower()
+    err = validate_credentials(uname, req.password or "")
+    if err:
+        raise HTTPException(status_code=400, detail=err)
+    try:
+        u = get_store().create(uname, req.password, role=ROLE_USER,
+                               full_name=(req.full_name or "").strip())
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Lỗi khi tạo tài khoản")
+        raise HTTPException(status_code=500, detail="Không tạo được tài khoản. Vui lòng thử lại sau.")
+    token = create_token(u["username"], u["role"], u["full_name"])
+    return {"status": "success", "data": {"token": token, "user": u}}
+
+
+@app.post("/api/auth/login")
+async def login(req: LoginRequest):
+    uname = (req.username or "").strip().lower()
+    rec = None
+    try:
+        rec = get_store().get(uname)
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Lỗi khi tra cứu tài khoản")
+        raise HTTPException(status_code=500, detail="Lỗi hệ thống khi đăng nhập.")
+    # verify_password vẫn chạy bcrypt kể cả khi rec=None -> không lộ tài khoản nào tồn tại
+    if not verify_password(req.password or "", rec.get("password_hash") if rec else None):
+        raise HTTPException(status_code=401, detail="Tên đăng nhập hoặc mật khẩu không đúng.")
+    if rec.get("active") is False:
+        raise HTTPException(status_code=403, detail="Tài khoản đã bị khoá.")
+    u = {"username": rec["username"], "role": rec.get("role") or ROLE_USER,
+         "full_name": rec.get("full_name") or rec["username"]}
+    return {"status": "success", "data": {"token": create_token(**{
+        "username": u["username"], "role": u["role"], "full_name": u["full_name"]}), "user": u}}
+
+
+@app.get("/api/auth/me")
+async def me(user: dict = Depends(get_current_user)):
+    return {"status": "success", "data": user}
+
+
+def _strip_clinical_internals(result: dict) -> dict:
+    """[PHÂN QUYỀN] Người dùng thường chỉ nhận PHẦN KẾT LUẬN đọc được. Các trường kỹ thuật
+    (ứng viên bệnh + ratio, phổ hội chứng, dữ liệu KG thô, mô tả vọng chẩn nội bộ) chỉ dành cho
+    bác sĩ: đọc sai chúng dễ dẫn tới tự chẩn đoán, và chúng phơi bày nội bộ hệ thống.
+    Cắt ở BACKEND — nếu chỉ ẩn trên giao diện thì mở DevTools là thấy hết."""
+    if not isinstance(result, dict):
+        return result
+    safe = {k: v for k, v in result.items()
+            if k not in ("vision_details", "input_fusion", "has_makeup")}
+    dr = safe.get("diagnosis_result")
+    if isinstance(dr, dict):
+        safe["diagnosis_result"] = {"answer": dr.get("answer", "")}
+    return safe
+
+
 @app.post("/api/diagnose")
 async def diagnose(
+    user: dict = Depends(get_current_user),
     symptoms: str = Form(""),
     face_img: UploadFile = File(None),
     tongue_img: UploadFile = File(None),
@@ -99,7 +191,9 @@ async def diagnose(
             tongue_img_path=tongue_path,
             sex=sex,   # [CỔNG GIỚI TÍNH] khai báo giới -> loại bệnh khác giới ở tầng khớp
         )
-        return {"status": "success", "data": result}
+        is_doctor = user.get("role") == ROLE_DOCTOR
+        payload = result if is_doctor else _strip_clinical_internals(result)
+        return {"status": "success", "data": payload, "role": user.get("role")}
     except HTTPException:
         raise
     except Exception:
@@ -116,8 +210,6 @@ async def diagnose(
                 except Exception as e:
                     logger.warning(f"Không thể xóa file tạm {path}: {e}")
 
-from pydantic import BaseModel
-
 class SymptomsRequest(BaseModel):
     symptoms: str
 
@@ -125,8 +217,11 @@ class AskRequest(BaseModel):
     question: str
 
 @app.post("/api/ask")
-async def ask_endpoint(req: AskRequest):
-    """Hỏi-đáp tự do trên Knowledge Graph (LLM sinh Cypher ở chế độ READ-ONLY, có disclaimer y tế)."""
+async def ask_endpoint(req: AskRequest, user: dict = Depends(require_doctor)):
+    """Hỏi-đáp tự do trên Knowledge Graph (LLM sinh Cypher ở chế độ READ-ONLY, có disclaimer y tế).
+
+    [PHÂN QUYỀN] CHỈ BÁC SĨ. Đây là công cụ tra cứu chuyên môn sinh truy vấn thẳng trên KG —
+    người bệnh dùng dễ hiểu sai thành lời khuyên điều trị cho bản thân."""
     question = (req.question or "").strip()
     if not question:
         raise HTTPException(status_code=400, detail="Vui lòng nhập câu hỏi.")
@@ -143,7 +238,8 @@ async def ask_endpoint(req: AskRequest):
         raise HTTPException(status_code=500, detail="Đã xảy ra lỗi nội bộ khi xử lý câu hỏi. Vui lòng thử lại sau.")
 
 @app.post("/api/related-symptoms")
-async def get_related_symptoms_endpoint(req: SymptomsRequest):
+async def get_related_symptoms_endpoint(req: SymptomsRequest,
+                                        user: dict = Depends(get_current_user)):
     symptoms_text = req.symptoms
     if not symptoms_text.strip():
         return {"status": "success", "data": []}

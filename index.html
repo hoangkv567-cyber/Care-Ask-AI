@@ -102,6 +102,22 @@
                 </div>
             </div>
             
+            <div class="flex items-center space-x-2">
+            <!-- Hộp thông tin phiên đăng nhập (ẩn khi chưa đăng nhập) -->
+            <div id="userBox" class="hidden items-center space-x-2 bg-teal-600/60 rounded-xl pl-3 pr-1.5 py-1.5">
+                <div class="text-right leading-tight">
+                    <div id="userName" class="text-sm font-semibold"></div>
+                    <div id="userRole" class="text-[10px] uppercase tracking-wide text-teal-100"></div>
+                </div>
+                <button id="logoutBtn" title="Đăng xuất"
+                        class="bg-teal-700 hover:bg-teal-800 p-1.5 rounded-lg transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </button>
+            </div>
+
             <!-- Nút Bánh răng Cài đặt API Ngrok -->
             <button id="settingsBtn" class="bg-teal-600 hover:bg-teal-500 p-2 rounded-lg transition-all duration-200" title="Cấu hình kết nối Ngrok">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -109,6 +125,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             </button>
+            </div>
         </div>
     </header>
 
@@ -133,8 +150,73 @@
         </div>
     </div>
 
+    <!-- ============================ MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ ============================ -->
+    <!-- Hiển thị khi CHƯA có phiên đăng nhập hợp lệ. Toàn bộ khung ứng dụng bên dưới bị ẩn. -->
+    <div id="authScreen" class="max-w-md mx-auto mt-10 px-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+            <div class="px-6 pt-6 pb-2 text-center">
+                <div class="inline-flex items-center justify-center bg-teal-50 text-teal-700 rounded-2xl w-14 h-14 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900">Đăng nhập hệ thống</h2>
+                <p class="text-xs text-slate-500 mt-1">Trợ lý tham khảo Đông y — phân quyền Bác sĩ / Người dùng</p>
+            </div>
+
+            <!-- Chuyển tab Đăng nhập / Đăng ký -->
+            <div class="px-6 mt-4">
+                <div class="grid grid-cols-2 bg-slate-100 rounded-xl p-1 text-sm font-semibold">
+                    <button id="tabLogin" type="button" class="py-2 rounded-lg bg-white text-teal-700 shadow-sm">Đăng nhập</button>
+                    <button id="tabRegister" type="button" class="py-2 rounded-lg text-slate-500">Đăng ký</button>
+                </div>
+            </div>
+
+            <form id="authForm" class="p-6 space-y-4" autocomplete="on">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tên đăng nhập</label>
+                    <input type="text" id="authUsername" name="username" autocomplete="username" required
+                           class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                           placeholder="vd: bs.an hoặc benhnhan1">
+                </div>
+                <!-- Chỉ hiện khi Đăng ký -->
+                <div id="fullNameWrap" class="hidden">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Họ và tên</label>
+                    <input type="text" id="authFullName" name="name" autocomplete="name"
+                           class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                           placeholder="vd: Nguyễn Văn A">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Mật khẩu</label>
+                    <input type="password" id="authPassword" name="password" required
+                           class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                           placeholder="Tối thiểu 8 ký tự">
+                    <p id="pwHint" class="text-[11px] text-slate-400 mt-1 hidden">Mật khẩu phải dài ít nhất 8 ký tự.</p>
+                </div>
+
+                <div id="authError" class="hidden text-sm bg-red-50 border border-red-200 text-red-700 rounded-xl px-3 py-2"></div>
+
+                <button type="submit" id="authSubmit"
+                        class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 rounded-xl shadow-sm transition disabled:opacity-60">
+                    Đăng nhập
+                </button>
+
+                <p class="text-[11px] text-slate-500 leading-relaxed border-t border-slate-100 pt-3">
+                    Tài khoản đăng ký trên web luôn là vai <strong>Người dùng</strong>.
+                    Tài khoản <strong>Bác sĩ</strong> do quản trị viên cấp
+                    (<code class="bg-slate-100 px-1 rounded">scripts/seed_users.py</code>) — để tránh
+                    người dùng tự nhận là bác sĩ nhằm mở khoá tính năng chuyên môn.
+                </p>
+            </form>
+        </div>
+        <p class="text-center text-[11px] text-slate-400 mt-4">
+            Bấm ⚙️ ở góc trên nếu cần đổi địa chỉ máy chủ API.
+        </p>
+    </div>
+
     <!-- Khung chính Giao diện -->
-    <div class="max-w-3xl mx-auto mt-8 px-4">
+    <div id="appScreen" class="max-w-3xl mx-auto mt-8 px-4 hidden">
         <!-- [AN TOÀN Y TẾ] Banner miễn trừ trách nhiệm + cảnh báo cấp cứu -->
         <div class="mb-6 bg-amber-50 border border-amber-300 text-amber-900 rounded-xl px-4 py-3 text-sm leading-relaxed">
             ⚠️ <strong>Công cụ tham khảo / giáo dục bằng AI — KHÔNG phải chẩn đoán y khoa và không thay thế bác sĩ.</strong>
@@ -322,7 +404,7 @@
 
     <!-- ============ TRỢ LÝ ĐÔNG Y — Bong bóng chat nổi (Messenger/Zalo style) ============ -->
     <!-- Nút bong bóng: bấm để mở/thu nhỏ khung chat -->
-    <button type="button" id="chatLauncher" title="Hỏi Trợ lý Đông y" aria-expanded="false"
+    <button type="button" id="chatLauncher" data-doctor-only title="Hỏi Trợ lý Đông y (dành cho bác sĩ)" aria-expanded="false"
         class="fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-teal-600 to-teal-500 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center">
         <span id="chatLauncherIcon" class="text-2xl leading-none">🩺</span>
         <!-- Chấm mời gọi nhấp (ẩn sau lần mở đầu tiên) -->
@@ -332,7 +414,7 @@
     </button>
 
     <!-- Khung chat nổi (ẩn mặc định — mở khi bấm bong bóng) -->
-    <div id="chatPanel"
+    <div id="chatPanel" data-doctor-only
         class="chat-panel closed fixed z-50 bottom-24 right-5 w-[380px] max-w-[calc(100vw-2.5rem)] h-[560px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
         <!-- Header kiểu ứng dụng chat -->
         <div class="px-4 py-3 flex items-center space-x-3 bg-gradient-to-r from-teal-600 to-teal-500 shrink-0">
@@ -392,6 +474,150 @@
 
         // Ưu tiên đọc cấu hình lưu trong trình duyệt trước, nếu không có sẽ tự nhận link mặc định
         let apiBaseUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_API_URL;
+
+        /* ==================== PHIÊN ĐĂNG NHẬP & PHÂN QUYỀN ====================
+           Token JWT lưu ở localStorage. LƯU Ý: việc ẩn/hiện theo vai ở đây CHỈ là trải nghiệm —
+           quyền thật được chặn ở BACKEND (require_doctor), nên sửa DOM hay gọi thẳng API đều
+           không vượt được. */
+        const TOKEN_KEY = "healthwatch_token";
+        const USER_KEY  = "healthwatch_user";
+        let authToken = localStorage.getItem(TOKEN_KEY) || "";
+        let currentUser = null;
+        try { currentUser = JSON.parse(localStorage.getItem(USER_KEY) || "null"); } catch (e) { currentUser = null; }
+
+        const isDoctor = () => currentUser && currentUser.role === "doctor";
+
+        /** fetch có kèm Authorization; tự đăng xuất khi token hỏng/hết hạn (401). */
+        async function authFetch(url, options = {}) {
+            const opts = Object.assign({}, options);
+            opts.headers = Object.assign({}, opts.headers || {});
+            if (authToken) opts.headers["Authorization"] = "Bearer " + authToken;
+            const res = await fetch(url, opts);
+            if (res.status === 401) {
+                doLogout("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+                throw new Error("Phiên đăng nhập đã hết hạn.");
+            }
+            return res;
+        }
+
+        function saveSession(token, user) {
+            authToken = token; currentUser = user;
+            localStorage.setItem(TOKEN_KEY, token);
+            localStorage.setItem(USER_KEY, JSON.stringify(user));
+            applyRoleUI();
+        }
+
+        function doLogout(message) {
+            authToken = ""; currentUser = null;
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
+            applyRoleUI();
+            if (message) showAuthError(message);
+        }
+
+        /** Bật/tắt màn hình và các khối theo vai trò hiện tại. */
+        function applyRoleUI() {
+            const authScreen = document.getElementById('authScreen');
+            const appScreen  = document.getElementById('appScreen');
+            const userBox    = document.getElementById('userBox');
+            const loggedIn   = !!(authToken && currentUser);
+
+            authScreen.classList.toggle('hidden', loggedIn);
+            appScreen.classList.toggle('hidden', !loggedIn);
+            userBox.classList.toggle('hidden', !loggedIn);
+            userBox.classList.toggle('flex', loggedIn);
+
+            if (loggedIn) {
+                document.getElementById('userName').textContent = currentUser.full_name || currentUser.username;
+                document.getElementById('userRole').textContent = isDoctor() ? '👨‍⚕️ Bác sĩ' : 'Người dùng';
+            }
+            // Khối CHỈ dành cho bác sĩ (hỏi-đáp KG, chi tiết kỹ thuật)
+            document.querySelectorAll('[data-doctor-only]').forEach(el => {
+                el.classList.toggle('hidden', !isDoctor());
+            });
+        }
+
+        function showAuthError(msg) {
+            const box = document.getElementById('authError');
+            box.textContent = msg;
+            box.classList.toggle('hidden', !msg);
+        }
+
+        // ---- Chuyển tab Đăng nhập / Đăng ký ----
+        let authMode = "login";
+        function setAuthMode(mode) {
+            authMode = mode;
+            const isReg = mode === "register";
+            document.getElementById('tabLogin').className =
+                "py-2 rounded-lg " + (isReg ? "text-slate-500" : "bg-white text-teal-700 shadow-sm");
+            document.getElementById('tabRegister').className =
+                "py-2 rounded-lg " + (isReg ? "bg-white text-teal-700 shadow-sm" : "text-slate-500");
+            document.getElementById('fullNameWrap').classList.toggle('hidden', !isReg);
+            document.getElementById('pwHint').classList.toggle('hidden', !isReg);
+            document.getElementById('authSubmit').textContent = isReg ? "Tạo tài khoản" : "Đăng nhập";
+            document.getElementById('authPassword').setAttribute(
+                'autocomplete', isReg ? 'new-password' : 'current-password');
+            showAuthError("");
+        }
+        document.getElementById('tabLogin').addEventListener('click', () => setAuthMode("login"));
+        document.getElementById('tabRegister').addEventListener('click', () => setAuthMode("register"));
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showAuthError("");
+            const btn = document.getElementById('authSubmit');
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const fullName = document.getElementById('authFullName').value.trim();
+            if (!username || !password) { showAuthError("Vui lòng nhập đủ tên đăng nhập và mật khẩu."); return; }
+
+            btn.disabled = true;
+            const oldLabel = btn.textContent;
+            btn.textContent = authMode === "register" ? "Đang tạo tài khoản…" : "Đang đăng nhập…";
+            try {
+                const endpoint = authMode === "register" ? "/api/auth/register" : "/api/auth/login";
+                const body = authMode === "register"
+                    ? { username, password, full_name: fullName }
+                    : { username, password };
+                const res = await fetch(`${apiBaseUrl}${endpoint}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
+                    body: JSON.stringify(body),
+                });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    showAuthError(json.detail || "Đăng nhập không thành công.");
+                    return;
+                }
+                saveSession(json.data.token, json.data.user);
+                document.getElementById('authForm').reset();
+            } catch (err) {
+                showAuthError("Không kết nối được máy chủ. Kiểm tra lại địa chỉ API (nút ⚙️).");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = oldLabel;
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => doLogout(""));
+
+        // Khôi phục phiên khi tải trang: đối chiếu token với server (có thể đã hết hạn / bị khoá)
+        (async function restoreSession() {
+            applyRoleUI();
+            if (!authToken) return;
+            try {
+                const res = await fetch(`${apiBaseUrl}/api/auth/me`, {
+                    headers: { "Authorization": "Bearer " + authToken, "ngrok-skip-browser-warning": "true" },
+                });
+                if (!res.ok) { doLogout(""); return; }
+                const json = await res.json();
+                currentUser = json.data;
+                localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+                applyRoleUI();
+            } catch (e) {
+                // Mất mạng: giữ phiên hiện có, các lệnh gọi sau sẽ tự xử lý 401.
+            }
+        })();
 
         const settingsBtn = document.getElementById('settingsBtn');
         const settingsModal = document.getElementById('settingsModal');
@@ -564,7 +790,7 @@
             showTyping();
 
             try {
-                const response = await fetch(`${apiBaseUrl}/api/ask`, {
+                const response = await authFetch(`${apiBaseUrl}/api/ask`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
                     body: JSON.stringify({ question })
@@ -618,7 +844,7 @@
             analyzeBtn.innerText = "⏳ Đang phân tích...";
             
             try {
-                const response = await fetch(`${apiBaseUrl}/api/related-symptoms`, {
+                const response = await authFetch(`${apiBaseUrl}/api/related-symptoms`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -733,7 +959,7 @@
 
             try {
                 // Gọi API Backend qua Endpoint kết nối
-                const response = await fetch(`${apiBaseUrl}/api/diagnose`, {
+                const response = await authFetch(`${apiBaseUrl}/api/diagnose`, {
                     method: 'POST',
                     headers: { 'ngrok-skip-browser-warning': 'true' },
                     body: formData
@@ -826,11 +1052,17 @@
                                 </div>`;
                         }
 
+                        // [PHÂN QUYỀN] 'Chuỗi triệu chứng đã gộp' là dữ liệu nội bộ -> backend chỉ
+                        // gửi cho bác sĩ. Người dùng thường không có trường này, phải bỏ hẳn khối
+                        // thay vì in ra chữ 'undefined'.
+                        const fusionHTML = data.input_fusion ? `
+                            <div class="mb-4 text-xs bg-teal-50 p-3 rounded-lg text-teal-800 border border-teal-100">
+                                <span class="inline-block bg-teal-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded mr-1 align-middle">BÁC SĨ</span>
+                                <strong>Chuỗi triệu chứng đã gộp:</strong> ${escapeHtml(data.input_fusion)}
+                            </div>` : "";
                         textResult.innerHTML = `
                             ${warningHTML}
-                            <div class="mb-4 text-xs bg-teal-50 p-3 rounded-lg text-teal-800 border border-teal-100">
-                                <strong>Chuỗi triệu chứng đã gộp:</strong> ${escapeHtml(data.input_fusion)}
-                            </div>
+                            ${fusionHTML}
                             <div>
                                 ${formattedHTML}
                             </div>
