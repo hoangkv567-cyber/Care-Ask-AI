@@ -2163,6 +2163,13 @@ class TCMFusionPipeline:
     _LUOI_BEU_RE = re.compile(r'lưỡi\s+bệu|lưỡi\s+(?:sưng|to|phồng|căng)')
     _EXT_PATHOGEN_ATTR_RE = re.compile(
         r'phong\s+nhiệt|phong\s+hàn|phong\s+tà|ngoại\s+tà|ngoại\s+cảm|tà\s+khí|nhiệt\s+tà|hàn\s+tà')
+    # Model LÁCH danh sách tên-tà bằng cách quy lưỡi bệu cho HỆ QUẢ của ngoại tà ("Lưỡi bệu là do PHẾ
+    # KHÍ UẤT TRỆ, vận hóa bất thường…" — gặp thật, regex tên-tà trượt). Trong ca đã lọc (ngoại cảm +
+    # Bát Cương THUẦN THỰC) thì lưỡi bệu KHÔNG được quy cho bất cứ cơ chế bệnh CẤP nào -> bắt thêm
+    # mệnh đề QUY NHÂN chung. Ca có 'Hư' đã return sớm nên 'lưỡi bệu do Tỳ hư' hợp lệ không bị đụng.
+    _LUOI_BEU_CAUSAL_RE = re.compile(r'\b(?:là\s+do|do|bởi|vì|nguyên\s+nhân|sinh\s+ra|gây\s+ra)\b')
+    # Câu HỢP LỆ của chính stripper (dấu nền) — KHÔNG được tự gỡ, tránh vòng lặp/mất câu đúng.
+    _LUOI_BEU_SANCTIONED_RE = re.compile(r'dấu\s+thể\s+trạng\s+nền|không\s+thuộc\s+bệnh\s+cảnh')
 
     def _strip_luoi_beu_exterior_claims(self, text: str, final_primary: str = "",
                                         bat_cuong_hint: str = "") -> str:
@@ -2187,8 +2194,11 @@ class TCMFusionPipeline:
             new_parts = []
             for sent in sentences:
                 sl = sent.lower()
-                if self._LUOI_BEU_RE.search(sl) and self._EXT_PATHOGEN_ATTR_RE.search(sl):
-                    logger.info(f"[NHẤT QUÁN LƯỠI BỆU] Gỡ câu quy lưỡi bệu cho ngoại tà: {sent[:90]!r}")
+                _beu_attr = (self._EXT_PATHOGEN_ATTR_RE.search(sl)          # gọi ĐÍCH DANH ngoại tà
+                             or self._LUOI_BEU_CAUSAL_RE.search(sl))        # hoặc quy nhân kiểu khác
+                if (self._LUOI_BEU_RE.search(sl) and _beu_attr
+                        and not self._LUOI_BEU_SANCTIONED_RE.search(sl)):
+                    logger.info(f"[NHẤT QUÁN LƯỠI BỆU] Gỡ câu quy lưỡi bệu cho bệnh cấp: {sent[:90]!r}")
                     changed = True
                     if not has_sanctioned:
                         new_parts.append(sanctioned)
