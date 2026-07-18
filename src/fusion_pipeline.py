@@ -2309,6 +2309,43 @@ class TCMFusionPipeline:
             logger.info("[NHẤT QUÁN SẮC MẶT] Gỡ cụm 'sắc mặt/da nhợt' bịa (vọng chẩn hồng hào, không dấu nhợt mặt).")
         return text
 
+    # [CHỐNG NHẠI RUBRIC] Model nhanh (qwen3-30b) hay CHÉP chữ của chính LUẬT 7 ('mạch lạc', 'bỏ
+    # sót', 'tự ý thêm', 'như một danh y') ra output thành câu TỰ CHẤM ĐIỂM: "Tất cả các triệu chứng
+    # này đều được giải thích một cách mạch lạc... không có dấu hiệu nào bị bỏ sót hay tự ý thêm vào."
+    # Vừa là RÁC trong bệnh án (nói VỀ bài trả lời, không nói về bệnh), vừa hay SAI SỰ THẬT (ca thật:
+    # khẳng định 'không bỏ sót' trong khi ĐÃ bỏ sót 'rêu trắng mỏng'). CÙNG LỚP rò-prompt với
+    # 'khi vận động' rò từ luật 16. Marker nhắm HÀNH ĐỘNG GIẢI THÍCH/TUÂN LUẬT, TUYỆT ĐỐI KHÔNG nhắm
+    # cơ chế: câu lâm sàng hợp lệ "Tất cả các triệu chứng cấp tính này đều DO Thấp nhiệt..." phải GIỮ.
+    _META_COMMENTARY_RE = re.compile(
+        r'bỏ\s*sót'
+        r'|tự\s*ý\s*(?:thêm|bịa|suy\s*diễn)'
+        r'|tự\s*bịa'
+        r'|(?:được|đã)\s+giải\s+thích\s+(?:một\s+cách\s+)?(?:mạch\s*lạc|đầy\s*đủ|logic|trọn\s*vẹn)'
+        r'|giải\s+thích\s+(?:đầy\s*đủ|trọn\s*vẹn|toàn\s*bộ)\s+(?:các\s+)?triệu\s*chứng'
+        r'|(?:đúng|phù\s*hợp)\s+(?:với\s+)?yêu\s*cầu'
+        r'|như\s+một\s+danh\s+y'
+        r'|tuân\s+thủ\s+(?:đúng\s+)?(?:các\s+)?(?:luật|quy\s*tắc|yêu\s*cầu)'
+        r'|(?:không|chưa)\s+(?:có\s+)?(?:dấu\s*hiệu|triệu\s*chứng)\s+nào\s+bị',
+        re.IGNORECASE)
+
+    def _strip_meta_commentary(self, text: str) -> str:
+        """[CHỐNG NHẠI RUBRIC] Gỡ câu model tự nói VỀ bài trả lời (tuân luật / không bỏ sót / giải
+        thích mạch lạc) thay vì nói về BỆNH. Bỏ cả câu (câu meta không có nội dung lâm sàng để giữ).
+        Cùng lớp với _strip_fabricated_pallor / _strip_luoi_beu_exterior_claims."""
+        if not text or not self._META_COMMENTARY_RE.search(text):
+            return text
+        before = text
+        out_lines = []
+        for line in text.split("\n"):
+            sents = re.split(r'(?<=[.!?])\s+', line)
+            kept = [s for s in sents if not self._META_COMMENTARY_RE.search(s)]
+            out_lines.append(" ".join(kept) if len(kept) != len(sents) else line)
+        text = "\n".join(out_lines)
+        text = re.sub(r'[ \t]{2,}', ' ', text).strip()
+        if text != before:
+            logger.info("[CHỐNG NHẠI RUBRIC] Gỡ câu META tự-chấm-điểm (nhại chữ luật 7) khỏi biện luận.")
+        return text
+
     @staticmethod
     def _syndrome_thermal_sign(name):
         """Cực HÀN / NHIỆT của hội chứng theo TÊN. Trả 'han', 'nhiet', hoặc None (trung tính hoặc
@@ -5029,6 +5066,9 @@ class TCMFusionPipeline:
         # [NHẤT QUÁN SẮC MẶT] Gỡ cụm 'da/sắc mặt xanh xao/nhợt' LLM bịa khi vọng chẩn cho mặt hồng hào
         # (không dấu nhợt mặt trong triệu chứng) -> tránh Mục 3 mâu thuẫn panel Vision ngay trên nó.
         llm_explanation = self._strip_fabricated_pallor(llm_explanation, symptoms_str)
+        # [CHỐNG NHẠI RUBRIC] Gỡ câu model tự-chấm-điểm nhại chữ luật 7 ('giải thích mạch lạc',
+        # 'không bỏ sót/tự ý thêm') — rác trong bệnh án và thường SAI (khẳng định đủ khi vẫn thiếu).
+        llm_explanation = self._strip_meta_commentary(llm_explanation)
 
         final_markdown += f"{llm_explanation}\n\n"
 
