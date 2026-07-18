@@ -2780,6 +2780,30 @@ class TCMFusionPipeline:
         "lưỡng", "đều", "song", "cả", "chứng",
     })
 
+    # 'dương cang/vượng/thịnh/thượng/động' — trạng thái DƯƠNG BỐC do âm không chế được dương.
+    _YANG_RISE_TOKS = frozenset({"dương", "cang", "vượng", "thượng", "thịnh", "động"})
+
+    @classmethod
+    def _yin_def_yang_rise_general(cls, core_toks, hc_toks) -> bool:
+        """[TƯ ÂM TIỀM DƯƠNG] Cốt lõi 'Âm hư dương cang' ĐƯỢC mượn bài của thể tổng quát 'Âm hư'
+        cùng bệnh danh.
+
+        Vì sao đây KHÔNG phải nới lỏng cái chốt 'tà thực rơi rớt': chốt đó có để chặn 'Khí hư huyết
+        trệ' mượn bài 'Khí hư' (mượn xong thì BỎ RƠI huyết trệ, một tà thực cần trị riêng). Còn
+        DƯƠNG CANG không phải tà ngoại lai — nó là HỆ QUẢ của chính âm hư (âm hư không chế được
+        dương); tư âm thì dương tự tiềm, nên bài trị âm hư đã là bài trị GỐC, không bỏ sót gì.
+
+        CA THẬT (audit ổn định): 'Kinh hành đầu thống' × cốt lõi 'Âm hư dương cang' -> Mục 5 TRẮNG,
+        trong khi KB CÓ 'Kinh hành đầu thống × Âm hư -> Thanh huyễn bình can thang' — mà bài này
+        đúng là bài TƯ ÂM TIỀM DƯƠNG (thanh huyễn = trị choáng váng do dương bốc).
+
+        PHẠM VI ĐÃ ĐO trên KB: đúng 2 hội chứng cốt lõi ('Âm hư dương cang', 'Âm hư dương thịnh')
+        × 19 bệnh có dòng 'Âm hư'. KHÔNG mở cho 'Âm hư hỏa vượng' — 'hỏa' là tà, giữ chặt như cũ."""
+        if not ({"âm", "hư"} <= set(core_toks) and {"âm", "hư"} <= set(hc_toks)):
+            return False
+        extra = set(core_toks) - set(hc_toks)
+        return bool(extra) and extra <= cls._YANG_RISE_TOKS
+
     @classmethod
     def _extra_tokens_are_locators(cls, a, b):
         """Phép so CHUỖI CON của grounding vốn để nhận BIẾN THỂ TẠNG ('Phế khí hư' ⊃ 'Khí hư' — token
@@ -5801,7 +5825,8 @@ class TCMFusionPipeline:
                     # chứng hỗn hợp chứ không phải thể tổng quát (vd cốt lõi 'Khí hư huyết trệ'
                     # mà nhận thể 'Khí hư' thì bỏ rơi tà thực 'huyết trệ'). BỎ QUA cho cầu dương->khí
                     # (token dư 'dương' là phần được thay bằng 'khí', không phải thành phần bị rơi).
-                    if not _duong_khi_ok and (_core_toks - _hc_toks) & _patho_toks:
+                    if (not _duong_khi_ok and (_core_toks - _hc_toks) & _patho_toks
+                            and not self._yin_def_yang_rise_general(_core_toks, _hc_toks)):
                         continue
                     if self._syndrome_is_hu(_hc) != self._syndrome_is_hu(final_primary):
                         continue
