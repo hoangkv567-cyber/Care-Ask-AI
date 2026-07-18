@@ -340,15 +340,27 @@ class TCMFusionPipeline:
         }
         
         for key, phrases in censor_rules.items():
-            # Nếu cả "chóng mặt" và "hoa mắt" đều không xuất hiện trong chuỗi triệu chứng gộp thực tế
-            is_allowed = False
+            # [CỔNG THEO TỪNG CỤM] Trước đây cổng chỉ soi KEY của nhóm: bệnh nhân khai 'ợ chua'
+            # nhưng key là 'ợ hơi' -> is_allowed=False -> XÓA SẠCH cả 'ợ chua' (chính lời khai THẬT)
+            # khỏi biện luận. Đo được trên ca thật: câu "...giáng xuống bình thường, gây ợ chua –
+            # biểu hiện của khí Vị thượng nghịch." bị cắt thành "...bình thường, – biểu hiện..." (dấu
+            # câu treo) và chủ chứng 'ợ chua' biến mất khỏi CẢ Mục 3 lẫn Mục 4. Nhóm 'nôn mửa' chứa
+            # 'buồn nôn' cũng dính y hệt (khai 'buồn nôn' -> bị xóa -> _patch_missing_symptoms phải
+            # chèn lại câu đóng hộp). Các nhóm này KHÔNG phải lớp tương đương đồng nghĩa: 'ợ chua'
+            # (nhiệt/Can-Vị uất) khác cực với 'ợ nước' (Vị hàn ẩm), 'nốt mụn' khác 'mụn viêm'.
+            # -> Mở cổng THEO TỪNG CỤM: cụm nào bệnh nhân KHAI thì giữ, cụm KHÔNG khai vẫn kiểm duyệt
+            # NGUYÊN CỤM (giữ nguyên năng lực chống bịa, và xóa trọn cụm TRƯỚC tầng quét vocab tổng
+            # quát bên dưới nên không để lại từ mồ côi kiểu 'mồ hôi trộm' -> 'trộm').
             if key in ["chóng mặt", "hoa mắt"]:
-                is_allowed = ("chóng mặt" in symptoms_lower) or ("hoa mắt" in symptoms_lower)
+                # Cặp chóng mặt/hoa mắt đi liền nhau trong bệnh học: khai MỘT là mở cho CẢ nhóm
+                # (phrases của 'chóng mặt' không chứa 'hoa mắt' trần nên tách ra sẽ siết ngược).
+                _ok = ("chóng mặt" in symptoms_lower) or ("hoa mắt" in symptoms_lower)
+                drop_phrases = [] if _ok else list(phrases)
             else:
-                is_allowed = (key in symptoms_lower)
-                
-            if not is_allowed:
-                for phrase in phrases:
+                drop_phrases = [ph for ph in phrases if ph not in symptoms_lower]
+
+            if drop_phrases:
+                for phrase in drop_phrases:
                     p = re.escape(phrase)
                     # (1) phrase ĐẦU liệt kê sau ĐỘNG TỪ nhân-quả: "dẫn đến chóng mặt và X" -> GIỮ
                     # động từ, bỏ "chóng mặt và " -> "dẫn đến X" (không để lại 'và' mồ côi/mất vị ngữ).
@@ -2319,6 +2331,111 @@ class TCMFusionPipeline:
             logger.info("[NHẤT QUÁN SẮC MẶT] Gỡ cụm 'sắc mặt/da nhợt' bịa (vọng chẩn hồng hào, không dấu nhợt mặt).")
         return text
 
+    # [NHẤT QUÁN SẮC LƯỠI] MIRROR của _strip_fabricated_pallor nhưng cho CHẤT LƯỠI. Vision đọc 'thân
+    # lưỡi hồng nhạt' — vision_schema.py:75 CỐ Ý map thành KHÔNG triệu chứng (đạm hồng = sắc lưỡi SINH
+    # LÝ) — mà Mục 3 vẫn bịa 'huyết không vinh nhuận lên lưỡi làm lưỡi trở nên nhợt nhạt, thiếu sức
+    # sống' để chống đỡ core khí/huyết hư -> mâu thuẫn thẳng panel Vọng chẩn ngay phía trên. Tầng quét
+    # vocab tổng quát của _post_process_hallucinations CHỈ bắt chuỗi 'lưỡi nhợt' nguyên văn nên các
+    # cách DIỄN ĐẠT LẠI ('lưỡi trở nên nhợt nhạt') lọt lưới — đây là phần bù đúng chỗ đó.
+    # Từ chỉ LƯỠI là BẮT BUỘC -> domain RỜI HẲN _FACE_PALLOR_* (bản mặt đòi từ chỉ MẶT và đã chặn
+    # 'bề mặt/về mặt'), chạy nối tiếp nhau không double-strip.
+    # CẤM NHẦM SINH LÝ: 'nhạt/đạm' TRẦN phải loại 'lưỡi nhạt hồng'/'lưỡi nhạt đỏ'/'lưỡi đạm hồng' —
+    # synonym map (L165-168) quy CHÍNH XÁC mấy cụm đó về 'lưỡi hồng nhạt' (SINH LÝ), khác hẳn 'lưỡi
+    # nhạt' (L171 -> 'lưỡi nhợt', BỆNH LÝ). Lookbehind hồng/đỏ còn chừa dấu NHIỆT ('chất lưỡi đỏ nhạt',
+    # 'chất lưỡi đỏ nhợt' có thật trong CSV) -> không gây "mù nhiệt".
+    # CỐ Ý KHÔNG có tầng "xóa cả câu theo động từ quy nhân": đã thẩm định đối kháng và bị bác — nó
+    # cuốn theo bằng chứng NHIỆT nằm cùng câu (ca ngoại cảm chớm hóa nhiệt mất sạch 'rêu ngả vàng,
+    # tiểu vàng sẫm') và cuốn theo cả phần giải thích ĐÚNG của các triệu chứng khác. Bản sắc-mặt
+    # không có tầng đó và xử lý các dạng câu này chuẩn hơn -> mirror y hệt, không "cải tiến".
+    _TONGUE_WORD_RE = r'(?:chất\s*lưỡi|thân\s*lưỡi|sắc\s*lưỡi|(?:bề\s*)?mặt\s*lưỡi|lưỡi)'
+    _TONGUE_PALLOR_WORD_RE = (r'(?<!hồng\s)(?<!đỏ\s)(?:nhợt\s*nhạt|nhợt\s*màu|nhợt\s*bệch|'
+                              r'trắng\s*bệch|đạm\s*bạch|nhạt\s*màu|'
+                              r'(?:nhợt|đạm|nhạt)(?!\s*(?:hồng|đỏ)))')
+    _TONGUE_PALLOR_CORE = (_TONGUE_WORD_RE +
+                           r'\s*(?:hơi|khá|có\s*phần|trở\s*nên|dần|ngày\s*càng|đã)?\s*'
+                           + _TONGUE_PALLOR_WORD_RE)
+    _TONGUE_PALLOR_DET_RE = re.compile(_TONGUE_PALLOR_CORE, re.IGNORECASE)
+    _TONGUE_PALLOR_EVIDENCE_RE = re.compile(
+        _TONGUE_WORD_RE + r'\s*(?:hơi|khá)?\s*' + _TONGUE_PALLOR_WORD_RE, re.IGNORECASE)
+    # Liên từ phải phủ CẢ 'kèm/kèm theo/đi kèm/cùng với/với': thiếu chúng thì câu "Lưỡi nhợt KÈM rêu
+    # đã ngả vàng và tiểu vàng sẫm..." không cắt được cụm, rơi xuống tầng bỏ-cả-câu và cuốn theo
+    # bằng chứng NHIỆT -> đúng lớp lỗi "mù nhiệt" (đã tái hiện thật trong test).
+    _TONGUE_PALLOR_LIST_RE = re.compile(
+        _TONGUE_PALLOR_CORE + r'\s*(?:,|;|–|—|-|\bvà\b|\bhoặc\b|\bcùng\s+với\b|\bcùng\b|\blẫn\b|'
+                              r'\bkèm\s+theo\b|\bkèm\b|\bđi\s+kèm\b|\bvới\b)\s*', re.IGNORECASE)
+    _TONGUE_PALLOR_LEAD_RE = re.compile(
+        r'(?:\s*(?:,|;|–|—|\bnhư\b|\bvà\b|\bhoặc\b)\s*)' + _TONGUE_PALLOR_CORE, re.IGNORECASE)
+    # Câu SÁCH GIÁO KHOA (nói về thể bệnh nói chung, KHÔNG khẳng định bệnh nhân này có) -> GIỮ.
+    # Xét theo TỪNG CÂU (không phải toàn văn): nếu áp ở mức toàn văn thì LIST/LEAD vốn là .sub()
+    # GLOBAL sẽ vẫn cắt xén câu có hedge — đã đo và bị bắt lỗi ở vòng thẩm định.
+    _TONGUE_PALLOR_HEDGE_RE = re.compile(
+        r'thường\s+(?:gặp|thấy|biểu\s*hiện|đi\s*kèm)|điển\s*hình|kinh\s*điển|'
+        r'nếu\s+(?:có|xuất\s*hiện)|có\s*thể\s+(?:thấy|gặp|xuất\s*hiện)|trên\s+lý\s*thuyết',
+        re.IGNORECASE)
+    # DẤU CHẨN ĐOÁN KHÁC còn sót lại trong câu sau khi gỡ cụm lưỡi-nhợt: có thì phần dư ĐÁNG GIỮ
+    # (nhất là dấu NHIỆT — mất là thành "mù nhiệt"); không có thì phần dư chỉ là mệnh đề mất chủ ngữ.
+    _TONGUE_PALLOR_KEEP_RE = re.compile(
+        r'\brêu\b|\bmạch\b|\bsốt\b|\bkhát\b|\btiểu\b|\bnước\s*tiểu\b|\bđại\s*tiện\b|\bphân\b|'
+        r'\bmồ\s*hôi\b|\bhãn\b|\bvàng\b|\bđỏ\b|\bnhiệt\b|\bhàn\b|\blạnh\b|\bnóng\b|\bđau\b|'
+        r'\bbệu\b|\bhằn\s*răng\b|\bvết\s*nứt\b|\bnhớt\b|\bdày\b',
+        re.IGNORECASE)
+
+    def _strip_fabricated_tongue_pallor(self, text: str, symptoms_str: str = "") -> str:
+        """[NHẤT QUÁN SẮC LƯỠI] Gỡ cụm 'lưỡi nhợt/nhạt' do LLM BỊA khi vọng chẩn KHÔNG ghi nhận chất
+        lưỡi nhợt. Lưỡi nhợt THẬT (ảnh cho 'nhợt' -> vision_schema:71, hoặc lời khai 'lưỡi nhạt/lưỡi
+        đạm' -> synonym map) đều nằm trong symptoms -> cổng bằng chứng mở -> KHÔNG đụng. Cùng lớp với
+        _strip_fabricated_pallor (sắc mặt) / _strip_thin_coating_damp_claims (rêu)."""
+        if not text or not self._TONGUE_PALLOR_DET_RE.search(text):
+            return text
+        if self._TONGUE_PALLOR_EVIDENCE_RE.search((symptoms_str or "").lower()):
+            return text  # có dấu lưỡi nhợt THẬT -> không phải bịa, giữ nguyên
+        before = text
+        out_lines = []
+        for line in text.split("\n"):
+            sents = re.split(r'(?<=[.!?])\s+', line)
+            kept, changed = [], False
+            for sent in sents:
+                if not self._TONGUE_PALLOR_DET_RE.search(sent):
+                    kept.append(sent)
+                    continue
+                if self._TONGUE_PALLOR_HEDGE_RE.search(sent):
+                    kept.append(sent)          # câu mô tả thể bệnh chung -> giữ
+                    continue
+                # (1) Cụm nhợt là MỘT MỤC trong liệt kê -> gỡ đúng cụm, giữ câu (như bản mặt).
+                s2 = self._TONGUE_PALLOR_LIST_RE.sub("", sent)
+                s2 = self._TONGUE_PALLOR_LEAD_RE.sub("", s2)
+                s2 = re.sub(r'\bnhư\s+và\b', 'và', s2, flags=re.IGNORECASE)
+                s2 = re.sub(r'\bnhư\s*(?=[,.;–—])', '', s2, flags=re.IGNORECASE)
+                s2 = re.sub(r'\s+([,.;])', r'\1', s2)
+                s2 = re.sub(r'([,;])\s*(?=[,;])', '', s2)
+                changed = True
+                # (2) Cụm vẫn còn TRẦN (làm chủ ngữ, không nằm trong liệt kê). KHÔNG bỏ cả câu ngay:
+                # câu có thể đang chở bằng chứng KHÁC (rêu vàng, tiểu vàng sẫm... -> dấu NHIỆT) và bỏ
+                # trọn sẽ gây "mù nhiệt". Gỡ CỤM trần + liên từ đầu thừa, còn nội dung thực chất thì
+                # GIỮ; chỉ khi phần còn lại chỉ là vụn (< 12 ký tự chữ) mới bỏ cả câu.
+                if self._TONGUE_PALLOR_DET_RE.search(s2):
+                    s3 = self._TONGUE_PALLOR_DET_RE.sub("", s2)
+                    s3 = re.sub(r'^\s*(?:kèm(?:\s+theo)?|đi\s+kèm|cùng(?:\s+với)?|trong\s+khi|'
+                                r'còn|mà|và|với|,|;|-)\s*', '', s3, flags=re.IGNORECASE)
+                    s3 = re.sub(r'\s+([,.;])', r'\1', s3)
+                    s3 = re.sub(r'\s{2,}', ' ', s3).strip()
+                    # Chỉ GIỮ phần còn lại nếu nó thật sự chở DẤU CHẨN ĐOÁN khác (rêu vàng, mạch,
+                    # tiểu vàng, sốt...) — đó là lý do lưới này tồn tại: không được cuốn mất bằng
+                    # chứng NHIỆT nằm cùng câu. Nếu câu vốn CHỈ nói về cụm lưỡi-nhợt bịa thì phần dư
+                    # là mệnh đề MẤT CHỦ NGỮ ("Lưỡi nhợt phản ánh huyết hư." -> "Phản ánh huyết hư.")
+                    # -> bỏ cả câu như bản sắc-mặt. Đo bằng nội dung, KHÔNG bằng độ dài (ngưỡng ký tự
+                    # cũ giữ nhầm đúng những mảnh cụt này).
+                    if not self._TONGUE_PALLOR_KEEP_RE.search(s3):
+                        continue
+                    s2 = s3[:1].upper() + s3[1:] if s3 else s3
+                kept.append(s2)
+            out_lines.append(" ".join(k for k in kept if k.strip()) if changed else line)
+        text = "\n".join(out_lines)
+        text = re.sub(r'[ \t]{2,}', ' ', text).strip()
+        if text != before:
+            logger.info("[NHẤT QUÁN SẮC LƯỠI] Gỡ cụm 'lưỡi nhợt' bịa (vọng chẩn không ghi nhận lưỡi nhợt).")
+        return text
+
     # [CHỐNG NHẠI RUBRIC] Model nhanh (qwen3-30b) hay CHÉP chữ của chính LUẬT 7 ('mạch lạc', 'bỏ
     # sót', 'tự ý thêm', 'như một danh y') ra output thành câu TỰ CHẤM ĐIỂM: "Tất cả các triệu chứng
     # này đều được giải thích một cách mạch lạc... không có dấu hiệu nào bị bỏ sót hay tự ý thêm vào."
@@ -2337,6 +2454,42 @@ class TCMFusionPipeline:
         r'|tuân\s+thủ\s+(?:đúng\s+)?(?:các\s+)?(?:luật|quy\s*tắc|yêu\s*cầu)'
         r'|(?:không|chưa)\s+(?:có\s+)?(?:dấu\s*hiệu|triệu\s*chứng)\s+nào\s+bị',
         re.IGNORECASE)
+
+    # [DỌN DẤU CÂU] Tầng kiểm duyệt/stripper gỡ cụm GIỮA câu -> để lại dấu treo. Ca thật: cổng kiểm
+    # duyệt xóa 'ợ chua' khỏi "...bình thường, gây ợ chua – biểu hiện..." -> "...bình thường, – biểu
+    # hiện...". Chỉ chuẩn hóa DẤU, không đụng chữ. Cố ý KHÔNG gộp gạch-dài với dấu chấm/hai chấm và
+    # KHÔNG đụng gạch đầu dòng markdown (đầu dòng) — phụ chú '— dấu chỉ điểm...', số '1,5g', và dòng
+    # Mục 5 '— *Bản – gốc bệnh*' phải giữ y nguyên.
+    _PUNCT_TIDY_RULES = (
+        (re.compile(r'\s*,\s*(?=[–—])'), ' '),        # ", –"  -> " –"
+        (re.compile(r'\s+,'), ','),                    # " ,"   -> ","
+        (re.compile(r',\s*(?=,)'), ''),                # ",,"   -> ","
+        (re.compile(r'\s*,\s*(?=[.;:!?])'), ''),       # " , ." -> "."
+    )
+
+    def _tidy_dangling_punctuation(self, text: str) -> str:
+        """Chuẩn hóa dấu câu treo + liên từ nối LẶP do các tầng hậu xử lý để lại. Thuần hình thức,
+        không thêm/bớt nội dung y lý."""
+        if not text:
+            return text
+        before = text
+        for rx, rep in self._PUNCT_TIDY_RULES:
+            text = rx.sub(rep, text)
+        # 'Ngoài ra,' bị chèn HAI LẦN trên cùng một đoạn khi _patch_missing_symptoms (vá triệu chứng
+        # sót vào Mục 3) và _sync_tieu_thuc_with_bat_cuong (dời nội dung Thực về Mục 3) cùng nối tiếp
+        # -> đọc như văn máy. Giữ lần đầu, đổi các lần sau thành liên từ khác.
+        if text.count("Ngoài ra,") > 1:
+            _lines = []
+            for _l in text.split("\n"):
+                _parts = _l.split("Ngoài ra,")
+                if len(_parts) > 2:
+                    _l = _parts[0] + "Ngoài ra," + _parts[1] + "".join("Bên cạnh đó," + _p
+                                                                       for _p in _parts[2:])
+                _lines.append(_l)
+            text = "\n".join(_lines)
+        if text != before:
+            logger.info("[DỌN HẬU XỬ LÝ] Chuẩn hóa dấu treo / liên từ lặp sau các tầng gỡ cụm.")
+        return text
 
     def _strip_meta_commentary(self, text: str) -> str:
         """[CHỐNG NHẠI RUBRIC] Gỡ câu model tự nói VỀ bài trả lời (tuân luật / không bỏ sót / giải
@@ -3651,7 +3804,16 @@ class TCMFusionPipeline:
             "lưỡi đỏ khô": "Lưỡi đỏ khô là dấu hiệu của tân dịch hư tổn, hư nhiệt nội sinh do Can Thận âm hư.",
             "phiền khát buồn bực": "Phiền khát buồn bực là do hư hỏa nhiễu loạn Tâm thần, Can âm bất túc.",
             "mất ngủ": "Tâm thần thất dưỡng, tâm huyết hư hoặc thận âm bất túc không nuôi dưỡng thần chí gây ra mất ngủ.",
-            "hồi hộp": "Tâm huyết hư không đủ nuôi dưỡng Tâm thần, tâm thần bất ổn gây ra hộp đánh trống ngực."
+            "hồi hộp": "Tâm huyết hư không đủ nuôi dưỡng Tâm thần, tâm thần bất ổn gây ra hộp đánh trống ngực.",
+            # [Ợ CHUA / Ợ HƠI] Trước đây KHÔNG có template ở cả hai từ điển -> LLM bỏ sót thì chủ chứng
+            # im lặng biến mất khỏi CẢ Mục 3 lẫn Mục 4 (ca thật đã gặp). Cơ chế bám ĐÚNG luật cứng của
+            # prompt: VỊ mất hòa giáng -> VỊ khí thượng nghịch (Tỳ chủ THĂNG, Vị chủ GIÁNG) — TUYỆT ĐỐI
+            # không quy cho 'khí Tỳ hành xuống/Tỳ khí nghịch'. Đặt ở hu_templates (KHÔNG phải
+            # _THUC_TEMPLATES) là CÓ CHỦ Ý: _THUC_TEMPLATES còn được _build_tieu_thuc_body dùng để dựng
+            # Mục 4, thêm vào đó sẽ khiến ca Bát Cương 'Lý - Hư' thuần bỗng mọc phần Tiêu Thực và tự
+            # mâu thuẫn với Mục 2. Ở đây chỉ bổ sung một câu cơ chế vào Mục 3, không đổi trục Hư/Thực.
+            "ợ chua": "Vị mất hòa giáng, Vị khí thượng nghịch đưa trọc khí và dịch vị bốc ngược lên trên gây ra ợ chua.",
+            "ợ hơi": "Vị mất hòa giáng, Vị khí thượng nghịch đưa trọc khí bốc ngược lên trên gây ra ợ hơi."
         }
 
         # Từ điển giải thích y lý dự phòng cho các triệu chứng Thực chứng (Tiêu Thực / Triệu chứng cấp)
@@ -5076,9 +5238,17 @@ class TCMFusionPipeline:
         # [NHẤT QUÁN SẮC MẶT] Gỡ cụm 'da/sắc mặt xanh xao/nhợt' LLM bịa khi vọng chẩn cho mặt hồng hào
         # (không dấu nhợt mặt trong triệu chứng) -> tránh Mục 3 mâu thuẫn panel Vision ngay trên nó.
         llm_explanation = self._strip_fabricated_pallor(llm_explanation, symptoms_str)
+        # [NHẤT QUÁN SẮC LƯỠI] MIRROR cho CHẤT LƯỠI: gỡ 'lưỡi nhợt/nhạt' bịa khi vọng chẩn đọc ra sắc
+        # lưỡi SINH LÝ ('hồng nhạt' -> vision_schema:75 không sinh triệu chứng). Dùng symptoms_lower
+        # (= symptoms_str + lời khai thô) để lời khai chưa qua preprocessor vẫn mở được cổng bằng chứng.
+        llm_explanation = self._strip_fabricated_tongue_pallor(llm_explanation, symptoms_lower)
         # [CHỐNG NHẠI RUBRIC] Gỡ câu model tự-chấm-điểm nhại chữ luật 7 ('giải thích mạch lạc',
         # 'không bỏ sót/tự ý thêm') — rác trong bệnh án và thường SAI (khẳng định đủ khi vẫn thiếu).
         llm_explanation = self._strip_meta_commentary(llm_explanation)
+        # [DỌN DẤU CÂU] Chạy CUỐI CÙNG: các tầng kiểm duyệt/stripper phía trên gỡ cụm giữa câu nên
+        # có thể để lại dấu treo ('..., – biểu hiện...', ' ,', ',,'). Chỉ chuẩn hóa dấu câu, KHÔNG
+        # đụng nội dung (gạch dài phụ chú, số thập phân '1,5g', gạch đầu dòng markdown giữ nguyên).
+        llm_explanation = self._tidy_dangling_punctuation(llm_explanation)
 
         final_markdown += f"{llm_explanation}\n\n"
 

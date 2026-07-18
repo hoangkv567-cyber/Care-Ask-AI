@@ -40,7 +40,11 @@ if _ROOT not in sys.path:
 from kg_maintenance import get_driver, run_read, run_write  # noqa: E402
 
 NGUON = "csv_gap_sync"
-CSV_PATH = os.path.join(_ROOT, "data", "Medicine_clean.csv")
+# TCM_CSV_PATH: trỏ sang CSV RÚT GỌN để nhập BÙ CÓ NHẮM (chỉ vài dòng) thay vì quét cả kho.
+# Cần vì script không có cờ --targets: chạy --apply trên CSV đầy sẽ kéo theo MỌI gap tồn đọng, gồm
+# các dòng có vị thuốc bẩn do tách nhầm ('Thể thực', 'Cam thảo. Thể hư') -> nhập rác vào graph.
+# CSV rút gọn phải cùng bộ cột với data/Medicine_clean.csv. Không đặt biến -> giữ nguyên kho đầy.
+CSV_PATH = os.getenv("TCM_CSV_PATH") or os.path.join(_ROOT, "data", "Medicine_clean.csv")
 
 
 def norm(s):
