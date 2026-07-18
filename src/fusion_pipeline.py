@@ -4114,6 +4114,24 @@ class TCMFusionPipeline:
         r'(?i)(?:âm\s+)?hàn\s+(?:tà\s+|khí\s+)?'
         r'(?:ngưng\s*(?:trệ|kết|tụ)?|bế\s*(?:tắc|trở)?|trở\s*trệ)(?:\s+huyết\s+ứ)?')
 
+    # [ỨĐỌNG THỰC TRONG CA THUẦN HƯ] Cùng lớp lỗi với _COLD_STAGNATION_RE, khác chất tà: Mục 3 viết
+    # "khí huyết không lưu thông, HUYẾT Ứ TẠI KINH MẠCH vùng đầu cổ" trong khi Mục 2 chốt 'Lý - Hư'
+    # và Mục 4 ngay bên dưới ghi 'Không có Tiêu Thực, Hư chứng thuần túy'. Huyết ứ là TÀ THỰC —
+    # khẳng định nó là tự chọi với hai mục hiển thị cạnh đó, và nếu tin theo thì pháp trị phải hoạt
+    # huyết chứ không phải bổ huyết đơn thuần. Đo trên ca thật (Đầu thống × Huyết hư, 6 lần chạy):
+    # 2/6 lần LLM viết mệnh đề này — dao động, nên phải chặn ở tầng hậu xử lý chứ không trông vào prompt.
+    #
+    # CHỈ bắt mệnh đề Ứ ĐỌNG có ĐỊNH VỊ kinh mạch/lạc (khẳng định có ổ ứ), KHÔNG bắt 'huyết hành vô
+    # lực'/'lưu thông kém' (đúng cơ chế hư). Chặn ngữ cảnh PHỦ ĐỊNH phía trước ('không có huyết ứ',
+    # 'chưa có ứ trệ') — thay chữ trong câu phủ định sẽ đảo ngược nghĩa.
+    _BLOOD_STASIS_IN_HU_RE = re.compile(
+        r'(?i)(?<!không )(?<!chưa )(?<!không có )(?<!chưa có )(?<!không kèm )'
+        r'(?:huyết\s+ứ|ứ\s+huyết|ứ\s+trệ|ứ\s+đọng)'
+        r'(?:\s+(?:tại|ở|trong)\s+(?:các\s+)?kinh\s*(?:mạch|lạc)?'
+        # phần đuôi định vị chỉ được ăn ĐỊA ĐIỂM ('vùng đầu cổ'), phải DỪNG trước động từ — nếu
+        # không sẽ nuốt luôn vế kết quả ('... đầu cổ SINH ĐAU') và làm cụt nghĩa câu.
+        r'(?:(?!\s*(?:sinh|gây|dẫn|làm|khiến|nên|khi|thì)\b)[^,.;]){0,20})?')
+
     # Thể DƯƠNG HƯ (sinh nội hàn) — khớp theo MẪU vì chữ đệm hay chen vào giữa 'dương' và 'hư':
     # dương hư / dương khí hư / dương khí hư thoát / dương khí suy nhược / dương bất túc /
     # âm dương đều-lưỡng-câu hư. KHÔNG khớp 'dương cang|xung|thịnh' (âm hư dương vượng — không hàn).
@@ -4175,7 +4193,14 @@ class TCMFusionPipeline:
         if new != llm_text:
             logger.info("[NHẤT QUÁN HƯ/THỰC] Gỡ mệnh đề THỰC 'hàn ngưng trệ' ở Mục 3 trong ca "
                         "Bát Cương thuần Hư (không Hàn, không Thực).")
-        return new
+        # Cùng hai cổng trên, khác chất tà: mệnh đề HUYẾT Ứ có định vị kinh mạch (xem
+        # _BLOOD_STASIS_IN_HU_RE). Thay bằng đúng cơ chế hư — chính là cách LLM tự diễn đạt ở các
+        # lần chạy KHÔNG lỗi ('huyết hành vô lực'), nên câu văn liền mạch chứ không cụt.
+        after = self._BLOOD_STASIS_IN_HU_RE.sub("huyết hành vô lực", new)
+        if after != new:
+            logger.info("[NHẤT QUÁN HƯ/THỰC] Gỡ mệnh đề THỰC 'huyết ứ' ở Mục 3 trong ca Bát Cương "
+                        "thuần Hư (Mục 4 đang ghi 'không có Tiêu Thực').")
+        return after
 
     def _strip_unfounded_heat_mechanism(self, llm_text: str, bat_cuong_hint: str,
                                         primary: str, concurrent: str, symptoms_str: str) -> str:

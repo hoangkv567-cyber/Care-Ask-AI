@@ -77,6 +77,31 @@ def main():
     n7 = o._strip_thuc_cold_stagnation_in_pure_hu(P, "Lý - Thực", "Hàn thấp", "Không có")
     cases.append(("Bát Cương Thực thuần: GIỮ nguyên", n7 == P))
 
+    # ---- HUYẾT Ứ trong ca thuần Hư (cùng lớp lỗi, khác chất tà) ----
+    # Ca thật 'Đầu thống × Huyết hư': Mục 2 chốt 'Lý - Hư', Mục 4 ghi 'Không có Tiêu Thực, Hư chứng
+    # thuần túy', nhưng Mục 3 viết "huyết ứ tại kinh mạch vùng đầu cổ" — huyết ứ là TÀ THỰC, tự chọi
+    # với hai mục hiển thị ngay cạnh; tin theo thì pháp trị phải HOẠT HUYẾT chứ không bổ huyết đơn
+    # thuần. Đo 6 lần chạy app: 2/6 lần LLM viết mệnh đề này (dao động -> phải chặn ở hậu xử lý).
+    BC_HU = "Lý - Hư (tổng cương: thiên Âm)"
+    U = "Khí huyết không lưu thông, huyết ứ tại kinh mạch vùng đầu cổ, gây ra đau đầu."
+    u1 = o._strip_thuc_cold_stagnation_in_pure_hu(U, BC_HU, "Huyết hư", "Không có")
+    cases.append(("Thuần Hư + 'huyết ứ tại kinh mạch': GỠ", "huyết ứ" not in u1.lower()))
+    cases.append(("thay bằng cơ chế hư đúng ('huyết hành vô lực')", "huyết hành vô lực" in u1.lower()))
+    cases.append(("GIỮ vế kết quả của câu (không nuốt 'gây ra đau đầu')", "gây ra đau đầu" in u1))
+
+    # PHỦ ĐỊNH: thay chữ trong câu phủ định sẽ ĐẢO NGƯỢC nghĩa -> phải giữ nguyên
+    NEGU = "Bệnh còn nhẹ, không có huyết ứ, cũng không kèm ứ trệ."
+    cases.append(("Câu PHỦ ĐỊNH huyết ứ: GIỮ nguyên",
+                  o._strip_thuc_cold_stagnation_in_pure_hu(NEGU, BC_HU, "Huyết hư", "Không có") == NEGU))
+    # Cổng 2: cốt lõi VỐN là thể huyết ứ -> huyết ứ là ĐÚNG, cấm gỡ
+    UO = "huyết ứ tại kinh mạch gây đau nhức."
+    cases.append(("Cốt lõi 'Khí trệ huyết ứ': GIỮ nguyên",
+                  o._strip_thuc_cold_stagnation_in_pure_hu(UO, BC_HU, "Khí trệ huyết ứ", "") == UO))
+    # Cổng 1: Bát Cương có Thực / có Hàn -> ngoài phạm vi
+    for bc in ("Lý - Bản Hư Tiêu Thực", "Lý - Hàn - Hư", "Biểu - Hàn - Thực"):
+        cases.append((f"Bát Cương '{bc}': GIỮ nguyên huyết ứ",
+                      o._strip_thuc_cold_stagnation_in_pure_hu(UO, bc, "Huyết hư", "") == UO))
+
     ok = 0
     for d, c in cases:
         print(f"  [{'PASS' if c else 'FAIL'}] {d}")
