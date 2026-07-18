@@ -66,10 +66,44 @@ def split_vi_thuoc(raw: str) -> list:
             buf.append(ch)
     out.append("".join(buf))
     cleaned = []
-    for tok in out:
+    for idx, tok in enumerate(out):
         tok = tok.strip().strip(".").strip()
         if not tok or tok.startswith("("):
             continue
+        # [MỘT Ô — NHIỀU BÀI] Một số dòng gói HAI bài vào cùng ô vị_thuốc, có nhãn phân đoạn:
+        #   "Thể thực (Trầm hương tán): Trầm hương, ..., Cam thảo. Thể hư (Bổ trung ích khí thang): Hoàng kỳ, ..."
+        #   "Ngũ Linh Tán: Trư linh, ..., Bạch truật, Tế sinh thận khí hoàn: Thục địa, ..."
+        # Cột bài_thuốc chỉ đặt tên bài ĐẦU -> node BaiThuoc này CHỈ được nhận vị của bài đầu.
+        # Không xử lý thì sinh node rác: 'Thể thực', 'Cam thảo. Thể hư', 'Ngũ Linh Tán: Trư linh'.
+        _colon = tok.find(":")
+        if _colon != -1 and "(" not in tok[:_colon]:
+            _head = tok[:_colon]
+        else:
+            # nhãn có ngoặc: "Thể thực (Trầm hương tán): Trầm hương" -> lấy phần trước ':' ngoài ngoặc
+            _d, _colon = 0, -1
+            for _i, _c in enumerate(tok):
+                if _c == "(":
+                    _d += 1
+                elif _c == ")":
+                    _d = max(0, _d - 1)
+                elif _c == ":" and _d == 0:
+                    _colon = _i
+                    break
+            _head = tok[:_colon] if _colon != -1 else ""
+        if _colon != -1:
+            if idx == 0:
+                # Token ĐẦU: nhãn của chính bài đang xét -> chỉ bỏ nhãn, giữ vị đứng sau.
+                tok = tok[_colon + 1:].strip().strip(".").strip()
+            else:
+                # Token GIỮA/CUỐI mang nhãn -> bài THỨ HAI bắt đầu từ đây: DỪNG hẳn.
+                # Phần trước dấu chấm cuối trong nhãn vẫn là vị THẬT của bài đầu ("Cam thảo. Thể hư (...)").
+                _tail = _head.rsplit(".", 1)[0].strip() if "." in _head else ""
+                _tail = re.sub(r"\s*\(.*$", "", _tail).strip()
+                if _tail and not re.match(r"(?i)^(?:thể|nếu|gia|thêm|bỏ|hoặc|tùy)\b", _tail):
+                    cleaned.append(_tail)
+                break
+            if not tok:
+                continue
         # cắt MỌI ghi chú trong ngoặc dính ở đuôi token, dù CÓ hay KHÔNG có dấu chấm phía trước
         # (vd 'Kê huyết đằng (Bệnh chi trên gia...)' — ngoặc liền sau tên, không có '.').
         tok = re.sub(r"\s*\(.*$", "", tok).strip().strip(".").strip()
