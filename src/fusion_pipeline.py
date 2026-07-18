@@ -2684,6 +2684,17 @@ class TCMFusionPipeline:
             return False
         return any(na in cl and nb in cl for cl in cls._load_synonym_map())
 
+    @staticmethod
+    def _norm_deficiency_name(s):
+        """'bất túc' (不足) ≡ 'hư' (虚) — CÙNG một hội chứng viết hai cách. KB dùng lẫn lộn:
+        'Thận dương bất túc' vs 'Thận dương hư', 'Can thận bất túc' vs 'Can thận hư'...
+        Không quy đổi thì thể ĐÚNG mất grounding và core rơi sang thể TRÁI CỰC (đã xảy ra thật:
+        ca tiểu trong dài + tay chân lạnh + sợ lạnh -> scorer xếp 'Thận dương bất túc' hạng 1
+        nhưng cửa sổ chỉ có 'Thận dương hư' -> không grounded -> core thành 'Âm hư thấp nhiệt'
+        và kê bài mean nhiệt -1.000 cho bệnh nhân HÀN)."""
+        s = re.sub(r'\s+', ' ', (s or '').lower().strip())
+        return re.sub(r'\bbất\s*túc\b', 'hư', s)
+
     @classmethod
     def _core_grounded_in_window(cls, syn, window):
         """True khi hội chứng `syn` THỰC SỰ thuộc một bệnh trong cửa sổ chief-complaint (khớp
@@ -2696,9 +2707,44 @@ class TCMFusionPipeline:
         for m in (window or []):
             for hc in m.get("hoi_chung_all", [m.get("hoi_chung", "")]):
                 hcl = (hc or "").lower().strip()
-                if hcl and (sl == hcl or sl in hcl or hcl in sl or cls._syndromes_are_synonyms(syn, hc)):
+                if not hcl:
+                    continue
+                if sl == hcl or cls._syndromes_are_synonyms(syn, hc):
+                    return True
+                # 'bất túc' ≡ 'hư': CHỈ khớp CHÍNH XÁC sau quy đổi, TUYỆT ĐỐI không chuỗi con.
+                # Đo trên KB: exact-only nạp thêm đúng 22 cặp, cả 22 đều là MỘT hội chứng viết hai
+                # cách ('Thận dương bất túc'≡'Thận dương hư', 'Can thận bất túc'≡'Can thận hư'...).
+                # Nếu cho chuỗi con thì vọt lên 143 cặp, phần lớn là rác
+                # ('khí hư' ⊂ 'dương khí hư yếu - tiên thiên bất túc').
+                if cls._norm_deficiency_name(sl) == cls._norm_deficiency_name(hcl):
+                    return True
+                if (sl in hcl or hcl in sl) and cls._extra_tokens_are_locators(sl, hcl):
                     return True
         return False
+
+    # Token TÀ BỆNH LÝ / trục hư (dùng chung với các cổng thể-đặc-hiệu). Token NGOÀI tập này coi là
+    # ĐỊNH VỊ TẠNG PHỦ ('phế', 'tỳ', 'thận', 'can', 'tâm', 'vị'...).
+    _GROUNDING_PATHO_TOKS = frozenset({
+        "hư", "suy", "nhược", "tổn", "nhiệt", "hàn", "thấp", "đàm", "đờm", "trọc",
+        "ẩm", "hỏa", "hoả", "ứ", "trệ", "uất", "kết", "tích", "nghịch", "độc",
+        "táo", "thử", "phong", "khí", "huyết", "âm", "dương",
+        "lưỡng", "đều", "song", "cả", "chứng",
+    })
+
+    @classmethod
+    def _extra_tokens_are_locators(cls, a, b):
+        """Phép so CHUỖI CON của grounding vốn để nhận BIẾN THỂ TẠNG ('Phế khí hư' ⊃ 'Khí hư' — token
+        thêm là 'phế', chỉ ĐỊNH VỊ). Nhưng nó cũng nhận oan thể ĐỘI THÊM TÀ: 'Âm hư thấp nhiệt' ⊃
+        'Âm hư' (thêm 'thấp','nhiệt' = TÀ BỆNH LÝ, khác hẳn bệnh cơ) -> core của bệnh KHÁC được coi
+        là grounded, cổng re-rank thành no-op và Mục 5 tra bài theo NHÁNH SAI.
+        Ca thật: 'Tiêu khát × Âm hư thấp nhiệt' (thể của Bàng quang viêm mạn) chặn mất
+        'Tiêu khát × Thận dương hư' -> kê bài dưỡng âm thanh nhiệt (mean −1.00, 12 vị đại hàn) cho
+        bệnh nhân tiểu trong dài + tay chân lạnh + sợ lạnh = TRÁI CỰC.
+        -> Chỉ chấp nhận chuỗi con khi phần token THÊM RA không mang token bệnh lý nào."""
+        ta = set(re.findall(r'[^\W\d_]+', a or ""))
+        tb = set(re.findall(r'[^\W\d_]+', b or ""))
+        extra = ta ^ tb                       # token chỉ có ở MỘT bên
+        return bool(extra) and not (extra & cls._GROUNDING_PATHO_TOKS)
 
     @classmethod
     def _reground_core(cls, final_primary, all_syndromes, window):

@@ -120,9 +120,42 @@ def test_reground_core():
     return n, f
 
 
+def test_grounding_extra_tokens():
+    """Chuỗi con trong cổng grounding CHỈ được nhận biến thể TẠNG, KHÔNG nhận thể ĐỘI THÊM TÀ.
+    Ca thật: 'Âm hư thấp nhiệt' (thể của Bàng quang viêm mạn) được coi là grounded ở Tiêu khát
+    chỉ vì chứa chuỗi 'Âm hư' -> chặn mất 'Tiêu khát x Than duong hu' -> ke bai duong am thanh
+    nhiet (mean -1.00, 12 vi dai han) cho benh nhan tieu trong dai + tay chan lanh = TRAI CUC."""
+    print("\n== (4) grounding: token thêm phải là ĐỊNH VỊ TẠNG ==")
+    n = f = 0
+    win = [{"benh_ly": "Tiêu khát",
+            "hoi_chung_all": ["Âm hư táo nhiệt", "Phế nhiệt", "Vị nhiệt",
+                              "Thận âm hư", "Thận dương hư", "Âm hư"]}]
+    # CHẶN: token thêm là TÀ bệnh lý
+    for syn in ("Âm hư thấp nhiệt", "Âm hư ứ huyết", "Khí hư đàm trệ"):
+        ok = not F._core_grounded_in_window(syn, win)
+        n += _chk(f"CHẶN thể đội thêm tà: {syn}", ok)
+        f += (not ok)
+    # GIỮ: trùng khớp hoặc biến thể TẠNG
+    for syn in ("Thận dương hư", "Thận âm hư", "Âm hư", "Phế nhiệt"):
+        ok = F._core_grounded_in_window(syn, win)
+        n += _chk(f"GIỮ thể hợp lệ: {syn}", ok)
+        f += (not ok)
+    ok = F._core_grounded_in_window("Phế khí hư", [{"benh_ly": "X", "hoi_chung_all": ["Khí hư"]}])
+    n += _chk("GIỮ biến thể tạng: 'Phế khí hư' ⊃ 'Khí hư'", ok)
+    f += (not ok)
+    # re-rank sang thể ĐÚNG của bệnh
+    new, reason = F._reground_core("Âm hư thấp nhiệt",
+                                   ["Âm hư thấp nhiệt", "Thận dương hư"], win)
+    ok = new == "Thận dương hư" and reason
+    n += _chk("re-rank sang 'Thận dương hư'", ok, repr(new))
+    f += (not ok)
+    return n, f
+
+
 def main():
     tp = tf = 0
-    for fn in (test_source_list_intact, test_cold_detection, test_reground_core):
+    for fn in (test_source_list_intact, test_cold_detection, test_reground_core,
+               test_grounding_extra_tokens):
         p, q = fn()
         tp += p
         tf += q
