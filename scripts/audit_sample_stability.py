@@ -56,7 +56,11 @@ def analyze(disease, ans):
     low = ans.lower()
     flags = []
     # bệnh danh dòng
-    m_bd = re.search(r"bệnh danh[^\n:]*:\s*([^\n]+)", low)
+    # NEO vào ĐÚNG trường '**Bệnh danh:**' của Mục 1. Regex cũ ("bệnh danh[^\n:]*:") khớp cả câu
+    # CẢNH BÁO phía trên ("...KHÔNG đủ để chốt bệnh danh + hội chứng tin cậy — ... Vui lòng bổ sung:
+    # hàn/nhiệt, khát nước, mồ hôi...") -> lấy nhầm DANH SÁCH CẦN HỎI THÊM làm bệnh danh -> báo oan
+    # KHONG_TU_GOI_TEN (đo trên 40 ca: 21 cờ -> chỉ còn 18 khi neo đúng, 3 ca hoàn toàn là ảo).
+    m_bd = re.search(r"\*\*bệnh danh:\*\*\s*([^\n]+)", low)
     bd = m_bd.group(1).strip() if m_bd else ""
     m_core = re.search(r"cốt lõi[^\n:]*:\s*([^\n]+)", low)
     core = m_core.group(1).strip() if m_core else ""
@@ -66,9 +70,16 @@ def analyze(disease, ans):
     if "chưa có bài thuốc" in low or "chưa cập nhật bài thuốc" in low or "hiện chưa có bài" in low:
         flags.append("MUC5_TRANG")
     # 2. không tự gọi tên bệnh (self-name miss)
+    # Tách hai tình huống RẤT khác nhau về mức nguy hiểm:
+    #   - hệ THÀNH THẬT từ chối ("chưa xác định cụ thể") khi lời khai không đủ dấu -> hành xử ĐÚNG,
+    #     chỉ ghi nhận độ phủ, KHÔNG coi là lỗi;
+    #   - hệ GỌI RA MỘT BỆNH KHÁC -> mới là lỗi lâm sàng thật (bệnh nhân nhận nhầm bệnh danh).
     dn = disease.lower().split("(")[0].strip()
     if dn and dn not in bd:
-        flags.append("KHONG_TU_GOI_TEN")
+        if (not bd) or "chưa xác định" in bd or "chưa rõ" in bd:
+            flags.append("TU_CHOI_GOI_TEN")
+        else:
+            flags.append("GOI_SAI_TEN")
     # 3. Tiêu-Thực mâu thuẫn: Mục 4 'Không có Tiêu Thực' NHƯNG Mục 5 có dòng 'Tiêu'
     has_no_tieu = "không có tiêu thực" in low
     has_tieu_formula = bool(re.search(r"tiêu\s*[–-]\s*(nhánh|thể kb khớp hội chứng kèm)", low))

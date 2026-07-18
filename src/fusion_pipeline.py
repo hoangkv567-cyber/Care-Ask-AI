@@ -1,5 +1,6 @@
 # src/fusion_pipeline.py
 import logging
+import os
 import re
 import unicodedata
 from src.pipeline import TCMTonguePipeline
@@ -1142,6 +1143,42 @@ class TCMFusionPipeline:
     _CC_FLOOR = 0.50
     _CC_CEIL = 0.80
 
+    # [CHỦ CHỨNG ĐỊNH VỊ] Ngưỡng df nạp chủ chứng có TỪ ĐỊNH VỊ GIẢI PHẪU (0 = tắt). Ngưỡng df THÔ
+    # đã thử và LOẠI: df<=6 nạp đủ 'đau mắt'/'đau vú' nhưng kéo theo rác low-df ('tai nạn', 'đập
+    # đầu', 'kích động') -> gold 22/28 -> 21/28 và M2 754 -> 746. Thu hẹp vào từ định vị giữ được
+    # lợi ích mà không trả giá đó. Chỉnh tạm qua env TCM_CC_DF_MAX để quét lại khi đổi KB.
+    _CC_ADMIT_DF_MAX = 8
+    # Danh từ bộ phận: chủ chứng chứa các từ này là dấu ĐỊNH VỊ (khai 'đau mắt' -> bệnh vùng mắt).
+    _CC_LOCATOR_WORDS = ("mắt", "vú", "mũi", "tai", "họng", "răng", "lợi", "hầu",
+                         "amidan", "bìu", "tinh hoàn", "hậu môn", "núm")
+    # BẪY: chứa danh từ bộ phận nhưng KHÔNG định vị bệnh ở bộ phận đó -> cấm nạp.
+    #   'hoa mắt'(df=45) = chóng mặt, 'ù tai'(48) = tai biến chứng toàn thân, 'vàng mắt' = hoàng đản
+    #   (bệnh GAN), 'mắt húp' = phù, 'tai nạn'/'tai biến' = 'tai' không phải cái tai.
+    _CC_LOCATOR_VETO = frozenset((
+        "hoa mắt", "mắt vàng", "vàng mắt", "vàng củng mạc", "củng mạc vàng", "mắt húp",
+        "quáng gà", "mắt mờ", "mờ mắt", "mù màu", "mất thị lực",
+        "ù tai", "tai nạn", "tai biến", "đau tai",
+    ))
+
+    # Phải là LỜI THAN CÓ ĐỊNH VỊ (triệu chứng + bộ phận), KHÔNG phải TÊN BỘ PHẬN trần.
+    # Đo được: nạp cả danh từ tạng trần ('hậu môn' df=7) làm ca VIÊM ĐẠI TRÀNG bật khỏi #1 sang
+    # 'Hậu môn lậu, Trĩ, Hậu môn nứt kẽ' — vì mọi bệnh vùng ruột-hậu môn đều nhắc 'hậu môn'. Tên
+    # bộ phận trần KHÔNG phân biệt được bệnh trong vùng, còn 'đau mắt'/'cục ở vú' thì có.
+    _CC_SYMPTOM_WORDS = ("đau", "nhức", "sưng", "cộm", "đỏ", "ngứa", "chảy", "nghẹt", "ngạt",
+                         "sổ", "cục", "áp xe", "loét", "lở", "máu", "tắc", "mủ", "rát", "khô")
+
+    @classmethod
+    def _cc_is_locator_mark(cls, kw: str) -> bool:
+        """Chủ chứng có phải LỜI THAN ĐỊNH VỊ GIẢI PHẪU dùng được để nạp ứng viên không.
+        Đòi ĐỦ BA: (1) đa-từ, (2) có danh từ bộ phận, (3) có từ TRIỆU CHỨNG — thiếu (3) thì đó chỉ
+        là tên bộ phận trần, nạp vào sẽ kéo cả cụm bệnh cùng vùng lên oan (xem _CC_SYMPTOM_WORDS)."""
+        k = (kw or "").strip().lower()
+        if not k or len(k.split()) < 2 or k in cls._CC_LOCATOR_VETO:
+            return False
+        if not any(w in k for w in cls._CC_LOCATOR_WORDS):
+            return False
+        return any(w in k for w in cls._CC_SYMPTOM_WORDS)
+
     def _build_chu_chung_index(self):
         from collections import defaultdict
         import math
@@ -1196,6 +1233,18 @@ class TCMFusionPipeline:
         admit = getattr(self, "_cc_admit_set", None)
         if admit is None:
             admit = set(self._SEX_MARK_MALE) | set(self._SEX_MARK_FEMALE) | set(self._CARDINAL_MARK_EXTRA)
+            # [MỞ RỘNG: CHỦ CHỨNG ĐỊNH VỊ] Nạp thêm chủ chứng mang TỪ ĐỊNH VỊ GIẢI PHẪU và đủ đặc
+            # hiệu (df thấp). Vì sao cần: khai 'đau mắt, sưng đỏ mắt' trước ra 'Tý chứng, Kiên tý,
+            # NHA THỐNG', và 'vú sưng đau, cục cứng ở vú, sốt nhẹ' (viêm tuyến vú kinh điển) ra
+            # 'NHA THỐNG' — bộ khớp ăn theo từ chung 'sưng'/'đau' còn danh từ bộ phận bị bỏ qua.
+            # 'đau mắt'/'đau vú' df=6 = đúng cỡ cụm bệnh cùng vùng -> nạp cả cụm là AN TOÀN (cùng
+            # vùng giải phẫu), trong khi 'mắt đỏ' df=18 / 'hoa mắt' df=45 bị loại.
+            _dfmax = int(os.getenv("TCM_CC_DF_MAX", str(self._CC_ADMIT_DF_MAX)) or 0)
+            if _dfmax > 0:
+                if getattr(self, "_cc_df", None) is None:
+                    self._build_chu_chung_index()
+                admit |= {k for k, df in self._cc_df.items()
+                          if df <= _dfmax and self._cc_is_locator_mark(k)}
             self._cc_admit_set = admit
         best, hit = 0.0, None
         for k in cc_str.split(","):
