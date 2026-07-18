@@ -35,9 +35,19 @@ CASES = [
      "Huyết hư gây chóng mặt, hoa mắt, mệt mỏi.", "Huyết hư", False, None),
     ("Lưỡi không rêu nhưng KHÔNG quy sai: no-op (không over-strip)",
      "Lưỡi không rêu, cần theo dõi thêm về sau.", "Huyết hư", False, None),
-    ("Core Khí hư + 'ít rêu do khí huyết': gỡ",
-     "Người mệt do khí hư. Lưỡi ít rêu là do khí huyết suy yếu không nuôi lưỡi.", "Khí hư", True, "âm dịch"),
+    # Core KHÍ/DƯƠNG hư -> nhánh THERMAL-AWARE: quy về VỊ KHÍ hư tổn (không đủ huân chưng sinh
+    # rêu), KHÔNG được quy về "âm dịch hao tổn" — âm hư là HƯ NHIỆT, trái cực với thể hư-hàn.
+    # (Kỳ vọng cũ "âm dịch" có từ thời hàm chỉ có MỘT câu thay thế; nhánh hư-hàn thêm sau.)
+    ("Core Khí hư + 'ít rêu do khí huyết': gỡ, quy VỊ KHÍ (không phải âm dịch)",
+     "Người mệt do khí hư. Lưỡi ít rêu là do khí huyết suy yếu không nuôi lưỡi.", "Khí hư",
+     True, "vị khí hư tổn"),
+    ("Core Tỳ thận DƯƠNG hư: cũng đi nhánh hư-hàn, KHÔNG quy âm dịch",
+     "Lưỡi ít rêu là biểu hiện của huyết hư không nuôi được lưỡi.", "Tỳ thận dương hư",
+     True, "vị khí hư tổn"),
 ]
+
+# Với core khí/dương hư, câu thay thế TUYỆT ĐỐI không được nói "âm dịch hao tổn" (đảo cực).
+FORBIDDEN_WHEN_HUHAN = {"Khí hư", "Tỳ thận dương hư"}
 
 
 def main():
@@ -48,6 +58,9 @@ def main():
         ok = (stripped == expect_strip)
         if ok and must_contain:
             ok = must_contain in out.lower()
+        # chống đảo cực: thể hư-hàn không được giải thích bằng "âm dịch hao tổn"
+        if ok and core in FORBIDDEN_WHEN_HUHAN:
+            ok = "âm dịch" not in out.lower()
         # với ca no-op, đảm bảo KHÔNG mất câu gốc
         if not expect_strip:
             ok = ok and (out == text)

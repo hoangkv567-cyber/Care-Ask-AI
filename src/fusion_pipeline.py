@@ -4381,6 +4381,24 @@ class TCMFusionPipeline:
         toks = set(re.findall(r'[^\W\d_]+', (syn or '').lower()))
         return bool(toks & cls._THUC_COMPONENT_TOKS)
 
+    @classmethod
+    def _branch_role_label(cls, syn: str, kb_variant: bool = False) -> str:
+        """[NHÃN BẢN/TIÊU] Chữ 'Tiêu' ở Mục 5 CHỈ được dùng khi hội chứng kèm theo THẬT SỰ mang tà
+        THỰC — vì Mục 4 dùng 'Tiêu' theo nghĩa TIÊU THỰC (trục bệnh cơ), còn Mục 5 vốn dùng theo
+        nghĩa 'nhánh/kèm theo' (标本). Hai nghĩa khác nhau nhưng cùng một chữ.
+
+        CA THẬT (Âm hành đàm hạch, audit ổn định): bệnh kèm 'Di tinh × Thận hư không bền' — HƯ
+        THUẦN, không tà thực — bị gắn 'Tiêu – nhánh/kèm theo', trong khi Mục 4 chốt ĐÚNG 'Không có
+        Tiêu Thực, đây là bệnh lý Hư chứng thuần túy'. Thầy thuốc đọc thấy TỰ MÂU THUẪN.
+
+        Đây là sửa CHỮ, KHÔNG đổi bài thuốc/xếp vai: dòng vẫn nằm ở branch_lines như cũ. Nhờ vậy
+        _sync_muc4_with_muc5_tieu (đọc lại nhãn 'Tiêu' từ markdown) chỉ còn thấy Tiêu THỰC thật."""
+        _thuc = cls._syndrome_has_thuc_component(syn or "")
+        if kb_variant:
+            return ("Tiêu – thể KB khớp hội chứng kèm theo" if _thuc
+                    else "Kèm theo – thể KB khớp hội chứng phối hợp")
+        return "Tiêu – nhánh/kèm theo" if _thuc else "Kèm theo – bệnh phối hợp"
+
     def _sync_muc4_with_muc5_tieu(self, md: str, symptoms_str: str) -> str:
         """[ĐỒNG BỘ MỤC 4 ↔ MỤC 5 — GROUND TRUTH = ĐIỀU TRỊ] Nếu Mục 5 ĐÃ kê bài TIÊU cho một hội
         chứng CÓ TÀ THỰC (đàm/thấp/nhiệt/ứ/trệ/táo-nhiệt...) mà Mục 4 vẫn chốt 'Không có Tiêu Thực'
@@ -5556,7 +5574,8 @@ class TCMFusionPipeline:
                 if syn_name not in active_syndromes:
                     continue
                 is_core = (syn_name == primary_key)
-                role = "Bản – gốc bệnh" if is_core else "Tiêu – nhánh/kèm theo"
+                role = ("Bản – gốc bệnh" if is_core
+                        else self._branch_role_label(data["syndrome"]))
                 for tb in data.get("treatments_by_disease", []):
                     # Khớp chính xác bệnh lý VÀ có bài thuốc thật (OPTIONAL MATCH trên graph có thể
                     # trả dòng p=null khi node HoiChung biến thể hoa/thường không có bài -> chặn in
@@ -5599,7 +5618,8 @@ class TCMFusionPipeline:
                     continue
                 _printed_pairs.add((_b.lower(), _bt.lower()))
                 _is_core = (_hc == primary_key)
-                _role = "Bản – gốc bệnh" if _is_core else "Tiêu – nhánh/kèm theo"
+                _role = ("Bản – gốc bệnh" if _is_core
+                         else self._branch_role_label(_row.get("hoi_chung", "")))
                 _vi = self._dedupe_herbs(_row.get("vi_thuoc", "").strip()) or "(chưa cập nhật vị thuốc)"
                 _line = (
                     f"- Trị Bệnh **{_b}** — *{_role}* (Hội chứng {_row.get('hoi_chung', '').strip()}) → Dùng bài **{_bt}**\n"
@@ -5773,7 +5793,7 @@ class TCMFusionPipeline:
                     _bt2 = _row2.get("bai_thuoc", "").strip()
                     _printed_pairs.add((_b2.lower(), _bt2.lower()))
                     _role2 = ("Bản – thể KB cùng cực khớp bệnh cảnh" if _is_core2
-                              else "Tiêu – thể KB khớp hội chứng kèm theo")
+                              else self._branch_role_label(_hc2, kb_variant=True))
                     _target2 = final_primary if _is_core2 else final_concurrent
                     _line2 = (
                         f"- Trị Bệnh **{_b2}** — *{_role2}* (Hội chứng {_hc2} — tương ứng {_target2}) → Dùng bài **{_bt2}**\n"
@@ -5940,7 +5960,13 @@ class TCMFusionPipeline:
                 f"- **Pháp trị gốc (Bản) — {final_primary}:** trọng tâm điều trị phải nhắm vào gốc bệnh "
                 f"(*{final_primary}*). Cơ sở tri thức hiện **chưa có bài thuốc đặc trị** gán trực tiếp cho "
                 f"hội chứng cốt lõi này ở bệnh danh tương ứng — cần thầy thuốc kê bài tư bổ theo gốc.\n"
-                f"- Bài thuốc dưới đây chỉ trị **Tiêu (nhánh/triệu chứng kèm theo)**, KHÔNG thay thế việc điều trị gốc:\n"
+                # Cùng lý do như _branch_role_label: chỉ gọi 'Tiêu' khi CÓ dòng Tiêu thực sự, kẻo
+                # câu dẫn này lại chọi với Mục 4 'Không có Tiêu Thực' ở ca kèm-theo HƯ thuần.
+                + (f"- Bài thuốc dưới đây chỉ trị **Tiêu (nhánh/triệu chứng kèm theo)**, "
+                   f"KHÔNG thay thế việc điều trị gốc:\n"
+                   if any("*Tiêu –" in _bl for _bl in branch_lines) else
+                   f"- Bài thuốc dưới đây chỉ trị **bệnh/chứng kèm theo**, "
+                   f"KHÔNG thay thế việc điều trị gốc:\n")
             )
 
         # In bài trị Tiêu (nhánh)
