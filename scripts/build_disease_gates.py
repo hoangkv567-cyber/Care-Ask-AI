@@ -266,9 +266,14 @@ def build():
         # hư nam, dán bệnh phụ khoa + bài trị đới hạ cho nam giới. Đòi hỏi bối cảnh phụ khoa (khí hư ra
         # nhiều/huyết trắng/đới hạ/âm đạo/kinh nguyệt...) mới cho qua. Cả 5 thể CSV đều mở đầu bằng
         # 'Khí hư ...' nên keyword 'khí hư' trong requires bảo toàn self-recall.
+        # 'kinh hành ...' = chứng XẢY RA KHI HÀNH KINH -> phải có bối cảnh kinh nguyệt mới được gọi
+        # tên. Ca thật (audit ổn định): lời khai thuần đau đầu ("đau đầu, nhức đầu, đầu thống, đau
+        # nửa đầu, nặng đầu, váng đầu") bị gọi thành 'Kinh hành đầu thống' — tức gán chứng ĐAU ĐẦU
+        # KHI HÀNH KINH cho người không hề nhắc kinh nguyệt (và có thể là nam). Cùng lớp lỗi với
+        # bệnh thai nghén từng bị gán oan vào ca hô hấp -> vá bằng CỔNG DỮ LIỆU, không sửa mù tầng khớp.
         {"names": ["lưu sản", "sảy thai", "băng lậu", "đới hạ", "vô sinh", "bế kinh", "thống kinh",
                    "sản hậu", "nhau thai", "thai chết", "động thai", "an thai", "thai lậu", "hoạt thai",
-                   "nguyệt kinh", "kinh nguyệt", "khí hư"],
+                   "nguyệt kinh", "kinh nguyệt", "kinh hành", "khí hư"],
          "requires": ["kinh nguyệt", "kinh", "thai", "sản", "âm đạo", "huyết trắng", "đới hạ",
                       "băng", "lậu", "tử cung", "phụ nữ", "mang thai", "có thai", "khí hư"]},
         {"names": ["nhĩ minh", "nhĩ lung", "điếc", "ù tai", "viêm tai"],
@@ -356,6 +361,36 @@ def build():
          "requires": ["mỡ máu", "cholesterol", "máu nhiễm mỡ", "lipid", "xơ vữa", "xơ mạch",
                       "xơ cứng động mạch", "xơ cứng mạch", "mảng xơ", "huyết áp", "tức ngực",
                       "đau ngực", "đau vùng tim", "đau tim", "đau thắt ngực", "đau trước tim"]},
+
+        # ---- BA CỔNG DƯỚI ĐÂY TRƯỚC CHỈ NẰM TRONG data/disease_gates.json ----
+        # Chúng được thêm THẲNG vào JSON mà không quay lại script này, nên chạy build_disease_gates.py
+        # sẽ XÓA SẠCH cả ba trong im lặng (JSON 104 cổng -> script sinh 101). Đưa về đây để lập lại
+        # bất biến "JSON do script sinh". Nguy hiểm nhất là cổng THAI SẢN: chính nó vá lỗi bệnh thai
+        # nghén bị gán oan cho ca hô hấp — mất nó là tái sinh lỗi đó.
+        {"names": ["suyễn chứng", "hen phế quản", "hen suyễn", "háo suyễn", "háo chứng"],
+         "kw_wb": True,
+         "requires": ["suyễn", "khò khè", "thở khò khè", "thở rít", "khó thở", "khí suyễn", "hen",
+                      "cơn hen", "thở gấp", "thở dốc", "hụt hơi", "đoản khí", "tức ngực"]},
+        {"names": ["nhâm thần", "ố trở", "tử giản", "sản giật"],
+         "kw_wb": True,
+         "requires": ["mang thai", "có thai", "thai", "nghén", "ốm nghén", "thai nghén", "thai phụ",
+                      "sản phụ", "mang bầu", "que thử thai", "chửa", "có bầu", "thai máy",
+                      "thai động", "bụng bầu"]},
+        {"names": ["suy nhược thần kinh"],
+         "kw_wb": True,
+         "requires": ["mất ngủ", "ít ngủ", "khó ngủ", "ngủ ít", "hay mơ", "mơ nhiều", "ngủ hay mơ",
+                      "hồi hộp", "trống ngực", "tim đập nhanh", "đánh trống ngực", "hay quên",
+                      "giảm trí nhớ", "trí nhớ giảm", "trí nhớ kém", "kém tập trung",
+                      "hay quên hay lú", "nhức đầu", "đau đầu", "hoa mắt", "chóng mặt", "ù tai",
+                      "váng đầu", "lo âu", "bứt rứt", "dễ hoảng sợ", "hoảng sợ", "phiền muộn",
+                      "uất ức", "tinh thần uất", "dễ cáu", "dễ tức giận", "cáu gắt", "hay xúc động",
+                      "vui buồn thất thường", "tinh thần uể oải", "di tinh", "liệt dương",
+                      "hay thở dài", "thở dài"],
+         "_note": "Suy nhược thần kinh (神经衰弱) đòi >=1 dấu THẦN KINH/TÂM THẦN/GIẤC NGỦ đặc trưng; "
+                  "mọi thể CSV đều có (mất ngủ/hồi hộp/hay quên/nhức đầu/phiền muộn/di tinh). Chặn "
+                  "over-match ca THUẦN TIÊU HÓA (đại tiện lỏng+đầy bụng+ăn kém+mệt mỏi) khớp qua "
+                  "'đầy bụng trướng/ăn kém' của thể Can-tâm-khí-uất-kết. KHÔNG dùng 'mệt mỏi' trần "
+                  "làm marker."},
     ]
 
     payload = {
@@ -366,10 +401,37 @@ def build():
                        "ranh giới từ. Sinh bởi scripts/build_disease_gates.py.",
         "gates": gates,
     }
+    # [CHỐNG GHI ĐÈ MÙ] data/disease_gates.json ĐÃ được sửa TAY nhiều lần sau khi sinh, và các sửa
+    # đó là bản vá lâm sàng thật: cổng Long bế siết bỏ 'nước tiểu'/'tiểu' trần; cổng Hư lao bỏ
+    # 'mệt mỏi' trần đòi dấu hao mòn/mạn; cổng Xoang/mề đay/COPD đặc hiệu hơn; và 3 cổng (hen suyễn,
+    # THAI SẢN nhâm thần/ố trở, suy nhược thần kinh) từng CHỈ tồn tại trong JSON. Chạy script này
+    # trước đây sẽ âm thầm HOÀN TÁC tất cả — đo được: 104 cổng -> 101.
+    # Nay: so sánh trước khi ghi, khác thì DỪNG và in ra chính xác cái sẽ mất. --force để ghi đè thật.
+    import sys
+    force = "--force" in sys.argv
+    old = None
+    if os.path.exists(OUT):
+        try:
+            old = json.load(open(OUT, encoding="utf-8")).get("gates", [])
+        except Exception:
+            old = None
+    if old is not None:
+        key = lambda g: json.dumps(g, ensure_ascii=False, sort_keys=True)  # noqa: E731
+        lost = [g for g in old if key(g) not in {key(x) for x in gates}]
+        if lost and not force:
+            print(f"DỪNG: {OUT} đang có {len(old)} cổng, script sinh {len(gates)}.")
+            print(f"Ghi đè sẽ MẤT/ĐỔI {len(lost)} cổng — JSON đã được sửa tay sau khi sinh:")
+            for g in lost:
+                print(f"   - {g.get('names', [])[:6]}")
+            print("\nJSON hiện là NGUỒN THẬT. Sửa cổng thì sửa THẲNG trong data/disease_gates.json,")
+            print("và chép lại vào script này để hai bên khớp. Chỉ dùng --force khi CHỦ ĐÍCH thay thế.")
+            return 1
+
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
     print(f"Đã ghi {len(gates)} cổng -> {OUT}")
+    return 0
 
 
 if __name__ == "__main__":
-    build()
+    sys.exit(build() or 0)
