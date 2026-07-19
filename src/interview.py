@@ -32,8 +32,21 @@ _INTERVIEW_MAP = {
         "trong_dai": "tiểu tiện trong dài",      # hàn
         "binh_thuong": "",
     },
+    # TÍNH CHẤT khát là dấu phân cực hàn/nhiệt cốt tử, không phải chỉ "có khát hay không":
+    #   渴喜冷飲 khát thích uống LẠNH      -> NHIỆT
+    #   渴喜熱飲 khát thích uống ẤM/NÓNG   -> HÀN
+    #   渴不欲飲 khát mà KHÔNG muốn uống   -> thấp/đàm/ứ huyết/dương hư không hóa tân (KHÔNG phải nhiệt)
+    # Trước đây form chỉ có "Khát, thích uống" -> quy về "khát nước" (đánh dấu là NHIỆT). Hệ quả đo
+    # được ở ca thật (nữ 34t dương hư): dữ liệu không đủ phân cực nên LLM TỰ BỊA tính chất uống để
+    # khớp chẩn đoán — ba lần chạy ra ba kiểu khác nhau ("không thể uống nhiều", "uống nhiều vẫn
+    # không giải được", "khát mà không uống được đủ"), đều TRÁI lời khai "thích uống".
+    # Cụm chuẩn bám ĐÚNG chữ KB đang dùng ("uống nước lạnh" 6 dòng, "thích uống nóng" 2 dòng) để
+    # tầng khớp triệu chứng hưởng luôn, không phải tự chế từ mới.
     "khat": {
-        "khat_nuoc": "khát nước",                # nhiệt
+        "khat_lanh": "khát, thích uống nước lạnh",      # nhiệt
+        "khat_am": "khát, thích uống nóng",             # hàn
+        "khat_khong_uong": "khát nhưng không muốn uống",  # thấp/đàm/dương hư — KHÔNG phải nhiệt
+        "khat_nuoc": "khát nước",                # mơ hồ (giữ cho tương thích ngược ca cũ)
         "mieng_nhat": "miệng nhạt không khát",   # hàn/thấp
         "binh_thuong": "",
     },

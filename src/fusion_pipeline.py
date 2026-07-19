@@ -1718,7 +1718,11 @@ class TCMFusionPipeline:
         "nước tiểu trong", "tiểu trong", "tiểu tiện trong", "nước tiểu trong dài", "tiểu trong dài",
         "tay chân lạnh", "chân tay lạnh", "chi lạnh", "tứ chi lạnh", "rét run", "lạnh run",
         "lưng lạnh", "lưng gối lạnh", "bụng lạnh", "lạnh bụng", "phân sống", "ngũ canh", "liệt dương",
-        "sợ lạnh", "úy hàn")
+        "sợ lạnh", "úy hàn",
+        # 渴喜熱飲 — khát mà thích uống NÓNG là dấu hàn ĐẶC HIỆU (khác 'khát nước' trần vốn mơ hồ).
+        # Đặt ở đây chứ KHÔNG ở cold_kws: cold_kws gác 5 quyết định, thêm từ vào đó bật 'Hàn Nhiệt
+        # Thác Tạp' giả. Bám đúng chữ KB đang dùng ('thích uống nóng', 2 dòng).
+        "thích uống nóng")
     # Dấu KHÓA SWAP: nhiệt RÕ hoặc dấu ÂM-HƯ (bài ấm-dương chống chỉ định). KHÔNG gồm 'khát/uống
     # nhiều' (mơ hồ trong tiêu khát) NHƯNG gồm 'mồ hôi trộm/ít rêu/lưỡi đỏ' (âm hư) -> có bất kỳ dấu
     # nào ở đây thì TUYỆT ĐỐI KHÔNG đổi sang bài ôn dương.
@@ -5344,9 +5348,18 @@ class TCMFusionPipeline:
         # họng đỏ, đờm\mũi\tiểu vàng...) mà KHÔNG có dấu hàn -> Bát Cương PHẢI có 'Nhiệt', kể cả khi
         # node hội chứng cốt lõi mang tag Hư/Lý và tên không chứa chữ nhiệt/hỏa (vd 'Can dương thượng
         # kháng' — Can hỏa thực nhiệt nhưng node tag Hư/Lý), tránh để Nhiệt phụ thuộc LLM (bất ổn).
+        # 'uống nước lạnh' (渴喜冷飲): tính chất khát ĐÃ PHÂN CỰC, khác hẳn 'khát nước' trần — nó là
+        # dấu nhiệt ĐẶC HIỆU, không mơ hồ. Bắt buộc có mặt ở đây: form nay cho khai riêng "thích
+        # uống nước LẠNH", nếu danh sách không nhận thì bệnh nhân nhiệt thật khai đúng lại MẤT SẠCH
+        # dấu nhiệt (đo được: chuỗi mới không chứa chuỗi con 'khát nước' nên không khớp gì cả).
+        # Một cụm là đủ — 'thích uống nước lạnh' chứa 'uống nước lạnh'. _kw_hit_clean có xử lý phủ
+        # định nên 'không thích uống nước lạnh' KHÔNG khớp (đã đo).
+        # KHÔNG thêm cụm HÀN ('thích uống nóng') vào cold_kws: danh sách đó gác 5 quyết định, thêm
+        # từ vào sẽ bật 'Hàn Nhiệt Thác Tạp' GIẢ — cụm hàn đi vào _THERMAL_COLD_STRONG thay thế.
         _strong_heat_kws = ["rêu vàng", "rêu lưỡi vàng", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ",
                             "rìa lưỡi đỏ", "mắt đỏ", "mặt đỏ", "đỏ bừng", "khát nước", "họng đỏ",
-                            "đờm vàng", "mũi vàng", "vàng đục", "tiểu vàng", "mụn đỏ", "nốt mụn đỏ", "sốt"]
+                            "đờm vàng", "mũi vàng", "vàng đục", "tiểu vàng", "mụn đỏ", "nốt mụn đỏ",
+                            "sốt", "uống nước lạnh"]
         has_strong_heat = self._kw_hit_clean(symptoms_lower_all, _strong_heat_kws)
         # [KHÁT KHÔNG ĐỦ DỰNG NHIỆT] 'khát nước' là thành viên DUY NHẤT của _strong_heat_kws không
         # phải dấu nhiệt KHÁCH QUAN (17 dấu còn lại — rêu vàng, lưỡi đỏ, sốt... — đều khách quan).
