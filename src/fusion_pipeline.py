@@ -4559,7 +4559,13 @@ class TCMFusionPipeline:
         hint_has_hu = bool(re.search(r"\bhư\b", hint_l))
         # 'Hàn Nhiệt Thác Tạp' = CÓ tà khí (nhiệt/hàn cục bộ) — phải coi như có Tiêu, nếu không
         # chiều 1 sẽ ép Mục 4 về 'thuần Hư' mâu thuẫn với chính nhãn Thác Tạp (đã xảy ra thật).
-        hint_has_thuc = bool(re.search(r"\bthực\b", hint_l)) or ("thác tạp" in hint_l)
+        # ⚠ NHẦM TRỤC: 'thác tạp' CHỈ xuất hiện ở nhãn 'Hàn Nhiệt Thác Tạp' — trục HÀN/NHIỆT, nói
+        # về CỰC NHIỆT chứ không nói gì về HƯ/THỰC (trục đó dùng nhãn riêng 'Bản Hư Tiêu Thực').
+        # Coi nó là bằng chứng Thực khiến ca THUẦN HƯ hàn-nhiệt lẫn lộn bị Mục 4 khẳng định "còn
+        # tồn tại yếu tố Thực (tà khí/đàm thấp ứ trệ)" — mâu thuẫn thẳng với Mục 2 không hề có Thực.
+        # Lỗi có sẵn, chỉ lộ khi nhãn Thác Tạp trở nên thường gặp (form cho khai 渴喜冷飲). Chú thích
+        # ở khối tổng cương Âm/Dương cho thấy tác giả ĐÃ biết bẫy này và cố ý không phát chữ đó ra.
+        hint_has_thuc = bool(re.search(r"\bthực\b", hint_l))
         body_stripped = body.strip().lstrip("-*• ").strip()
         body_l = body_stripped.lower()
         if body_l.startswith("không xác định"):
@@ -4602,6 +4608,20 @@ class TCMFusionPipeline:
         bc = (bat_cuong_hint or "").lower()
         # Gate: hư nhiệt nội thương (Nhiệt + Hư, KHÔNG tà thực, KHÔNG ngoại cảm).
         if not (re.search(r"\bnhiệt\b", bc) and re.search(r"\bhư\b", bc)):
+            return md
+        # [CỔNG CỰC] Hư nhiệt kinh điển sinh từ ÂM hư (âm bất túc không chế ước được dương). Core
+        # DƯƠNG hư / hư-hàn thuần KHÔNG sinh hư nhiệt — dương hư mà phát nhiệt chỉ có ở đới dương /
+        # cách dương (chân hàn giả nhiệt), là chứng NGUY KỊCH, và cơ chế là hư dương ngoại phù chứ
+        # KHÔNG phải 'âm không chế dương' như câu chú giải dưới đây viết.
+        # Ca thật (nữ 34t, core 'Thận dương hư'): khối này in ra "trên nền Thận dương hư lâu ngày,
+        # âm huyết/chính khí hư tổn không chế ước được dương, sinh nội nhiệt do hư" — TỰ ĐẺ LÝ LẼ
+        # biện minh cho nhãn Nhiệt sai, tức CHE LẤP lỗi thượng nguồn thay vì để nó lộ ra.
+        # Nhãn bỏ lửng là lỗi HIỂN THỊ (thầy thuốc thấy ngay); lý lẽ bịa là lỗi LÂM SÀNG.
+        # \b âm \b KHÔNG dính 'âm' trong 'tâm' -> 'Tâm dương hư'/'Tâm thận dương hư' VẪN bị chặn
+        # đúng ý; thể có phần âm ('Âm dương lưỡng hư', 'Khí âm hư') vẫn được chú giải như cũ.
+        _pl = (primary or "").lower()
+        if (re.search(r"\bdương\s+hư\b|\bdương\s+suy\b|\bhư\s+hàn\b|\bdương\s+khí\s+hư\b", _pl)
+                and not re.search(r"\bâm\b", _pl)):
             return md
         if re.search(r"\bthực\b", bc) or "bản hư tiêu thực" in bc or "thác tạp" in bc:
             return md
@@ -5594,8 +5614,28 @@ class TCMFusionPipeline:
             all_bat_cuong.discard("Nhiệt")
         elif "Hàn" in all_bat_cuong and "Nhiệt" in all_bat_cuong:
             _names_l = " | ".join(_chosen_names).lower()
+            # [CĂN CỨ HÀN — MỞ RỘNG] Danh sách 6 từ khóa cũ QUÁ HẸP: nó bỏ sót toàn bộ dấu hàn
+            # TIẾT NIỆU/THIỆT CHẨN kinh điển. Ca thật (nữ 34t chọn "khát thích uống nước LẠNH"):
+            # lời khai có 6 dấu hàn (tiểu tiện trong dài, nước tiểu trong, tiểu đêm, rêu trắng mỏng,
+            # lưỡi bệu, + core 'Thận dương hư') đối 1 dấu nhiệt, mà _han_corr=False nên nhánh dưới
+            # XÓA SẠCH 'Hàn' -> nhãn 'Lý - NHIỆT - Hư' TRÁI CỰC, và Mục 4 lại bịa "HƯ NHIỆT".
+            #
+            # VÌ SAO TRƯỚC ĐÂY KHÔNG LỘ: cổng _thirst_only_on_cold (vòng 1) chặn 'khát nước' trần
+            # dựng Nhiệt, nên nhánh đối chiếu này KHÔNG BAO GIỜ chạy. Khi form cho khai 渴喜冷飲 —
+            # một dấu nhiệt THẬT — thì Nhiệt bật hợp lệ, nhánh chạy, và lỗ hổng lộ ra.
+            #
+            # DÙNG _THERMAL_COLD_STRONG (hằng đã có test khóa) chứ KHÔNG dùng _YANG_DEFICIENCY_RE
+            # theo TÊN hội chứng: đo được regex đó khớp cả 'Âm dương lưỡng hư' (dương+lưỡng+hư),
+            # tức sẽ dựng căn cứ Hàn cho một thể có phần ÂM hư. Bỏ 'tiểu trong' trần vì 'trong' làm
+            # giới từ ("đi tiểu trong ngày") dính oan ca thấp nhiệt lâm chứng.
+            #
+            # Hệ quả đúng y lý: hai phía đều có căn cứ THẬT -> 'Hàn Nhiệt Thác Tạp'. Đó là nhãn
+            # TRUNG THỰC cho ca mâu thuẫn (chân hàn giả nhiệt / thượng nhiệt hạ hàn), tốt hơn hẳn
+            # việc âm thầm chọn một phía và vứt phía kia.
             _han_corr = bool(re.search(r'\bhàn\b', _names_l)) or self._kw_hit_clean(
-                symptoms_lower_all, ["sợ lạnh", "úy hàn", "rét run", "tay chân lạnh", "chân tay lạnh", "lưng lạnh"])
+                symptoms_lower_all,
+                ["sợ lạnh", "úy hàn", "rét run", "tay chân lạnh", "chân tay lạnh", "lưng lạnh"]
+                + [k for k in self._THERMAL_COLD_STRONG if k != "tiểu trong"])
             _nhiet_corr = bool(re.search(r'\b(nhiệt|hỏa|hoả)\b', _names_l)) or has_heat_pulse_indicator
             if _han_corr and _nhiet_corr:
                 all_bat_cuong.discard("Hàn")
@@ -5880,7 +5920,8 @@ class TCMFusionPipeline:
             # nối AI (tránh vừa 'Không xác định' vừa vẫn kê đơn — người dùng phải biết vì sao thiếu).
             _bc_l = (bat_cuong_hint or "").lower()
             _has_hu = "hư" in _bc_l
-            _has_thuc = "thực" in _bc_l or "thác tạp" in _bc_l
+            _has_thuc = "thực" in _bc_l      # KHÔNG tính 'thác tạp' — đó là trục hàn/nhiệt (xem chú
+            #                                  thích ở _sync_tieu_thuc_with_bat_cuong)
             _note = ("_(Phần biện luận cơ chế chi tiết tạm thời chưa tạo được do lỗi kết nối máy chủ AI. "
                      "Định vị Bát Cương và hội chứng dưới đây được suy trực tiếp từ cơ sở tri thức Neo4j "
                      "nên vẫn tin cậy; vui lòng thử lại để có phần phân tích y lý đầy đủ.)_")
