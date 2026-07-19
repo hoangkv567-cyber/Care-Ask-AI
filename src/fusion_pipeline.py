@@ -3005,27 +3005,96 @@ class TCMFusionPipeline:
         """'Người lớn - Dương hư' -> 'Dương hư'; nhãn thường giữ nguyên."""
         return cls._DEMO_PREFIX_RE.sub("", hc or "").strip()
 
-    # Vị họ Ô ĐẦU (Aconitum) — có độc, phải bào chế/định liều bởi thầy thuốc.
-    _TOXIC_ACONITE = ("phụ tử", "ô đầu", "xuyên ô", "thảo ô")
-    # GIẢ DANH — chứa chuỗi con giống vị độc nhưng KHÔNG phải: 'Địa phụ tử' là hạt Kochia
-    # (thanh nhiệt lợi thấp); 'Ma hoàng căn' là RỄ, thu sáp CHỈ hãn — ngược cực với ma hoàng.
+    # Vị họ Ô ĐẦU (Aconitum) — CÓ ĐỘC (aconitin), phải bào chế/định liều bởi thầy thuốc.
+    # Từ vựng theo CẢ tên sách LẪN tên thương phẩm: 'phụ phiến' là phụ tử đã bào chế thái phiến,
+    # KB dùng tên này ở 5 dòng mà bộ dò cũ bỏ sót hoàn toàn.
+    # ⚠ Danh sách này KHÔNG SẠCH: 'bạch phụ tử' (Typhonium) KHÔNG thuộc họ Ô đầu nhưng vẫn dính
+    # nhãn 'họ Ô đầu' qua chuỗi con 'phụ tử'. Nó VẪN có độc nên giữ cảnh báo là phía an toàn;
+    # muốn chuẩn hóa thì phải tách hạng mục thứ ba, đừng đưa vào _TOXIC_LOOKALIKE.
+    _TOXIC_ACONITE = ("phụ tử", "ô đầu", "xuyên ô", "thảo ô", "phụ phiến")
+    # MA HOÀNG (Ephedra) — hạng mục RIÊNG, KHÔNG phải 'có độc': rủi ro là phát hãn mạnh + kích
+    # thích tim mạch (ephedrin). Gộp chung câu 'họ Ô đầu, CÓ ĐỘC' là sai dược lý.
+    _CAUTION_EPHEDRA = ("ma hoàng",)
+    # GIẢ DANH — chứa chuỗi con giống vị trên nhưng KHÔNG phải: 'Địa phụ tử' là hạt Kochia
+    # (thanh nhiệt lợi thấp); 'Ma hoàng căn' là RỄ, thu sáp CHỈ hãn — NGƯỢC cực với ma hoàng.
     _TOXIC_LOOKALIKE = ("địa phụ tử", "ma hoàng căn")
 
-    @classmethod
-    def _herb_safety_flags(cls, vi_thuoc: str) -> list:
-        """Vị họ Ô đầu có mặt trong danh sách vị thuốc (đã tách theo dấu phẩy, bỏ chú thích ngoặc).
+    # Dòng in vị thuốc ở Mục 5 (mọi nhánh dựng bài đều dùng đúng khuôn này).
+    _VI_THUOC_LINE_RE = re.compile(r'^(\s*-\s*\*Vị thuốc:\*\s*)(.+?)\s*$', re.M)
 
-        Tách riêng khỏi chỗ dùng để test gọi được MÃ THẬT — bản sao trong file test sẽ vẫn xanh
-        kể cả khi bộ dò ở đây bị gỡ, tức là không khóa được gì.
+    @staticmethod
+    def _herb_safety_sentence(aconite, ephedra) -> str:
+        """Một câu duy nhất cho cả hai hạng mục — dùng chung để hai chỗ gọi không lệch câu chữ.
+
+        Ghép bằng '; ' chứ KHÔNG phải '. ': ghép bằng dấu chấm sinh ra 'không tự dùng. chứa Ma
+        hoàng —' (chữ thường sau dấu chấm).
         """
-        out = []
+        _bits = []
+        if aconite:
+            _bits.append(f"{', '.join(aconite)} — họ Ô đầu (Aconitum), CÓ ĐỘC, phải do thầy thuốc "
+                         f"Đông y định liều và bào chế")
+        if ephedra:
+            _bits.append(f"{', '.join(ephedra)} — phát hãn mạnh, kích thích tim mạch (ephedrin), "
+                         f"thận trọng khi tăng huyết áp, bệnh tim/loạn nhịp, mất ngủ, cường giáp, "
+                         f"không dùng kéo dài")
+        return "; ".join(_bits) + ". Không tự dùng."
+
+    def _annotate_toxic_herb_lines(self, md: str, core_syndrome: str = "") -> str:
+        """Chèn cảnh báo an toàn dược dưới MỌI dòng '*Vị thuốc:*' có vị cần lưu ý.
+
+        IDEMPOTENT: bỏ qua dòng đã có cảnh báo ngay bên dưới (nhánh fallback thể-tổng-quát tự chèn
+        inline kèm ngữ cảnh 'khớp XẤP XỈ' — không được nhân đôi).
+
+        CỔNG CHỈ ĐỊNH cho ma hoàng: im lặng khi cốt lõi là BIỂU CHỨNG ngoại cảm. Trên Ma hoàng
+        thang / Tiểu thanh long thang, ma hoàng chính LÀ phép trị (phát hãn giải biểu, tuyên phế
+        bình suyễn) — cảnh báo ở đó là dạy sai y lý, và cảnh báo sai chỗ làm mất tin ở chỗ đúng.
+        Vị họ Ô đầu thì KHÔNG có cổng: độc tính không phụ thuộc chỉ định.
+        """
+        if not md or "*Vị thuốc:*" not in md:
+            return md
+        _skip_ephedra = self._syndrome_is_exterior_wind(core_syndrome or "")
+        _out, _pos = [], 0
+        for _m in self._VI_THUOC_LINE_RE.finditer(md):
+            _flags = self._herb_safety_flags(_m.group(2))
+            _aco = _flags.get("aconite") or []
+            _eph = [] if _skip_ephedra else (_flags.get("ephedra") or [])
+            if not (_aco or _eph):
+                continue
+            _tail = md[_m.end():_m.end() + 200]
+            if "An toàn dược" in _tail.split("\n- ")[0]:
+                continue                      # đã có cảnh báo inline -> không nhân đôi
+            _out.append(md[_pos:_m.end()])
+            _out.append("\n  - *⚠️ An toàn dược: bài chứa "
+                        + self._herb_safety_sentence(_aco, _eph) + "*")
+            _pos = _m.end()
+        return ("".join(_out) + md[_pos:]) if _out else md
+
+    @classmethod
+    def _herb_safety_flags(cls, vi_thuoc: str) -> dict:
+        """Vị cần cảnh báo, tách theo HAI hạng mục rủi ro khác nhau.
+
+        Trả {'aconite': [...], 'ephedra': [...]} — nêu TÊN VỊ theo TỪ KHÓA ĐÃ KHỚP, không phải
+        token thô. Token thô trong KB rất bẩn: đo được 11/30 token phân biệt hiển thị sai, kiểu
+        'Thăng ma (Lạnh nhiều gia Phụ tử' hay 'lưu ý Phụ tử' — in nguyên ra thì cảnh báo nêu nhầm
+        tên vị, thầy thuốc mất tin.
+
+        CỐ Ý bỏ chú thích trong ngoặc SAU khi đã tách theo dấu phẩy, không phải trước: đảo thứ tự
+        sẽ MẤT cờ ở dòng gia-giảm ('... (nếu hàn nặng gia Phụ tử)'). Mất cờ là lỗi AN TOÀN, nêu
+        sai tên chỉ là lỗi hiển thị — tầng này phải fail-closed.
+
+        Tách riêng khỏi chỗ dùng để test gọi được MÃ THẬT — bản sao trong file test vẫn xanh kể cả
+        khi bộ dò ở đây bị gỡ sạch, tức không khóa được gì (đã đo đúng như vậy một lần).
+        """
+        found = {"aconite": [], "ephedra": []}
         for _h in re.split(r'[,;]', vi_thuoc or ""):
             _hl = re.sub(r'\([^)]*\)', '', _h).strip().lower()
             if not _hl or any(_x in _hl for _x in cls._TOXIC_LOOKALIKE):
                 continue
-            if any(_k in _hl for _k in cls._TOXIC_ACONITE):
-                out.append(_h.strip())
-        return out
+            for _cat, _kws in (("aconite", cls._TOXIC_ACONITE), ("ephedra", cls._CAUTION_EPHEDRA)):
+                for _k in _kws:
+                    if _k in _hl and _k.capitalize() not in found[_cat]:
+                        found[_cat].append(_k.capitalize())
+        return found
 
     @staticmethod
     def _syndrome_is_hu(name: str) -> bool:
@@ -5933,6 +6002,19 @@ class TCMFusionPipeline:
                     _gen_rows.append((_hc_eff, _b, _bt, _row.get("vi_thuoc", "").strip(), _subset_ok, _duong_khi_ok))
                 # Thể sát cốt lõi nhất trước (nhiều âm tiết hơn = ít khái quát hơn); tối đa 2 bài
                 _gen_rows.sort(key=lambda t: -len(re.findall(r'[^\W\d_]+', t[0])))
+                # [CHỐNG CỘNG DỒN BÀI] Hai dòng dưới đây thuộc HAI BỆNH DANH khác nhau nhưng in ra
+                # với nhãn vai trò Y HỆT ('Bản – thể tổng quát...'), không một chữ nói chúng thay
+                # thế nhau. Ca thật in cạnh nhau Dương thị phương (Thục phụ tử + Ma hoàng chích) và
+                # Bát vị hoàn (Phụ tử) -> người đọc gộp hai bài = CHỒNG LIỀU aconitin. Đây là mối
+                # nguy mà đổi THỨ TỰ hai dòng không chạm tới được.
+                if len({_r[1].lower() for _r in _gen_rows[:2]}) > 1:
+                    _both_tox = sum(1 for _r in _gen_rows[:2]
+                                    if self._herb_safety_flags(_r[3]).get("aconite")) >= 2
+                    core_lines.append(
+                        "> **Các bài dưới đây tương ứng TỪNG bệnh danh — chọn MỘT theo bệnh cảnh "
+                        "trội, KHÔNG phối hợp đồng thời.**"
+                        + (" Cả hai bài đều chứa vị họ Ô đầu — tuyệt đối không cộng dồn."
+                           if _both_tox else "") + "\n")
                 for _hc, _b, _bt, _vi, _was_subset, _dk in _gen_rows[:2]:
                     _printed_pairs.add((_b.lower(), _bt.lower()))
                     _rel_word = "bao quát" if _was_subset else ("dạng khí hư của" if _dk else "tương ứng")
@@ -5946,13 +6028,14 @@ class TCMFusionPipeline:
                     else:
                         _dk_note = (" — *thể DƯƠNG hư: gia thêm vị ôn dương (ưu tiên Nhục quế/Can "
                                     "khương; Phụ tử CÓ ĐỘC, phải do thầy thuốc định liều và bào chế)*")
-                    _tox = self._herb_safety_flags(self._dedupe_herbs(_vi))
+                    _flags = self._herb_safety_flags(self._dedupe_herbs(_vi))
+                    _tox = _flags.get("aconite") or []
+                    _eph = _flags.get("ephedra") or []
                     _tox_note = ""
-                    if _tox:
+                    if _tox or _eph:
                         _tox_note = (f"\n  - *⚠️ An toàn dược: bài đến từ khớp XẤP XỈ (thể tổng quát, "
-                                     f"không khớp đích danh hội chứng cốt lõi) và chứa {', '.join(_tox)} "
-                                     f"— họ Ô đầu, CÓ ĐỘC; cần thầy thuốc Đông y định liều và bào chế, "
-                                     f"không tự dùng.*")
+                                     f"không khớp đích danh hội chứng cốt lõi) và chứa "
+                                     f"{self._herb_safety_sentence(_tox, _eph)}*")
                     core_lines.append(
                         f"- Trị Bệnh **{_b}** — *Bản – thể tổng quát của hội chứng cốt lõi* "
                         f"(Hội chứng {_hc} — {_rel_word} {final_primary}) → Dùng bài **{_bt}**{_dk_note}\n"
@@ -6300,6 +6383,12 @@ class TCMFusionPipeline:
         # [ĐỒNG BỘ MỤC 4↔5 — MUỘN] Chốt cuối: nếu Mục 5 đã kê bài TIÊU mà Mục 4 vẫn 'Không có Tiêu
         # Thực' -> nâng Bát Cương Bản Hư Tiêu Thực + viết lại Mục 4 (bắt hội chứng hỗn hợp thuc_pure sót).
         final_markdown = self._sync_muc4_with_muc5_tieu(final_markdown, symptoms_str)
+
+        # [AN TOÀN DƯỢC — PHỦ TOÀN BỘ] Đặt SAU mọi tầng dựng/dedup/đồng bộ Mục 5, gọi ĐÚNG MỘT LẦN.
+        # Trước đây cảnh báo vị độc chỉ nằm inline ở 1/9 chỗ in '*Vị thuốc:*' — kể cả nhánh khớp
+        # ĐÍCH DANH (tin cậy cao nhất) cũng câm. Quét markdown đã chốt thì phủ hết mọi nhánh, kể cả
+        # nhánh thêm về sau.
+        final_markdown = self._annotate_toxic_herb_lines(final_markdown, final_primary)
 
         return final_markdown
 
