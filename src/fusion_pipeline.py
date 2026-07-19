@@ -4291,6 +4291,9 @@ class TCMFusionPipeline:
         r'(?i)(?<![\wÀ-ỹ])(?:không|chẳng|chưa|ít|nhiều|đủ|nổi|lạnh|mát|nóng|ấm|cưỡng)(?![\wÀ-ỹ])'
         r'|giải\s+khát|nhấp\s+môi')
     _DRINK_CLAUSE_SPLIT_RE = re.compile(r'([,;.!?\n]+)')
+    # Liên từ dẫn vào vế hệ quả — điểm cắt để giữ lại vế y lý đứng trước.
+    _DRINK_CONJ_RE = re.compile(
+        r'(?i)(?<![\wÀ-ỹ])(?:nên|mà|dù|nhưng|khiến|làm cho|đến mức|tới mức|và)(?![\wÀ-ỹ])')
 
     def _strip_unfounded_drinking_behavior(self, llm_text: str, symptoms_str: str) -> str:
         """[Ô UỐNG] Gỡ khẳng định HÀNH VI UỐNG khi lời khai KHÔNG mô tả tính chất uống.
@@ -4319,12 +4322,30 @@ class TCMFusionPipeline:
                 _out.append(_seg)
                 continue
             _hit += 1
-            _out.append(" có khát (lời khai chưa mô tả tính chất uống — cần hỏi lại)"
-                        if "khát" in _seg.lower() else "")
+            # Cắt PHẪU THUẬT, không nuốt cả mệnh đề: câu bịa thường dính chung mệnh đề với y lý
+            # HỢP LỆ ("Dương hư không hóa tân dịch nên bệnh nhân không uống được nhiều." — vế đầu
+            # đúng và chính là cơ chế luật 21 CHO PHÉP). Cắt cả mệnh đề sẽ xóa luôn vế đúng và để
+            # lại dấu chấm trơ. Giữ phần TRƯỚC liên từ dẫn vào vế bịa.
+            _keep = ""
+            _mc = None
+            for _m in self._DRINK_CONJ_RE.finditer(_seg[:(self._DRINK_VERB_RE.search(_masked)
+                                                          or self._DRINK_POLARITY_RE.search(_masked)).start()]):
+                _mc = _m                                  # liên từ GẦN NHẤT trước vế bịa
+            if _mc and len(self._A3_WORD_RE.findall(_seg[:_mc.start()])) >= 3:
+                _keep = _seg[:_mc.start()].rstrip()
+            # Ghi chú chỉ thêm khi vế GIỮ LẠI chưa tự nhắc tới khát — nếu không sẽ ra
+            # "gây khát nước có khát (...)" trùng ý.
+            _note = ("" if (not _seg.lower().count("khát") or "khát" in _keep.lower())
+                     else " có khát (lời khai chưa mô tả tính chất uống — cần hỏi lại)")
+            _out.append(_keep + _note)      # giữ khoảng trắng đầu _note; .strip() cuối hàm dọn
         if not _hit:
             return llm_text
         logger.info("[Ô UỐNG] Gỡ %d khẳng định hành vi uống không có trong lời khai.", _hit)
-        return re.sub(r'\s*([,;])\s*(?=[,;.])', '', "".join(_out))
+        _res = re.sub(r'\s*([,;])\s*(?=[,;.])', '', "".join(_out))
+        # Dọn dấu câu MỒ CÔI do việc gỡ để lại (cùng lớp lỗi với mảnh vỡ (a3)): mệnh đề bị gỡ sạch
+        # có thể bỏ lại '. ' hoặc ', ' đứng đầu dòng/đầu câu.
+        _res = re.sub(r'(?m)^[\s]*[,;.]+\s*', '', _res)
+        return re.sub(r'\s{2,}', ' ', _res).strip()
 
     def _strip_unfounded_cold_mechanism(self, llm_text: str, bat_cuong_hint: str,
                                         primary: str, concurrent: str, symptoms_str: str) -> str:

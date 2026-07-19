@@ -93,6 +93,44 @@ def test_must_keep():
     return n, fl
 
 
+def test_surgical_cut():
+    """Cắt PHẪU THUẬT: câu bịa thường dính chung mệnh đề với y lý HỢP LỆ — phải giữ vế đúng.
+
+    Lỗi thật của phiên bản đầu (commit ce2637c): cắt theo CẢ mệnh đề nên
+    "Dương hư không hóa tân dịch nên bệnh nhân không uống được nhiều." -> "." — mất luôn vế
+    "Dương hư không hóa tân dịch", tức chính cơ chế Kim quỹ mà luật 21 CHO PHÉP. Hệ quả quan sát
+    được trên app thật: Mục 3 im lặng hoàn toàn về khát dù bệnh nhân CÓ khai 'khát nước'.
+    """
+    print("\n== (A2) Cắt phẫu thuật, giữ vế y lý ==")
+    n = fl = 0
+    for txt, must_keep in [
+        ("Dương hư không hóa tân dịch nên bệnh nhân không uống được nhiều.",
+         "Dương hư không hóa tân dịch"),
+        ("Thận dương suy không khí hóa được thủy dịch, khiến bệnh nhân uống nhiều vẫn không giải khát.",
+         "Thận dương suy không khí hóa được thủy dịch"),
+        ("Khát nước là do dương hư không hóa được tân dịch, không thể uống nhiều để giải.",
+         "dương hư không hóa được tân dịch"),
+    ]:
+        out = f(txt, LK)
+        ok = must_keep in out and out != txt
+        n += _chk(f"giữ vế y lý: {must_keep[:38]!r}", ok, "" if ok else repr(out[:70]))
+        fl += (not ok)
+    # KHÔNG để lại dấu câu mồ côi / khoảng trắng dính
+    for txt in ["Dương hư không hóa tân dịch nên bệnh nhân không uống được nhiều.",
+                "Bệnh nhân có tiểu đêm; khát mà không uống được đủ.",
+                "bệnh nhân chẳng uống nổi bao nhiêu."]:
+        out = f(txt, LK)
+        ok = not re.match(r'^\s*[,;.]', out) and ",có" not in out and ";có" not in out
+        n += _chk(f"không dấu câu mồ côi: {out[:44]!r}", ok)
+        fl += (not ok)
+    # Ghi chú KHÔNG được lặp ý khi vế giữ lại đã nhắc khát
+    out = f("gây khát nước dù không uống nhiều.", LK)
+    ok = out.lower().count("khát") == 1
+    n += _chk("không lặp 'khát' hai lần", ok, "" if ok else repr(out[:60]))
+    fl += (not ok)
+    return n, fl
+
+
 def test_license():
     """Lời khai ĐÃ mô tả tính chất uống -> cổng không được đụng một byte."""
     print("\n== (C) Cổng cấp phép ==")
@@ -196,7 +234,7 @@ def test_invariants():
 
 def main():
     tp = tf = 0
-    for fn in (test_must_catch, test_must_keep, test_license, test_real_corpus,
+    for fn in (test_must_catch, test_must_keep, test_surgical_cut, test_license, test_real_corpus,
                test_scope_locked, test_invariants):
         p, q = fn()
         tp += p
