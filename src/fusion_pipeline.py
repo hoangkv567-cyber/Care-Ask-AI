@@ -1737,9 +1737,11 @@ class TCMFusionPipeline:
     _MIXED_COLD_SIGNS = (
         "sợ lạnh", "úy hàn", "rét run", "lạnh run", "tay chân lạnh", "chân tay lạnh", "chi lạnh",
         "lưng lạnh", "bụng lạnh", "lạnh bụng", "nước tiểu trong", "tiểu trong", "tiểu tiện trong",
-        "phân sống", "đại tiện lỏng", "phân lỏng", "ngũ canh", "rêu trắng dày", "rêu trắng nhớt")
+        "phân sống", "đại tiện lỏng", "phân lỏng", "ngũ canh", "rêu trắng dày", "rêu trắng nhớt",
+        "thích uống nóng", "khát nhưng không muốn uống")
     _MIXED_HEAT_SIGNS = (
-        "sốt", "phát nhiệt", "triều nhiệt", "khát", "khát nước", "lưỡi đỏ", "chất lưỡi đỏ",
+        # 'khát' trần gỡ (nuốt cả 'không khát' và 'thích uống nóng'); 'uống nước lạnh' vào thay.
+        "sốt", "phát nhiệt", "triều nhiệt", "khát nước", "uống nước lạnh", "lưỡi đỏ", "chất lưỡi đỏ",
         "rêu vàng", "rêu lưỡi vàng", "tiểu vàng", "nước tiểu vàng", "họng đỏ", "đờm vàng", "mặt đỏ",
         "gò má đỏ", "ngũ tâm phiền nhiệt", "lòng bàn tay chân nóng", "bốc hỏa", "táo bón", "khô miệng")
     _WARM_DEF_THE_RE = re.compile(r'dương\s*hư|hư\s*hàn|hàn\s*(?:thấp|ngưng|trệ)|khí\s*hư|tỳ\s*vị\s*hư|thận\s*dương|tỳ\s*dương|dương\s*suy', re.IGNORECASE)
@@ -3333,8 +3335,13 @@ class TCMFusionPipeline:
     # -> gần như chắc chắn KHÔNG phải âm hư -> hạ bậc, chọn ứng viên non-âm-hư kế. 'Mồ hôi trộm'/'đạo
     # hãn' đơn độc KHÔNG tính là nhiệt (có thể do khí/dương hư). Trước đây luật này chỉ nằm trong prompt
     # LLM (mềm, bị 'mồ hôi trộm' kéo lệch); nay là cổng CỨNG.
+    # ⚠ 'khát' TRẦN đã bị gỡ: danh sách này khớp bằng phép `in` THÔ (không qua _kw_hit_clean nên
+    # KHÔNG hiểu phủ định) -> 'miệng nhạt KHÔNG khát' — lời khai phủ định khát, dấu HÀN kinh điển —
+    # bị đếm thành dấu NHIỆT, vô hiệu cổng hạ bậc âm-hư. Từ khi form cho khai 渴喜熱飲 thì
+    # 'khát, thích uống nóng' (dấu HÀN) cũng dính. Thay bằng các cụm ĐÃ NEO, không tự phủ định được.
     _AMHU_HEAT_SIGNS = (
-        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát", "khô họng", "họng khô", "khô miệng",
+        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "khát nhiều",
+        "khô họng", "họng khô", "khô miệng",
         "miệng khô", "khô mũi", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "lưỡi thon đỏ", "ít rêu",
         "không rêu", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ", "má đỏ", "hai gò má đỏ", "bốc hỏa",
         "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "bàn tay chân nóng", "nóng trong", "phiền nhiệt",
@@ -3387,8 +3394,10 @@ class TCMFusionPipeline:
     # "có dấu lạnh -> không nhiệt" KHÔNG chuẩn. Discriminator an toàn = "KHÔNG có dấu nhiệt NÀO":
     # phong nhiệt THẬT gần như luôn có họng đỏ/sốt/khát/rêu vàng. Nếu core NHIỆT mà lời khai 0 dấu
     # nhiệt + CÓ dấu hàn (tay chân lạnh/rêu trắng) -> gần chắc là HÀN -> loại nhiệt, chọn non-nhiệt.
+    # 'khát' trần gỡ vì cùng lý do như _AMHU_HEAT_SIGNS (khớp `in` thô, nuốt cả 'không khát').
     _NHIET_HEAT_SIGNS = (
-        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát", "khô họng", "họng khô", "khô miệng",
+        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "khát nhiều",
+        "khô họng", "họng khô", "khô miệng",
         "miệng khô", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ",
         "má đỏ", "mặt đỏ", "bốc hỏa", "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "nóng trong",
         "phiền nhiệt", "tâm phiền", "nước tiểu vàng", "tiểu vàng", "nước tiểu đỏ", "táo bón",
@@ -5196,7 +5205,14 @@ class TCMFusionPipeline:
         # chúng thì ca 'chảy mũi vàng đục + sợ lạnh' bị dựng thành 'Hư thuần túy' không dấu nhiệt.
         heat_kws = ["mạch sác", "tế sác", "sác", "mạch trầm sác", "khát nước", "sốt", "đỏ bừng", "khô miệng",
                     "họng ráo", "lưỡi đỏ", "chất lưỡi đỏ", "mụn đỏ", "nốt mụn đỏ", "rêu vàng",
-                    "đờm vàng", "mũi vàng", "vàng đục", "tiểu vàng", "họng đỏ"]
+                    "đờm vàng", "mũi vàng", "vàng đục", "tiểu vàng", "họng đỏ",
+                    # PARITY BẮT BUỘC với 'khát nước' ở trên: form nay cho khai riêng 渴喜冷飲.
+                    # Thiếu cụm này thì lời khai ĐẶC HIỆU HƠN lại bị nhận diện YẾU HƠN lời khai mơ
+                    # hồ (đo được: 'khát nước' -> True, 'khát, thích uống nước lạnh' -> False).
+                    # CHỈ thêm ở đây; KHÔNG thêm vào hai bản sao inline khác của danh sách này —
+                    # chúng gác việc cộng điểm và CƯỠNG BỨC core 'Âm Dương Lưỡng Hư', sẽ ép sai core
+                    # ở ca biểu hàn lý nhiệt (Đại thanh long: sợ lạnh + sốt + khát thích uống lạnh).
+                    "uống nước lạnh"]
 
         has_cold_indicator = self._kw_hit_clean(symptoms_lower_all, cold_kws)
         has_heat_pulse_indicator = self._kw_hit_clean(symptoms_lower_all, heat_kws)
@@ -5729,7 +5745,7 @@ class TCMFusionPipeline:
            - CỤ THỂ VỚI KHÍ HƯ TỔNG QUÁT: nếu hội chứng cốt lõi là 'Khí hư' / 'Khí huyết lưỡng hư' (tên KHÔNG mang tạng phủ cụ thể), cơ chế sinh khí phải quy về Tỳ (nguồn hóa sinh khí huyết, hậu thiên chi bản) và Phế (chủ khí). TUYỆT ĐỐI CẤM (PROHIBITED) viết "khí của tạng Can suy yếu" hay "Can khí hư" — bệnh lý điển hình của Can là KHÍ TRỆ/KHÍ UẤT (Thực chứng, thuộc Mục 4), Can KHÔNG phải nguồn Bản Hư của khí. Nếu hội chứng kèm theo là Can khí uất kết/Can khí uất trệ, nó chỉ được biện luận ở Mục 4 (Tiêu Thực), TUYỆT ĐỐI CẤM lấy nó làm nguyên nhân gốc của Bản Hư ở Mục 3.
         16. CHỐT CHẶN MỒ HÔI (ĐẠO HÃN vs TỰ HÃN) — CHỌN CƠ CHẾ THEO HỘI CHỨNG CỐT LÕI ĐÃ CHỐT ({final_primary}):
            - ĐẠO HÃN (mồ hôi trộm — ra mồ hôi lúc ngủ, tỉnh dậy thì hết): TUYỆT ĐỐI CẤM (PROHIBITED) giải thích bằng cơ chế "vệ (khí/dương) biểu bất cố không giữ được mồ hôi" (đó là cơ chế của TỰ HÃN ban ngày) và CẤM xếp đạo hãn vào "### 4. Phân tích Cơ chế Ngọn (Tiêu Thực)". Cơ chế ĐÚNG chọn theo cốt lõi:
-             (a) Cốt lõi là ÂM HƯ, HOẶC lời khai CÓ dấu nhiệt (lưỡi đỏ/ít rêu/khô, khát, ngũ tâm phiền nhiệt, triều nhiệt): đạo hãn do âm hư sinh nội nhiệt (hư hỏa), nhiệt bức tân dịch tiết ra ngoài về đêm.
+             (a) Cốt lõi là ÂM HƯ, HOẶC lời khai CÓ dấu nhiệt (lưỡi đỏ/ít rêu/khô, khát nước, khát thích uống lạnh, ngũ tâm phiền nhiệt, triều nhiệt — LƯU Ý: 'khát thích uống NÓNG' và 'khát nhưng KHÔNG muốn uống' KHÔNG phải dấu nhiệt): đạo hãn do âm hư sinh nội nhiệt (hư hỏa), nhiệt bức tân dịch tiết ra ngoài về đêm.
              (b) Cốt lõi là HUYẾT HƯ / KHÍ HUYẾT HƯ / TÂM (TỲ) HUYẾT HƯ VÀ lời khai KHÔNG có dấu nhiệt nào (lưỡi hồng nhạt, rêu trắng mỏng nhuận): đạo hãn thuộc thể HƯ theo lối "HÃN VI TÂM CHI DỊCH" (mồ hôi là dịch của Tâm) — tâm huyết/doanh âm bất túc, đêm ngủ vệ khí nhập lý khiến phần biểu tạm sơ hở, doanh âm hư KHÔNG liễm nhiếp được tân dịch nên mồ hôi rỉ ra khi ngủ, KHÔNG kèm nội nhiệt. Đây là đạo hãn THỂ HUYẾT HƯ (không phải âm hư hỏa vượng, cũng không phải vệ biểu bất cố) — tuân luật 15, KHÔNG tự thêm hội chứng âm hư mới ngoài Bước 1. Pháp đi kèm: dưỡng Tâm bổ huyết + cố biểu liễm hãn.
            - TỰ HÃN (mồ hôi tự ra ban ngày, vận động càng ra nhiều): mới là biểu hiện KHÍ HƯ/DƯƠNG HƯ (vệ khí bất cố, tấu lý không kín) → giải thích theo cơ chế khí hư bất cố nhiếp ở phần Bản Hư.
         17. QUẦNG THÂM MẮT / QUẦNG ĐEN DƯỚI MẮT — XÉT THEO ĐÚNG THỨ TỰ ƯU TIÊN (a) → (b) → (c), CHỌN NHÁNH ĐẦU TIÊN KHỚP:
@@ -5748,6 +5764,10 @@ class TCMFusionPipeline:
            - PHẢI LÀM: chỉ nhận định TRUNG TÍNH rằng các dấu này là NỀN có từ trước, KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này, nên theo dõi thêm (đúng khuôn luật 17(c)).
            - TUYỆT ĐỐI CẤM (PROHIBITED) bịa cơ chế gán chúng cho NGOẠI TÀ CẤP. CẤM đích danh các kiểu: "phong nhiệt tà khí làm rối loạn khí huyết gây quầng thâm", "phong nhiệt/phong hàn làm tổn thương khí huyết khiến mặt nhợt nhạt", "phong nhiệt làm rối loạn vận hóa của Tỳ gây lưỡi bệu".
            - CŨNG CẤM nhân đó tự thêm hội chứng hư mới (Tỳ hư / Thận hư / khí huyết hư) làm nguyên nhân — trái luật 6 và luật 15.
+        21. CHỐT CHẶN TÍNH CHẤT KHÁT (渴飲) — CẤM SUY DIỄN HÀNH VI UỐNG NGOÀI LỜI KHAI:
+           - Y LÝ: tính chất khát là dấu PHÂN CỰC hàn/nhiệt cốt tử, KHÔNG phải chi tiết văn phong — 渴喜冷飲 (khát thích uống LẠNH) = NHIỆT; 渴喜熱飲 (khát thích uống ẤM/NÓNG) = HÀN; 渴不欲飲 (khát mà KHÔNG muốn uống) = thấp/đàm/ứ huyết/dương hư không hóa tân; 大渴引飲 (khát dữ uống nhiều) = thực nhiệt.
+           - TUYỆT ĐỐI CẤM (PROHIBITED) khẳng định BẤT KỲ tính chất uống nào mà lời khai KHÔNG nêu nguyên văn. Cấm đích danh các cụm: "không uống được", "uống không giải khát", "uống nhiều vẫn không đỡ", "chỉ nhấp môi", "không muốn uống", "thích uống lạnh", "thích uống ấm/nóng" — TRỪ KHI chính lời khai đã chứa cụm đó. Nếu lời khai chỉ có "khát nước" TRẦN (chưa rõ ấm/lạnh) thì CHỈ được viết "có khát", tuyệt đối không tự gán thêm tính chất để cho khớp chẩn đoán.
+           - ĐƯỢC PHÉP (không tính là bịa) giải thích CƠ CHẾ "dương bất khí hóa, tân dịch bất thượng thừa" (Kim quỹ 消渴: tiểu tiện phản đa) cho ca khát + tiểu trong dài + cốt lõi dương hư — MIỄN LÀ không kèm bất kỳ khẳng định nào về HÀNH VI UỐNG của bệnh nhân.
         """
         
         try:
