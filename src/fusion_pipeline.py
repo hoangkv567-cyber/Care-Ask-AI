@@ -323,6 +323,59 @@ class TCMFusionPipeline:
         self._neg_protected = cached
         return cached
 
+    # [MẢNH VỠ a3] Luật (a3) gỡ đúng span '<động từ nhân-quả> <triệu chứng bịa>' nhưng KHÔNG nhìn
+    # phần dư HAI BÊN span trong cùng mệnh đề -> để lại rác. Tái hiện tất định (ca thật nữ 34t):
+    #   "...điều tiết thủy dịch, về đêm gây mất ngủ."      -> "..., về đêm."      (trạng ngữ mồ côi)
+    #   "...điều tiết thủy dịch, về đêm sinh ra phù chân." -> "..., về đêm chân." (cắt giữa cụm:
+    #    'phù' CÓ trong vocab, 'phù chân' KHÔNG -> chỉ 'phù' bị gỡ, 'chân' ở lại)
+    #
+    # Vá đặt TẠI ĐIỂM CẮT, neo theo span mà chính (a3) vừa khớp — KHÔNG phải một tầng quét lại toàn
+    # văn bản chạy sau censor. Khác biệt này quyết định: 'chạy sau censor' KHÔNG đồng nghĩa 'chỉ
+    # chạm văn bản censor đã sửa' (nhánh except của khối biện luận đi thẳng tới tầng hậu xử lý mà
+    # censor chưa hề chạy, và _patch_missing_symptoms còn chèn thêm nội dung SAU censor).
+    # Neo theo span thì câu censor không đụng là bất khả xâm phạm THEO CẤU TRÚC, không theo may mắn.
+    #
+    # Bản chất: NỚI RỘNG vùng xóa của một lần xóa ĐÃ ĐƯỢC DUYỆT, trong ĐÚNG mệnh đề chứa span.
+    # Không thêm term nào vào diện bị xóa -> năng lực chống bịa ĐƠN ĐIỆU KHÔNG GIẢM.
+    # FAIL-CLOSED: mọi điều kiện không thỏa đều rơi về hành vi cũ y nguyên.
+    #
+    # ⚠ CẤM biến thành tầng quét lại toàn văn bản; CẤM tiêu chí đếm-từ/vắng-động-từ trên prose CHƯA
+    # bị cắt (đo được 100% dương tính giả trên văn tả mạch/thiệt: "Mạch trầm tế, vô lực.").
+    # ⚠ CẤM whitelist trạng ngữ ('về đêm', 'về chiều'...): đo được xóa oan 13/14 mệnh đề CƠ CHẾ
+    #   y lý — đúng loại câu mà prompt đang dạy LLM viết ("Vệ khí ban ngày hành ở biểu, về đêm
+    #   hành ở phần Âm."). Cách duy nhất an toàn là danh sách ĐÓNG chỉ để GIỮ (_A3_YLY_RE).
+    _A3_BOUND_RE = re.compile(r'[,;.!?\n]')
+    _A3_WORD_RE = re.compile(r'[\wÀ-ỹ]+')
+    # Phần dư chứa từ Hán-Việt tạng phủ / khí huyết / bát cương / tứ chẩn = NỘI DUNG Y LÝ -> KHÔNG
+    # nuốt mệnh đề. Danh sách ĐÓNG và chỉ dùng để GIỮ LẠI: nới nó chỉ làm bản vá thận trọng hơn.
+    _A3_YLY_RE = re.compile(
+        r'(?i)(?<![\wÀ-ỹ])(?:can|tâm|tỳ|tì|phế|thận|vị|đởm|tam tiêu|vệ|doanh|dương|âm|huyết|khí'
+        r'|tân dịch|tinh|hồn|phách|kinh|lạc|tạng|phủ|hàn|nhiệt|thấp|đàm|phong|táo|hỏa|ứ|trệ|uất'
+        r'|thủy|dịch|mạch|lưỡi|rêu)(?![\wÀ-ỹ])')
+
+    def _a3_cut(self, text: str, rx, input_terms: list) -> str:
+        """Gỡ các span (a3). Nếu phần dư của CHÍNH mệnh đề đó trở nên mồ côi thì gỡ trọn mệnh đề."""
+        for _s, _e in reversed([m.span() for m in rx.finditer(text)]):   # phải->trái, offset không lệch
+            _lm = None
+            for _mm in self._A3_BOUND_RE.finditer(text[:_s]):
+                _lm = _mm                      # ký tự ngắt gần nhất TRƯỚC span
+            _left = _lm.start() if _lm else -1
+            # CHỈ mệnh đề mở bằng ',' hoặc ';'. TUYỆT ĐỐI không nhận '\n': nhận xuống dòng làm biên
+            # trái sẽ nuốt cả gạch đầu dòng markdown ('- Thận dương hư suy..').
+            _left_is_clause = bool(_lm) and _lm.group(0) in ",;"
+            _rm = self._A3_BOUND_RE.search(text[_e:])
+            _right = _e + (_rm.start() if _rm else len(text) - _e)
+            _residue = (text[_left + 1:_s] + " " + text[_e:_right]).strip()
+            _nw = len(self._A3_WORD_RE.findall(_residue))
+            if (_left_is_clause and 0 < _nw <= 3
+                    and not self._A3_YLY_RE.search(_residue)
+                    and not any(t and t in _residue.lower() for t in input_terms)):
+                logger.info("[MẢNH VỠ a3] Gỡ trọn mệnh đề mồ côi: %r", _residue)
+                text = text[:_left] + text[_right:]
+            else:
+                text = text[:_s] + text[_e:]   # hành vi CŨ, không đổi một byte
+        return text
+
     def _post_process_hallucinations(self, text: str, symptoms_str: str) -> str:
         """Xóa bỏ các triệu chứng ảo giác ra khỏi văn bản biện chứng bằng lập trình nếu không có trong đầu vào"""
         if not text:
@@ -425,8 +478,10 @@ class TCMFusionPipeline:
             new_text = re.sub(rf'(?i)(\b{_causal}\s+){pat}\s+(?:và|hoặc)\s+', r'\1', text)
             #   (a2) term CUỐI/giữa liệt kê ngay trong cụm nhân-quả -> bỏ " và X" (giữ phần trước)
             new_text = re.sub(rf'(?i)(\b{_causal}\b[^,.;]{{0,40}}?)\s*(?:,|và|hoặc)\s+{pat}(?![\wÀ-ỹ])', r'\1', new_text)
-            #   (a3) term đơn lẻ sau động từ -> bỏ cả cụm "verb X"
-            new_text = re.sub(rf'(?i)\b{_causal}\s+{pat}(?![\wÀ-ỹ])', '', new_text)
+            #   (a3) term đơn lẻ sau động từ -> bỏ cả cụm "verb X". Cắt theo MỆNH ĐỀ chứ không chỉ
+            #   theo span verb+term — xem _a3_cut (mảnh vỡ trạng ngữ/bổ ngữ mồ côi).
+            new_text = self._a3_cut(
+                new_text, re.compile(rf'(?i)\b{_causal}\s+{pat}(?![\wÀ-ỹ])'), input_terms)
             # (b) chủ ngữ ĐẦU liệt kê: "Chóng mặt và đau đầu là do..." -> bỏ "Chóng mặt và "
             new_text = re.sub(
                 rf'(?i)(?<![\wÀ-ỹ]){pat}\s*(?:,|và)\s*(?=[^,.;]{{0,60}}\b{_subj_causal})',
