@@ -410,7 +410,12 @@ class TCMFusionPipeline:
         # dùng 'khiến/gây' đứng sau dấu phẩy và không cho lookahead băng qua ,.; — tránh gỡ nhầm
         # danh từ cơ chế ("vận hóa tân dịch và thức ăn, khiến cho...").
         _subj_causal = r'(?:là do|đều do|là vì|là bởi|(?:cũng\s+)?là(?:\s+một)?\s+(?:biểu hiện|dấu hiệu))'
-        for term in self._get_symptom_vocab():
+        # Duyệt cụm DÀI trước: 'mệt mỏi' phải xét xong trước 'mệt', nếu không luật (a2) cắt ', mệt'
+        # đúng biên từ rồi bỏ lại 'mỏi' mồ côi — ca thật in ra 'tinh thần uể oải mỏi'. Khóa phụ `t`
+        # khử tính BẤT ĐỊNH do duyệt trên set (hash randomization: cùng lời khai cho ra nhiều bản
+        # văn khác nhau giữa các lần chạy) — bệnh án phải tái lập được.
+        # CHỈ đổi THỨ TỰ duyệt, không bỏ qua term nào -> năng lực chống bịa đơn điệu KHÔNG giảm.
+        for term in sorted(self._get_symptom_vocab(), key=lambda t: (-len(t), t)):
             if term not in text_lower or _is_input_symptom(term):
                 continue
             pat = re.escape(term)
@@ -2985,6 +2990,43 @@ class TCMFusionPipeline:
         """Bỏ từ đệm 'màu/mầu' trước tên màu ('đờm màu vàng' -> 'đờm vàng') cho khớp keyword hàn/nhiệt."""
         return cls._COLOR_FILLER_RE.sub('', text or '')
 
+    # Tiền tố NHÂN KHẨU HỌC trong nhãn KB ('Người lớn - Dương hư') là siêu dữ liệu ĐỐI TƯỢNG, không
+    # phải bệnh cơ — nhưng tầng khớp tokenize nhãn THÔ nên 'người'/'lớn' tự loại nhãn khỏi phép thử
+    # tập-con. Ca thật (nữ 34t dương hư di niệu): 'Di niệu × Người lớn - Dương hư -> Bát vị hoàn
+    # (Kim quỹ thận khí hoàn)' — bài kinh điển — bị loại IM LẶNG, hệ rơi sang bài viêm cột sống của
+    # bệnh khác. Từ vựng ĐÓNG + neo ĐẦU CHUỖI: 18/22 nhãn có gạch trong KB là nhãn GHÉP HAI HỘI
+    # CHỨNG ('Âm hoàng - Hàn thấp trở át', 'Dương hoàng - Nhiệt trọng ư thấp') — tách mù bằng
+    # split(' - ') sẽ ĐẢO CỰC hàn/nhiệt. CẤM mở rộng sang 'Cấp tính -'/'Mãn tính -': giai đoạn
+    # cấp/mãn quyết định cực điều trị (Chàm cấp = thanh; mãn = dưỡng huyết nhuận táo).
+    _DEMO_PREFIX_RE = re.compile(r'^\s*(người\s+lớn|trẻ\s+em)\s*[-–]\s*(?=\S)', re.I)
+
+    @classmethod
+    def _strip_demographic_prefix(cls, hc: str) -> str:
+        """'Người lớn - Dương hư' -> 'Dương hư'; nhãn thường giữ nguyên."""
+        return cls._DEMO_PREFIX_RE.sub("", hc or "").strip()
+
+    # Vị họ Ô ĐẦU (Aconitum) — có độc, phải bào chế/định liều bởi thầy thuốc.
+    _TOXIC_ACONITE = ("phụ tử", "ô đầu", "xuyên ô", "thảo ô")
+    # GIẢ DANH — chứa chuỗi con giống vị độc nhưng KHÔNG phải: 'Địa phụ tử' là hạt Kochia
+    # (thanh nhiệt lợi thấp); 'Ma hoàng căn' là RỄ, thu sáp CHỈ hãn — ngược cực với ma hoàng.
+    _TOXIC_LOOKALIKE = ("địa phụ tử", "ma hoàng căn")
+
+    @classmethod
+    def _herb_safety_flags(cls, vi_thuoc: str) -> list:
+        """Vị họ Ô đầu có mặt trong danh sách vị thuốc (đã tách theo dấu phẩy, bỏ chú thích ngoặc).
+
+        Tách riêng khỏi chỗ dùng để test gọi được MÃ THẬT — bản sao trong file test sẽ vẫn xanh
+        kể cả khi bộ dò ở đây bị gỡ, tức là không khóa được gì.
+        """
+        out = []
+        for _h in re.split(r'[,;]', vi_thuoc or ""):
+            _hl = re.sub(r'\([^)]*\)', '', _h).strip().lower()
+            if not _hl or any(_x in _hl for _x in cls._TOXIC_LOOKALIKE):
+                continue
+            if any(_k in _hl for _k in cls._TOXIC_ACONITE):
+                out.append(_h.strip())
+        return out
+
     @staticmethod
     def _syndrome_is_hu(name: str) -> bool:
         """Hội chứng thuộc HƯ chứng (bản chất suy yếu/bất túc) theo từ khóa trong tên.
@@ -5182,9 +5224,37 @@ class TCMFusionPipeline:
                             "rìa lưỡi đỏ", "mắt đỏ", "mặt đỏ", "đỏ bừng", "khát nước", "họng đỏ",
                             "đờm vàng", "mũi vàng", "vàng đục", "tiểu vàng", "mụn đỏ", "nốt mụn đỏ", "sốt"]
         has_strong_heat = self._kw_hit_clean(symptoms_lower_all, _strong_heat_kws)
+        # [KHÁT KHÔNG ĐỦ DỰNG NHIỆT] 'khát nước' là thành viên DUY NHẤT của _strong_heat_kws không
+        # phải dấu nhiệt KHÁCH QUAN (17 dấu còn lại — rêu vàng, lưỡi đỏ, sốt... — đều khách quan).
+        # Dương bất khí hóa thì tân bất thượng thừa -> KHÁT mà tiểu TRONG DÀI (Kim quỹ: "tiểu tiện
+        # phản đa... Thận khí hoàn chủ chi"). Ca thật (nữ 34t, tiểu trong dài + tiểu đêm + rêu trắng
+        # nhuận + lưỡi bệu, core 'Tỳ thận dương hư'): chữ 'khát nước' đơn độc dựng trục Nhiệt ->
+        # xuống bộ đối chiếu L5282 thì _han_corr=False nên tag 'Hàn' ĐÚNG (từ Neo4j) BỊ XÓA ->
+        # nhãn 'Lý - Nhiệt - Hư' TRÁI CỰC chính hội chứng vừa chốt.
+        # Cổng là GIAO của 3 điều kiện, KHÔNG neo vào tên hội chứng cốt lõi (tránh vòng tự-hợp-thức):
+        #   khát là dấu nhiệt mạnh DUY NHẤT  ∧  có dấu HÀN định tính  ∧  0 dấu khóa nhiệt/âm-hư.
+        # Cùng khuôn tiền lệ [DẤU NHIỆT YẾU — NƯỚC TIỂU VÀNG] ở trên. Tái dùng hằng cấp lớp đã có
+        # test khóa; KHÔNG gỡ 'khát nước' khỏi _strong_heat_kws (nó là chứng chủ của Bạch hổ thang /
+        # Tiêu khát / Vị nhiệt, và lan sang has_heat_pulse_indicator dùng ở 7 nơi); KHÔNG đụng
+        # cold_kws (nó gác 5 quyết định, thêm từ vào đó sẽ bật 'Hàn Nhiệt Thác Tạp' GIẢ).
+        # Loại 'tiểu trong' khỏi tập dò: 'trong' làm GIỚI TỪ ("đi tiểu trong ngày/trong đêm") dính
+        # oan ca thấp nhiệt lâm chứng. Các cụm còn lại đều có danh từ neo ('nước tiểu…'/'tiểu tiện…').
+        _cold_strong_unambig = [k for k in self._THERMAL_COLD_STRONG if k != "tiểu trong"]
+        _heat_nonthirst = self._kw_hit_clean(
+            symptoms_lower_all, [k for k in _strong_heat_kws if k != "khát nước"])
+        _thirst_only_on_cold = (
+            has_strong_heat and not _heat_nonthirst
+            and self._kw_hit_clean(symptoms_lower_all, _cold_strong_unambig)
+            and not self._kw_hit_clean(symptoms_lower_all, list(self._THERMAL_NO_SWAP_SIGNS)))
         if (not self._syndrome_is_exterior_wind(final_primary)
-                and has_strong_heat and not has_cold_indicator):
+                and has_strong_heat and not has_cold_indicator
+                and not _thirst_only_on_cold):
             all_bat_cuong.add("Nhiệt")
+        elif _thirst_only_on_cold:
+            logger.warning(
+                f"[KHÁT KHÔNG ĐỦ NHIỆT] Dấu nhiệt mạnh DUY NHẤT là 'khát nước' trên nền dấu hàn "
+                f"định tính (nước tiểu trong/tay chân lạnh…) + 0 dấu khóa nhiệt/âm-hư -> KHÔNG "
+                f"dựng trục Nhiệt. core='{final_primary}'.")
 
         # [BỔ SUNG LÝ] Không có bất kỳ dấu BIỂU CHỨNG nào -> bệnh thuộc Lý theo phép loại trừ Bát
         # Cương (nội thương tạng phủ), bất kể node metadata có tag 'Lý' hay không — tránh nhãn cụt
@@ -5805,7 +5875,9 @@ class TCMFusionPipeline:
                     "ẩm", "hỏa", "hoả", "ứ", "trệ", "uất", "kết", "tích", "nghịch", "độc",
                     "táo", "thử", "phong", "khí", "huyết", "âm", "dương",
                 }
-                _core_toks = set(re.findall(r'[^\W\d_]+', primary_key))
+                # Đối xứng hai phía: cốt lõi mang tiền tố nhân khẩu cũng hành xử như nhãn sạch.
+                _core_toks = set(re.findall(
+                    r'[^\W\d_]+', self._strip_demographic_prefix(primary_key).lower()))
                 _gen_rows = []
                 for _row in (getattr(self, "csv_rows", None) or []):
                     _b = _row.get("benh_ly", "").strip()
@@ -5815,7 +5887,8 @@ class TCMFusionPipeline:
                         continue
                     if (_b.lower(), _bt.lower()) in _printed_pairs:
                         continue
-                    _hc_toks = set(re.findall(r'[^\W\d_]+', _hc.lower()))
+                    _hc_eff = self._strip_demographic_prefix(_hc)
+                    _hc_toks = set(re.findall(r'[^\W\d_]+', _hc_eff.lower()))
                     _subset_ok = bool(_hc_toks) and (_hc_toks < _core_toks)
                     # [NGOẠI CẢM CÙNG CHỮ KÝ] Cốt lõi ngoại cảm biểu ('Phong hàn phạm biểu') vs thể
                     # KB ngoại cảm CÙNG CHỮ KÝ BỆNH LÝ ('Phong hàn tập phế' — patho-token {phong,hàn}
@@ -5827,7 +5900,7 @@ class TCMFusionPipeline:
                     _ext_sig_ok = (
                         not _subset_ok and bool(_hc_toks)
                         and self._syndrome_is_exterior_wind(final_primary)
-                        and self._syndrome_is_exterior_wind(_hc)
+                        and self._syndrome_is_exterior_wind(_hc_eff)
                         and (_hc_toks & _patho_toks) == (_core_toks & _patho_toks)
                     )
                     # [BẮC CẦU DƯƠNG HƯ → KHÍ HƯ] 阳虚 = 气虚 + hàn: cốt lõi 'X dương hư' MƯỢN ĐƯỢC bài
@@ -5853,9 +5926,11 @@ class TCMFusionPipeline:
                     if (not _duong_khi_ok and (_core_toks - _hc_toks) & _patho_toks
                             and not self._yin_def_yang_rise_general(_core_toks, _hc_toks)):
                         continue
-                    if self._syndrome_is_hu(_hc) != self._syndrome_is_hu(final_primary):
+                    if self._syndrome_is_hu(_hc_eff) != self._syndrome_is_hu(final_primary):
                         continue
-                    _gen_rows.append((_hc, _b, _bt, _row.get("vi_thuoc", "").strip(), _subset_ok, _duong_khi_ok))
+                    # Nhãn SẠCH đi tiếp: sort key đếm âm tiết và prose Mục 5 đều phải thấy 'Dương hư',
+                    # không phải 'Người lớn - Dương hư' (4 token sẽ giả vờ 'sát cốt lõi' hơn thực tế).
+                    _gen_rows.append((_hc_eff, _b, _bt, _row.get("vi_thuoc", "").strip(), _subset_ok, _duong_khi_ok))
                 # Thể sát cốt lõi nhất trước (nhiều âm tiết hơn = ít khái quát hơn); tối đa 2 bài
                 _gen_rows.sort(key=lambda t: -len(re.findall(r'[^\W\d_]+', t[0])))
                 for _hc, _b, _bt, _vi, _was_subset, _dk in _gen_rows[:2]:
@@ -5869,11 +5944,19 @@ class TCMFusionPipeline:
                         _dk_note = (" — *thể DƯƠNG hư: cân nhắc gia vị ôn dương NHẸ (Can khương/Nhục quế liều nhỏ); "
                                     "TRẺ EM tránh Phụ tử/Ô đầu — cần thầy thuốc Nhi khoa Đông y*")
                     else:
-                        _dk_note = " — *thể DƯƠNG hư: gia thêm vị ôn dương (Phụ tử/Nhục quế/Can khương)*"
+                        _dk_note = (" — *thể DƯƠNG hư: gia thêm vị ôn dương (ưu tiên Nhục quế/Can "
+                                    "khương; Phụ tử CÓ ĐỘC, phải do thầy thuốc định liều và bào chế)*")
+                    _tox = self._herb_safety_flags(self._dedupe_herbs(_vi))
+                    _tox_note = ""
+                    if _tox:
+                        _tox_note = (f"\n  - *⚠️ An toàn dược: bài đến từ khớp XẤP XỈ (thể tổng quát, "
+                                     f"không khớp đích danh hội chứng cốt lõi) và chứa {', '.join(_tox)} "
+                                     f"— họ Ô đầu, CÓ ĐỘC; cần thầy thuốc Đông y định liều và bào chế, "
+                                     f"không tự dùng.*")
                     core_lines.append(
                         f"- Trị Bệnh **{_b}** — *Bản – thể tổng quát của hội chứng cốt lõi* "
                         f"(Hội chứng {_hc} — {_rel_word} {final_primary}) → Dùng bài **{_bt}**{_dk_note}\n"
-                        f"  - *Vị thuốc:* {self._dedupe_herbs(_vi) or '(chưa cập nhật vị thuốc)'}\n"
+                        f"  - *Vị thuốc:* {self._dedupe_herbs(_vi) or '(chưa cập nhật vị thuốc)'}{_tox_note}\n"
                     )
 
             # [FALLBACK THỂ KB CÙNG CỰC KHỚP BỆNH CẢNH] Chiều NGƯỢC của thể-tổng-quát: cốt lõi
