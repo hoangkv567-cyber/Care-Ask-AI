@@ -4257,6 +4257,75 @@ class TCMFusionPipeline:
                 
         return part1 + part2 + part3
 
+    # [Ô PHÂN CỰC — HÀNH VI UỐNG] Song sinh TẤT ĐỊNH của luật 21 trong prompt Mục 3.
+    #
+    # VÌ SAO KHÔNG VÁ Ở PROMPT NỮA: luật 21 cấm ĐÍCH DANH 7 cụm, LLM viết cụm thứ 8 ngay lần chạy
+    # kế ("khát nước dù không uống nhiều"). Đo được 4/4 lần chạy đều bịa tính chất uống, mỗi lần
+    # một cách diễn đạt khác. Prompt là tầng KHUYẾN NGHỊ — tuân định dạng nhưng vi phạm ngữ nghĩa.
+    #
+    # VÌ SAO KHÔNG NỚI TỪ ĐIỂN: censor duyệt từ điển 3761 mục là thế giới MỞ — "không uống nhiều"
+    # không có trong đó, và diễn giải vòng thì vô hạn. Cổng này hỏi câu KHÁC: "lời khai có CẤP
+    # PHÉP cho ô 'hành vi uống' không?" — thế giới ĐÓNG. Vì neo vào ĐỘNG TỪ 'uống' + danh sách bổ
+    # ngữ phân cực ĐÓNG, mọi cách diễn đạt đều phải đi qua đó, nên KHÔNG có "cụm thứ 9".
+    #
+    # ĐÂY LÀ TRỤC THỨ TƯ của khuôn đã chạy sẵn trong file (xem _strip_unfounded_cold_mechanism ngay
+    # dưới, mirror trục nhiệt, và _BLOOD_STASIS_IN_HU_RE): từ vựng ĐÓNG, neo vào BẰNG CHỨNG chứ
+    # không vào từ điển, viết lại bằng re.sub, 0 lượt gọi LLM.
+    #
+    # PHẠM VI CÓ CHỦ ĐÍCH: CHỈ phủ trục uống. Hai đường rò khác đo được ("cảm giác lạnh kéo dài",
+    # "toàn thân nặng nề") mỗi cái 1/298 câu — không đủ mẫu chứng minh an toàn, và mọi cơ chế đủ
+    # rộng để bắt chúng đều tái sinh lỗi cũ (censor từng xóa nhầm triệu chứng bệnh nhân khai).
+    _DRINK_LICENSE_KWS = (
+        "uống nước lạnh", "uống nước mát", "thích uống lạnh", "thích uống mát",
+        "uống nước nóng", "uống nước ấm", "thích uống nóng", "thích uống ấm",
+        "không muốn uống", "không uống được", "khát nhưng không muốn uống",
+        "uống nhiều", "khát nhiều", "uống ít", "không khát",
+    )
+    # Danh từ ghép / ngôn ngữ dùng thuốc — KHÔNG phải hành vi uống của bệnh nhân.
+    _DRINK_NOUN_RE = re.compile(r'(?i)(?:nước|ăn|đồ|thức)\s+uống|uống\s+(?:thuốc|bài|thang)|sắc\s+uống')
+    _DRINK_VERB_RE = re.compile(r'(?i)(?<![\wÀ-ỹ])uống(?![\wÀ-ỹ])')
+    # CHỈ nổ khi mệnh đề mang BỔ NGỮ PHÂN CỰC. Lời khai form của ca này là "khát, thích uống" —
+    # KHÔNG có bổ ngữ nào nên bất khả xâm phạm. Đây là điều kiện THU HẸP, không phải mở rộng.
+    # ⚠ CẤM thêm 'thích' vào đây: sẽ xóa oan chính lời khai đó.
+    _DRINK_POLARITY_RE = re.compile(
+        r'(?i)(?<![\wÀ-ỹ])(?:không|chẳng|chưa|ít|nhiều|đủ|nổi|lạnh|mát|nóng|ấm|cưỡng)(?![\wÀ-ỹ])'
+        r'|giải\s+khát|nhấp\s+môi')
+    _DRINK_CLAUSE_SPLIT_RE = re.compile(r'([,;.!?\n]+)')
+
+    def _strip_unfounded_drinking_behavior(self, llm_text: str, symptoms_str: str) -> str:
+        """[Ô UỐNG] Gỡ khẳng định HÀNH VI UỐNG khi lời khai KHÔNG mô tả tính chất uống.
+
+        ĐỂ LẠI DẤU VẾT thay vì xóa im lặng: tính chất khát là dấu phân cực hàn/nhiệt cốt tử
+        (渴喜冷飲 = nhiệt, 渴喜熱飲 = hàn, 渴不欲飲 = thấp/dương hư), thầy thuốc phải biết đây
+        chính là chỗ PHẢI hỏi lại chứ không phải chỗ đã có dữ liệu.
+
+        Cơ chế 'dương bất khí hóa, tân dịch bất thượng thừa' (Kim quỹ — luật 21 CHO PHÉP) không
+        chứa động từ 'uống' nên an toàn THEO CẤU TRÚC, không theo may mắn.
+        """
+        if not llm_text:
+            return llm_text
+        _sym = (symptoms_str or "").lower()
+        if any(k in _sym for k in self._DRINK_LICENSE_KWS):
+            return llm_text                    # lời khai ĐÃ cấp phép -> không đụng một byte
+        _parts = self._DRINK_CLAUSE_SPLIT_RE.split(llm_text)
+        _out, _hit = [], 0
+        for _i, _seg in enumerate(_parts):
+            if _i % 2 == 1 or not _seg.strip():         # phần tử lẻ = dấu ngắt, giữ nguyên
+                _out.append(_seg)
+                continue
+            _masked = self._DRINK_NOUN_RE.sub(' ', _seg)
+            if not (self._DRINK_VERB_RE.search(_masked)
+                    and self._DRINK_POLARITY_RE.search(_masked)):
+                _out.append(_seg)
+                continue
+            _hit += 1
+            _out.append(" có khát (lời khai chưa mô tả tính chất uống — cần hỏi lại)"
+                        if "khát" in _seg.lower() else "")
+        if not _hit:
+            return llm_text
+        logger.info("[Ô UỐNG] Gỡ %d khẳng định hành vi uống không có trong lời khai.", _hit)
+        return re.sub(r'\s*([,;])\s*(?=[,;.])', '', "".join(_out))
+
     def _strip_unfounded_cold_mechanism(self, llm_text: str, bat_cuong_hint: str,
                                         primary: str, concurrent: str, symptoms_str: str) -> str:
         """[NHẤT QUÁN HÀN] LLM đôi khi bịa cơ chế 'Âm hàn ngưng trệ' / 'hàn ngưng' để giải thích đau
@@ -5827,6 +5896,10 @@ class TCMFusionPipeline:
         # thương thực/thực trệ cấp. Dùng symptoms_lower (chứa 'bệnh vài ngày' do form ghép vào).
         llm_explanation = self._annotate_acute_onset_caution(
             llm_explanation, final_primary, symptoms_lower)
+        # [Ô UỐNG] Chốt chặn TẤT ĐỊNH cho luật 21 — prompt đã thua 4/4 lần chạy (mỗi lần LLM viết
+        # một cách diễn đạt mới). Đặt SAU _patch_missing_symptoms để phủ luôn văn do mã chèn, và
+        # TRƯỚC _tidy_dangling_punctuation để dấu câu treo do nó tạo ra được dọn.
+        llm_explanation = self._strip_unfounded_drinking_behavior(llm_explanation, symptoms_str)
         # [NHẤT QUÁN HÀN] Gỡ cơ chế 'hàn ngưng' bịa khi ca không có căn cứ Hàn (chạy sau cùng)
         llm_explanation = self._strip_unfounded_cold_mechanism(
             llm_explanation, bat_cuong_hint, final_primary, final_concurrent, symptoms_str)
