@@ -4395,11 +4395,22 @@ class TCMFusionPipeline:
     # 'chưa có ứ trệ') — thay chữ trong câu phủ định sẽ đảo ngược nghĩa.
     _BLOOD_STASIS_IN_HU_RE = re.compile(
         r'(?i)(?<!không )(?<!chưa )(?<!không có )(?<!chưa có )(?<!không kèm )'
-        r'(?:huyết\s+ứ|ứ\s+huyết|ứ\s+trệ|ứ\s+đọng)'
+        # ĐK1 — CHỦ NGỮ phải là HUYẾT. Đã bỏ 'ứ trệ|ứ đọng' TRẦN: đó là vị ngữ đình tụ TRUNG TÍNH,
+        # nhận MỌI chủ ngữ (thủy thấp / đàm trọc / tân dịch / thức ăn / khí cơ / nhiệt độc). 水湿停聚
+        # là HỆ QUẢ của Tỳ hư, KHÔNG phải tà thực cần gỡ — nhét 'huyết hành vô lực' vào đó ra câu
+        # vô nghĩa ("Thủy thấp huyết hành vô lực"). Nuốt luôn vị ngữ đi kèm ('huyết ứ TRỆ') để
+        # không bỏ lại đuôi mồ côi.
+        r'(?:huyết\s+ứ(?:\s+(?:trệ|đọng|kết|tắc))?|ứ\s+huyết)'
+        # ĐK2 — ĐỊNH VỊ BẮT BUỘC. Trước đây nhóm này đóng bằng ')?' tức TÙY CHỌN, TRÁI với chính
+        # chú thích ngay dưới. Chỉ viết lại khi LLM khẳng định có Ổ Ứ CÓ ĐỊA CHỈ; 'huyết ứ' TRẦN
+        # còn là nhãn Mục 1, dòng kê bài Mục 5, dấu vọng chẩn ('ban ứ huyết'), hoặc mắt xích
+        # 因虚致瘀 HỢP LỆ ("khí hư nên huyết hành vô lực, lâu ngày sinh huyết ứ") -> KHÔNG đụng.
+        # Fail-closed CÓ CHỦ ĐÍCH: đo trên prose thật 40 ca, 55 span cụm-ứ thì chỉ 2 span có định
+        # vị và CẢ HAI chủ ngữ đều phi-huyết; trên KB 0/207 span có định vị.
         r'(?:\s+(?:tại|ở|trong)\s+(?:các\s+)?kinh\s*(?:mạch|lạc)?'
         # phần đuôi định vị chỉ được ăn ĐỊA ĐIỂM ('vùng đầu cổ'), phải DỪNG trước động từ — nếu
         # không sẽ nuốt luôn vế kết quả ('... đầu cổ SINH ĐAU') và làm cụt nghĩa câu.
-        r'(?:(?!\s*(?:sinh|gây|dẫn|làm|khiến|nên|khi|thì)\b)[^,.;]){0,20})?')
+        r'(?:(?!\s*(?:sinh|gây|dẫn|làm|khiến|nên|khi|thì)\b)[^,.;]){0,20})')
 
     # Thể DƯƠNG HƯ (sinh nội hàn) — khớp theo MẪU vì chữ đệm hay chen vào giữa 'dương' và 'hư':
     # dương hư / dương khí hư / dương khí hư thoát / dương khí suy nhược / dương bất túc /
@@ -4471,6 +4482,14 @@ class TCMFusionPipeline:
                         "thuần Hư (Mục 4 đang ghi 'không có Tiêu Thực').")
         return after
 
+    # ⚠ TODO — NỢ ĐÃ BIẾT, CHƯA VÁ (đo được, ĐỪNG duyệt bản vá nào dựa vào giả định hàm này đúng):
+    # Hàm MIRROR này có CÙNG LỚP LỖI với _strip_unfounded_cold_mechanism (đã vá phần huyết-ứ), nhưng
+    # NẶNG HƠN. Đo trên gate 'Lý - Hàn - Hư' / core 'Tỳ khí hư': 1/7 đúng, 6/7 sai, trong đó 4 ca
+    # ĐẢO NGHĨA LÂM SÀNG vì phép thay không nhìn phủ định:
+    #     "Bệnh nhân KHÔNG có nội nhiệt"        -> "KHÔNG có khí (dương) hư không cố nhiếp"
+    #     "Pháp trị: thanh nội nhiệt, dưỡng âm" -> "Pháp trị: thanh khí (dương) hư không cố nhiếp"
+    # Nguyên nhân: phép sub thứ ba trong hàm có 0 lookbehind phủ định, trong khi bản gốc bên trục
+    # hàn có 5. Vá riêng, PR riêng, test riêng — khác trục, khác rủi ro, không gộp.
     def _strip_unfounded_heat_mechanism(self, llm_text: str, bat_cuong_hint: str,
                                         primary: str, concurrent: str, symptoms_str: str) -> str:
         """[NHẤT QUÁN NHIỆT] MIRROR của _strip_unfounded_cold_mechanism cho trục NHIỆT. LLM hay viện

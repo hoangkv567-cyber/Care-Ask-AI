@@ -102,6 +102,57 @@ def main():
         cases.append((f"Bát Cương '{bc}': GIỮ nguyên huyết ứ",
                       o._strip_thuc_cold_stagnation_in_pure_hu(UO, bc, "Huyết hư", "") == UO))
 
+    # ---------------------------------------------------------------------------------------
+    # [CHỦ NGỮ + ĐỊNH VỊ] Guard chỉ được viết lại khi LLM khẳng định Ổ Ứ HUYẾT CÓ ĐỊA CHỈ.
+    #
+    # Lỗi thật đã xảy ra: regex bắt cả 'ứ trệ'/'ứ đọng' TRẦN (vị ngữ đình tụ TRUNG TÍNH, nhận mọi
+    # chủ ngữ) và nhóm định vị đóng bằng ')?' tức TÙY CHỌN — trái với chính chú thích của nó.
+    # Hệ quả đo trên dữ liệu thật: 55/55 span cụm-ứ trong prose 40 ca bị nổ, trong khi chỉ 2 span
+    # có định vị và CẢ HAI chủ ngữ đều PHI-huyết. Ca thật in ra "Thủy thấp huyết hành vô lực" ba
+    # lần trong một đoạn — vô nghĩa, vì 水湿停聚 là HỆ QUẢ của Tỳ hư chứ không phải tà thực.
+    # Nặng hơn: 5/5 chuỗi do CHÍNH MÃ sinh (_THUC_TEMPLATES) cũng bị bóp méo — hệ tự phá văn nó viết.
+    # Và prompt Mục 3 RA LỆNH viết 'Thủy thấp ứ đọng' cho lưỡi bệu: prompt đúng, guard sai.
+    #
+    # ⚠ Bộ test này TRƯỚC ĐÓ cho 21/21 PASS với CẢ mã hỏng LẪN mã đúng — nó mù hoàn toàn với lớp
+    # lỗi này. Đó là lý do phải thêm nhóm dưới đây.
+    KEEP = [
+        ("thủy thấp đình tụ (hệ quả Tỳ hư)", "Thủy thấp ứ đọng, huyết hành vô lực làm trệ khí."),
+        ("lưỡi bệu do thủy thấp", "Lưỡi bệu là do Thủy thấp ứ đọng, không được vận hóa."),
+        ("đàm thấp — chủ ngữ phi huyết", "Đàm thấp ứ trệ tại kinh lạc gây tê bì."),
+        ("thức ăn đình trệ", "Thức ăn ứ đọng tại vị quản."),
+        ("khí cơ đình trệ", "Khí cơ ứ trệ, ngực bụng đầy tức."),
+        ("dấu VỌNG CHẨN, không phải khẳng định cơ chế", "Rìa lưỡi có ban ứ huyết, mạch sáp."),
+        ("因虚致瘀 — mắt xích HỢP LỆ", "Khí hư nên huyết hành vô lực, lâu ngày sinh huyết ứ."),
+        # Bất biến: MÃ KHÔNG ĐƯỢC TỰ BÓP MÉO VĂN CỦA CHÍNH NÓ (chuỗi lấy từ _THUC_TEMPLATES).
+        ("chuỗi do chính mã sinh",
+         "Rêu nhớt phản ánh đàm trọc / thủy thấp ứ đọng ở trung tiêu (yếu tố Tiêu Thực)."),
+    ]
+    for lab, s in KEEP:
+        cases.append((f"GIỮ NGUYÊN [{lab}]",
+                      o._strip_thuc_cold_stagnation_in_pure_hu(s, BC_HU, "Tỳ khí hư", "Không có") == s))
+    # Vẫn phải GỠ: ổ ứ huyết CÓ ĐỊA CHỈ trong ca thuần Hư (lưới chặn ai đó "vá" bằng cách tắt guard)
+    STRIP = [
+        "Khí huyết không lưu thông, huyết ứ tại kinh mạch vùng đầu cổ, gây ra đau đầu.",
+        "huyết ứ tại kinh mạch gây đau nhức.",
+        "Ứ huyết ở kinh lạc gây đau cố định.",
+    ]
+    for s in STRIP:
+        cases.append((f"VẪN GỠ [{s[:38]}...]",
+                      o._strip_thuc_cold_stagnation_in_pure_hu(s, BC_HU, "Tỳ khí hư", "Không có") != s))
+    # Không được để lại LẶP CỤM hay đuôi mồ côi
+    _r1 = o._strip_thuc_cold_stagnation_in_pure_hu(KEEP[0][1], BC_HU, "Tỳ khí hư", "Không có")
+    cases.append(("KHÔNG lặp cụm 'huyết hành vô lực'", _r1.lower().count("huyết hành vô lực") <= 1))
+
+    # Khóa TRỰC TIẾP trên regex: hai điều kiện phải cùng BẮT BUỘC. Kiểm qua hàm là chưa đủ — cổng
+    # vào của hàm có thể che mất tác dụng của từng điều kiện, khiến ai đó nới regex mà test vẫn xanh.
+    _RX = F._BLOOD_STASIS_IN_HU_RE
+    cases.append(("ĐK1 chủ ngữ HUYẾT: 'thủy thấp ứ đọng tại kinh lạc' KHÔNG khớp",
+                  not _RX.search("thủy thấp ứ đọng tại kinh lạc")))
+    cases.append(("ĐK2 định vị BẮT BUỘC: 'huyết ứ' trần KHÔNG khớp",
+                  not _RX.search("lâu ngày sinh huyết ứ.")))
+    cases.append(("vẫn khớp khi ĐỦ CẢ HAI: 'huyết ứ tại kinh mạch'",
+                  bool(_RX.search("huyết ứ tại kinh mạch vùng đầu cổ"))))
+
     ok = 0
     for d, c in cases:
         print(f"  [{'PASS' if c else 'FAIL'}] {d}")
