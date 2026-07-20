@@ -97,6 +97,20 @@ QUY TẮC:
   không có độ dày/chất rêu). Nếu mô tả được chất rêu (nhuận/nhớt/khô) tức là CÓ rêu -> KHÔNG được ="không rêu".
 - "vet_nut"="có" CHỈ KHI thấy RÃNH NỨT SÂU rõ ràng (đường nứt dọc/ngang hằn sâu trên thân lưỡi). Bề mặt
   lấm tấm gai/nhú, nếp gợn nông, hạt li ti, hay ánh phản chiếu ướt -> KHÔNG phải vết nứt -> "không".
+- "luoi_beu"="có" CHỈ KHI thấy RÕ ÍT NHẤT HAI trong ba dấu sau trên chính THÂN LƯỠI:
+  (1) thân lưỡi BÈ NGANG bất thường — bề ngang lớn so với chiều dài, lưỡi trông vuông/mập chứ không
+      thon dài; (2) thân lưỡi DÀY VỒNG lên, mặt cắt tròn đầy, không phẳng-mỏng; (3) ĐẦU LƯỠI TÙ TRÒN,
+      không thon nhọn.
+  KHÔNG phải bệu -> "không": lưỡi thon dài, lưỡi dày trung bình, lưỡi thè gồng hết sức (bè TẠM THỜI),
+  lưỡi nghiêng lệch hoặc bị cắt mất rìa trong khung hình.
+  Chỉ thấy MỘT dấu, hoặc ảnh không cho đánh giá được hình thể thân lưỡi -> "không rõ".
+  MẶC ĐỊNH "không rõ"; TUYỆT ĐỐI không chọn "có" khi chưa đủ hai dấu.
+  Ba mốc trên đều NỘI TẠI thân lưỡi, KHÔNG cần thấy cung răng/khoang miệng — ảnh vọng chẩn là lưỡi
+  THÈ nên mốc "rìa áp sát hàm răng" thường không có trong khung hình.
+  ⚠ Đánh giá ĐỘC LẬP với "dau_rang": KHÔNG được suy từ vết hằn răng ra lưỡi bệu. Ngưỡng của
+  "dau_rang" cố ý đặt RẤT THẤP ("dù nhẹ"); bắc cầu sẽ biến mọi vết lõm nhẹ thành áp lực báo bệu.
+  (Gọi thừa "lưỡi bệu" kéo chẩn đoán sang Tỳ hư / thủy thấp OAN và LOẠI OAN thể âm hư — một token
+  đủ để hạ bậc toàn bộ họ âm-hư khi lời khai không có dấu nhiệt.)
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
 
