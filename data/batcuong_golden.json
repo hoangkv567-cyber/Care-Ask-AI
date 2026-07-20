@@ -1,0 +1,453 @@
+{
+ "version": 1,
+ "_meta": {
+  "sinh_boi": "scripts/build_batcuong_golden.py",
+  "che_do": "OFFLINE — chặn qa_pipeline.client.chat, 0 lượt gọi LLM",
+  "canh_bao": "Golden ĐÓNG BĂNG hành vi hiện tại. Chốt sai = khóa luôn cái sai. Phải đọc tay trước khi commit, và khi test đỏ phải xác định là HỒI QUY hay là CẢI THIỆN có chủ đích trước khi sinh lại.",
+  "khong_phu": "Tầng prose Mục 3/4 (văn do LLM sinh) — harness này KHÔNG bắt được hồi quy kiểu 'cắt mất biện luận'. Cần fixture replay riêng.",
+  "so_ca": 40,
+  "bo_qua": 3
+ },
+ "cases": [
+  {
+   "id": "reg_khat_tran_duonghu",
+   "raw": "34 tuổi, nữ giới, bệnh vài ngày, tiểu tiện trong dài, tinh thần uể oải, nước tiểu trong, khát nước, tiểu đêm, đau lưng, mỏi gối, rêu trắng mỏng, lưỡi bệu",
+   "source": "hồi quy #1 — đảo cực: 'khát nước' TRẦN dựng trục Nhiệt trên nền dương hư",
+   "note": "Khát TRẦN + dấu hàn định tính -> CẤM dựng trục Nhiệt. Phải ra Hàn.",
+   "expect": {
+    "bat_cuong": "lý - hàn - hư (tổng cương: thiên âm)",
+    "core": "tỳ thận dương hư",
+    "benh_danh": "yêu thống, di niệu"
+   }
+  },
+  {
+   "id": "reg_khat_lanh_duonghu",
+   "raw": "34 tuổi, nữ giới, bệnh vài ngày, thích uống nước lạnh, tiểu tiện trong dài, nước tiểu trong, rêu trắng mỏng, khát nước, lưỡi bệu, tiểu đêm, đau lưng, mỏi gối",
+   "source": "hồi quy #3 — đảo cực: mở lựa chọn 渴喜冷飲 phá tiền đề bản vá #1, 'Hàn' bị XÓA",
+   "note": "6 dấu hàn + 1 dấu nhiệt THẬT -> phải ra 'Hàn Nhiệt Thác Tạp', KHÔNG được rụng Hàn.",
+   "expect": {
+    "bat_cuong": "lý - hàn nhiệt thác tạp - hư (tổng cương: thiên âm)",
+    "core": "thận dương hư",
+    "benh_danh": "yêu thống, di niệu"
+   }
+  },
+  {
+   "id": "vdt_ty_khi_hu",
+   "raw": "bệnh mới mắc, ngực bụng đầy tức, đại tiện lỏng, buồn nôn, đau bụng, mệt mỏi, nôn mửa, ăn kém, ợ chua, rêu trắng mỏng, lưỡi bệu",
+   "source": "ca mối nối Mục 4 — dấu trệ trung tiêu KHÔNG được lật trục Hư/Thực",
+   "note": "72/407 dòng HƯ trong KB sẽ bị lật oan nếu nạp dấu trung tiêu vào thuc_kws.",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "tỳ khí hư",
+    "benh_danh": "viêm đại tràng"
+   }
+  },
+  {
+   "id": "audit01_Bạo manh",
+   "raw": "mù, lòa, quáng gà, mù màu, mù lòa, mất thị lực",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - bản hư tiêu thực",
+    "core": "thận âm hư",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit02_Châm nhãn (lẹo/chắ",
+   "raw": "mắt đỏ, đỏ mắt, mắt sưng, sưng mắt, đau mắt, mắt đau",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "can dương thượng cang / can hỏa vượng",
+    "benh_danh": "châm nhãn (lẹo/chắp), kết mạc viêm, viêm kết mạc"
+   }
+  },
+  {
+   "id": "audit03_Chấn thương sọ não",
+   "raw": "chấn thương, va đập, tai nạn, ngã đầu, đập đầu, ngoại thương",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý (tổng cương: thiên âm)",
+    "core": "chưa rõ",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit04_Cường dương",
+   "raw": "Không có hứng thú giao hợp mà dương vật cứng mãi không thôi, hoặc sau khi giao hợp xong dương vật vẫn cứng. Dương vật thâm đỏ, đau buốt, tiểu tiện khó khăn kèm theo váng đầu chóng mặt, đau lưng mỏi gối, khô họng",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - bản hư tiêu thực",
+    "core": "âm hư",
+    "benh_danh": "cường dương, tảo tiết, âm hành đàm hạch"
+   }
+  },
+  {
+   "id": "audit05_Di tinh",
+   "raw": "liệt dương, dương nuy, di tinh, mộng tinh, tảo tiết, hoạt tinh",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "tâm thận bất giao",
+    "benh_danh": "tảo tiết, di tinh, âm nang huyết thũng"
+   }
+  },
+  {
+   "id": "audit06_Diện du phong",
+   "raw": "Phát bệnh cấp, da vùng tổn thương đỏ, ướt, lở loét, thành sẹo, ngứa",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "phế vị nhiệt thịnh",
+    "benh_danh": "bạch biến, diện du phong"
+   }
+  },
+  {
+   "id": "audit07_Hung tý",
+   "raw": "đau ngực, tức ngực, ngực đau, đau vùng ngực, đau thắt ngực, ngực đầy",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hàn - thực (tổng cương: thiên âm)",
+    "core": "huyết ứ",
+    "benh_danh": "xơ cứng động mạch vành, nhiễm mỡ xơ mạch, hung tý"
+   }
+  },
+  {
+   "id": "audit08_Huyết niệu",
+   "raw": "tiểu ra máu, miệng khát, sốt, mặt đỏ, ít ngủ, hay mê",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "tâm hoả vọng động",
+    "benh_danh": "huyết niệu"
+   }
+  },
+  {
+   "id": "audit09_Huyết áp cao",
+   "raw": "huyết áp, tụt huyết áp, hạ áp, tụt áp, tăng áp, Đau đầu",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - thực",
+    "core": "can hoả phạm phế",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit10_Hỏa thương",
+   "raw": "Bỏng lửa, nước sôi, hóa chất, có thể dùng để thanh thử tị trọc, hòa vị chỉ ẩu",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý (tổng cương: thiên âm)",
+    "core": "chung",
+    "benh_danh": "hỏa thương"
+   }
+  },
+  {
+   "id": "audit11_Kinh hành đầu thốn",
+   "raw": "đau đầu, nhức đầu, đầu thống, đau nửa đầu, nặng đầu, váng đầu",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - bản hư tiêu thực (tổng cương: thiên âm)",
+    "core": "âm hư dương cang",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit12_Lâm chứng",
+   "raw": "Tiểu nhiều lần, tiểu gấp, tiểu buốt rát, nước tiểu vàng đục hoặc đỏ, lượng ít, đau tức vùng bụng dưới và thắt lưng",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "nhiệt lâm",
+    "benh_danh": "lâm chứng"
+   }
+  },
+  {
+   "id": "audit13_Mạch nhãn",
+   "raw": "mắt đỏ, đỏ mắt, mắt sưng, sưng mắt, đau mắt, mắt đau",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "can dương thượng cang / can hỏa vượng",
+    "benh_danh": "châm nhãn (lẹo/chắp), kết mạc viêm, viêm kết mạc"
+   }
+  },
+  {
+   "id": "audit14_Mạn tính tắc nghẽn",
+   "raw": "Phổi tắc nghẽn mãn tính, phổi mất tính đàn hồi, ho, đoản khí, tự hãn, sợ gió",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "phế khí hư",
+    "benh_danh": "mạn tính tắc nghẽn phế bệnh"
+   }
+  },
+  {
+   "id": "audit15_Nga khẩu sang (tưa",
+   "raw": "loét miệng, lở miệng, nhiệt miệng, miệng lở, miệng lưỡi, loét lưỡi",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - bản hư tiêu thực",
+    "core": "tâm âm hư",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit16_Ngoan tiển (viêm d",
+   "raw": "Bệnh mới phát hoặc đợt cấp, tổn thương da đỏ, sẩn cục sần sùi, ngứa dữ dội, gãi nhiều chảy nước vàng, có thể trợt loét",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "biểu - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "phong thấp nhiệt",
+    "benh_danh": "ngoan tiển (viêm da thần kinh)"
+   }
+  },
+  {
+   "id": "audit17_Ngứa âm hộ",
+   "raw": "âm hộ, âm đạo, vùng kín, Âm hộ khô sít, ngứa không chịu nổi, da vùng âm bộ biến trắng",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "can thận âm hư",
+    "benh_danh": "ngứa âm hộ, âm đạo viêm, âm đạo đau"
+   }
+  },
+  {
+   "id": "audit18_Nhiễm mỡ xơ mạch",
+   "raw": "Chóng mặt, váng đầu, ù tai, khô họng, bứt rứt, ít ngủ hay mơ",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - bản hư tiêu thực (tổng cương: thiên âm)",
+    "core": "thận âm hư",
+    "benh_danh": "suy nhược thần kinh"
+   }
+  },
+  {
+   "id": "audit19_Nhiệt chẩn",
+   "raw": "Nốt sẩy đỏ, nổi mọng nước",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "nhiệt độc",
+    "benh_danh": "nhiệt chẩn"
+   }
+  },
+  {
+   "id": "audit20_Nhâm thần ố trở (n",
+   "raw": "Có thai sớm, nôn mửa ra thức ăn hoặc nước dãi trong, chán ăn, ăn vào là nôn, tinh thần mệt mỏi, người rã rời",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "tỳ vị hư nhược",
+    "benh_danh": "quỷ thai, nhâm thần ố trở (nghén)"
+   }
+  },
+  {
+   "id": "audit21_Nhũ phích",
+   "raw": "vú, tuyến vú, đau vú, sưng vú, cục ở vú, núm vú",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "can thận hư tổn",
+    "benh_danh": "nhũ phích, thiếu nhũ, nhũ tịch"
+   }
+  },
+  {
+   "id": "audit22_Nuy chứng",
+   "raw": "teo cơ, teo, liệt, yếu chi, chi yếu, tay chân yếu",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "can thận khuy hư",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit23_Phong thấp tâm",
+   "raw": "Sốt, đau họng, khát nước, các cơ khớp đau nhức di chuyển, khớp sưng nóng đỏ, lưỡi nhạt vàng",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "biểu - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "phong nhiệt",
+    "benh_danh": "phong thấp tâm"
+   }
+  },
+  {
+   "id": "audit24_Suy tuyến thượng t",
+   "raw": "Sợ lạnh, tay chân lạnh, phân lỏng, nước tiểu trong nhiều, phù toàn thân, tình dục giảm",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hàn - hư (tổng cương: thiên âm)",
+    "core": "tỳ thận dương hư",
+    "benh_danh": "viêm đại tràng, di niệu"
+   }
+  },
+  {
+   "id": "audit26_Thận quặn thống",
+   "raw": "Đột nhiên đau quặn bụng dưới dữ dội, đau lan ra sau lưng và lan xuống mé trong đùi, vùng bẹn, đường tiểu đau, tức, muốn tiểu không tiểu được",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "thấp nhiệt uất kết",
+    "benh_danh": "thận quặn thống"
+   }
+  },
+  {
+   "id": "audit27_Thận vu viêm",
+   "raw": "Sốt cao, đau vùng thận một hoặc hai bên, tiểu đục, tiểu gắt, tiểu ra protein, bạch cầu",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "thấp nhiệt",
+    "benh_danh": "thận vu viêm"
+   }
+  },
+  {
+   "id": "audit29_Tý chứng",
+   "raw": "Đau di chuyển các khớp, đau nhiều khớp, sợ gió, rêu lưỡi trắng",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "biểu - lý đồng bệnh - hàn - thực",
+    "core": "phong tý",
+    "benh_danh": "tý chứng"
+   }
+  },
+  {
+   "id": "audit30_Tảo tiết",
+   "raw": "liệt dương, dương nuy, di tinh, mộng tinh, tảo tiết, hoạt tinh",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "tâm thận bất giao",
+    "benh_danh": "tảo tiết, di tinh, âm nang huyết thũng"
+   }
+  },
+  {
+   "id": "audit31_Viêm bể thận mạn",
+   "raw": "Sốt nhẹ, đau ngang thắt lưng, mệt mỏi, tiểu buốt, tiểu gắt từng đợt, có thể sốt cao",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "thấp nhiệt",
+    "benh_danh": "viêm bể thận mạn"
+   }
+  },
+  {
+   "id": "audit32_Viêm kết mạc",
+   "raw": "mắt đỏ, đỏ mắt, mắt sưng, sưng mắt, đau mắt, mắt đau",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "can dương thượng cang / can hỏa vượng",
+    "benh_danh": "châm nhãn (lẹo/chắp), kết mạc viêm, viêm kết mạc"
+   }
+  },
+  {
+   "id": "audit33_Vị hạ sa",
+   "raw": "sa tử cung, tử cung sa, khối sa, sa xuống, trằn nặng, sa dạ con",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "khí hư hạ hãm",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit34_Vị ái",
+   "raw": "khối u, sụt cân, nuốt nghẹn, ho ra máu, u bướu, sưng hạch",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - bản hư tiêu thực",
+    "core": "âm hư hoả vượng",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  },
+  {
+   "id": "audit35_Âm hành đàm hạch",
+   "raw": "liệt dương, dương nuy, di tinh, mộng tinh, tảo tiết, hoạt tinh",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "tâm thận bất giao",
+    "benh_danh": "tảo tiết, di tinh, âm nang huyết thũng"
+   }
+  },
+  {
+   "id": "audit36_Âm hộ viêm loét",
+   "raw": "âm hộ, âm đạo, vùng kín, Vùng âm đạo lở loét, sưng nóng đỏ đau, chảy nước mủ dính",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
+    "core": "thấp nhiệt",
+    "benh_danh": "âm hộ viêm loét, ngứa âm hộ, âm đạo viêm"
+   }
+  },
+  {
+   "id": "audit37_Âm nang chàm",
+   "raw": "ngứa, mẩn, ban, mụn, ghẻ, da",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - hư (tổng cương: thiên âm)",
+    "core": "can thận âm hư",
+    "benh_danh": "bạch biến"
+   }
+  },
+  {
+   "id": "audit38_Đái tháo nhạt",
+   "raw": "khát nước, khát nhiều, uống nhiều, uống nước nhiều, đa niệu, tiểu nhiều",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - nhiệt - bản hư tiêu thực (tổng cương: thiên âm)",
+    "core": "thận âm hư",
+    "benh_danh": "tiêu khát"
+   }
+  },
+  {
+   "id": "audit39_Đỉnh đầu thống",
+   "raw": "đau đầu, nhức đầu, đầu thống, đau nửa đầu, nặng đầu, váng đầu",
+   "source": "data/audit_sample_report.json",
+   "note": "",
+   "expect": {
+    "bat_cuong": "lý - bản hư tiêu thực (tổng cương: thiên âm)",
+    "core": "âm hư dương cang",
+    "benh_danh": "chưa xác định cụ thể"
+   }
+  }
+ ]
+}
