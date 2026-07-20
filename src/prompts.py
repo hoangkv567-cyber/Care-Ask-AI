@@ -125,6 +125,11 @@ QUY TẮC:
   trên nền da nhợt — dấu "lưỡng quyền hồng" của âm hư). Da đều màu / hồng tự nhiên nhẹ / má chỉ hơi ấm /
   đỏ ở QUANH MŨI-MIỆNG-CẰM (mụn, kích ứng, mao mạch) -> KHÔNG phải gò má đỏ -> "không". MẶC ĐỊNH "không"
   trừ khi mảng đỏ khu trú ở gò má thật rõ.
+  PHÂN BIỆT THEO HÌNH THÁI, KHÔNG THEO VỊ TRÍ: "lưỡng quyền hồng" là MẢNG ĐỎ LIỀN, ĐỀU MÀU, không nổi
+  gờ. Nếu vùng đỏ gồm các NỐT/SẨN/MỤN MỦ RỜI RẠC có ranh giới (mụn trứng cá) thì -> "không", KỂ CẢ khi
+  chúng nằm ĐÚNG trên hai gò má. Đây là điểm bổ khuyết: danh sách loại trừ ở trên chỉ nêu quanh
+  mũi-miệng-cằm nên mụn Ở MÁ lọt vào, bị gọi thành "gò má đỏ" và kéo chẩn đoán sang âm hư hỏa vượng OAN
+  (đã xảy ra thật). Cổng "ban_do" ngay dưới vốn đã loại mụn ở má — hai cổng phải nhất quán.
 - "ban_do"="có" CHỈ KHI có BAN/PHÁT BAN THẬT: vùng đỏ LAN TỎA thành mảng hoặc nốt ban dày (ban sởi,
   mề đay, phát ban dị ứng, đơn độc) phủ rộng trên da. MỤN TRỨNG CÁ / mụn cám (nốt sẩn đỏ rải rác ở
   má-cằm-trán-quanh mũi), tàn nhang, nốt ruồi, sẹo, mao mạch, kích ứng nhỏ -> KHÔNG phải ban -> "không".
