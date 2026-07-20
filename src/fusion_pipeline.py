@@ -4722,14 +4722,41 @@ class TCMFusionPipeline:
                  + ("thực trệ (" if kind == "food" else "ngoại cảm biểu (")
                  + ", ".join(present[:4]) + "). ")
         if kind == "food":
-            _note = _head + ("Cần cân nhắc THƯƠNG THỰC / THỰC TRỆ cấp trên nền hư (bản hư tiêu thực) "
-                             "— nếu đúng thì phải phối thêm pháp tiêu thực đạo trệ, chứ không chỉ "
-                             "kiện tỳ đơn thuần.")
+            # Nêu BẰNG CHỨNG PHỦ ĐỊNH thay vì ra mệnh lệnh: Mục 5 KHÔNG có kênh nhận pháp tiêu thực
+            # (nó không đọc trục Hư/Thực), nên câu "phải phối pháp tiêu thực" cũ là chỉ thị mà hệ
+            # không tự thực hiện được — đọc như hệ đã chốt trong khi nó chỉ đang nghi.
+            # Rêu DÀY NHỚT mới là dấu thực tích khách quan (đo KB: 41/540 dòng Thực vs 8/407 Hư).
+            # ⚠ Rêu mỏng CHỈ dùng làm từ ngữ dè dặt, TUYỆT ĐỐI không dùng làm cổng CHẶN cảnh báo:
+            # đo được chặn theo rêu mỏng sẽ giết 4/23 dương tính thật, và 苔由薄轉厚 cần thời gian
+            # nên ca "bệnh mới mắc" đúng là chưa kịp hóa rêu dày.
+            _thin = self._kw_hit_clean(sym_l, ["rêu trắng mỏng", "rêu mỏng", "ít rêu", "không rêu"])
+            _thick = self._kw_hit_clean(sym_l, ["rêu dày", "rêu trắng dày", "rêu nhớt", "rêu nhờn",
+                                                "rêu vàng nhớt", "rêu trắng nhớt"])
+            _hedge = (" Song bằng chứng CHƯA đủ để chốt: rêu vẫn trắng mỏng (thực tích/đàm thấp "
+                      "thường cho rêu DÀY NHỚT), chưa rõ cự án hay thiện án."
+                      if (_thin and not _thick) else
+                      " Song cần xác nhận thêm trước khi chốt: chưa rõ cự án hay thiện án.")
+            _note = _head + ("Cần cân nhắc THƯƠNG THỰC / THỰC TRỆ cấp trên nền hư (bản hư tiêu thực)."
+                             + _hedge +
+                             " Cần hỏi thêm: ấn bụng đau tăng hay đỡ; ợ có mùi thức ăn thối không; "
+                             "đại tiện xong đau có giảm không. Có ít nhất một dấu đó mới phối pháp "
+                             "tiêu thực đạo trệ, chứ không chỉ kiện tỳ đơn thuần.")
         else:
             _note = _head + ("Cần cân nhắc NGOẠI CẢM cấp (phong hàn, kèm thấp nếu có người nặng/đau "
                              "mình) trên nền hư — nếu đúng thì phải giải biểu trước hoặc phù chính "
                              "giải biểu, chứ không chỉ bổ hư đơn thuần (bổ sớm dễ lưu tà).")
-        new_body = m4.group(2).rstrip() + _note
+        # [MỐI NỐI] Nguồn mâu thuẫn thật: hàm này NỐI ĐUÔI mà không đọc câu đứng trước, trong khi
+        # _sync_tieu_thuc_with_bat_cuong vừa ép câu "Không có Tiêu Thực, đây là bệnh lý Hư chứng
+        # thuần túy." -> đoạn văn vừa phủ định vừa khẳng định thực trệ.
+        # CHÈN quanh câu đó, TUYỆT ĐỐI KHÔNG thay hẳn: chuỗi "Không có Tiêu Thực" là KHÓA GIAO THỨC
+        # NGẦM — _muc4_denies_tieu_thuc đọc nó ở 4 nơi, trong đó _sync_muc4_with_muc5_tieu chạy SAU
+        # hàm này. Thay hẳn câu sẽ làm tầng đó câm cho MỌI ca khác.
+        _b = m4.group(2).rstrip()
+        if kind == "food" and self._muc4_denies_tieu_thuc(_b4):
+            _b = re.sub(r"Không có Tiêu Thực,\s*đây là bệnh lý Hư chứng thuần túy\.",
+                        "Theo dữ kiện đã khai thác, chưa đủ căn cứ chốt phần Tiêu: Không có Tiêu "
+                        "Thực thành thể riêng, bệnh cảnh hiện thiên về Hư chứng.", _b, count=1)
+        new_body = _b + _note
         logger.info("[ONSET CẤP] Gắn cảnh báo thực trệ: bệnh mới phát nhưng cốt lõi là thể hư mạn.")
         return md[:m4.start(2)] + new_body + md[m4.end(2):]
 
