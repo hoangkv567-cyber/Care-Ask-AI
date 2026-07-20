@@ -311,7 +311,10 @@ def build():
                       "tim đập nhanh", "kinh sợ", "hoảng sợ", "dễ giật mình", "tâm quý"]},
         {"names": ["ma chẩn", "phong chẩn", "thủy đậu", "thuỷ đậu", "ban chẩn", "đơn độc", "phong ngứa"],
          "requires": ["ban", "phát ban", "nổi ban", "mọc ban", "mụn nước", "nốt", "hồng ban", "sởi", "phỏng", "ngứa", "mẩn"]},
-        {"names": ["nhũ ung", "nhũ nham", "nhũ phích", "nhũ lạc", "viêm tuyến vú", "nhũ tuyến", "nhũ"],
+        {"names": ["nhũ ung", "nhũ nham", "nhũ phích", "nhũ lạc", "viêm tuyến vú", "nhũ tuyến"],
+         # ĐÃ GỠ "nhũ" TRẦN: khớp chuỗi con nên bắt cả "Nhũ nga" (乳蛾 = amidan; chữ "nhũ" ở đây
+         # là HÌNH CON TẰM, không phải VÚ) -> viêm amidan bị cổng bệnh VÚ loại oan, rơi khỏi cả
+         # top-3. Sáu tên cụ thể ở trên đã phủ đủ; "nhũ" trần chỉ thêm dương tính giả.
          "requires": ["vú", "tuyến vú", "đau vú", "sưng vú", "cục ở vú", "núm vú", "tắc sữa", "áp xe vú"]},
         {"names": ["áp xe phế", "phế ung", "áp xe phổi"],
          "requires": ["ho ra mủ", "khạc mủ", "ho ra máu", "đờm mủ", "đờm tanh", "đau ngực", "mủ tanh", "sốt cao rét run", "khạc ra máu"]},

@@ -1,0 +1,89 @@
+{
+ "_meta": {
+  "muc_dich": "Ánh xạ bệnh danh TÂY Y -> quy ước 'Tên Đông y (tên Tây y)' đã dùng sẵn cho 22 bệnh trong KB (Phấn thích (trứng cá), Ma chẩn (sởi), Tỵ cứu (viêm mũi dị ứng), Cường giáp (Basedow)...).",
+  "vi_sao_khong_doi_han": "Đo trên KB: 7/11 cặp thử sẽ TRÙNG với bệnh Đông y đã tồn tại (Viêm đại tràng->Tiết tả, Parkinson->Chiến chấn, Suy tim->Tâm quý...). Đổi hẳn = GỘP dữ liệu chứ không phải đổi nhãn. Giữ dạng 'ĐY (TY)' tạo chuỗi MỚI nên không va chạm, và giữ được đường tra theo tên Tây y — cách bệnh nhân Việt tự mô tả.",
+  "muc_tin_cay": {
+   "cao": "Ánh xạ kinh điển 1-1, có trong giáo trình Trung y nội/ngoại/ngũ quan khoa. Áp dụng được ngay.",
+   "can_xac_nhan": "Ánh xạ HỢP LÝ nhưng KHÔNG duy nhất (một bệnh Tây y ứng nhiều bệnh danh Đông y tùy bệnh cảnh), hoặc bệnh hiện đại không có bệnh danh cổ điển tương ứng. CẦN thầy thuốc duyệt trước khi áp."
+  },
+  "canh_bao": "Tên bệnh là KHÓA ở 6 nơi: data/disease_gates.json, disease_sex.json, disease_age.json, gold_cases.json, batcuong_golden.json, và node BenhLy trên Neo4j. Đổi tên PHẢI migrate đồng bộ cả 6, nếu không cổng bệnh danh/giới/tuổi sẽ im lặng mất hiệu lực.",
+  "quy_tac_bat_buoc": "PHẢI giữ NGUYÊN VĂN tên gốc trong ngoặc. data/disease_gates.json khớp theo CHUỖI CON, nên đổi chữ trong ngoặc (hạnh đào->amidan, yết hầu->họng) sẽ làm cổng MẤT KHỚP im lặng. Đã đo: 3/35 cổng vỡ vì lý do này trước khi sửa.",
+  "khong_doi": "Suyễn chứng (喘證), Cường dương (陽強), Trĩ (痔) — vốn đã là bệnh danh Đông y, giữ nguyên."
+ },
+ "cao": {
+  "Hen phế quản": "Háo chứng (hen phế quản)",
+  "Viêm phế quản": "Khái thấu (viêm phế quản)",
+  "Áp xe phế": "Phế ung (áp xe phế)",
+  "Áp xe gan": "Can ung (áp xe gan)",
+  "Xơ gan": "Cổ trướng (xơ gan)",
+  "Viêm gan cấp": "Hoàng đản (viêm gan cấp)",
+  "Viêm gan mạn tính": "Hiếp thống (viêm gan mạn)",
+  "Viêm hạnh đào": "Nhũ nga (viêm hạnh đào)",
+  "Viêm yết hầu": "Hầu tý (viêm yết hầu)",
+  "Viêm xoang": "Tỵ uyên (viêm xoang)",
+  "Viêm tai giữa": "Nùng nhĩ (viêm tai giữa)",
+  "Viêm sai": "Trá tai (viêm sai — quai bị)",
+  "Viêm kết mạc": "Bạo phong khách nhiệt (viêm kết mạc)",
+  "Viêm khớp dạng thấp": "Uông tý (viêm khớp dạng thấp)",
+  "Viêm bàng quang cấp": "Nhiệt lâm (viêm bàng quang cấp)",
+  "Viêm bàng quang mạn": "Lao lâm (viêm bàng quang mạn)",
+  "Viêm bể thận mạn": "Lâm chứng (viêm bể thận mạn)",
+  "Viêm cầu thận cấp": "Phong thủy (viêm cầu thận cấp)",
+  "Viêm cầu thận mạn": "Thủy thũng (viêm cầu thận mạn)",
+  "Viêm âm đạo": "Đới hạ (viêm âm đạo)",
+  "Viêm đại tràng": "Tiết tả (viêm đại tràng)",
+  "Lao hạch": "Loa lịch (lao hạch)",
+  "Lao xương khớp - Cốt lao": "Cốt lao (lao xương khớp)",
+  "Xơ cứng động mạch vành": "Hung tý (xơ cứng động mạch vành)",
+  "Suy tim": "Tâm quý (suy tim)",
+  "Alzheimer": "Si ngốc (Alzheimer)",
+  "Parkinson": "Chiến chứng (Parkinson)"
+ },
+ "can_xac_nhan": {
+  "Bệnh bạch huyết": {
+   "de_xuat": "Huyết chứng (bệnh bạch cầu)",
+   "ly_do": "Bạch cầu cấp không có bệnh danh cổ điển thống nhất — y văn dùng 急勞 (cấp lao) / 血證 / 虛勞 / 癥積 tùy giai đoạn. Chọn một là quyết định lâm sàng."
+  },
+  "Giảm bạch cầu": {
+   "de_xuat": "Hư lao (giảm bạch cầu)",
+   "ly_do": "Quy về Hư lao là hợp lý nhưng cũng có thể là 血虛 tùy biểu hiện."
+  },
+  "Nhiễm mỡ xơ mạch": {
+   "de_xuat": "Đàm trọc (rối loạn lipid máu)",
+   "ly_do": "Bệnh hiện đại, không có bệnh danh cổ. Y văn dùng 痰濁/血濁/眩暈/胸痺 tùy triệu chứng trội."
+  },
+  "Đái tháo nhạt": {
+   "de_xuat": "Niệu băng (đái tháo nhạt)",
+   "ly_do": "KHÔNG được quy về Tiêu khát (消渴) — đó là đái tháo ĐƯỜNG, cơ chế khác hẳn. KB đã có Tiêu khát riêng."
+  },
+  "Ung thư can": {
+   "de_xuat": "Can tích (ung thư gan)",
+   "ly_do": "Bệnh danh ung thư trong Đông y đặt theo CHỨNG (積聚/癥瘕/黃疸/鼓脹) chứ không theo tạng bị ung thư. Cần thầy thuốc chọn."
+  },
+  "Ung thư phế": {
+   "de_xuat": "Phế tích (ung thư phổi)",
+   "ly_do": "Như trên (息賁/肺積/咳嗽/咯血)."
+  },
+  "Ung thư thận": {
+   "de_xuat": "Thận tích (ung thư thận)",
+   "ly_do": "Như trên (尿血/腰痛/癥積)."
+  },
+  "Ung thư bàng quang": {
+   "de_xuat": "Niệu huyết (ung thư bàng quang)",
+   "ly_do": "Như trên (血淋/尿血/癃閉)."
+  },
+  "Ung thư não – U não": {
+   "de_xuat": "Não nham (u não)",
+   "ly_do": "Như trên (頭痛/眩暈/真頭痛)."
+  },
+  "Suy nhược thần kinh": {
+   "de_xuat": "Uất chứng (suy nhược thần kinh)",
+   "ly_do": "ĐÃ THỬ 'Hư lao' và ĐO ĐƯỢC LÀ SAI: 2/9 dòng (Can tâm khí uất kết, Âm hư hỏa vượng) không có một dấu hao mòn nào, bị cổng 'hư lao' (đòi gầy sút/sụt cân) loại ĐÚNG, và bệnh thắng chúng chính là 'Uất chứng'. Suy nhược thần kinh ứng NHIỀU bệnh danh Đông y tùy thể: Uất chứng (uất khí), Bất mị (mất ngủ trội), Hư lao (hao mòn thật). Cần chọn THEO TỪNG DÒNG, không gán một tên cho cả 9 dòng."
+  }
+ },
+ "giu_nguyen": {
+  "Suyễn chứng": "vốn là bệnh danh Đông y (喘證)",
+  "Cường dương": "vốn là bệnh danh Đông y (陽強)",
+  "Trĩ": "vốn là bệnh danh Đông y (痔)"
+ }
+}

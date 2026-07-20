@@ -27,7 +27,7 @@ check("Nhi tiết tả (nhi) loại cho người lớn", p._age_conflict("Nhi ti
 # Không nhập tuổi -> không lọc
 check("Bách nhật khái KHÔNG lọc khi tuổi None", p._age_conflict("Bách nhật khái", None) is False)
 # Bệnh không đặc thù tuổi -> không lọc
-check("Viêm phế quản KHÔNG lọc (any) cho mọi tuổi", p._age_conflict("Viêm phế quản", 40) is False)
+check("Viêm phế quản KHÔNG lọc (any) cho mọi tuổi", p._age_conflict("Khái thấu (viêm phế quản)", 40) is False)
 check("Tiêu khát KHÔNG lọc (any) cho trẻ", p._age_conflict("Tiêu khát", 8) is False)
 # Bệnh ADULT (loại khi < 16)
 check("Liệt dương loại cho trẻ 12 tuổi", p._age_conflict("Liệt dương", 12) is True)
@@ -39,7 +39,7 @@ check("Canh niên kỳ loại cho 39 tuổi (ngưỡng dưới)", p._age_conflic
 check("Canh niên kỳ GIỮ cho 40 tuổi (ngưỡng)", p._age_conflict("Canh niên kỳ hội chứng", 40) is False)
 check("Canh niên kỳ GIỮ cho 52 tuổi", p._age_conflict("Canh niên kỳ hội chứng", 52) is False)
 check("Canh niên kỳ KHÔNG lọc khi tuổi None", p._age_conflict("Canh niên kỳ hội chứng", None) is False)
-check("Parkinson loại cho trẻ", p._age_conflict("Parkinson", 12) is True)
+check("Parkinson loại cho trẻ", p._age_conflict("Chiến chứng (Parkinson)", 12) is True)
 check("COPD loại cho trẻ", p._age_conflict("Mạn tính tắc nghẽn phế bệnh", 12) is True)
 check("Liệt dương KHÔNG lọc khi tuổi None", p._age_conflict("Liệt dương", None) is False)
 # Di tinh/Mộng tinh CỐ Ý 'any' (hậu dậy thì) — không được loại cho thiếu niên
@@ -59,7 +59,7 @@ def diseases(txt):
 
 
 check("40 tuổi -> LOẠI Bách nhật khái", "Bách nhật khái" not in diseases(base + ", 40 tuổi, nam giới"))
-check("40 tuổi -> GIỮ Viêm phế quản", "Viêm phế quản" in diseases(base + ", 40 tuổi, nam giới"))
+check("40 tuổi -> GIỮ Viêm phế quản", "Khái thấu (viêm phế quản)" in diseases(base + ", 40 tuổi, nam giới"))
 check("10 tuổi -> GIỮ Bách nhật khái", "Bách nhật khái" in diseases(base + ", 10 tuổi"))
 check("Không nhập tuổi -> GIỮ Bách nhật khái (NO-OP)", "Bách nhật khái" in diseases(base))
 

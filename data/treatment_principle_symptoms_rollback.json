@@ -1,0 +1,38 @@
+[
+ {
+  "name": "Dưỡng âm thanh nhiệt",
+  "edges": [
+   {
+    "hc": "Âm hư",
+    "benh_ly": "Tiêu khát"
+   }
+  ]
+ },
+ {
+  "name": "sinh tân dịch",
+  "edges": [
+   {
+    "hc": "Âm hư",
+    "benh_ly": "Tiêu khát"
+   }
+  ]
+ },
+ {
+  "name": "bổ thận âm",
+  "edges": [
+   {
+    "hc": "Âm hư",
+    "benh_ly": "Tiêu khát"
+   }
+  ]
+ },
+ {
+  "name": "hoạt huyết hóa ứ",
+  "edges": [
+   {
+    "hc": "Âm hư",
+    "benh_ly": "Tiêu khát"
+   }
+  ]
+ }
+]

@@ -88,11 +88,11 @@ def test_bridge_helps():
     _saved = o.csv_rows
     try:
         o.csv_rows = [r for r in _saved
-                      if not (r.get("benh_ly", "").strip() == "Viêm đại tràng"
+                      if not (r.get("benh_ly", "").strip() == "Tiết tả (viêm đại tràng)"
                               and r.get("hoi_chung", "").strip() == "Tỳ khí hư")]
         sym = ["ỉa chảy", "đau bụng", "nóng rát hậu môn"]
         cands = [c for c in o._find_matching_diseases(sym, ", ".join(sym))
-                 if c["benh_ly"] == "Viêm đại tràng"]
+                 if c["benh_ly"] == "Tiết tả (viêm đại tràng)"]
         got = cands[0]["ratio"] if cands else 0.0
         # khớp chữ thuần = 2/5 = 0.40 (lời khai 'ỉa chảy' không chạm được field 'đi ngoài nhiều lần');
         # có bắc cầu = 3/5 = 0.60. Ngưỡng 0.55 tách bạch hai đường.
@@ -111,10 +111,10 @@ def test_bridge_helps():
     names = [c["benh_ly"] for c in o._find_matching_diseases(sym, ", ".join(sym))]
     top = names[0] if names else None
     for label, ok in [
-        ("ca thật: Viêm đại tràng là bệnh danh #1", top == "Viêm đại tràng"),
+        ("ca thật: Viêm đại tràng là bệnh danh #1", top == "Tiết tả (viêm đại tràng)"),
         ("ca thật: Viêm đại tràng xếp TRÊN Xuất hãn dị thường",
-         "Viêm đại tràng" in names and ("Xuất hãn dị thường" not in names
-                                        or names.index("Viêm đại tràng") < names.index("Xuất hãn dị thường"))),
+         "Tiết tả (viêm đại tràng)" in names and ("Xuất hãn dị thường" not in names
+                                        or names.index("Tiết tả (viêm đại tràng)") < names.index("Xuất hãn dị thường"))),
     ]:
         print(f"[{'PASS' if ok else 'FAIL'}] {label}  (top: {names[:3]})")
         npass += ok
@@ -133,7 +133,7 @@ def test_bridge_does_not_harm():
     for label, ok in [
         ("Xuất hãn dị thường vẫn còn trong ứng viên", "Xuất hãn dị thường" in names),
         ("KHÔNG bệnh ruột nào chen lên #1",
-         bool(names) and names[0] not in ("Viêm đại tràng", "Tiết tả", "Tiết tả tính", "Nhi tiết tả")),
+         bool(names) and names[0] not in ("Tiết tả (viêm đại tràng)", "Tiết tả", "Tiết tả tính", "Nhi tiết tả")),
     ]:
         print(f"[{'PASS' if ok else 'FAIL'}] {label}  (top: {names[:3]})")
         npass += ok

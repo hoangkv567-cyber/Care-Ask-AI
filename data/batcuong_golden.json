@@ -39,7 +39,7 @@
    "expect": {
     "bat_cuong": "lý - hư (tổng cương: thiên âm)",
     "core": "tỳ khí hư",
-    "benh_danh": "viêm đại tràng"
+    "benh_danh": "tiết tả (viêm đại tràng)"
    }
   },
   {
@@ -61,7 +61,7 @@
    "expect": {
     "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
     "core": "can dương thượng cang / can hỏa vượng",
-    "benh_danh": "châm nhãn (lẹo/chắp), kết mạc viêm, viêm kết mạc"
+    "benh_danh": "châm nhãn (lẹo/chắp), thiếu nhũ, nhũ tịch"
    }
   },
   {
@@ -116,7 +116,7 @@
    "expect": {
     "bat_cuong": "lý - hàn - thực (tổng cương: thiên âm)",
     "core": "huyết ứ",
-    "benh_danh": "xơ cứng động mạch vành, nhiễm mỡ xơ mạch, hung tý"
+    "benh_danh": "thiếu nhũ, nhũ tịch, nhũ lao"
    }
   },
   {
@@ -182,7 +182,7 @@
    "expect": {
     "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
     "core": "can dương thượng cang / can hỏa vượng",
-    "benh_danh": "châm nhãn (lẹo/chắp), kết mạc viêm, viêm kết mạc"
+    "benh_danh": "châm nhãn (lẹo/chắp), thiếu nhũ, nhũ tịch"
    }
   },
   {
@@ -303,7 +303,7 @@
    "expect": {
     "bat_cuong": "lý - hàn - hư (tổng cương: thiên âm)",
     "core": "tỳ thận dương hư",
-    "benh_danh": "viêm đại tràng, di niệu"
+    "benh_danh": "tiết tả (viêm đại tràng), di niệu"
    }
   },
   {
@@ -358,7 +358,7 @@
    "expect": {
     "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
     "core": "thấp nhiệt",
-    "benh_danh": "viêm bể thận mạn"
+    "benh_danh": "lâm chứng (viêm bể thận mạn)"
    }
   },
   {
@@ -369,7 +369,7 @@
    "expect": {
     "bat_cuong": "lý - nhiệt - thực (tổng cương: thiên dương)",
     "core": "can dương thượng cang / can hỏa vượng",
-    "benh_danh": "châm nhãn (lẹo/chắp), kết mạc viêm, viêm kết mạc"
+    "benh_danh": "châm nhãn (lẹo/chắp), thiếu nhũ, nhũ tịch"
    }
   },
   {
