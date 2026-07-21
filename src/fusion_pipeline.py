@@ -1741,7 +1741,7 @@ class TCMFusionPipeline:
         "thích uống nóng", "khát nhưng không muốn uống")
     _MIXED_HEAT_SIGNS = (
         # 'khát' trần gỡ (nuốt cả 'không khát' và 'thích uống nóng'); 'uống nước lạnh' vào thay.
-        "sốt", "phát nhiệt", "triều nhiệt", "khát nước", "uống nước lạnh", "lưỡi đỏ", "chất lưỡi đỏ",
+        "sốt", "phát nhiệt", "triều nhiệt", "khát nước", "uống nước lạnh", "uống nước mát", "lưỡi đỏ", "chất lưỡi đỏ",
         "rêu vàng", "rêu lưỡi vàng", "tiểu vàng", "nước tiểu vàng", "họng đỏ", "đờm vàng", "mặt đỏ",
         "gò má đỏ", "ngũ tâm phiền nhiệt", "lòng bàn tay chân nóng", "bốc hỏa", "táo bón", "khô miệng")
     _WARM_DEF_THE_RE = re.compile(r'dương\s*hư|hư\s*hàn|hàn\s*(?:thấp|ngưng|trệ)|khí\s*hư|tỳ\s*vị\s*hư|thận\s*dương|tỳ\s*dương|dương\s*suy', re.IGNORECASE)
@@ -3340,7 +3340,7 @@ class TCMFusionPipeline:
     # bị đếm thành dấu NHIỆT, vô hiệu cổng hạ bậc âm-hư. Từ khi form cho khai 渴喜熱飲 thì
     # 'khát, thích uống nóng' (dấu HÀN) cũng dính. Thay bằng các cụm ĐÃ NEO, không tự phủ định được.
     _AMHU_HEAT_SIGNS = (
-        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "khát nhiều",
+        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "uống nước mát", "khát nhiều",
         "khô họng", "họng khô", "khô miệng",
         "miệng khô", "khô mũi", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "lưỡi thon đỏ", "ít rêu",
         "không rêu", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ", "má đỏ", "hai gò má đỏ", "bốc hỏa",
@@ -3396,7 +3396,7 @@ class TCMFusionPipeline:
     # nhiệt + CÓ dấu hàn (tay chân lạnh/rêu trắng) -> gần chắc là HÀN -> loại nhiệt, chọn non-nhiệt.
     # 'khát' trần gỡ vì cùng lý do như _AMHU_HEAT_SIGNS (khớp `in` thô, nuốt cả 'không khát').
     _NHIET_HEAT_SIGNS = (
-        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "khát nhiều",
+        "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "uống nước mát", "khát nhiều",
         "khô họng", "họng khô", "khô miệng",
         "miệng khô", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ",
         "má đỏ", "mặt đỏ", "bốc hỏa", "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "nóng trong",
@@ -5368,7 +5368,7 @@ class TCMFusionPipeline:
                     # CHỈ thêm ở đây; KHÔNG thêm vào hai bản sao inline khác của danh sách này —
                     # chúng gác việc cộng điểm và CƯỠNG BỨC core 'Âm Dương Lưỡng Hư', sẽ ép sai core
                     # ở ca biểu hàn lý nhiệt (Đại thanh long: sợ lạnh + sốt + khát thích uống lạnh).
-                    "uống nước lạnh"]
+                    "uống nước lạnh", "uống nước mát"]
 
         has_cold_indicator = self._kw_hit_clean(symptoms_lower_all, cold_kws)
         has_heat_pulse_indicator = self._kw_hit_clean(symptoms_lower_all, heat_kws)
@@ -5531,7 +5531,7 @@ class TCMFusionPipeline:
         _strong_heat_kws = ["rêu vàng", "rêu lưỡi vàng", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ",
                             "rìa lưỡi đỏ", "mắt đỏ", "mặt đỏ", "đỏ bừng", "khát nước", "họng đỏ",
                             "đờm vàng", "mũi vàng", "vàng đục", "tiểu vàng", "mụn đỏ", "nốt mụn đỏ",
-                            "sốt", "uống nước lạnh"]
+                            "sốt", "uống nước lạnh", "uống nước mát"]
         has_strong_heat = self._kw_hit_clean(symptoms_lower_all, _strong_heat_kws)
         # [KHÁT KHÔNG ĐỦ DỰNG NHIỆT] 'khát nước' là thành viên DUY NHẤT của _strong_heat_kws không
         # phải dấu nhiệt KHÁCH QUAN (17 dấu còn lại — rêu vàng, lưỡi đỏ, sốt... — đều khách quan).
