@@ -914,6 +914,14 @@
             const faceFile = document.getElementById('faceImg').files[0];
             const tongueFile = document.getElementById('tongueImg').files[0];
 
+            // KHÔNG TẢI ẢNH và AI-SOI-KHÔNG-THẤY-GÌ là hai chuyện khác hẳn nhau. Trước đây cả hai
+            // (và cả trường hợp bị cắt theo phân quyền) đều in chung một câu "AI chưa phát hiện
+            // được triệu chứng bất thường qua ảnh" — với người chưa tải ảnh thì câu đó vô nghĩa,
+            // với người đã tải ảnh thì nó TRẤN AN SAI. Tách bạch.
+            const noVisionMsg = () => (!faceFile && !tongueFile)
+                ? "<span class='text-slate-400 italic'>Chưa tải ảnh lưỡi hoặc sắc mặt — phần vọng chẩn không chạy. Bạn có thể tải ảnh để chẩn đoán đầy đủ hơn.</span>"
+                : "<span class='text-slate-400 italic'>AI đã soi ảnh nhưng chưa ghi nhận dấu hiệu bất thường rõ rệt.</span>";
+
             // Vấn chẩn chi tiết (thập vấn + nhân khẩu) — chỉ gửi field có chọn
             const interviewFields = {
                 age: 'qAge', sex: 'qSex', onset: 'qOnset', han_nhiet: 'qHanNhiet',
@@ -1169,7 +1177,7 @@
                         if(data.vision_details.analysis) {
                             htmlContent += `
                                 <div class="mt-3 pt-2.5 border-t border-slate-100">
-                                    <strong class="text-teal-700 text-xs uppercase block mb-1">🔍 Triệu chứng đã khớp:</strong>
+                                    <strong class="text-teal-700 text-xs uppercase block mb-1"><span class="inline-block bg-teal-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded mr-1 align-middle">BÁC SĨ</span>🔍 Triệu chứng đã khớp:</strong>
                                     <span class="inline-block bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs font-bold border border-blue-100">${escapeHtml(data.vision_details.analysis)}</span>
                                 </div>
                             `;
@@ -1178,10 +1186,10 @@
                         if(htmlContent) {
                             visionResult.innerHTML = htmlContent;
                         } else {
-                            visionResult.innerHTML = "<span class='text-slate-400 italic'>AI chưa phát hiện được triệu chứng bất thường qua ảnh.</span>";
+                            visionResult.innerHTML = noVisionMsg();
                         }
                     } else {
-                        visionResult.innerHTML = "<span class='text-slate-400 italic'>AI chưa phát hiện được triệu chứng bất thường qua ảnh.</span>";
+                        visionResult.innerHTML = noVisionMsg();
                     }
 
                     resultArea.classList.remove('hidden');

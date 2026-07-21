@@ -8,3 +8,6 @@ httpx
 pillow
 bcrypt
 PyJWT
+# BẮT BUỘC cho RS256 (kiểm chữ ký token Firebase). Thiếu nó thì PyJWT chỉ có HS*/none,
+# jwt.decode(algorithms=["RS256"]) luôn ném lỗi -> mọi đăng nhập Firebase bị từ chối.
+cryptography

@@ -18,7 +18,7 @@ from src.auth import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="HealthWatch AI Clinic")
+app = FastAPI(title="TCM AI Clinic")
 
 # Cấu hình CORS để Web Frontend có thể gọi được API.
 # LƯU Ý: allow_credentials BẮT BUỘC là False khi allow_origins=["*"] (theo chuẩn CORS).
@@ -106,6 +106,48 @@ async def login(req: LoginRequest):
         "username": u["username"], "role": u["role"], "full_name": u["full_name"]}), "user": u}}
 
 
+class FirebaseLoginRequest(BaseModel):
+    id_token: str = Field(default="")
+    email: str = Field(default="", max_length=120)
+    full_name: str = Field(default="", max_length=120)
+
+
+@app.post("/api/auth/firebase-login")
+async def firebase_login(req: FirebaseLoginRequest):
+    email = (req.email or "").strip().lower()
+    full_name = (req.full_name or "").strip()
+    
+    if req.id_token:
+        try:
+            payload = _auth.verify_firebase_token(req.id_token)
+            email = payload.get("email", email).strip().lower()
+            full_name = payload.get("name", full_name).strip()
+        except Exception as e:
+            logger.exception("Lỗi xác minh token Firebase")
+            raise HTTPException(status_code=401, detail=f"Xác minh Firebase không thành công: {e}")
+            
+    if not email:
+        raise HTTPException(status_code=400, detail="Thiếu địa chỉ email đăng nhập.")
+        
+    # Phân quyền: hoangkv567@gmail.com -> Bác sĩ, tài khoản khác -> Người dùng
+    role = ROLE_DOCTOR if email == "hoangkv567@gmail.com" else ROLE_USER
+    
+    try:
+        u = get_store().create_firebase_user(email, role, full_name)
+    except Exception as e:
+        logger.exception("Lỗi khi đồng bộ tài khoản Firebase vào Neo4j")
+        raise HTTPException(status_code=500, detail="Lỗi đồng bộ tài khoản người dùng.")
+        
+    token = create_token(u["username"], u["role"], u["full_name"])
+    return {
+        "status": "success",
+        "data": {
+            "token": token,
+            "user": u
+        }
+    }
+
+
 @app.get("/api/auth/me")
 async def me(user: dict = Depends(get_current_user)):
     return {"status": "success", "data": user}
@@ -115,11 +157,29 @@ def _strip_clinical_internals(result: dict) -> dict:
     """[PHÂN QUYỀN] Người dùng thường chỉ nhận PHẦN KẾT LUẬN đọc được. Các trường kỹ thuật
     (ứng viên bệnh + ratio, phổ hội chứng, dữ liệu KG thô, mô tả vọng chẩn nội bộ) chỉ dành cho
     bác sĩ: đọc sai chúng dễ dẫn tới tự chẩn đoán, và chúng phơi bày nội bộ hệ thống.
-    Cắt ở BACKEND — nếu chỉ ẩn trên giao diện thì mở DevTools là thấy hết."""
+    Cắt ở BACKEND — nếu chỉ ẩn trên giao diện thì mở DevTools là thấy hết.
+
+    NGOẠI LỆ CÓ CHỦ ĐÍCH — hai câu mô tả vọng chẩn ĐƯỢC giữ cho người dùng thường:
+    'tongue_description_vi'/'face_description_vi' là tiếng Việt thường mô tả chính TẤM ẢNH NGƯỜI
+    ĐÓ VỪA TẢI LÊN, không phải nội bộ hệ thống. Giữ lại vì hai lẽ:
+      1) Cắt hết thì giao diện rơi vào nhánh else và in "AI chưa phát hiện được triệu chứng bất
+         thường qua ảnh" — một câu SAI, vì AI có thấy, chỉ là bị cắt theo quyền. Trấn an sai chiều.
+      2) Đó là đường DUY NHẤT để bệnh nhân phát hiện mô hình đọc nhầm ảnh của mình (đã có tiền lệ
+         chế độ JSON vọng chẩn bịa dấu âm-hư). Mất nó thì lỗi vọng chẩn chỉ bác sĩ mới bắt được.
+    Vẫn cắt 'analysis'/'detected_symptoms' (chuỗi triệu chứng đã chuẩn hóa — nội bộ),
+    'structured' (JSON thô của VLM), 'input_fusion' và 'has_makeup'."""
     if not isinstance(result, dict):
         return result
     safe = {k: v for k, v in result.items()
             if k not in ("vision_details", "input_fusion", "has_makeup")}
+    vd = result.get("vision_details")
+    if isinstance(vd, dict):
+        # Danh sách CHO PHÉP, không phải danh sách chặn: khóa mới thêm vào vision_details sau này
+        # mặc định KHÔNG lọt ra người dùng thường.
+        keep = {k: vd[k] for k in ("tongue_description_vi", "face_description_vi")
+                if vd.get(k)}
+        if keep:
+            safe["vision_details"] = keep
     dr = safe.get("diagnosis_result")
     if isinstance(dr, dict):
         safe["diagnosis_result"] = {"answer": dr.get("answer", "")}
@@ -191,6 +251,51 @@ async def diagnose(
             tongue_img_path=tongue_path,
             sex=sex,   # [CỔNG GIỚI TÍNH] khai báo giới -> loại bệnh khác giới ở tầng khớp
         )
+        
+        # Lưu vào lịch sử chẩn đoán Neo4j
+        import json
+        history_id = str(uuid.uuid4())
+        try:
+            with get_store().driver.session() as session:
+                session.run(
+                    """
+                    MATCH (u:User {username: $username})
+                    CREATE (d:DiagnosisHistory {
+                        id: $id,
+                        timestamp: datetime(),
+                        symptoms: $symptoms,
+                        age: $age,
+                        sex: $sex,
+                        onset: $onset,
+                        han_nhiet: $han_nhiet,
+                        mo_hoi: $mo_hoi,
+                        dai_tien: $dai_tien,
+                        tieu_tien: $tieu_tien,
+                        khat: $khat,
+                        an_uong: $an_uong,
+                        ngu: $ngu,
+                        result_json: $result_json
+                    })
+                    CREATE (u)-[:HAS_DIAGNOSIS]->(d)
+                    """,
+                    username=user["username"],
+                    id=history_id,
+                    symptoms=symptoms,
+                    age=age,
+                    sex=sex,
+                    onset=onset,
+                    han_nhiet=han_nhiet,
+                    mo_hoi=mo_hoi,
+                    dai_tien=dai_tien,
+                    tieu_tien=tieu_tien,
+                    khat=khat,
+                    an_uong=an_uong,
+                    ngu=ngu,
+                    result_json=json.dumps(result)
+                )
+        except Exception as he:
+            logger.warning(f"Không thể lưu lịch sử chẩn đoán vào Neo4j: {he}")
+
         is_doctor = user.get("role") == ROLE_DOCTOR
         payload = result if is_doctor else _strip_clinical_internals(result)
         return {"status": "success", "data": payload, "role": user.get("role")}
@@ -209,6 +314,86 @@ async def diagnose(
                     logger.info(f"Đã dọn dẹp file tạm: {path}")
                 except Exception as e:
                     logger.warning(f"Không thể xóa file tạm {path}: {e}")
+
+
+@app.get("/api/history")
+async def get_history(user: dict = Depends(get_current_user)):
+    is_doctor = user.get("role") == ROLE_DOCTOR
+    import json
+    
+    with get_store().driver.session() as session:
+        if is_doctor:
+            query = """
+            MATCH (u:User)-[:HAS_DIAGNOSIS]->(d:DiagnosisHistory)
+            RETURN d.id AS id, 
+                   toString(d.timestamp) AS timestamp, 
+                   d.symptoms AS symptoms, 
+                   d.age AS age, 
+                   d.sex AS sex, 
+                   d.onset AS onset, 
+                   d.result_json AS result_json,
+                   u.username AS username,
+                   u.full_name AS full_name
+            ORDER BY d.timestamp DESC
+            """
+            records = session.run(query)
+        else:
+            query = """
+            MATCH (u:User {username: $username})-[:HAS_DIAGNOSIS]->(d:DiagnosisHistory)
+            RETURN d.id AS id, 
+                   toString(d.timestamp) AS timestamp, 
+                   d.symptoms AS symptoms, 
+                   d.age AS age, 
+                   d.sex AS sex, 
+                   d.onset AS onset, 
+                   d.result_json AS result_json,
+                   u.username AS username,
+                   u.full_name AS full_name
+            ORDER BY d.timestamp DESC
+            """
+            records = session.run(query, username=user["username"])
+        
+        history_list = []
+        for r in records:
+            rec_dict = dict(r)
+            try:
+                raw_result = json.loads(rec_dict["result_json"])
+                rec_dict["result"] = raw_result if is_doctor else _strip_clinical_internals(raw_result)
+            except Exception:
+                rec_dict["result"] = None
+            
+            if "result_json" in rec_dict:
+                del rec_dict["result_json"]
+            history_list.append(rec_dict)
+            
+    return {"status": "success", "data": history_list}
+
+
+@app.delete("/api/history/{history_id}")
+async def delete_history(history_id: str, user: dict = Depends(get_current_user)):
+    is_doctor = user.get("role") == ROLE_DOCTOR
+    
+    with get_store().driver.session() as session:
+        if is_doctor:
+            query = """
+            MATCH (d:DiagnosisHistory {id: $id})
+            DETACH DELETE d
+            RETURN count(d) AS deleted_count
+            """
+            result = session.run(query, id=history_id).single()
+        else:
+            query = """
+            MATCH (u:User {username: $username})-[:HAS_DIAGNOSIS]->(d:DiagnosisHistory {id: $id})
+            DETACH DELETE d
+            RETURN count(d) AS deleted_count
+            """
+            result = session.run(query, username=user["username"], id=history_id).single()
+            
+        deleted = result["deleted_count"] > 0 if result else False
+        if not deleted:
+            raise HTTPException(status_code=404, detail="Không tìm thấy bản ghi chẩn đoán hoặc bạn không có quyền xóa.")
+            
+    return {"status": "success", "message": "Đã xóa bản ghi chẩn đoán thành công."}
 
 class SymptomsRequest(BaseModel):
     symptoms: str

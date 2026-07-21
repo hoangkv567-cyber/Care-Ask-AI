@@ -25,6 +25,7 @@ import os
 import re
 import logging
 import secrets
+import httpx
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
@@ -174,6 +175,26 @@ class UserStore:
                 "MATCH (u:User) RETURN u.username AS username, u.role AS role, "
                 "u.full_name AS full_name, u.active AS active ORDER BY u.role, u.username")]
 
+    def create_firebase_user(self, email: str, role: str, full_name: str = "") -> dict:
+        if role not in VALID_ROLES:
+            raise ValueError(f"Vai trò không hợp lệ: {role}")
+        uname = (email or "").strip().lower()
+        with self.driver.session() as s:
+            rec = s.run(
+                """
+                MERGE (u:User {username: $u})
+                ON CREATE SET u.password_hash = "firebase", u.role = $role, u.full_name = $fn,
+                              u.active = true, u.created_at = datetime(), u._new = true
+                ON MATCH  SET u.full_name = $fn, u.role = $role, u._new = false
+                WITH u, u._new AS is_new
+                REMOVE u._new
+                RETURN is_new AS is_new, u.username AS username, u.role AS role,
+                       u.full_name AS full_name
+                """,
+                u=uname, role=role, fn=full_name or uname,
+            ).single()
+        return {"username": rec["username"], "role": rec["role"], "full_name": rec["full_name"]}
+
 
 # ----------------------------------------------------------------------------- dependency FastAPI
 _store: Optional[UserStore] = None
@@ -229,3 +250,78 @@ async def require_doctor(user: dict = Depends(get_current_user)) -> dict:
             detail="Chức năng này dành riêng cho tài khoản bác sĩ.",
         )
     return user
+
+
+_FIREBASE_CERTS_URL = ("https://www.googleapis.com/robot/v1/metadata/x509/"
+                       "securetoken@system.gserviceaccount.com")
+
+
+def verify_firebase_token(id_token: str) -> dict:
+    """Giải mã và kiểm chữ ký ID Token của Firebase. Ném ValueError nếu KHÔNG kiểm được.
+
+    LỖI ĐÃ CÓ Ở ĐÂY — ghi lại để không ai vô tình dựng lại:
+    Bản trước bọc bước kiểm chữ ký trong try/except, và nhánh except lại `return jwt.decode(
+    ..., verify_signature=False)`. Nghĩa là chữ ký SAI thì token vẫn được nhận — kiểm chữ ký chỉ
+    còn tính trang trí. Ghép với việc vai trò suy thẳng từ trường email trong token (api.py), ai
+    cũng tự ký được một token mang email của bác sĩ để lấy quyền bác sĩ, và quyền đó mở ra cả
+    /api/ask lẫn TOÀN BỘ lịch sử chẩn đoán của mọi người dùng.
+
+    Đo được lúc vá, tệ hơn cả suy đoán ban đầu: gói `cryptography` KHÔNG được cài, nên PyJWT chỉ
+    có ['HS256','HS384','HS512','none'] — RS256 CHƯA TỪNG khả dụng. Mọi lượt gọi đều ném
+    InvalidAlgorithmError rồi rơi vào except. Xác minh chữ ký chưa chạy đúng một lần nào, kể cả
+    khi FIREBASE_PROJECT_ID đã đặt. Vì vậy bản vá này BẮT BUỘC đi kèm `cryptography` trong
+    requirements.txt — thiếu nó thì mọi đăng nhập Firebase sẽ bị từ chối (thà hỏng còn hơn nhận bừa).
+
+    Cạm bẫy thứ hai đã đo: PyJWT 2.13 KHÔNG nhận chuỗi cert X.509 làm khóa (InvalidKeyError) —
+    phải bóc public key ra khỏi cert trước. Truyền thẳng cert_pem như bản cũ là luôn ném lỗi.
+    """
+    try:
+        header = jwt.get_unverified_header(id_token)
+        kid = header.get("kid")
+        if not kid:
+            raise ValueError("Token Firebase không hợp lệ (thiếu kid).")
+    except ValueError:
+        raise
+    except Exception as e:
+        raise ValueError(f"Không thể đọc header của Token: {e}")
+
+    proj_id = os.getenv("FIREBASE_PROJECT_ID", "").strip()
+    if not proj_id:
+        # Đường dev bỏ qua chữ ký phải được BẬT TƯỜNG MINH. Trước đây chỉ cần biến môi trường
+        # TRỐNG là tự động bỏ kiểm — tức quên cấu hình khi triển khai = mở toang xác thực.
+        if os.getenv("FIREBASE_ALLOW_INSECURE_DEV", "").strip().lower() in ("1", "true", "yes"):
+            logger.warning("FIREBASE_ALLOW_INSECURE_DEV đang BẬT — token KHÔNG được kiểm chữ ký. "
+                           "Chỉ dùng cho máy dev, TUYỆT ĐỐI không bật khi triển khai.")
+            return jwt.decode(id_token, options={"verify_signature": False})
+        raise ValueError("Chưa cấu hình FIREBASE_PROJECT_ID nên không thể kiểm chữ ký token.")
+
+    try:
+        res = httpx.get(_FIREBASE_CERTS_URL, timeout=10)
+        res.raise_for_status()
+        certs = res.json()
+    except Exception as e:
+        # KHÔNG nhận bừa khi không lấy được chứng chỉ: mạng hỏng là lý do để TỪ CHỐI, không phải
+        # để bỏ qua xác thực.
+        raise ValueError(f"Không lấy được chứng chỉ Firebase để kiểm chữ ký: {e}")
+
+    if kid not in certs:
+        raise ValueError("Không tìm thấy chứng chỉ tương ứng với kid từ Google.")
+
+    try:
+        # PyJWT không nhận cert X.509 trực tiếp -> bóc public key (đã đo: truyền thẳng cert ném
+        # InvalidKeyError, và lỗi đó chính là thứ rơi vào except ở bản cũ).
+        from cryptography.x509 import load_pem_x509_certificate
+        pub_key = load_pem_x509_certificate(certs[kid].encode()).public_key()
+        return jwt.decode(
+            id_token,
+            pub_key,
+            algorithms=["RS256"],
+            audience=proj_id,
+            issuer=f"https://securetoken.google.com/{proj_id}",
+        )
+    except ImportError as e:
+        raise ValueError(f"Thiếu gói 'cryptography' nên không kiểm được chữ ký RS256: {e}")
+    except Exception as e:
+        # TỪ CHỐI. Đây chính là chỗ bản cũ nhận bừa token.
+        logger.warning(f"Từ chối token Firebase — kiểm chữ ký thất bại: {e}")
+        raise ValueError(f"Token Firebase không hợp lệ: {e}")
