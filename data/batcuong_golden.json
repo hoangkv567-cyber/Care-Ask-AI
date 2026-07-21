@@ -51,7 +51,10 @@
     "bat_cuong": "lý - nhiệt - bản hư tiêu thực",
     "core": "thận âm hư",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   },
   {
    "id": "audit02_Châm nhãn (lẹo/chắ",
@@ -73,7 +76,11 @@
     "bat_cuong": "lý (tổng cương: thiên âm)",
     "core": "chưa rõ",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh",
+    "core"
+   ]
   },
   {
    "id": "audit04_Cường dương",
@@ -139,7 +146,10 @@
     "bat_cuong": "lý - thực",
     "core": "can hoả phạm phế",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   },
   {
    "id": "audit10_Hỏa thương",
@@ -161,7 +171,10 @@
     "bat_cuong": "lý - bản hư tiêu thực (tổng cương: thiên âm)",
     "core": "âm hư dương cang",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   },
   {
    "id": "audit12_Lâm chứng",
@@ -205,7 +218,10 @@
     "bat_cuong": "lý - nhiệt - bản hư tiêu thực",
     "core": "tâm âm hư",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   },
   {
    "id": "audit16_Ngoan tiển (viêm d",
@@ -282,7 +298,10 @@
     "bat_cuong": "lý - hư (tổng cương: thiên âm)",
     "core": "can thận khuy hư",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   },
   {
    "id": "audit23_Phong thấp tâm",
@@ -381,7 +400,10 @@
     "bat_cuong": "lý - hư (tổng cương: thiên âm)",
     "core": "khí hư hạ hãm",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   },
   {
    "id": "audit34_Vị ái",
@@ -392,7 +414,10 @@
     "bat_cuong": "lý - nhiệt - bản hư tiêu thực",
     "core": "âm hư hoả vượng",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   },
   {
    "id": "audit35_Âm hành đàm hạch",
@@ -447,7 +472,10 @@
     "bat_cuong": "lý - bản hư tiêu thực (tổng cương: thiên âm)",
     "core": "âm hư dương cang",
     "benh_danh": "chưa xác định cụ thể"
-   }
+   },
+   "dong_bang_that_bai": [
+    "benh_danh"
+   ]
   }
  ]
 }

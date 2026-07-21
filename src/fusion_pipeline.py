@@ -3402,6 +3402,11 @@ class TCMFusionPipeline:
         "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "uống nước mát", "khát nhiều",
         "khô họng", "họng khô", "khô miệng",
         "miệng khô", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ",
+        # Chữ 'hơi' chen giữa làm \blưỡi đỏ\b TRƯỢT -> L774 'Đới trạng bào chẩn × Thấp nhiệt'
+        # ('lưỡi hơi đỏ, rêu trắng bệu hoặc vàng bệu') bị cổng hàn bắn oan. Vá PHÍA NHIỆT chứ không
+        # gỡ 'rêu trắng' bên phía HÀN: thêm dấu nhiệt chỉ khiến cổng IM THÊM khi có bằng chứng nhiệt
+        # thật, KHÔNG bao giờ làm mất bằng chứng hàn. Đo: 4 dòng KB chứa cụm này, 0 dòng thuộc thể hàn.
+        "lưỡi hơi đỏ", "chất lưỡi hơi đỏ",
         "má đỏ", "mặt đỏ", "bốc hỏa", "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "nóng trong",
         "phiền nhiệt", "tâm phiền", "nước tiểu vàng", "tiểu vàng", "nước tiểu đỏ", "táo bón",
         "đại tiện táo", "họng đỏ", "họng sưng", "sưng đau họng", "đau rát họng", "amidan sưng",

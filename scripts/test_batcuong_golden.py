@@ -106,6 +106,16 @@ def main():
     print(f"\n{len(cases) - len(fails) - len(errs)} XANH, {len(fails)} ĐỎ, {len(errs)} LỖI / {len(cases)}")
     for cid, why in errs:
         print(f"  LỖI {cid}: {why}")
+    # Kỳ vọng golden được GHI LẠI TỪ ĐẦU RA CỦA HỆ (build_batcuong_golden.py: "expect": got). Nên ca
+    # nào hệ đang BÓ TAY thì golden đóng băng luôn cái bó tay đó, và "xanh" ở ca ấy KHÔNG có nghĩa
+    # là chẩn đúng — chỉ nghĩa là hệ vẫn hỏng y như lúc chụp ảnh. Phải in ra, kẻo con số "40/40
+    # XANH" bị viện dẫn như bằng chứng an toàn rộng hơn thực tế (đã xảy ra).
+    _bang = [c["id"] for c in cases if c.get("dong_bang_that_bai")]
+    if _bang:
+        print(f"\n⚠ {len(_bang)}/{len(cases)} ca ĐÓNG BĂNG MỘT THẤT BẠI — 'xanh' ở các ca này chỉ nghĩa "
+              f"là hệ VẪN không chẩn được, không phải chẩn đúng:")
+        for cid in _bang:
+            print(f"     {cid}")
     if fails:
         print("\n⚠ Trước khi chạy build_batcuong_golden.py để sinh lại: xác định từng ca đỏ là HỒI QUY "
               "hay CẢI THIỆN CÓ CHỦ ĐÍCH. Sinh lại phản xạ = đóng băng cái sai.")

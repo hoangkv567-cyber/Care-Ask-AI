@@ -132,8 +132,17 @@ def main():
         if not got["benh_danh"] or not got["core"] or not got["bat_cuong"]:
             skipped.append((c["id"], "thoái hóa (thiếu bệnh danh/core/bát cương)"))
             continue
-        out.append({"id": c["id"], "raw": c["raw"], "source": c["source"], "note": c["note"],
-                    "expect": got})
+        # Kỳ vọng lấy TỪ ĐẦU RA CỦA HỆ -> ca nào hệ đang bó tay thì ta đóng băng luôn cái bó tay.
+        # Không loại chúng (vẫn cần canh hồi quy Bát Cương/core), nhưng PHẢI đánh dấu để runner in
+        # cảnh báo — nếu không, "40/40 XANH" sẽ bị đọc thành "40 ca chẩn đúng".
+        _THOAI_HOA = ("chưa xác định", "chưa rõ", "không xác định", "không rõ")
+        rec = {"id": c["id"], "raw": c["raw"], "source": c["source"], "note": c["note"],
+               "expect": got}
+        _degen = [k for k in ("benh_danh", "core")
+                  if any(t in (got[k] or "").lower() for t in _THOAI_HOA)]
+        if _degen:
+            rec["dong_bang_that_bai"] = _degen
+        out.append(rec)
         print(f"  [{i:>2}/{len(cases)}] {c['id'][:34]:<34} {got['bat_cuong'][:42]}")
 
     data = {"version": 1,
