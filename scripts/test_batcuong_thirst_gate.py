@@ -130,9 +130,66 @@ def test_invariants():
     return n, f
 
 
+def test_khop_cum_khat_khong_cat_chu():
+    """Cụm khát/khô phải khớp theo RANH GIỚI TỪ, không phải `in` thô.
+
+    Lỗi thật đã xảy ra HAI lần cùng một gốc: 'khô' là TIỀN TỐ của 'không'.
+      'miệng khô' nuốt 'miệng khô|ng khát'   (口不渴)
+      'họng khô'  nuốt 'họng khô|ng khô'
+    Hậu quả đúng chiều NGƯỢC: _demote_amhu/_demote_nhiet là cổng SỬA-VỀ-HÀN và thoát sớm khi
+    thấy dấu nhiệt — nên 口不渴, bằng chứng hàn mạnh nhất, lại TẮT chính cổng hàn. Lần trước dự án
+    đã gỡ 'khát' trần vì đúng lý do này (chú thích tại _NHIET_HEAT_SIGNS) nhưng bỏ sót cụm 'khô'.
+    """
+    n = f = 0
+    o = F.__new__(F)
+    F._load_csv_data(o)
+
+    # Gọi CỔNG THẬT, không gọi _kw_hit_clean trong test: bản test đầu tiên của tôi đo helper nên
+    # vẫn XANH khi đã phá nguồn về `in` thô — xanh giả. Cổng trả (danh sách, lý do|None); lý do
+    # khác None nghĩa là ĐÃ hạ hội chứng sai cực.
+    # Lời khai HÀN: cổng PHẢI hạ core NHIỆT.
+    for t in ("bệnh nhân miệng không khát, tay chân lạnh, rêu trắng",
+              "họng không khô, sợ lạnh, đại tiện lỏng",
+              "miệng nhạt không khát, chân tay lạnh"):
+        _, why = o._demote_nhiet_without_heat(["Vị nhiệt", "Tỳ dương hư"], t)
+        n += _chk(f"hàn -> hạ core NHIỆT: {t[:34]}", why is not None, f"lý do={why}")
+        f += (why is None)
+    # Song song cho trục âm-hư.
+    for t in ("miệng không khát, sợ lạnh, đại tiện lỏng",
+              "họng không khô, tay chân lạnh, rêu trắng"):
+        _, why = o._demote_amhu_without_heat(["Thận âm hư", "Tỳ dương hư"], t)
+        n += _chk(f"hàn -> loại core ÂM HƯ: {t[:34]}", why is not None, f"lý do={why}")
+        f += (why is None)
+
+    # Chiều ngược: dấu nhiệt THẬT phải giữ nguyên hội chứng nhiệt (không sinh âm tính giả).
+    for t in ("sốt cao, khát nước, rêu vàng, tay chân lạnh",
+              "miệng khô họng khô, lòng bàn tay nóng, sợ lạnh",
+              "khát thích uống nước mát, ăn mau đói, rêu trắng"):
+        _, why = o._demote_nhiet_without_heat(["Vị nhiệt", "Tỳ dương hư"], t)
+        n += _chk(f"có dấu nhiệt -> GIỮ core nhiệt: {t[:34]}", why is None, f"lý do={why}")
+        f += (why is not None)
+
+    # Chặn tái phát ở NGUỒN: hai cổng không được quay lại `in` thô.
+    for fname in ("_demote_amhu_without_heat", "_demote_nhiet_without_heat"):
+        i = SRC.find(f"def {fname}")
+        blk = SRC[i:SRC.find("\n    def ", i + 10)]
+        blk = re.sub(r"#.*", "", blk)          # gỡ chú thích: chính chú thích cảnh báo có chữ 'in'
+        bad = re.findall(r"any\(\s*k\s+in\s+t\s+for", blk)
+        n += _chk(f"{fname} dùng _kw_hit_clean, không `in` thô", not bad, str(bad))
+        f += (not not bad)
+
+    # Cụm khát-mà-không-uống (渴不欲飲) là dấu THẤP/Ứ, KHÔNG được nạp làm dấu nhiệt.
+    for t in ("khát mà không muốn uống", "miệng khát không muốn uống"):
+        hot = o._kw_hit_clean(t, F._NHIET_HEAT_SIGNS)
+        n += _chk(f"渴不欲飲 không tính là nhiệt: {t}", not hot)
+        f += (not not hot)
+    return n, f
+
+
 def main():
     tp = tf = 0
-    for fn in (test_gate_behaviour, test_gate_present_in_source, test_invariants):
+    for fn in (test_gate_behaviour, test_gate_present_in_source, test_invariants,
+               test_khop_cum_khat_khong_cat_chu):
         p, q = fn()
         tp += p
         tf += q

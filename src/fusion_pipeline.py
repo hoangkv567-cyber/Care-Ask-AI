@@ -3377,9 +3377,12 @@ class TCMFusionPipeline:
         if not self._is_amhu_syndrome(core):
             return syndromes, None
         t = self._norm_color_filler((case_text or "").lower())
-        if any(k in t for k in self._AMHU_HEAT_SIGNS):
+        # _kw_hit_clean chứ KHÔNG phải `in` thô: 'khô' là TIỀN TỐ của 'không', nên 'miệng khô' nuốt
+        # 'miệng khô|ng khát' và 'họng khô' nuốt 'họng khô|ng khô'. Hậu quả đúng chiều ngược: đây là
+        # cổng SỬA-VỀ-HÀN, nên 口不渴 — bằng chứng hàn mạnh nhất — lại TẮT chính cổng hàn.
+        if self._kw_hit_clean(t, self._AMHU_HEAT_SIGNS):
             return syndromes, None                       # có dấu nhiệt/khô -> âm hư có thể đúng
-        if not any(k in t for k in self._AMHU_HUHAN_SIGNS):
+        if not self._kw_hit_clean(t, self._AMHU_HUHAN_SIGNS):
             return syndromes, None                       # không có dấu hư-hàn -> không đủ cơ sở, để yên
         kept = [s for s in syndromes if not self._is_amhu_syndrome(s)]
         if not kept:
@@ -3428,9 +3431,9 @@ class TCMFusionPipeline:
         if not self._is_nhiet_syndrome(core):
             return syndromes, None
         t = self._norm_color_filler((case_text or "").lower())
-        if any(k in t for k in self._NHIET_HEAT_SIGNS):
+        if self._kw_hit_clean(t, self._NHIET_HEAT_SIGNS):   # xem chú thích ở _demote_amhu_without_heat
             return syndromes, None                       # có dấu nhiệt -> nhiệt có thể đúng
-        if not any(k in t for k in self._NHIET_COLD_SIGNS):
+        if not self._kw_hit_clean(t, self._NHIET_COLD_SIGNS):
             return syndromes, None                       # không dấu hàn -> không đủ cơ sở, để yên
         kept = [s for s in syndromes if not self._is_nhiet_syndrome(s)]
         if not kept:
