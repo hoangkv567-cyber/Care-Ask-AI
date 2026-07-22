@@ -1917,10 +1917,14 @@ class TCMFusionPipeline:
 
     def _validate_disease_safety(self, disease_name: str, patient_symptoms: list, raw_user_text: str) -> bool:
         """Bộ lọc an toàn lâm sàng (DATA-HÓA): loại bệnh danh chuyên khoa nếu lời khai không có triệu
-        chứng chỉ điểm tương ứng. Luật đọc từ data/disease_gates.json (thay ~460 dòng if/else cũ —
-        xem _validate_disease_safety_legacy để đối chiếu). Ngữ nghĩa giữ nguyên: bệnh phải qua HẾT
-        mọi cổng áp dụng; cổng 'requires' rỗng = luôn loại (bệnh Tây y thuần)."""
+        chứng chỉ điểm tương ứng."""
         disease_lower = disease_name.lower()
+        _raw_l = raw_user_text.lower() if raw_user_text else ""
+        if _raw_l:
+            _raw_l = self._mask_negated_text(_raw_l, self._get_neg_protected_phrases())
+        patient_symptoms_l = [s.lower() for s in (patient_symptoms or [])]
+        symptoms_str = " ".join(patient_symptoms_l) + " " + _raw_l
+
         # [CỔNG AN TOÀN PHẾ UNG]
         # Phế ung (Áp xe phổi) là bệnh THỰC NHIỆT (Phế nhiệt/Đờm mủ hôi thối/Sốt cao).
         # Loại tuyệt đối Phế ung khi bệnh nhân thuộc HÀN chứng thuần túy (Sợ lạnh, rêu trắng, không dấu nhiệt).
@@ -1929,15 +1933,10 @@ class TCMFusionPipeline:
                 "nhiệt", "sốt", "thần nhiệt", "đờm mủ", "hôi thối", "đờm hôi", "lưỡi đỏ", "rêu vàng", "nhiệt độc"))
             if not has_heat_sign:
                 return False
+
+        # [CỔNG AN TOÀN UNG THƯ / ONCOLOGY SAFETY GATE]
         if any(onc_kw in disease_lower for onc_kw in ("ung thư", "khối u ác tính")):
             return False
-        disease_lower = disease_name.lower()
-        # Che phủ định trên lời khai thô (đồng nhất với bản legacy): 'không đau đầu' không được rò
-        # 'đau đầu' cho qua bệnh Thiên đầu thống. patient_symptoms đã lọc phủ định từ trước.
-        _raw_l = raw_user_text.lower() if raw_user_text else ""
-        if _raw_l:
-            _raw_l = self._mask_negated_text(_raw_l, self._get_neg_protected_phrases())
-        symptoms_str = " ".join(patient_symptoms).lower() + " " + _raw_l
 
         for gate in self._get_disease_gates():
             named = any(n in disease_lower for n in gate.get("names", ()))
