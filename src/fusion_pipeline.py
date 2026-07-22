@@ -3003,6 +3003,23 @@ class TCMFusionPipeline:
         return s.strip().rstrip(".,; ").strip()
 
     @classmethod
+    def _dedupe_disease_names(cls, names: list) -> list:
+        """Loại bỏ trùng lặp và biến thể hậu tố của bệnh danh (vd 'Tiết tả' và 'Tiết tả tính' -> chỉ giữ 'Tiết tả')."""
+        if not names:
+            return []
+        cleaned = []
+        seen_norm = set()
+        for n in names:
+            raw = str(n).strip()
+            if not raw:
+                continue
+            # Chuẩn hóa tên bằng cách bỏ hậu tố biến thể rác (tính, thể, chứng)
+            norm = re.sub(r'\s+(tính|thể|chứng)$', '', raw, flags=re.IGNORECASE).strip().lower()
+            if norm not in seen_norm:
+                seen_norm.add(norm)
+                cleaned.append(re.sub(r'\s+tính$', '', raw, flags=re.IGNORECASE).strip())
+        return cleaned
+
     def _dedupe_herbs(cls, vi_str: str) -> str:
         """Khử trùng vị thuốc (gộp biến thể bào chế/chính tả), GIỮ VỊ TRÍ đầu tiên nhưng ưu tiên
         hiển thị dạng CHUẨN (không tiền tố bào chế, không phải alias-sai)."""
@@ -5241,7 +5258,7 @@ class TCMFusionPipeline:
             if target_matches:
                 filtered_matches = target_matches[:3]
 
-                disease_names = list(dict.fromkeys([m["benh_ly"].strip() for m in filtered_matches]))
+                disease_names = self._dedupe_disease_names([m["benh_ly"].strip() for m in filtered_matches])
                 if disease_grounded:
                     final_markdown += f"- **Bệnh danh:** {', '.join(disease_names)}\n"
                 else:
@@ -5980,7 +5997,8 @@ class TCMFusionPipeline:
         20. DẤU THỂ TRẠNG NỀN (MẶT NHỢT / LƯỠI BỆU / QUẦNG THÂM) TRONG CA NGOẠI CẢM CẤP THUẦN THỰC:
            - PHẠM VI ÁP DỤNG (đọc kỹ, tránh chọi luật khác): CHỈ áp khi HỘI ĐỦ — cốt lõi là NGOẠI CẢM (phong hàn/phong nhiệt phạm biểu hoặc phạm phế) VÀ Bát Cương thuần THỰC (Mục 3 phải ghi "Không có Bản Hư") VÀ Bước 1 ({final_primary}, {final_concurrent}) KHÔNG có hội chứng nội thương nào. Ca CÓ hội chứng nội thương đã chốt thì theo luật 13 (lưỡi bệu) và luật 17(a)(b) (quầng thâm) như thường — luật 20 KHÔNG áp.
            - Y LÝ: ngoại cảm mới mắc (vài ngày đến vài tuần) KHÔNG THỂ tự sinh ra mặt nhợt, lưỡi bệu hay quầng thâm — đó là dấu THỂ TRẠNG NỀN có sẵn (phản ánh khí/huyết/Tỳ vốn có của người bệnh), cần thời gian DÀI mới hình thành. Đặc biệt phong NHIỆT làm mặt ĐỎ, KHÔNG làm mặt NHỢT — gán mặt nhợt cho phong nhiệt là mâu thuẫn y lý.
-           - PHẢI LÀM: chỉ nhận định TRUNG TÍNH rằng các dấu này là NỀN có từ trước, KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này, nên theo dõi thêm (đúng khuôn luật 17(c)).
+           - PHẢI LÀM: chỉ nhận định TRUNG TÍNH rằng các dấu này là NỀN có từ trước (liên quan Tỳ/Thận/khí huyết vốn có), KHÔNG thuộc bệnh cảnh ngoại cảm cấp lần này, nên theo dõi thêm.
+           - TUYỆT ĐỐI CẤM (PROHIBITED) viết các câu phủ định thô bạo hoặc ngoan ngoãn nịnh bợ đồ thị như "không phải do Tỳ hư", "không phải do Thận hư" hay "không phải do Huyết ứ". Chỉ nhận định trung tính: "Là dấu hiệu thể trạng nền có từ trước (liên quan Tỳ/Thận/khí huyết vốn có), không thuộc bệnh cảm cấp lần này".
            - TUYỆT ĐỐI CẤM (PROHIBITED) bịa cơ chế gán chúng cho NGOẠI TÀ CẤP. CẤM đích danh các kiểu: "phong nhiệt tà khí làm rối loạn khí huyết gây quầng thâm", "phong nhiệt/phong hàn làm tổn thương khí huyết khiến mặt nhợt nhạt", "phong nhiệt làm rối loạn vận hóa của Tỳ gây lưỡi bệu".
            - CŨNG CẤM nhân đó tự thêm hội chứng hư mới (Tỳ hư / Thận hư / khí huyết hư) làm nguyên nhân — trái luật 6 và luật 15.
         21. CHỐT CHẶN TÍNH CHẤT KHÁT (渴飲) — CẤM SUY DIỄN HÀNH VI UỐNG NGOÀI LỜI KHAI:
@@ -7310,7 +7328,7 @@ class TCMFusionPipeline:
 
             if target_matches:
                 filtered_matches = target_matches[:3]
-                disease_names = list(dict.fromkeys([m["benh_ly"].strip() for m in filtered_matches]))
+                disease_names = self._dedupe_disease_names([m["benh_ly"].strip() for m in filtered_matches])
             
         # Danh sách triệu chứng HIỂN THỊ (tính sớm để đồ thị dùng cùng nhãn với input_fusion)
         _display_terms0 = self.qa_pipeline._preprocess_question(user_symptoms) if user_symptoms else []
