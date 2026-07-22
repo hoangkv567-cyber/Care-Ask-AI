@@ -1921,6 +1921,14 @@ class TCMFusionPipeline:
         xem _validate_disease_safety_legacy để đối chiếu). Ngữ nghĩa giữ nguyên: bệnh phải qua HẾT
         mọi cổng áp dụng; cổng 'requires' rỗng = luôn loại (bệnh Tây y thuần)."""
         disease_lower = disease_name.lower()
+        # [CỔNG AN TOÀN PHẾ UNG]
+        # Phế ung (Áp xe phổi) là bệnh THỰC NHIỆT (Phế nhiệt/Đờm mủ hôi thối/Sốt cao).
+        # Loại tuyệt đối Phế ung khi bệnh nhân thuộc HÀN chứng thuần túy (Sợ lạnh, rêu trắng, không dấu nhiệt).
+        if "phế ung" in disease_lower:
+            has_heat_sign = any(h_kw in symptoms_str for h_kw in (
+                "nhiệt", "sốt", "thần nhiệt", "đờm mủ", "hôi thối", "đờm hôi", "lưỡi đỏ", "rêu vàng", "nhiệt độc"))
+            if not has_heat_sign:
+                return False
         if any(onc_kw in disease_lower for onc_kw in ("ung thư", "khối u ác tính")):
             return False
         disease_lower = disease_name.lower()
@@ -3102,6 +3110,26 @@ class TCMFusionPipeline:
                          f"thận trọng khi tăng huyết áp, bệnh tim/loạn nhịp, mất ngủ, cường giáp, "
                          f"không dùng kéo dài")
         return "; ".join(_bits) + ". Không tự dùng."
+
+    def _annotate_hemostatic_herb_lines(self, md: str, symptoms_str: str) -> str:
+        """Tự động gia giảm các vị thuốc CẦM MÁU (Tiên hạc thảo, Tây thảo, Bạch mao căn) vào Mục 5 
+        khi người bệnh có triệu chứng CỜ ĐỎ Ho ra máu / Khái huyết / Xuất huyết đường thở."""
+        if not md or "*Vị thuốc:*" not in md:
+            return md
+        sl = (symptoms_str or "").lower()
+        has_bleeding = any(b_kw in sl for b_kw in ("ho ra máu", "khái huyết", "đờm lẫn máu", "khạc ra máu", "xuất huyết phế"))
+        if not has_bleeding:
+            return md
+
+        out_lines = []
+        for line in md.splitlines():
+            if "*Vị thuốc:*" in line:
+                line_l = line.lower()
+                # Nếu dàn vị chưa có bất kỳ vị cầm máu nào
+                if not any(h in line_l for h in ("tiên hạc thảo", "tây thảo", "bạch mao căn", "tam thất", "a giao", "địa huyết")):
+                    line = line.rstrip() + ", Tiên hạc thảo (12g), Tây thảo (10g), Bạch mao căn (15g) (Gia thêm vị cầm máu phế lạc)"
+            out_lines.append(line)
+        return "\n".join(out_lines)
 
     def _annotate_toxic_herb_lines(self, md: str, core_syndrome: str = "") -> str:
         """Chèn cảnh báo an toàn dược dưới MỌI dòng '*Vị thuốc:*' có vị cần lưu ý.
@@ -5962,7 +5990,7 @@ class TCMFusionPipeline:
            - ĐƯỢC PHÉP (không tính là bịa) giải thích CƠ CHẾ "dương bất khí hóa, tân dịch bất thượng thừa" (Kim quỹ 消渴: tiểu tiện phản đa) cho ca khát + tiểu trong dài + cốt lõi dương hư — MIỄN LÀ không kèm bất kỳ khẳng định nào về HÀNH VI UỐNG của bệnh nhân.
          22. CHỐT CHẶN HO RA MÁU (KHÁI HUYẾT) — Y LÝ CHUẨN XÁC:
             - Y LÝ: Ho ra máu (Khái huyết) trong YHCT BẮT BUỘC giải thích theo các cơ chế chuẩn: (a) Nhiệt bức huyết vọng hành (Phế nhiệt / Can hỏa thiêu đốt phế lạc), (b) Tỳ khí hư bất nhiếp huyết (Tỳ hư không cai quản được huyết), hoặc (c) Huyết ứ tổn thương phế lạc.
-            - TUYỆT ĐỐI CẤM (PROHIBITED) giải thích ho ra máu bằng cơ chế bịa "Phong hàn làm vỡ mạch máu". Hàn có tính co rút ngưng trệ, KHÔNG tự làm vỡ mạch máu.
+           - TUYỆT ĐỐI CẤM (PROHIBITED) giải thích ho ra máu bằng cơ chế vật lý cơ học Tây y ("do ho mạnh làm vỡ mạch") hay bịa "Phong hàn làm vỡ mạch". Hàn có tính co rút ngưng trệ, KHÔNG tự làm vỡ mạch.
          23. CHỐT CHẶN KHÔ HỌNG / KHÁT NƯỚC — CẤM GÁN CHO PHONG HÀN:
             - Y LÝ: Khô họng, khát nước là biểu hiện của TÁO TÀ, PHONG NHIỆT hoặc ÂM HƯ. TUYỆT ĐỐI CẤM viết phong hàn làm "âm khí không thể dưỡng hóa gây khô họng khát nước". Nếu có khô họng trong ca phong hàn, giải thích gọn do phong tà mang tính khô (hoặc phế khí bị bế không tuyên tân dịch), tuyệt đối không quy cho hàn tà.
         """
@@ -6678,6 +6706,7 @@ class TCMFusionPipeline:
         # Trước đây cảnh báo vị độc chỉ nằm inline ở 1/9 chỗ in '*Vị thuốc:*' — kể cả nhánh khớp
         # ĐÍCH DANH (tin cậy cao nhất) cũng câm. Quét markdown đã chốt thì phủ hết mọi nhánh, kể cả
         # nhánh thêm về sau.
+        final_markdown = self._annotate_hemostatic_herb_lines(final_markdown, symptoms_str)
         final_markdown = self._annotate_toxic_herb_lines(final_markdown, final_primary)
 
         return final_markdown
