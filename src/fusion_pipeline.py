@@ -1921,6 +1921,9 @@ class TCMFusionPipeline:
         xem _validate_disease_safety_legacy để đối chiếu). Ngữ nghĩa giữ nguyên: bệnh phải qua HẾT
         mọi cổng áp dụng; cổng 'requires' rỗng = luôn loại (bệnh Tây y thuần)."""
         disease_lower = disease_name.lower()
+        if any(onc_kw in disease_lower for onc_kw in ("ung thư", "khối u ác tính")):
+            return False
+        disease_lower = disease_name.lower()
         # Che phủ định trên lời khai thô (đồng nhất với bản legacy): 'không đau đầu' không được rò
         # 'đau đầu' cho qua bệnh Thiên đầu thống. patient_symptoms đã lọc phủ định từ trước.
         _raw_l = raw_user_text.lower() if raw_user_text else ""
@@ -5719,6 +5722,11 @@ class TCMFusionPipeline:
                 bat_cuong_order.append(x)
 
         organs_hint = f"{', '.join(all_organs)}" if all_organs else "Chưa rõ"
+        # [EXTERIOR BAT CUONG SYNC]
+        _prim_l = (final_primary or "").lower()
+        if any(b_kw in _prim_l for b_kw in ("phạm biểu", "mạo biểu", "phong hàn biểu", "phong nhiệt biểu")):
+            if "Lý" in bat_cuong_order and "Biểu" not in bat_cuong_order and "Biểu - Lý đồng bệnh" not in bat_cuong_order:
+                bat_cuong_order = ["Biểu - Lý đồng bệnh" if x == "Lý" else x for x in bat_cuong_order]
         bat_cuong_hint = " - ".join(bat_cuong_order) if bat_cuong_order else "Chưa rõ"
 
         # [TỔNG CƯƠNG ÂM-DƯƠNG] Bát Cương = 2 tổng cương (Âm/Dương) + 6 cương mục. Đồ thị chỉ tag
@@ -5952,6 +5960,11 @@ class TCMFusionPipeline:
            - Y LÝ: tính chất khát là dấu PHÂN CỰC hàn/nhiệt cốt tử, KHÔNG phải chi tiết văn phong — 渴喜冷飲 (khát thích uống LẠNH) = NHIỆT; 渴喜熱飲 (khát thích uống ẤM/NÓNG) = HÀN; 渴不欲飲 (khát mà KHÔNG muốn uống) = thấp/đàm/ứ huyết/dương hư không hóa tân; 大渴引飲 (khát dữ uống nhiều) = thực nhiệt.
            - TUYỆT ĐỐI CẤM (PROHIBITED) khẳng định BẤT KỲ tính chất uống nào mà lời khai KHÔNG nêu nguyên văn. Cấm đích danh các cụm: "không uống được", "uống không giải khát", "uống nhiều vẫn không đỡ", "chỉ nhấp môi", "không muốn uống", "thích uống lạnh", "thích uống ấm/nóng" — TRỪ KHI chính lời khai đã chứa cụm đó. Nếu lời khai chỉ có "khát nước" TRẦN (chưa rõ ấm/lạnh) thì CHỈ được viết "có khát", tuyệt đối không tự gán thêm tính chất để cho khớp chẩn đoán.
            - ĐƯỢC PHÉP (không tính là bịa) giải thích CƠ CHẾ "dương bất khí hóa, tân dịch bất thượng thừa" (Kim quỹ 消渴: tiểu tiện phản đa) cho ca khát + tiểu trong dài + cốt lõi dương hư — MIỄN LÀ không kèm bất kỳ khẳng định nào về HÀNH VI UỐNG của bệnh nhân.
+         22. CHỐT CHẶN HO RA MÁU (KHÁI HUYẾT) — Y LÝ CHUẨN XÁC:
+            - Y LÝ: Ho ra máu (Khái huyết) trong YHCT BẮT BUỘC giải thích theo các cơ chế chuẩn: (a) Nhiệt bức huyết vọng hành (Phế nhiệt / Can hỏa thiêu đốt phế lạc), (b) Tỳ khí hư bất nhiếp huyết (Tỳ hư không cai quản được huyết), hoặc (c) Huyết ứ tổn thương phế lạc.
+            - TUYỆT ĐỐI CẤM (PROHIBITED) giải thích ho ra máu bằng cơ chế bịa "Phong hàn làm vỡ mạch máu". Hàn có tính co rút ngưng trệ, KHÔNG tự làm vỡ mạch máu.
+         23. CHỐT CHẶN KHÔ HỌNG / KHÁT NƯỚC — CẤM GÁN CHO PHONG HÀN:
+            - Y LÝ: Khô họng, khát nước là biểu hiện của TÁO TÀ, PHONG NHIỆT hoặc ÂM HƯ. TUYỆT ĐỐI CẤM viết phong hàn làm "âm khí không thể dưỡng hóa gây khô họng khát nước". Nếu có khô họng trong ca phong hàn, giải thích gọn do phong tà mang tính khô (hoặc phế khí bị bế không tuyên tân dịch), tuyệt đối không quy cho hàn tà.
         """
         
         try:
