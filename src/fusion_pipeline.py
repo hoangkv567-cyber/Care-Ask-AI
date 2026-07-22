@@ -6010,7 +6010,11 @@ class TCMFusionPipeline:
            - TUYỆT ĐỐI CẤM (PROHIBITED) giải thích ho ra máu bằng cơ chế vật lý cơ học Tây y ("do ho mạnh làm vỡ mạch") hay bịa "Phong hàn làm vỡ mạch". Hàn có tính co rút ngưng trệ, KHÔNG tự làm vỡ mạch.
          23. CHỐT CHẶN KHÔ HỌNG / KHÁT NƯỚC — CẤM GÁN CHO PHONG HÀN:
             - Y LÝ: Khô họng, khát nước là biểu hiện của TÁO TÀ, PHONG NHIỆT hoặc ÂM HƯ. TUYỆT ĐỐI CẤM viết phong hàn làm "âm khí không thể dưỡng hóa gây khô họng khát nước". Nếu có khô họng trong ca phong hàn, giải thích gọn do phong tà mang tính khô (hoặc phế khí bị bế không tuyên tân dịch), tuyệt đối không quy cho hàn tà.
-        """
+                 24. CHỐT CHẶN TIÊU CHẢY (TIẾT TẢ) HÀN vs NHIỆT — Y LÝ ÂM DƯƠNG CHUẨN XÁC:
+            - TIẾT TẢ HÀN THẤP (HÀN CHỨNG): Phân lỏng nát, loãng trong, lợn cợn thức ăn chưa tiêu, KHÔNG MÙI THỐI KHẲM (không hôi nồng), hậu môn KHÔNG nóng rát. TUYỆT ĐỐI CẤM (PROHIBITED) viết "khiến phân thối, mùi hôi" hay "phân hôi nồng" cho ca HÀN THẤP. Mùi thối khẳm và nóng rát hậu môn BẮT BUỘC chỉ thuộc về THẤP NHIỆT (Nhiệt chứng).
+         25. TUYỆT ĐỐI KHÔNG TÀNG HÌNH / LƠ ĐẸP DẤU HIỆU LƯỠI ĐÃ NHẬN DIỆN:
+            - Nếu Vision/Lời khai có [rìa lưỡi có dấu răng] hoặc [lưỡi bệu], BẮT BUỘC phải nhắc đến trong Mục 4. Trong ca Thực chứng cấp (ngoại cảm/hàn thấp), BẮT BUỘC giải thích: "Rìa lưỡi có dấu răng là dấu hiệu thể trạng nền Tỳ hư/thủy thấp có từ trước, không thuộc tà khí cấp lần này". CẤM TUYỆT ĐỐI lơ đẹp hoặc xóa dấu răng khỏi bài biện luận.
+"""
         
         try:
             response = self.qa_pipeline.client.chat(
