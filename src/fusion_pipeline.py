@@ -1934,6 +1934,18 @@ class TCMFusionPipeline:
             if not has_heat_sign:
                 return False
 
+                # [CỔNG AN TOÀN BẾ KINH & BĂNG LẬU]
+        if "bế kinh" in disease_lower:
+            is_acute = any(k in symptoms_str for k in ("mới mắc", "1-2 ngày", "1 - 2 ngày", "vài ngày"))
+            has_missed_period = any(k in symptoms_str for k in ("mất kinh", "tắt kinh", "không có kinh", "không thấy kinh", "trễ kinh", "chậm kinh"))
+            if is_acute or not has_missed_period:
+                return False
+
+        if "băng lậu" in disease_lower or "băng huyết" in disease_lower:
+            has_bleeding = any(k in symptoms_str for k in ("băng lậu", "băng huyết", "rong kinh", "rong huyết", "ra máu âm đạo", "chảy máu âm đạo", "xuất huyết âm đạo"))
+            if not has_bleeding:
+                return False
+
         # [CỔNG AN TOÀN UNG THƯ / ONCOLOGY SAFETY GATE]
         if any(onc_kw in disease_lower for onc_kw in ("ung thư", "khối u ác tính")):
             return False
@@ -4780,7 +4792,7 @@ class TCMFusionPipeline:
         elif chill and comp:
             kind, present = "exterior", (chill[:1] + comp[:3])
         else:
-            return md
+            kind, present = "general_hu", []
         m4 = re.search(r"(### 4\.[^\n]*\n)(.*?)(?=\n### |\Z)", md, re.DOTALL)
         if not m4:
             return md
@@ -4815,10 +4827,15 @@ class TCMFusionPipeline:
                              " Cần hỏi thêm: ấn bụng đau tăng hay đỡ; ợ có mùi thức ăn thối không; "
                              "đại tiện xong đau có giảm không. Có ít nhất một dấu đó mới phối pháp "
                              "tiêu thực đạo trệ, chứ không chỉ kiện tỳ đơn thuần.")
-        else:
+        elif kind == "exterior":
             _note = _head + ("Cần cân nhắc NGOẠI CẢM cấp (phong hàn, kèm thấp nếu có người nặng/đau "
                              "mình) trên nền hư — nếu đúng thì phải giải biểu trước hoặc phù chính "
                              "giải biểu, chứ không chỉ bổ hư đơn thuần (bổ sớm dễ lưu tà).")
+        else:
+            _note = (f" ⚠️ Lưu ý: người bệnh khai bệnh MỚI PHÁT (1-2 ngày) trong khi cốt lõi '{primary}' "
+                     f"là thể hư thường hình thành lâu ngày. Cần cân nhắc thăm khám lâm sàng thêm để "
+                     f"xác định nguyên nhân cấp tính trước khi dùng bài thuốc bổ đậm, nhằm tránh nguyên "
+                     f"tắc 'bổ sớm lưu tà' của Đông y.")
         # [MỐI NỐI] Nguồn mâu thuẫn thật: hàm này NỐI ĐUÔI mà không đọc câu đứng trước, trong khi
         # _sync_tieu_thuc_with_bat_cuong vừa ép câu "Không có Tiêu Thực, đây là bệnh lý Hư chứng
         # thuần túy." -> đoạn văn vừa phủ định vừa khẳng định thực trệ.
@@ -4826,10 +4843,9 @@ class TCMFusionPipeline:
         # NGẦM — _muc4_denies_tieu_thuc đọc nó ở 4 nơi, trong đó _sync_muc4_with_muc5_tieu chạy SAU
         # hàm này. Thay hẳn câu sẽ làm tầng đó câm cho MỌI ca khác.
         _b = m4.group(2).rstrip()
-        if kind == "food" and self._muc4_denies_tieu_thuc(_b4):
+        if self._muc4_denies_tieu_thuc(_b4):
             _b = re.sub(r"Không có Tiêu Thực,\s*đây là bệnh lý Hư chứng thuần túy\.",
-                        "Theo dữ kiện đã khai thác, chưa đủ căn cứ chốt phần Tiêu: Không có Tiêu "
-                        "Thực thành thể riêng, bệnh cảnh hiện thiên về Hư chứng.", _b, count=1)
+                        "Theo dữ kiện đã khai thác, chưa đủ căn cứ chốt phần Tiêu: Bệnh cảnh hiện thiên về Hư chứng.", _b, count=1)
         new_body = _b + _note
         logger.info("[ONSET CẤP] Gắn cảnh báo thực trệ: bệnh mới phát nhưng cốt lõi là thể hư mạn.")
         return md[:m4.start(2)] + new_body + md[m4.end(2):]
