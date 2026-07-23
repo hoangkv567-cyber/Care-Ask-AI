@@ -5304,7 +5304,7 @@ class TCMFusionPipeline:
             target_matches = syndrome_matched_diseases if syndrome_matched_diseases else _window
 
             if target_matches:
-                filtered_matches = target_matches[:3]
+                filtered_matches = target_matches[:1]
 
                 disease_names = self._dedupe_disease_names([m["benh_ly"].strip() for m in filtered_matches])
                 if disease_grounded:
