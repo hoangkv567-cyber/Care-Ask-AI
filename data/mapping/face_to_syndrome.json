@@ -1,9 +1,13 @@
 {
   "Mặt đỏ": ["Can dương thượng kháng", "Can uất hóa hỏa", "Âm hư hỏa vượng", "Phong nhiệt", "Nhiệt độc thịnh"],
+  "mặt đỏ": ["Can dương thượng kháng", "Can uất hóa hỏa", "Âm hư hỏa vượng", "Phong nhiệt", "Nhiệt độc thịnh"],
   "hai gò má đỏ": ["Âm hư", "Vị nhiệt"],
   "Mặt trắng nhợt": ["Khí huyết khuy hư", "Tâm tỳ lưỡng hư", "Huyết hư"],
+  "mặt trắng nhợt": ["Khí huyết khuy hư", "Tâm tỳ lưỡng hư", "Huyết hư"],
   "Mặt nhợt nhạt": ["Khí huyết khuy hư", "Tâm tỳ lưỡng hư", "Huyết hư"],
+  "mặt nhợt nhạt": ["Khí huyết khuy hư", "Tâm tỳ lưỡng hư", "Huyết hư"],
   "Mặt vàng": ["Tỳ vị hư nhược", "Thấp nhiệt uẩn kết", "Hoàng đản"],
+  "mặt vàng": ["Tỳ vị hư nhược", "Thấp nhiệt uẩn kết", "Hoàng đản"],
   "Mặt xanh": ["Phong hàn", "Hàn thấp", "Can uất khí trệ"],
   "Mặt đen": ["Ứ huyết trở lạc", "Thận dương hư", "Huyết ứ nội kết"],
   "Mặt phù": ["Thận dương hư", "Tỳ dương hư", "Phong thủy tướng bác"],

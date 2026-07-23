@@ -32,13 +32,16 @@ class SymptomToSyndromeMapper:
     
     def map_symptoms_to_syndromes(self, symptom_list):
         syndromes = set()
+        lower_map = {str(k).strip().lower(): v for k, v in self.mapping.items()}
         for symptom in symptom_list:
-            if symptom in self.mapping:
-                syndromes.update(self.mapping[symptom])
-            elif len(str(symptom).split()) > 8:
-                # Đoạn mô tả tự do từ VLM (cả câu văn) — không phải key triệu chứng chuẩn,
-                # việc khớp do LLM matcher trong fusion_pipeline đảm nhận, không cần cảnh báo
-                logger.debug(f"Bỏ qua mapping keyword cho mô tả tự do: {str(symptom)[:60]}...")
+            sym_raw = str(symptom).strip()
+            sym_low = sym_raw.lower()
+            if sym_raw in self.mapping:
+                syndromes.update(self.mapping[sym_raw])
+            elif sym_low in lower_map:
+                syndromes.update(lower_map[sym_low])
+            elif len(sym_raw.split()) > 8:
+                logger.debug(f"Bỏ qua mapping keyword cho mô tả tự do: {sym_raw[:60]}...")
             else:
                 logger.warning(f"Chưa có mapping cho: {symptom}")
         return list(syndromes)
