@@ -62,7 +62,7 @@ class CloudVLMClient:
             "Mặt đen", "Mặt phù", "Mặt có ban"
         ]
 
-    def _encode_image(self, image_path: str, max_edge: int = _MAX_IMAGE_EDGE) -> str:
+    def _encode_image(self, image_path: str, max_edge: int = 1024) -> str:
         """Đọc ảnh, thu nhỏ nếu quá lớn, trả về data URL base64 cho API OpenAI-compatible."""
         try:
             import io
@@ -73,7 +73,7 @@ class CloudVLMClient:
             if scale < 1:
                 img = img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
             buf = io.BytesIO()
-            img.save(buf, format="JPEG", quality=90)
+            img.save(buf, format="JPEG", quality=85)
             data = buf.getvalue()
             mime = "image/jpeg"
         except ImportError:
