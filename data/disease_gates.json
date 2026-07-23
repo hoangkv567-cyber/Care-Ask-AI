@@ -1462,9 +1462,7 @@
   {
    "names": [
     "addison",
-    "alzheimer",
     "basedow",
-    "parkinson",
     "eczema",
     "gout",
     "tuyến thượng thận",
@@ -2172,6 +2170,40 @@
    ],
    "kw_wb": true,
    "_note": "Suy nhược thần kinh (神经衰弱) đòi >=1 dấu THẦN KINH/TÂM THẦN/GIẤC NGỦ đặc trưng; mọi thể CSV đều có (mất ngủ/hồi hộp/hay quên/nhức đầu/phiền muộn/di tinh). Chặn over-match ca THUẦN TIÊU HÓA (đại tiện lỏng+đầy bụng+ăn kém+mệt mỏi) khớp qua 'đầy bụng trướng/ăn kém' của thể Can-tâm-khí-uất-kết. KHÔNG dùng 'mệt mỏi' trần làm marker."
+  },
+  {
+   "names": [
+    "si ngốc",
+    "alzheimer"
+   ],
+   "requires": [
+    "trí nhớ",
+    "chậm chạp",
+    "quên",
+    "si ngốc",
+    "chóng mặt",
+    "mất trí",
+    "lẫn",
+    "tê",
+    "run",
+    "co rút"
+   ]
+  },
+  {
+   "names": [
+    "chiến chứng",
+    "parkinson"
+   ],
+   "requires": [
+    "run",
+    "rung",
+    "co giật",
+    "cứng",
+    "tê",
+    "chiến chứng",
+    "parkinson",
+    "chậm chạp"
+   ]
   }
  ]
 }
