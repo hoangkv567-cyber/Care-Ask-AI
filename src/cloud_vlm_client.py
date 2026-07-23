@@ -63,11 +63,16 @@ class CloudVLMClient:
         ]
 
     def _encode_image(self, image_path: str, max_edge: int = 1024) -> str:
-        """Đọc ảnh, thu nhỏ nếu quá lớn, trả về data URL base64 cho API OpenAI-compatible."""
+        """Đọc ảnh, xoay chuẩn EXIF, thu nhỏ nếu quá lớn, trả về data URL base64 JPEG cho API."""
         try:
             import io
-            from PIL import Image
-            img = Image.open(image_path).convert("RGB")
+            from PIL import Image, ImageOps
+            img = Image.open(image_path)
+            try:
+                img = ImageOps.exif_transpose(img)
+            except Exception:
+                pass
+            img = img.convert("RGB")
             w, h = img.size
             scale = max_edge / max(w, h)
             if scale < 1:
@@ -76,8 +81,8 @@ class CloudVLMClient:
             img.save(buf, format="JPEG", quality=85)
             data = buf.getvalue()
             mime = "image/jpeg"
-        except ImportError:
-            # Không có Pillow -> gửi nguyên gốc (Qwen3-VL nhận mọi kích thước)
+        except Exception as e:
+            logger.warning(f"PIL process error cho '{image_path}': {e} -> gửi raw bytes")
             with open(image_path, "rb") as f:
                 data = f.read()
             ext = os.path.splitext(image_path)[1].lower()
