@@ -21,6 +21,21 @@ def _fold_vn(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 class TCMFusionPipeline:
+
+
+    def _map_oncology_disease_name(self, disease_name: str) -> str:
+        """Quy đổi tên bệnh có chứa Ung thư / Khối u ác tính sang Bệnh danh Đông y truyền thống
+        và đính kèm cảnh báo tầm soát YHHĐ khẩn cấp."""
+        d_lower = disease_name.lower()
+        if "ung thư gan" in d_lower or "ung thư can" in d_lower:
+            return "Tích tụ (Can tích), Hoàng đản (Nghi ngờ tổn thương Cấp/U gan - Cần tầm soát Bệnh viện)"
+        elif "ung thư phế" in d_lower or "ung thư phổi" in d_lower:
+            return "Phế ung, Khái huyết (Nghi ngờ tổn thương Phế - Cần tầm soát Bệnh viện)"
+        elif "ung thư vị" in d_lower or "ung thư dạ dày" in d_lower:
+            return "Ế cách, Vị quản thống (Nghi ngờ tổn thương Vị - Cần tầm soát Bệnh viện)"
+        elif "ung thư" in d_lower or "khối u" in d_lower:
+            return f"{disease_name} (Tích tụ / Nùng độc - Cần tầm soát Bệnh viện chuyên khoa)"
+        return disease_name
     def __init__(self, config: dict = None):
         """Khởi tạo toàn bộ lõi AI của hệ thống"""
         logger.info("Đang khởi tạo Hệ thống Hợp nhất (Fusion Pipeline)...")
@@ -1963,8 +1978,9 @@ class TCMFusionPipeline:
                 return False
 
         # [CỔNG AN TOÀN UNG THƯ / ONCOLOGY SAFETY GATE]
-        if any(onc_kw in disease_lower for onc_kw in ("ung thư", "khối u ác tính")):
-            return False
+        # Cho phép đi tiếp để không bị mất bài thuốc (Chưa xác định cụ thể / Bài thuốc chưa cập nhật),
+        # tên bệnh Tây y ung thư sẽ được quy đổi sang Bệnh danh Đông y truyền thống (Tích tụ, Can ung, Phế ung...)
+        # và đính kèm cảnh báo tầm soát bệnh viện chuyên khoa khẩn cấp.
 
         for gate in self._get_disease_gates():
             named = any(n in disease_lower for n in gate.get("names", ()))
