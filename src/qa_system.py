@@ -820,10 +820,27 @@ class TCMQA:
                     # [CSV FALLBACK KHẮC PHỤC NULL BÀI THUỐC]
                     if not bt and hasattr(self, "df") and self.df is not None:
                         try:
+                            # 1. Khớp chính xác tên bệnh & hội chứng
                             df_match = self.df[
                                 (self.df["tên_bệnh"].str.strip().str.lower() == str(dis).strip().lower()) &
                                 (self.df["hội_chứng"].str.strip().str.lower() == str(syndrome).strip().lower())
                             ]
+                            # 2. Khớp cùng tên bệnh + hội chứng lân cận (vd Phong hàn phạm biểu vs Phế khí hư hàn / Phong hàn)
+                            if df_match.empty and syndrome:
+                                syn_words = [w for w in str(syndrome).lower().replace("phạm", "").replace("biểu", "").replace("phế", "").split() if len(w) >= 3]
+                                if syn_words:
+                                    pattern_syn = "|".join(syn_words)
+                                    df_match = self.df[
+                                        (self.df["tên_bệnh"].str.strip().str.lower() == str(dis).strip().lower()) &
+                                        (self.df["hội_chứng"].str.strip().str.lower().str.contains(pattern_syn, regex=True))
+                                    ]
+                            # 3. Khớp bất kỳ bệnh nào có cùng gốc hội chứng (vd phong hàn)
+                            if df_match.empty and syndrome:
+                                syn_first = str(syndrome).strip().lower().split()[0]
+                                if len(syn_first) >= 3:
+                                    df_match = self.df[
+                                        self.df["hội_chứng"].str.strip().str.lower().str.contains(syn_first, regex=False)
+                                    ]
                             if not df_match.empty:
                                 bt = str(df_match.iloc[0].get("bài_thuốc", "")).strip()
                                 if not vt and "vị_thuốc" in df_match.columns:
