@@ -41,8 +41,7 @@ QUY TẮC:
 """
 
 # Prompt VLM Tiếng Việt - Sắc mặt (JSON CÓ CẤU TRÚC)
-FACE_JSON_PROMPT_VI = """
-Bạn là chuyên gia Đông y vọng chẩn (xem sắc mặt). Quan sát ảnh khuôn mặt và trả về DUY NHẤT một object JSON (không kèm giải thích, không rào ```), theo đúng các khóa và giá trị cho phép sau:
+FACE_JSON_PROMPT_VI = """Bạn là chuyên gia vọng chẩn Đông y. Hãy quan sát ảnh khuôn mặt và trả về DUY NHẤT một object JSON (không rào codeblock, không thêm bất kỳ văn bản nào khác):
 {
   "sac_mat":    "trắng nhợt" | "vàng úa" | "đỏ bừng" | "xanh xao" | "sạm tối" | "hồng hào bình thường" | "không rõ",
   "go_ma_do":   "có" | "không" | "không rõ",
@@ -51,24 +50,21 @@ Bạn là chuyên gia Đông y vọng chẩn (xem sắc mặt). Quan sát ảnh 
   "quang_tham": "có" | "không" | "không rõ",
   "trang_diem": "có" | "không" | "không rõ"
 }
-QUY TẮC PHÂN BIỆT SẮC MẶT:
-- KHI ĐÁNH GIÁ "sac_mat", HÃY SOI KỸ MÀU SẮC DA TRÊN TRÁN, MÁ, MŨI VÀ CỦNG MẠC MẮT (LÒNG TRẮNG MẮT):
-  * "vàng úa": CHỌN KHI DA MẶT (TRÁN, MÁ, MŨI, CẰM, TRẺ SƠ SINH, EM BÉ HOẶC NGUỜI LỚN) CÓ TÔNG MÀU VÀNG NỔI BẬT (VÀNG CAM, VÀNG CHANH, VÀNG NGHỆ - ĐẶC BIỆT TRẺ SƠ SINH VÀNG DA / HOÀNG ĐẢN / BỆNH GAN).
-  * "trắng nhợt": CHỌN KHI DA MẶT TÁI BỆCH, NHỢT NHẠT, XANH TÁI, HOẶC DA MẶT GẦY HỐC HÁC NHẠT MÀU THIẾU TƯƠI NHUẬN / THIẾU MÁU / SUY NHƯỢC.
-  * "hồng hào bình thường": CHỌN KHI DA MẶT CÓ TÔNG MÀU HỒNG TƯƠI KHỎE MẠNH, SẮC DA ĐẦY ĐẶN TƯƠI NHUẬN TỰ NHIÊN (KHÔNG BỊ MÀU VÀNG CAM/VÀNG CHANH HAY TÁI BỆCH).
-- "trang_diem"="có" CHỈ KHI thấy RÕ LỚP PHẤN NỀN (foundation) che phủ da, SON MÔI ĐẬM HOẶC KẺ MẮT/MASCARA TRANG ĐIỂM RÕ RÀNG. Da mặt mộc tự nhiên -> MẶC ĐỊNH "trang_diem": "không".
-- "go_ma_do"="có" CHỈ KHI thấy RÕ hai MẢNG ĐỎ KHU TRÚ ngay trên hai gò má (lưỡng quyền hồng của âm hư).
-- "ban_do"="có" CHỈ KHI có BAN/PHÁT BAN THẬT (ban sởi, mề đay, dị ứng lan tỏa). Mụn trứng cá -> "không".
-- "quang_tham":
-  * "quang_tham"="có": KHI DƯỚI MẮT CÓ MẢNG DA THÂM NÂU / SẠM TỐI / BÓNG THÂM RÕ RỆT.
-  * "quang_tham"="không": KHI VÙNG DA DƯỚI MẮT PHẲNG MỊN, SÁNG ĐỀU MÀU CÙNG TÔNG DA MẶT.
 
-MẪU ĐỐI CHIẾU THỰC TẾ:
-1) Ảnh em bé / trẻ sơ sinh mắc chứng vàng da sơ sinh (toàn bộ da mặt trán má có sắc vàng cam / vàng chanh rõ rệt) hoặc người bệnh hoàng đản -> {"sac_mat": "vàng úa", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
-2) Ảnh nữ da nhạt tái gầy hốc hác, nhợt nhạt thiếu tươi nhuận -> {"sac_mat": "trắng nhợt", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
-3) Ảnh nam Châu Á da hồng tươi nhuận đầy đặn, mi mắt dưới sạm nâu thâm sẫm -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "có", "trang_diem": "không"}
-4) Ảnh thiếu niên, trẻ em hoặc bé gái có da mặt hồng hào tươi nhuận, sáng màu khỏe mạnh (không ngả sắc vàng) -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
-- Chỉ trả JSON, không thêm chữ nào khác.
+HƯỚNG DẪN ĐÁNH GIÁ TRỰC QUAN:
+1. "sac_mat":
+   - "vàng úa": Chọn khi da mặt, trán, má, cằm ngả tông màu VÀNG, VÀNG CAM, hoặc VÀNG CHANH rõ rệt (ví dụ: trẻ sơ sinh vàng da / hoàng đản, bệnh nhân bệnh gan hoặc sắc mặt vàng xỉn).
+   - "trắng nhợt": Chọn khi da mặt tái bệch, nhạt màu, nhợt nhạt, xanh tái, hoặc gầy hốc hác nhạt sắc (thiếu máu, suy nhược, khí huyết kém).
+   - "đỏ bừng": Chọn khi toàn bộ mặt hoặc vùng má/trán đỏ rực, hồng đậm như sốt cao hoặc bốc hỏa.
+   - "xanh xao": Chọn khi da ngả màu xanh tím, tái xanh.
+   - "sạm tối": Chọn khi da mặt u tối, sạm đen, xám xịt.
+   - "hồng hào bình thường": Chọn khi da hồng tươi, tươi nhuận, đầy đặn khỏe mạnh.
+
+2. "quang_tham":
+   - "có": Chọn khi vùng mi mắt dưới (infraorbital) có mảng thâm nâu, thâm quầng, hoặc bóng tối sẫm rõ rệt.
+   - "không": Chọn khi vùng dưới mắt sáng phẳng, cùng màu da mặt.
+
+Chỉ xuất JSON chuẩn.
 """
 
 TONGUE_PROMPT_TEMPLATE = TONGUE_PROMPT_TEMPLATE_VI
