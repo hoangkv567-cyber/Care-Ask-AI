@@ -51,14 +51,14 @@ FACE_JSON_PROMPT_VI = """Bạn là chuyên gia vọng chẩn Đông y. Hãy quan
   "trang_diem": "có" | "không" | "không rõ"
 }
 
-HƯỚNG DẪN ĐÁNH GIÁ TRỰC QUAN:
+HƯỚNG DẪN ĐÁNH GIÁ TRỰC QUAN MÀU DA KHUÔN MẶT:
 1. "sac_mat":
-   - "trắng nhợt": CHỌN KHI DA MẶT TÁI BỆCH, NHỢT NHẠT, GẦY HỐC HÁC, SẮC DA MẮT/MÔI NHẠT MÀU THIẾU TƯƠI NHUẬN (THIẾU MÁU, SUY NHƯỢC, XANH TÁI, KHÍ HUYẾT HƯ - ĐẶC BIỆT NỮ GIỚI/NGƯỜI GẦY).
-   - "vàng úa": CHỈ CHỌN KHI DA MẶT BỊ VÀNG DA BỆNH LÝ RÕ RỆT (vàng da sơ sinh, hoàng đản, bệnh gan, da & củng mạc mắt nhuộm vàng chanh/vàng nghệ).
-   - "đỏ bừng": Chọn khi toàn bộ mặt hoặc vùng má/trán đỏ rực như sốt cao.
-   - "xanh xao": Chọn khi da ngả màu xanh tím, tái xanh.
+   - "hồng hào bình thường": CHỌN KHI DA MẶT NHÌN TỰ NHIÊN, TƯƠI NHUẬN, KHỎE MẠNH (bao gồm cả da người Châu Á/Châu Âu sáng màu, da mặt tươi tắn tự nhiên không bị bệnh lý vàng da hay tái bệch mất máu).
+   - "trắng nhợt": CHỈ CHỌN KHI DA MẶT TÁI BỆCH BỆNH LÝ, MÔI & DA BỆCH MÀU HOẶC TÁI XANH DO NGHÈO HUYẾT / THIẾU MÁU.
+   - "vàng úa": CHỈ CHỌN KHI DA MẶT VÀ CỦNG MẠC MẮT BỊ VÀNG DA BỆNH LÝ RÕ RỆT (vàng da sơ sinh, hoàng đản, bệnh gan).
+   - "đỏ bừng": Chọn khi da mặt đỏ rực như bốc hỏa, sốt cao.
+   - "xanh xao": Chọn khi da ngả màu xanh tím.
    - "sạm tối": Chọn khi da mặt u tối, sạm đen, xám xịt.
-   - "hồng hào bình thường": CHỌN KHI DA MẶT ĐẦY ĐẶN, HỒNG TƯƠI TƯƠI NHUẬN KHỎE MẠNH (DA CÓ SỨC SỐNG, KHÔNG BỊ TÁI BỆCH HOẶC GẦY HỐC HÁC).
 
 2. "quang_tham":
    - HÃY SOI KỸ VÙNG MI MẮT DƯỚI (DƯỚI BỌNG MẮT):
@@ -66,7 +66,7 @@ HƯỚNG DẪN ĐÁNH GIÁ TRỰC QUAN:
    - "không": CHỈ CHỌN KHI VÙNG DƯỚI MẮT ĐỀU MÀU PHẲNG MỊN CÙNG TÔNG DA MẶT.
 
 3. "go_ma_do":
-   - "có": CHỈ CHỌN KHI THẤY RÕ 2 MẢNG MÀU ĐỎ HỒNG KHU TRÚ NGAY TRÊN HẠT GÒ MÁ (lưỡng quyền đỏ/hồng của âm hư hỏa vượng, sốt cao). Da mặt hồng hào tự nhiên hoặc da nam giới bình thường -> MẶC ĐỊNH "không".
+   - "có": CHỈ CHỌN KHI THẤY RÕ 2 MẢNG MÀU ĐỎ HỒNG KHU TRÚ NGAY TRÊN HẠT GÒ MÁ (lưỡng quyền đỏ/hồng của âm hư hỏa vượng, sốt cao). Da mặt bình thường -> MẶC ĐỊNH "không".
    - "không": Khi hai gò má cùng màu với da trán và da mặt.
 
 Chỉ xuất JSON chuẩn.
