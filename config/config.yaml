@@ -13,6 +13,11 @@ qa:
   seed: 42
   top_p: 0.9
 
+dashscope:
+  use_cloud: true
+  model: "qwen3.5-flash"
+  api_key: ""        # Lấy từ DASHSCOPE_API_KEY trong .env
+
 requesty:
   use_cloud: true    # TEXT LLM CHÍNH — Requesty.ai router. Fallback ollama local.
   api_key: ""        # Lấy từ REQUESTY_API_KEY trong .env

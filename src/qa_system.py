@@ -19,13 +19,124 @@ class TCMQA:
         self.top_p = self.config.get("qa", {}).get("top_p", 0.9)
 
         # Cấu hình sử dụng Requesty, SiliconFlow, OpenRouter, Hugging Face Cloud hoặc Ollama
+        dashscope_cfg = self.config.get("dashscope", {})
         siliconflow_cfg = self.config.get("siliconflow", {})
         openrouter_cfg = self.config.get("openrouter", {})
         hf_cfg = self.config.get("huggingface", {})
         requesty_cfg = self.config.get("requesty", {})
         import os
 
-        if requesty_cfg.get("use_cloud", False):
+        class DashScopeChatClient:
+                """Client TEXT LLM qua DashScope / Alibaba ModelStudio (qwen3.5-flash).
+                Fallback 1 sang Requesty.ai (qwen2.5) khi lỗi/hết quota/timeout.
+                Fallback 2 sang Ollama local nếu Requesty cũng lỗi.
+                """
+                def __init__(self, ds_token: str, ds_model: str = "qwen3.5-flash",
+                             rq_token: str = None, rq_model: str = "deepinfra/Qwen/Qwen2.5-72B-Instruct",
+                             fallback_model: str = None, fallback_host: str = None):
+                    self.ds_token = ds_token
+                    self.ds_model = ds_model
+                    self.ds_url = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions"
+                    self.rq_token = rq_token
+                    self.rq_model = rq_model
+                    self.rq_url = "https://router.requesty.ai/v1/chat/completions"
+                    self.fallback_model = fallback_model
+                    self.fallback_host = fallback_host
+                    self._ollama = None
+                    import httpx
+                    self.ds_client = httpx.Client(
+                        headers={"Authorization": f"Bearer {self.ds_token}", "Content-Type": "application/json"},
+                        timeout=60.0
+                    )
+                    if self.rq_token:
+                        self.rq_client = httpx.Client(
+                            headers={"Authorization": f"Bearer {self.rq_token}", "Content-Type": "application/json"},
+                            timeout=120.0
+                        )
+                    else:
+                        self.rq_client = None
+                    logger.info(f"Khởi tạo DashScope Text LLM (ModelStudio '{self.ds_model}') -> Fallback Requesty ('{self.rq_model}') -> Fallback Ollama")
+
+                def chat(self, model: str, messages: list, options: dict = None) -> dict:
+                    temperature = 0.0
+                    if options and "temperature" in options:
+                        temperature = options["temperature"]
+                    if temperature == 0.0:
+                        temperature = 0.01
+
+                    # 1. Thử gọi DashScope (ModelStudio) với qwen3.5-flash
+                    payload_ds = {"model": self.ds_model, "messages": messages, "temperature": temperature, "stream": False}
+                    if options and "max_tokens" in options:
+                        payload_ds["max_tokens"] = options["max_tokens"]
+                    try:
+                        resp = self.ds_client.post(self.ds_url, json=payload_ds)
+                        resp.raise_for_status()
+                        data = resp.json()
+                        content = data["choices"][0]["message"]["content"]
+                        return {"message": {"role": "assistant", "content": content}}
+                    except Exception as e1:
+                        logger.warning(f"[FALLBACK TEXT LLM] DashScope ({self.ds_model}) không gọi được ({e1}) -> Chuyển sang Requesty ({self.rq_model})...")
+
+                    # 2. Fallback sang Requesty với qwen2.5
+                    if self.rq_client and self.rq_token:
+                        payload_rq = {"model": self.rq_model, "messages": messages, "temperature": temperature, "stream": False}
+                        if options and "max_tokens" in options:
+                            payload_rq["max_tokens"] = options["max_tokens"]
+                        try:
+                            resp = self.rq_client.post(self.rq_url, json=payload_rq)
+                            resp.raise_for_status()
+                            data = resp.json()
+                            content = data["choices"][0]["message"]["content"]
+                            return {"message": {"role": "assistant", "content": content}}
+                        except Exception as e2:
+                            logger.error(f"[FALLBACK TEXT LLM] Requesty ({self.rq_model}) cũng lỗi ({e2})")
+
+                    # 3. Fallback sang Ollama local
+                    if self.fallback_model:
+                        try:
+                            if self._ollama is None:
+                                if self.fallback_host:
+                                    from ollama import Client as _OllamaClient
+                                    self._ollama = _OllamaClient(host=self.fallback_host)
+                                else:
+                                    import ollama as _ollama_mod
+                                    self._ollama = _ollama_mod
+                            _opts = {"temperature": temperature}
+                            if options and "seed" in options:
+                                _opts["seed"] = options["seed"]
+                            if options and "max_tokens" in options:
+                                _opts["num_predict"] = options["max_tokens"]
+                            logger.warning(f"[FALLBACK LLM] Chuyển sang Ollama local '{self.fallback_model}'.")
+                            _resp = self._ollama.chat(model=self.fallback_model, messages=messages, options=_opts)
+                            _content = _resp["message"]["content"] if isinstance(_resp, dict) else _resp.message.content
+                            import re as _re_fb
+                            _content = _re_fb.sub(
+                                r'^\s*(?:(?:tôi hiểu|dưới đây|chắc chắn|vâng|được|tất nhiên|sure|certainly|here (?:is|are)|okay|ok)[^\n]*\n)+\s*(?:[-–—]{3,}\s*\n)?',
+                                '', _content, flags=_re_fb.IGNORECASE).strip()
+                            return {"message": {"role": "assistant", "content": _content}}
+                        except Exception as e3:
+                            logger.error(f"[FALLBACK LLM] Ollama local cũng lỗi: {e3}")
+                    raise Exception(f"Tất cả các provider Text LLM (DashScope, Requesty, Ollama) đều thất bại.")
+
+        ds_token = os.environ.get("DASHSCOPE_API_KEY") or dashscope_cfg.get("api_key")
+        if ds_token and dashscope_cfg.get("use_cloud", True):
+            ds_model_id = dashscope_cfg.get("model", "qwen3.5-flash")
+            rq_token = os.environ.get("REQUESTY_API_KEY") or requesty_cfg.get("api_key")
+            rq_model_id = requesty_cfg.get("model", "deepinfra/Qwen/Qwen2.5-72B-Instruct")
+            _fb_model = (requesty_cfg.get("fallback_ollama_model") or self.config.get("llm_model") or "qwen2.5:7b")
+            _fb_host = self.config.get("host") or self.config.get("ollama", {}).get("host")
+            
+            self.llm_model = ds_model_id
+            self.client = DashScopeChatClient(
+                ds_token=ds_token,
+                ds_model=ds_model_id,
+                rq_token=rq_token,
+                rq_model=rq_model_id,
+                fallback_model=_fb_model,
+                fallback_host=_fb_host
+            )
+            logger.info(f"TCMQA ưu tiên DashScope '{ds_model_id}' -> Fallback Requesty '{rq_model_id}' -> Fallback Ollama!")
+        elif requesty_cfg.get("use_cloud", False):
             token = os.environ.get("REQUESTY_API_KEY") or requesty_cfg.get("api_key")
             model_id = requesty_cfg.get("model", "deepinfra/Qwen/Qwen2.5-72B-Instruct")
             self.llm_model = model_id
