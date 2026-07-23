@@ -129,7 +129,7 @@ QUY TẮC:
 - CHỈ dùng đúng các giá trị liệt kê. Không chắc chắn -> "không rõ" (KHÔNG đoán, KHÔNG bịa).
 - Ánh sáng/nền ấm dễ làm da trông VÀNG: chỉ chọn "vàng úa" khi vàng thật rõ (thường kèm củng mạc mắt
   vàng); nếu chỉ do ánh sáng thì đánh giá theo sắc da thật, KHÔNG chọn "vàng úa".
-- "sac_mat": Chọn "hồng hào bình thường" khi da mặt tươi nhuận, sắc da vàng hồng khỏe mạnh tự nhiên của người Châu Á, da đầy đặn tươi sáng có sắc máu. Chọn "trắng nhợt" KHI VÀ CHỈ KHI da mặt thực sự TÁI BỆCH, XANH TÁI, NHỢT MÀU RÕ RỆT HOẶC MẶT HỐC HÁC GẦY GUỘC (thiếu vinh nhuận, không có sắc máu). TUYỆT ĐỐI KHÔNG đánh giá da khỏe mạnh hồng hào tự nhiên thành "trắng nhợt".
+- "sac_mat": Chọn "hồng hào bình thường" khi da mặt tươi nhuận, sắc da vàng hồng khỏe mạnh tự nhiên của người Châu Á, da đầy đặn tươi sáng có sắc máu. Chọn "trắng nhợt" KHI VÀ CHỈ KHI da mặt thực sự TÁI BỆCH, XANH TÁI, NHỢT MÀU RÕ RỆT HOẶC MẶT HỐC HÁC GẦY GUỘC (thiếu vinh nhuận, không có sắc máu). Tuyệt đối KHÔNG đánh giá da khỏe mạnh hồng hào tự nhiên thành "trắng nhợt".
 - "trang_diem"="có" CHỈ KHI thấy RÕ LỚP PHẤN NỀN (foundation) che phủ da, SON MÔI ĐẬM HOẶC KẺ MẮT/MASCARA TRANG ĐIỂM RÕ RÀNG. Da mặt mộc tự nhiên (kể cả có mụn trứng cá, vết thâm, tàn nhang, nốt ruồi, da khô, da nhờn, môi tự nhiên) -> MẶC ĐỊNH "trang_diem": "không". TUYỆT ĐỐI CẤM (PROHIBITED) đánh giá nhầm mặt mộc có mụn/vết thâm thành "có trang điểm".
 - "go_ma_do"="có" CHỈ KHI thấy RÕ hai MẢNG ĐỎ KHU TRÚ ngay trên hai gò má (ửng đỏ từng vùng nổi bật
   trên nền da nhợt — dấu "lưỡng quyền hồng" của âm hư). Da đều màu / hồng tự nhiên nhẹ / má chỉ hơi ấm /
@@ -145,6 +145,8 @@ QUY TẮC:
   má-cằm-trán-quanh mũi), tàn nhang, nốt ruồi, sẹo, mao mạch, kích ứng nhỏ -> KHÔNG phải ban -> "không".
   MẶC ĐỊNH "không" trừ khi có ban/phát ban LAN TỎA thật rõ. (Gọi nhầm mụn thành 'ban' sẽ kéo biện luận
   sang huyết nhiệt/tinh huyết hư OAN.)
-- "quang_tham"="có" CHỈ KHI THẤY RÕ MẢNG DA THÂM TÍM / SẠM TỐI RÕ RỆT Ở VÙNG DƯỚI MẮT HOẶC HỐC MẮT TRŨNG SÂU NỔI BẬT. Nếu vùng da dưới mi mắt phẳng mịn, sáng màu hoặc chỉ có bóng mờ nhẹ do nếp gấp mí -> MẶC ĐỊNH "quang_tham": "không". TUYỆT ĐỐI KHÔNG BÁO NHẦM bóng da phẳng tự nhiên thành quầng thâm.
+- "quang_tham":
+  * "quang_tham"="có": KHI VÙNG DA DƯỚI MI MẮT DƯỚI CÓ MẢNG SẠM MÀU, THÂM NÂU, THÂM TÍM HOẶC BÓNG THÂM TỐI MÀU (quầng thâm sẫm hơn hẳn màu da gò má kế bên).
+  * "quang_tham"="không": CHỈ KHI vùng da dưới mi mắt dưới phẳng mịn, sáng đều màu cùng tông da mặt (không có mảng thâm nâu/sạm sẫm nào).
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
