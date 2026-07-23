@@ -49,6 +49,8 @@ def _apply_env_secrets(config: dict):
         config.setdefault("requesty", {})["api_key"] = os.getenv("REQUESTY_API_KEY")
     if os.getenv("REQUESTY_VISION_API_KEY"):
         config.setdefault("requesty", {})["vision_api_key"] = os.getenv("REQUESTY_VISION_API_KEY")
+    if os.getenv("DASHSCOPE_API_KEY"):
+        config.setdefault("dashscope", {})["api_key"] = os.getenv("DASHSCOPE_API_KEY")
 
     if os.getenv("TCM_CSV_PATH"):
         config.setdefault("dataset", {})["csv_path"] = os.getenv("TCM_CSV_PATH")

@@ -104,6 +104,27 @@ async def login(req: LoginRequest):
          "full_name": rec.get("full_name") or rec["username"]}
     return {"status": "success", "data": {"token": create_token(**{
         "username": u["username"], "role": u["role"], "full_name": u["full_name"]}), "user": u}}
+@app.post("/api/auth/forgot-password")
+async def forgot_password(req: LoginRequest):
+    uname = (req.username or "").strip().lower()
+    if not uname:
+        raise HTTPException(status_code=400, detail="Vui lòng nhập tên đăng nhập.")
+    try:
+        rec = get_store().get(uname)
+    except HTTPException:
+        rec = None
+    except Exception:
+        logger.exception("Lỗi khi tra cứu tài khoản")
+        raise HTTPException(status_code=500, detail="Lỗi hệ thống khi tìm tài khoản.")
+    if rec:
+        logger.info(f"\n=================================================="
+                    f"\n[KHÔI PHỤC MẬT KHẨU] Nhận yêu cầu cho tài khoản: {uname}"
+                    f"\nLink khôi phục giả lập: http://localhost:8000/reset-password?username={uname}"
+                    f"\n==================================================")
+    return {
+        "status": "success",
+        "detail": "Yêu cầu khôi phục mật khẩu đã được ghi nhận. Vì hệ thống demo chưa kết nối cổng gửi email (SMTP), vui lòng kiểm tra logs của backend hoặc liên hệ Admin."
+    }
 
 
 class FirebaseLoginRequest(BaseModel):

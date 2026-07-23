@@ -128,7 +128,11 @@ class CloudVLMClient:
         except Exception as e:
             logger.error(f"Lỗi gọi Cloud VLM: {e}")
             if self.fallback_client is not None:
-                logger.warning("Cloud VLM lỗi -> chuyển sang LLaVA local (fallback) để phân tích ảnh...")
+                # Nêu ĐÍCH DANH nơi sắp gọi. Câu cũ ghi cứng "chuyển sang LLaVA local" trong khi
+                # chuỗi dự phòng thật là DashScope -> Requesty(parasail) -> Ollama, nên log báo
+                # "LLaVA local" ngay trước một lượt gọi ĐÁM MÂY -> chẩn lỗi theo log sẽ đi lạc.
+                _fb = getattr(self.fallback_client, "model_name", type(self.fallback_client).__name__)
+                logger.warning(f"{self.model_name} lỗi -> chuyển sang dự phòng '{_fb}' để phân tích ảnh...")
                 return self.fallback_client.diagnose_image(image_path, modality=modality)
             return []
 
@@ -151,11 +155,34 @@ class CloudVLMClient:
             data = parse_vlm_json(content)
             if data is None:
                 logger.warning(f"VLM không trả JSON hợp lệ (modality={modality}), sẽ fallback prose. Raw: {content[:120]}")
-                return None
+                return self._structured_via_fallback(image_path, modality)
             logger.info(f"{self.model_name} JSON {modality}: {data}")
             return {"data": data, "raw": content}
         except Exception as e:
             logger.error(f"Lỗi gọi VLM JSON: {e}")
+            return self._structured_via_fallback(image_path, modality)
+
+    def _structured_via_fallback(self, image_path: str, modality: str):
+        """Thử ĐƯỜNG JSON trên client dự phòng trước khi chịu thua về prose.
+
+        VÌ SAO CẦN: trước đây diagnose_image_structured KHÔNG hề đụng tới fallback_client — hỏng là
+        trả None, caller chuyển sang prose, và prose lại hỏng tiếp trên CHÍNH client đang chết rồi
+        mới rơi xuống dự phòng. Hệ quả đo được trên log thật: DashScope chết -> parasail chỉ từng
+        được gọi ở chế độ PROSE, chưa bao giờ được hỏi JSON, dù nó làm được.
+        Điều đó quan trọng vì JSON là đường TẤT ĐỊNH (vision_schema map thẳng ra triệu chứng); rơi
+        về prose là phải nhờ LLM khớp triệu chứng — nơi đã ghi nhận lỗi đọc câu PHỦ ĐỊNH thành
+        khẳng định ('Không thấy rõ ... mặt phù/sưng ...' -> sinh ra triệu chứng 'Mặt phù').
+        Nên một lượt sập của nhà cung cấp KHÔNG được phép hạ cấp luôn chất lượng vọng chẩn.
+        """
+        fb = getattr(self, "fallback_client", None)
+        if fb is None or not hasattr(fb, "diagnose_image_structured"):
+            return None
+        try:
+            _n = getattr(fb, "model_name", type(fb).__name__)
+            logger.warning(f"{self.model_name} không cho JSON -> thử JSON trên dự phòng '{_n}'...")
+            return fb.diagnose_image_structured(image_path, modality=modality)
+        except Exception as e:
+            logger.error(f"Dự phòng cũng không cho JSON: {e}")
             return None
 
     def verify_image_modality(self, image_path: str) -> str:
@@ -202,79 +229,71 @@ class CloudVLMClient:
             raise ValueError(f"Modality '{modality}' không được hỗ trợ")
 
 
-def _make_vision_fallback_chain(config: dict, vision_cfg: dict, ollama_model: str):
-    """Chuỗi FALLBACK khi provider vision chính (HuggingFace) lỗi (mất mạng/hết quota/model gỡ):
-    Requesty router (novita/qwen/qwen2.5-vl-72b-instruct) -> LLaVA local. Requesty chỉ chèn nếu có
-    REQUESTY_VISION_API_KEY (hoặc REQUESTY_API_KEY). Nếu không có key Requesty -> chỉ LLaVA local."""
+def create_vision_client(config: dict):
+    """Factory khởi tạo client vision theo chuỗi fallback:
+    DashScope (qwen3-vl-32b-thinking) -> Requesty (parasail/parasail-qwen25-vl-72b-instruct) -> LLaVA local.
+    """
     from src.ollama_client import OllamaTCMClient
+
+    config = config or {}
+    ollama_model = config.get("ollama", {}).get("model", "llava:7b")
+
+    # 1. Khởi tạo LLaVA local (cuối cùng của chuỗi fallback)
     try:
         ollama_fb = OllamaTCMClient(model_name=ollama_model, config=config)
     except Exception as e:
         logger.warning(f"Không khởi tạo được LLaVA local làm fallback: {e}")
         ollama_fb = None
-    rq_key = (os.environ.get("REQUESTY_VISION_API_KEY")
+
+    # 2. Khởi tạo Requesty (giữa chuỗi fallback)
+    rq_key = (os.environ.get("REQUESTY_VISION_API_KEY") 
               or os.environ.get("REQUESTY_API_KEY")
-              or config.get("requesty", {}).get("vision_api_key"))
+              or config.get("requesty", {}).get("vision_api_key")
+              or config.get("requesty", {}).get("api_key"))
+    requesty_client = None
     if rq_key:
-        rq_model = vision_cfg.get("fallback_model", "novita/qwen/qwen2.5-vl-72b-instruct")
+        rq_model = "parasail/parasail-qwen25-vl-72b-instruct"
         try:
-            client = CloudVLMClient(
-                rq_key, rq_model, config=config, fallback_client=ollama_fb,
+            requesty_client = CloudVLMClient(
+                api_key=rq_key,
+                model_name=rq_model,
+                config=config,
+                fallback_client=ollama_fb,
                 base_url="https://router.requesty.ai/v1/chat/completions",
-                classify_model=rq_model)
-            logger.info(f"Vision fallback = Requesty router, model: {rq_model} (rồi mới đến LLaVA local)")
-            return client
+                classify_model=rq_model
+            )
+            logger.info(f"Đã thiết lập Requesty fallback: {rq_model} -> Ollama")
         except Exception as e:
-            logger.warning(f"Không khởi tạo được Requesty vision fallback: {e} -> chỉ LLaVA local.")
-    return ollama_fb
+            logger.warning(f"Không khởi tạo được Requesty fallback client: {e}")
+            requesty_client = ollama_fb
+    else:
+        requesty_client = ollama_fb
 
-
-def create_vision_client(config: dict):
-    """Factory chọn client vision theo config['vision']['provider']:
-    - 'huggingface': Qwen3-VL qua HF router (fallback chuỗi: Requesty Qwen2.5-VL -> LLaVA local)
-    - 'requesty': Qwen2.5-VL qua Requesty router (kèm LLaVA local làm fallback)
-    - 'ollama' (hoặc không cấu hình): LLaVA local như cũ
-    Thiếu API key thì tự hạ về LLaVA local thay vì chết."""
-    from src.ollama_client import OllamaTCMClient
-
-    config = config or {}
-    vision_cfg = config.get("vision", {})
-    provider = (vision_cfg.get("provider") or "ollama").strip().lower()
-    ollama_model = config.get("ollama", {}).get("model", "llava:7b")
-
-    if provider in ("huggingface", "hf"):
-        hf_token = (os.environ.get("HUGGINGFACE_TOKEN") or os.environ.get("HF_TOKEN")
-                    or config.get("huggingface", {}).get("token"))
-        if hf_token:
-            # Model VL trên HF router (vd Qwen/Qwen3-VL-30B-A3B-Instruct). Fallback CHUỖI khi HF lỗi:
-            # Requesty (novita/qwen/qwen2.5-vl-72b-instruct) -> LLaVA local.
-            model_name = vision_cfg.get("model", "Qwen/Qwen3-VL-30B-A3B-Instruct")
-            fallback = _make_vision_fallback_chain(config, vision_cfg, ollama_model)
-            # HF hay 504 (router quá tải) -> đặt timeout THẤP (config vision.hf_timeout, mặc định 20s)
-            # để fail NHANH xuống fallback (Requesty parasail) thay vì chờ ~30s/lần gọi.
-            _hf_timeout = float(vision_cfg.get("hf_timeout", 20.0))
-            logger.info(f"Vision provider = HuggingFace router, model: {model_name} (timeout {_hf_timeout}s)")
-            return CloudVLMClient(hf_token, model_name, config=config, fallback_client=fallback,
-                                  base_url="https://router.huggingface.co/v1/chat/completions",
-                                  timeout=_hf_timeout)
-        logger.warning("vision.provider='huggingface' nhưng thiếu HUGGINGFACE_TOKEN -> thử Requesty/LLaVA.")
-        return _make_vision_fallback_chain(config, vision_cfg, ollama_model) \
-            or OllamaTCMClient(model_name=ollama_model, config=config)
-
-    if provider in ("requesty", "requesty-vision"):
-        rq_key = (os.environ.get("REQUESTY_VISION_API_KEY") or os.environ.get("REQUESTY_API_KEY")
-                  or config.get("requesty", {}).get("api_key"))
-        if rq_key:
-            model_name = vision_cfg.get("model", "novita/qwen/qwen2.5-vl-72b-instruct")
-            try:
-                fallback = OllamaTCMClient(model_name=ollama_model, config=config)
-            except Exception as e:
-                logger.warning(f"Không khởi tạo được LLaVA local làm fallback: {e}")
-                fallback = None
-            logger.info(f"Vision provider = Requesty router, model: {model_name}")
-            return CloudVLMClient(rq_key, model_name, config=config, fallback_client=fallback,
-                                  base_url="https://router.requesty.ai/v1/chat/completions",
-                                  classify_model=model_name)
-        logger.warning("vision.provider='requesty' nhưng thiếu REQUESTY_VISION_API_KEY/REQUESTY_API_KEY -> LLaVA local.")
-
-    return OllamaTCMClient(model_name=ollama_model, config=config)
+    # 3. Khởi tạo DashScope VLM chính (đầu chuỗi)
+    ds_key = (os.environ.get("DASHSCOPE_API_KEY") 
+              or config.get("dashscope", {}).get("api_key"))
+    
+    if ds_key:
+        ds_model = "qwen3-vl-32b-thinking"
+        try:
+            primary_client = CloudVLMClient(
+                api_key=ds_key,
+                model_name=ds_model,
+                config=config,
+                fallback_client=requesty_client,
+                # PHẢI có đuôi /chat/completions. Trong lớp này `base_url` là ENDPOINT ĐẦY ĐỦ để
+                # POST thẳng (xem Requesty ở trên: .../v1/chat/completions), KHÔNG phải base_url
+                # kiểu SDK OpenAI. Thiếu đuôi -> POST vào .../compatible-mode/v1 -> 404 mọi lượt,
+                # DashScope không bao giờ chạy và hệ âm thầm tụt xuống Requesty (đã đo trên log thật).
+                base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions",
+                classify_model=ds_model
+            )
+            logger.info(f"Đã thiết lập DashScope VLM chính: {ds_model} -> Requesty -> Ollama")
+            return primary_client
+        except Exception as e:
+            logger.warning(f"Không khởi tạo được DashScope client: {e} -> dùng Requesty/Ollama.")
+            return requesty_client
+            
+    # Nếu không có key DashScope thì dùng thẳng Requesty/Ollama
+    logger.warning("Thiếu DASHSCOPE_API_KEY -> chuyển qua dùng Requesty hoặc LLaVA local làm mặc định.")
+    return requesty_client

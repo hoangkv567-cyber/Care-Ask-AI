@@ -118,34 +118,45 @@
                 </button>
             </div>
 
-            <!-- Nút Bánh răng Cài đặt API Ngrok -->
-            <button id="settingsBtn" class="bg-teal-600 hover:bg-teal-500 p-2 rounded-lg transition-all duration-200" title="Cấu hình kết nối Ngrok">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+            <!-- Nút Lịch sử chẩn đoán -->
+            <button id="historyBtn" class="bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold px-3 py-2 rounded-xl transition flex items-center space-x-1.5 shadow-sm" title="Lịch sử chẩn đoán">
+                <span>📜</span>
+                <span>Lịch sử</span>
             </button>
             </div>
         </div>
     </header>
 
-    <!-- Modal Cài đặt API Ngrok -->
-    <div id="settingsModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-6">
-            <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-                <span>Cấu hình Kết nối API</span>
-            </h3>
-            <p class="text-xs text-slate-500 mt-1">Dán liên kết Ngrok mới của bạn vào đây nếu bạn khởi động lại Ngrok và bị đổi URL.</p>
-            <div class="mt-4">
-                <label class="block text-xs font-bold text-slate-700 mb-1">API Endpoint URL</label>
-                <input type="text" id="apiUrlInput" class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Ví dụ: https://xxxx.ngrok-free.dev">
+    <!-- Modal Lịch sử chẩn đoán -->
+    <div id="historyModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 p-6 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b pb-3 mb-4">
+                <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                    <span>📜</span>
+                    <span>Lịch sử chẩn đoán</span>
+                </h3>
+                <button id="closeHistory" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg text-lg font-bold">✕</button>
             </div>
-            <div class="mt-6 flex justify-end space-x-2">
-                <button id="closeSettings" class="px-4 py-2 text-sm text-slate-500 hover:bg-slate-100 rounded-lg">Hủy</button>
-                <button id="saveSettings" class="px-5 py-2 text-sm bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg shadow-sm">Lưu cấu hình</button>
+
+            <div id="historyListContainer" class="flex-1 overflow-y-auto space-y-3 pr-1">
+                <!-- Dữ liệu lịch sử sẽ được render ở đây -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chi tiết Ca chẩn đoán -->
+    <div id="historyDetailModal" class="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 p-6 max-h-[85vh] flex flex-col">
+            <div class="flex items-center justify-between border-b pb-3 mb-4">
+                <h3 class="text-base font-bold text-teal-800 flex items-center space-x-2">
+                    <span>📋</span>
+                    <span>Chi tiết ca chẩn đoán</span>
+                </h3>
+                <button id="closeHistoryDetail" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg text-lg font-bold">✕</button>
+            </div>
+
+            <div id="historyDetailContent" class="flex-1 overflow-y-auto space-y-4 pr-1 text-sm">
+                <!-- Dữ liệu chi tiết sẽ được render ở đây -->
             </div>
         </div>
     </div>
@@ -167,13 +178,18 @@
 
             <!-- Chuyển tab Đăng nhập / Đăng ký -->
             <div class="px-6 mt-4">
-                <div class="grid grid-cols-2 bg-slate-100 rounded-xl p-1 text-sm font-semibold">
+                <div id="authTabs" class="grid grid-cols-2 bg-slate-100 rounded-xl p-1 text-sm font-semibold">
                     <button id="tabLogin" type="button" class="py-2 rounded-lg bg-white text-teal-700 shadow-sm">Đăng nhập</button>
                     <button id="tabRegister" type="button" class="py-2 rounded-lg text-slate-500">Đăng ký</button>
                 </div>
             </div>
 
             <form id="authForm" class="p-6 space-y-4" autocomplete="on">
+                <div id="authTitleWrap" class="hidden text-center mb-2">
+                    <h3 class="text-sm font-bold text-teal-700">Khôi phục mật khẩu</h3>
+                    <p class="text-[11px] text-slate-500 mt-1">Nhập tên đăng nhập để nhận liên kết khôi phục mật khẩu</p>
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Tên đăng nhập</label>
                     <input type="text" id="authUsername" name="username" autocomplete="username" required
@@ -187,11 +203,16 @@
                            class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
                            placeholder="vd: Nguyễn Văn A">
                 </div>
-                <div>
+                <div id="passwordWrap">
                     <label class="block text-xs font-bold text-slate-700 mb-1">Mật khẩu</label>
-                    <input type="password" id="authPassword" name="password" required
-                           class="w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
-                           placeholder="Tối thiểu 8 ký tự">
+                    <div class="relative">
+                        <input type="password" id="authPassword" name="password" required
+                               class="w-full border border-slate-300 rounded-xl pl-3 pr-10 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                               placeholder="Tối thiểu 8 ký tự">
+                        <button type="button" id="togglePasswordBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-slate-500 hover:text-teal-600 focus:outline-none select-none">
+                            👁️
+                        </button>
+                    </div>
                     <p id="pwHint" class="text-[11px] text-slate-400 mt-1 hidden">Mật khẩu phải dài ít nhất 8 ký tự.</p>
                 </div>
 
@@ -202,6 +223,17 @@
                     Đăng nhập
                 </button>
 
+                <div id="forgotPasswordLinkWrap" class="text-right mt-1">
+                    <button type="button" id="forgotPasswordBtn" class="text-xs text-teal-600 hover:text-teal-700 hover:underline select-none">
+                        Quên mật khẩu?
+                    </button>
+                </div>
+                <div id="backToLoginWrap" class="text-center mt-1 hidden">
+                    <button type="button" id="backToLoginBtn" class="text-xs text-slate-500 hover:text-slate-700 hover:underline select-none">
+                        ← Quay lại Đăng nhập
+                    </button>
+                </div>
+
                 <p class="text-[11px] text-slate-500 leading-relaxed border-t border-slate-100 pt-3">
                     Tài khoản đăng ký trên web luôn là vai <strong>Người dùng</strong>.
                     Tài khoản <strong>Bác sĩ</strong> do quản trị viên cấp
@@ -210,9 +242,6 @@
                 </p>
             </form>
         </div>
-        <p class="text-center text-[11px] text-slate-400 mt-4">
-            Bấm ⚙️ ở góc trên nếu cần đổi địa chỉ máy chủ API.
-        </p>
     </div>
 
     <!-- Khung chính Giao diện -->
@@ -465,18 +494,10 @@
         // khi deploy (Vercel) -> trỏ THẲNG về backend qua ngrok (đã cố định) — người dùng KHÔNG
         // cần nhập link. Đổi ngrok? Sửa hằng NGROK_API_URL rồi deploy lại, HOẶC bấm ⚙️ dán URL mới.
         const NGROK_API_URL = "https://huddle-wreckage-rounding.ngrok-free.dev";
-        const DEFAULT_API_URL = (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-            ? "http://localhost:8000"
-            : NGROK_API_URL;
+        const DEFAULT_API_URL = NGROK_API_URL;
         const STORAGE_KEY = "healthwatch_api_base_url";
 
-        // Migration: dọn giá trị rỗng còn sót từ kiến trúc same-origin trước để quay về ngrok mặc định.
-        if (localStorage.getItem(STORAGE_KEY) === "") {
-            localStorage.removeItem(STORAGE_KEY);
-        }
-
-        // Ưu tiên đọc cấu hình lưu trong trình duyệt trước, nếu không có sẽ tự nhận link mặc định
-        let apiBaseUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_API_URL;
+        let apiBaseUrl = NGROK_API_URL;
 
         /* ==================== PHIÊN ĐĂNG NHẬP & PHÂN QUYỀN ====================
            Token JWT lưu ở localStorage. LƯU Ý: việc ẩn/hiện theo vai ở đây CHỈ là trải nghiệm —
@@ -494,6 +515,7 @@
         async function authFetch(url, options = {}) {
             const opts = Object.assign({}, options);
             opts.headers = Object.assign({}, opts.headers || {});
+            opts.headers["ngrok-skip-browser-warning"] = "true";
             if (authToken) opts.headers["Authorization"] = "Bearer " + authToken;
             const res = await fetch(url, opts);
             if (res.status === 401) {
@@ -551,19 +573,61 @@
         function setAuthMode(mode) {
             authMode = mode;
             const isReg = mode === "register";
+            const isForgot = mode === "forgot";
+
+            // Hide/show tabs
+            document.getElementById('authTabs').classList.toggle('hidden', isForgot);
+            document.getElementById('authTitleWrap').classList.toggle('hidden', !isForgot);
+
             document.getElementById('tabLogin').className =
                 "py-2 rounded-lg " + (isReg ? "text-slate-500" : "bg-white text-teal-700 shadow-sm");
             document.getElementById('tabRegister').className =
                 "py-2 rounded-lg " + (isReg ? "bg-white text-teal-700 shadow-sm" : "text-slate-500");
+            
             document.getElementById('fullNameWrap').classList.toggle('hidden', !isReg);
+            document.getElementById('passwordWrap').classList.toggle('hidden', isForgot);
             document.getElementById('pwHint').classList.toggle('hidden', !isReg);
-            document.getElementById('authSubmit').textContent = isReg ? "Tạo tài khoản" : "Đăng nhập";
+            
+            const submitBtn = document.getElementById('authSubmit');
+            if (isReg) {
+                submitBtn.textContent = "Tạo tài khoản";
+            } else if (isForgot) {
+                submitBtn.textContent = "Gửi yêu cầu khôi phục";
+            } else {
+                submitBtn.textContent = "Đăng nhập";
+            }
+            
             document.getElementById('authPassword').setAttribute(
                 'autocomplete', isReg ? 'new-password' : 'current-password');
+            
+            // Toggle visibility of forgot password links
+            document.getElementById('forgotPasswordLinkWrap').classList.toggle('hidden', isForgot);
+            document.getElementById('backToLoginWrap').classList.toggle('hidden', !isForgot);
+            
+            // Adjust input requirement
+            const passwordInput = document.getElementById('authPassword');
+            if (isForgot) {
+                passwordInput.removeAttribute('required');
+            } else {
+                passwordInput.setAttribute('required', '');
+            }
+            
             showAuthError("");
         }
         document.getElementById('tabLogin').addEventListener('click', () => setAuthMode("login"));
         document.getElementById('tabRegister').addEventListener('click', () => setAuthMode("register"));
+        
+        document.getElementById('forgotPasswordBtn').addEventListener('click', () => setAuthMode("forgot"));
+        document.getElementById('backToLoginBtn').addEventListener('click', () => setAuthMode("login"));
+
+        // Toggle password visibility
+        const authPassword = document.getElementById('authPassword');
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        togglePasswordBtn.addEventListener('click', () => {
+            const isPassword = authPassword.getAttribute('type') === 'password';
+            authPassword.setAttribute('type', isPassword ? 'text' : 'password');
+            togglePasswordBtn.textContent = isPassword ? '🙈' : '👁️';
+        });
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -572,12 +636,42 @@
             const username = document.getElementById('authUsername').value.trim();
             const password = document.getElementById('authPassword').value;
             const fullName = document.getElementById('authFullName').value.trim();
-            if (!username || !password) { showAuthError("Vui lòng nhập đủ tên đăng nhập và mật khẩu."); return; }
+            
+            if (authMode !== "forgot" && (!username || !password)) {
+                showAuthError("Vui lòng nhập đủ tên đăng nhập và mật khẩu.");
+                return;
+            }
+            if (authMode === "forgot" && !username) {
+                showAuthError("Vui lòng nhập tên đăng nhập.");
+                return;
+            }
 
             btn.disabled = true;
             const oldLabel = btn.textContent;
-            btn.textContent = authMode === "register" ? "Đang tạo tài khoản…" : "Đang đăng nhập…";
+            
+            if (authMode === "forgot") {
+                btn.textContent = "Đang gửi yêu cầu…";
+            } else {
+                btn.textContent = authMode === "register" ? "Đang tạo tài khoản…" : "Đang đăng nhập…";
+            }
+            
             try {
+                if (authMode === "forgot") {
+                    const res = await fetch(`${apiBaseUrl}/api/auth/forgot-password`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
+                        body: JSON.stringify({ username }),
+                    });
+                    const json = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        showAuthError(json.detail || "Không gửi được yêu cầu.");
+                        return;
+                    }
+                    alert(json.detail || "Yêu cầu đã được xử lý.");
+                    setAuthMode("login");
+                    return;
+                }
+                
                 const endpoint = authMode === "register" ? "/api/auth/register" : "/api/auth/login";
                 const body = authMode === "register"
                     ? { username, password, full_name: fullName }
@@ -595,7 +689,7 @@
                 saveSession(json.data.token, json.data.user);
                 document.getElementById('authForm').reset();
             } catch (err) {
-                showAuthError("Không kết nối được máy chủ. Kiểm tra lại địa chỉ API (nút ⚙️).");
+                showAuthError("Không kết nối được máy chủ. Vui lòng kiểm tra lại kết nối mạng.");
             } finally {
                 btn.disabled = false;
                 btn.textContent = oldLabel;
@@ -622,35 +716,163 @@
             }
         })();
 
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsModal = document.getElementById('settingsModal');
-        const closeSettings = document.getElementById('closeSettings');
-        const saveSettings = document.getElementById('saveSettings');
-        const apiUrlInput = document.getElementById('apiUrlInput');
+        // ---- Lịch sử chẩn đoán Modal & Handlers ----
+        const historyBtn = document.getElementById('historyBtn');
+        const historyModal = document.getElementById('historyModal');
+        const closeHistory = document.getElementById('closeHistory');
+        const historyListContainer = document.getElementById('historyListContainer');
 
-        apiUrlInput.value = apiBaseUrl;
+        const historyDetailModal = document.getElementById('historyDetailModal');
+        const closeHistoryDetail = document.getElementById('closeHistoryDetail');
+        const historyDetailContent = document.getElementById('historyDetailContent');
 
-        settingsBtn.addEventListener('click', () => settingsModal.classList.remove('hidden'));
-        closeSettings.addEventListener('click', () => settingsModal.classList.add('hidden'));
-        
-        saveSettings.addEventListener('click', () => {
-            let url = apiUrlInput.value.trim();
-            if (url.endsWith('/')) {
-                url = url.slice(0, -1);
+        if (historyBtn) historyBtn.addEventListener('click', openHistoryModal);
+        if (closeHistory) closeHistory.addEventListener('click', () => historyModal.classList.add('hidden'));
+        if (closeHistoryDetail) closeHistoryDetail.addEventListener('click', () => historyDetailModal.classList.add('hidden'));
+
+        let historyCache = [];
+
+        async function openHistoryModal() {
+            if (!authToken || !currentUser) {
+                alert("Vui lòng đăng nhập để xem lịch sử chẩn đoán.");
+                return;
             }
-            if (url) {
-                apiBaseUrl = url;
-                localStorage.setItem(STORAGE_KEY, url);
-                alert("Đã lưu kết nối API Endpoint: " + url);
-                settingsModal.classList.add('hidden');
+            historyModal.classList.remove('hidden');
+            historyListContainer.innerHTML = '<div class="text-center text-xs text-slate-500 py-8">⏳ Đang tải danh sách lịch sử...</div>';
+
+            try {
+                const res = await authFetch(`${apiBaseUrl}/api/history`);
+                if (!res.ok) {
+                    let msg = "Không thể tải danh sách lịch sử.";
+                    try { const errJson = await res.json(); if (errJson && errJson.detail) msg = errJson.detail; } catch (_) {}
+                    historyListContainer.innerHTML = `<div class="text-center text-xs text-rose-500 py-8">${escapeHtml(msg)}</div>`;
+                    return;
+                }
+                const json = await res.json();
+                historyCache = json.data || [];
+                renderHistoryList(historyCache);
+            } catch (err) {
+                console.error(err);
+                historyListContainer.innerHTML = '<div class="text-center text-xs text-rose-500 py-8">Lỗi kết nối máy chủ Ngrok khi lấy lịch sử. Vui lòng kiểm tra lại dịch vụ backend.</div>';
+            }
+        }
+
+        function renderHistoryList(items) {
+            if (!items || items.length === 0) {
+                historyListContainer.innerHTML = `
+                    <div class="text-center py-10 border border-dashed border-slate-200 rounded-xl">
+                        <p class="text-2xl mb-1">📜</p>
+                        <p class="text-xs text-slate-400">Chưa có lịch sử chẩn đoán nào.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            historyListContainer.innerHTML = "";
+            items.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 hover:bg-teal-50/50 border border-slate-200 rounded-xl p-3.5 transition flex items-center justify-between gap-3 cursor-pointer";
+                
+                const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleString('vi-VN') : "Không rõ thời gian";
+                const isDoc = isDoctor();
+                const userTag = (isDoc && (item.full_name || item.username)) 
+                    ? `<span class="bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded">Tài khoản: ${escapeHtml(item.full_name || item.username)}</span>` 
+                    : "";
+
+                card.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-2 mb-1 flex-wrap gap-1">
+                            <span class="text-xs font-bold text-teal-700">${escapeHtml(timeStr)}</span>
+                            ${userTag}
+                        </div>
+                        <p class="text-xs text-slate-700 font-medium truncate">
+                            ${escapeHtml(item.symptoms || "Chỉ vọng chẩn bằng hình ảnh")}
+                        </p>
+                        <div class="flex items-center space-x-3 text-[11px] text-slate-400 mt-1">
+                            ${item.age ? `<span>Tuổi: ${escapeHtml(item.age)}</span>` : ""}
+                            ${item.sex ? `<span>Giới tính: ${escapeHtml(item.sex)}</span>` : ""}
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1.5 shrink-0">
+                        <button type="button" class="view-detail-btn px-2.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+                            👁️ Xem
+                        </button>
+                        <button type="button" class="delete-history-btn p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition" title="Xóa bản ghi">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+
+                card.querySelector('.view-detail-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showHistoryDetail(item);
+                });
+
+                card.querySelector('.delete-history-btn').addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!confirm("Bạn có chắc chắn muốn xóa bản ghi chẩn đoán này?")) return;
+                    try {
+                        const delRes = await authFetch(`${apiBaseUrl}/api/history/${item.id}`, { method: 'DELETE' });
+                        if (delRes.ok) {
+                            historyCache = historyCache.filter(h => h.id !== item.id);
+                            renderHistoryList(historyCache);
+                        } else {
+                            alert("Xóa không thành công.");
+                        }
+                    } catch (err) {
+                        alert("Lỗi khi xóa lịch sử.");
+                    }
+                });
+
+                card.addEventListener('click', () => showHistoryDetail(item));
+                historyListContainer.appendChild(card);
+            });
+        }
+
+        function showHistoryDetail(item) {
+            historyDetailModal.classList.remove('hidden');
+            const resultData = item.result || {};
+            const timeStr = item.timestamp ? new Date(item.timestamp).toLocaleString('vi-VN') : "";
+            
+            let visionHTML = "";
+            if (resultData.vision_details) {
+                const vd = resultData.vision_details;
+                if (vd.tongue_description_vi) {
+                    visionHTML += `<div class="mb-1.5"><strong>👅 Lưỡi:</strong> ${escapeHtml(vd.tongue_description_vi)}</div>`;
+                }
+                if (vd.face_description_vi) {
+                    visionHTML += `<div><strong>📷 Sắc mặt:</strong> ${escapeHtml(vd.face_description_vi)}</div>`;
+                }
+            }
+
+            let textHTML = "";
+            if (resultData.diagnosis_result && resultData.diagnosis_result.answer) {
+                textHTML = marked.parse(resultData.diagnosis_result.answer);
             } else {
-                // Bỏ trống -> quay về API mặc định của trang (backend Vercel cùng domain)
-                localStorage.removeItem(STORAGE_KEY);
-                apiBaseUrl = DEFAULT_API_URL;
-                alert("Đã trở về API mặc định của trang.");
-                settingsModal.classList.add('hidden');
+                textHTML = "<p class='text-slate-400 italic'>Không có chi tiết kết quả dạng văn bản.</p>";
             }
-        });
+
+            historyDetailContent.innerHTML = `
+                <div class="bg-slate-100 p-3.5 rounded-xl space-y-1 text-xs text-slate-700 mb-4">
+                    <p><strong>🕒 Thời gian:</strong> ${escapeHtml(timeStr)}</p>
+                    ${item.full_name || item.username ? `<p><strong>👤 Tài khoản:</strong> ${escapeHtml(item.full_name || item.username)}</p>` : ""}
+                    <p><strong>📝 Triệu chứng ban đầu:</strong> ${escapeHtml(item.symptoms || "Không ghi chép")}</p>
+                    ${item.age || item.sex ? `<p><strong>ℹ️ Thông tin:</strong> ${escapeHtml(item.age ? item.age + ' tuổi' : '')} ${escapeHtml(item.sex || '')}</p>` : ""}
+                </div>
+
+                ${visionHTML ? `
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-4">
+                        <h4 class="font-bold text-teal-800 text-xs uppercase mb-2">👁️ Phân tích hình ảnh (AI Vision):</h4>
+                        <div class="text-xs text-slate-700 leading-relaxed">${visionHTML}</div>
+                    </div>
+                ` : ""}
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-teal-800 text-xs uppercase mb-2">💬 Kết quả chẩn đoán y lý (Neo4j):</h4>
+                    <div class="markdown-content text-xs leading-relaxed">${textHTML}</div>
+                </div>
+            `;
+        }
 
         // Hàm xem trước tệp ảnh khi tải lên
         function registerPreview(inputId, previewId) {
