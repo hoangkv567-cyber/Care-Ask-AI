@@ -53,16 +53,21 @@ FACE_JSON_PROMPT_VI = """Bạn là chuyên gia vọng chẩn Đông y. Hãy quan
 
 HƯỚNG DẪN ĐÁNH GIÁ TRỰC QUAN:
 1. "sac_mat":
-   - "vàng úa": Chọn khi da mặt, trán, má, cằm ngả tông màu VÀNG, VÀNG CAM, hoặc VÀNG CHANH rõ rệt (ví dụ: trẻ sơ sinh vàng da / hoàng đản, bệnh nhân bệnh gan hoặc sắc mặt vàng xỉn).
-   - "trắng nhợt": Chọn khi da mặt tái bệch, nhạt màu, nhợt nhạt, xanh tái, hoặc gầy hốc hác nhạt sắc (thiếu máu, suy nhược, khí huyết kém).
-   - "đỏ bừng": Chọn khi toàn bộ mặt hoặc vùng má/trán đỏ rực, hồng đậm như sốt cao hoặc bốc hỏa.
+   - "vàng úa": CHỈ CHỌN KHI DA MẶT BỊ VÀNG DA BỆNH LÝ RÕ RỆT (vàng da sơ sinh, hoàng đản, bệnh gan, da & củng mạc mắt nhuộm vàng chanh/vàng nghệ). Da nam/nữ người Châu Á bình thường chụp dưới ánh đèn phòng ngả vàng nhẹ -> BẮT BUỘC CHỌN "hồng hào bình thường".
+   - "trắng nhợt": CHỌN KHI DA MẶT TÁI BỆCH, NHỢT NHẠT, XANH TÁI, HOẶC DA MẶT GẦY HỐC HÁC NHẠT MÀU THIẾU TƯƠI NHUẬN / THIẾU MÁU / SUY NHƯỢC.
+   - "đỏ bừng": Chọn khi toàn bộ mặt hoặc vùng má/trán đỏ rực như sốt cao.
    - "xanh xao": Chọn khi da ngả màu xanh tím, tái xanh.
    - "sạm tối": Chọn khi da mặt u tối, sạm đen, xám xịt.
-   - "hồng hào bình thường": Chọn khi da hồng tươi, tươi nhuận, đầy đặn khỏe mạnh.
+   - "hồng hào bình thường": CHỌN KHI DA MẶT MỌC TƯƠI NHUẬN, HOẶC DA NAM/NỮ CHÂU Á BÌNH THƯỜNG TRONG ĐIỀU KIỆN ÁNH SÁNG PHÒNG.
 
 2. "quang_tham":
-   - "có": Chọn khi vùng mi mắt dưới (infraorbital) có mảng thâm nâu, thâm quầng, hoặc bóng tối sẫm rõ rệt.
-   - "không": Chọn khi vùng dưới mắt sáng phẳng, cùng màu da mặt.
+   - HÃY SOI KỸ VÙNG MI MẮT DƯỚI (DƯỚI BỌNG MẮT):
+   - "có": BẮT BUỘC CHỌN KHI VÙNG DA MI MẮT DƯỚI CÓ BÓNG THÂM, SẠM NÂU, HOẶC THÂM QUỒNG RÕ RỆT SO VỚI MÁ.
+   - "không": CHỈ CHỌN KHI VÙNG DƯỚI MẮT ĐỀU MÀU PHẲNG MỊN CÙNG TÔNG DA MẶT.
+
+3. "go_ma_do":
+   - "có": CHỈ CHỌN KHI THẤY RÕ 2 MẢNG MÀU ĐỎ HỒNG KHU TRÚ NGAY TRÊN HẠT GÒ MÁ (lưỡng quyền đỏ/hồng của âm hư hỏa vượng, sốt cao). Da mặt hồng hào tự nhiên hoặc da nam giới bình thường -> MẶC ĐỊNH "không".
+   - "không": Khi hai gò má cùng màu với da trán và da mặt.
 
 Chỉ xuất JSON chuẩn.
 """
