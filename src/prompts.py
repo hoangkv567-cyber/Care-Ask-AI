@@ -70,3 +70,6 @@ MẪU THỰC TẾ ĐỂ ĐỐI CHIẾU (FEW-SHOT ANCHORS):
 3) Ảnh nam Châu Á da vàng hồng tươi nhuận đầy đặn, mi mắt dưới sạm nâu thâm sẫm -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "có", "trang_diem": "không"}
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
+
+TONGUE_PROMPT_TEMPLATE = TONGUE_PROMPT_TEMPLATE_VI
+FACE_PROMPT_TEMPLATE = FACE_PROMPT_TEMPLATE_VI
