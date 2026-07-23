@@ -1461,11 +1461,9 @@
   },
   {
    "names": [
-    "addison",
     "basedow",
     "eczema",
     "gout",
-    "tuyến thượng thận",
     "suy tim",
     "loãng xương",
     "bệnh bạch huyết",
@@ -2203,6 +2201,27 @@
     "chiến chứng",
     "parkinson",
     "chậm chạp"
+   ]
+  },
+  {
+   "names": [
+    "suy tuyến thượng thận",
+    "addison",
+    "tuyến thượng thận"
+   ],
+   "requires": [
+    "đen",
+    "sạm",
+    "mệt mỏi",
+    "váng đầu",
+    "nôn",
+    "sợ lạnh",
+    "thượng thận",
+    "addison",
+    "huyết áp",
+    "tình dục",
+    "ăn uống kém",
+    "hoa mắt"
    ]
   }
  ]
