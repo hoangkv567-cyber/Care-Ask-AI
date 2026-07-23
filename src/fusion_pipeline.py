@@ -5765,6 +5765,20 @@ class TCMFusionPipeline:
             if x not in bat_cuong_order:
                 bat_cuong_order.append(x)
 
+                # [KHỬ DƯƠNG TÍNH GIẢ BIỂU CHỨNG]
+        # Nếu hội chứng cốt lõi & kèm theo KHÔNG thuộc nhóm Biểu (không có phong/biểu/mạo)
+        # VÀ triệu chứng không có cờ hiệu ngoại cảm cấp -> loại bỏ 'Biểu' và 'Biểu - Lý đồng bệnh'.
+        _chosen_names_l = " ".join([final_primary] + ([final_concurrent] if final_concurrent else [])).lower()
+        _has_bieu_syn = any(k in _chosen_names_l for k in ("biểu", "phong hàn", "phong nhiệt", "mạo biểu"))
+        _has_bieu_sym = any(k in symptoms_lower_all for k in ("sợ gió", "ố phong", "sợ lạnh kèm sốt", "phát nhiệt mạo biểu"))
+        if not _has_bieu_syn and not _has_bieu_sym:
+            all_bat_cuong.discard("Biểu")
+            all_bat_cuong.discard("Biểu - Lý đồng bệnh")
+            all_bat_cuong.add("Lý")
+            if "Biểu - Lý đồng bệnh" in bat_cuong_order:
+                bat_cuong_order = [x for x in bat_cuong_order if x != "Biểu - Lý đồng bệnh"]
+                if "Lý" not in bat_cuong_order:
+                    bat_cuong_order.insert(0, "Lý")
         organs_hint = f"{', '.join(all_organs)}" if all_organs else "Chưa rõ"
         # [EXTERIOR BAT CUONG SYNC]
         _prim_l = (final_primary or "").lower()
