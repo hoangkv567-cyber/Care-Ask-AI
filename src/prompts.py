@@ -53,12 +53,12 @@ FACE_JSON_PROMPT_VI = """Bạn là chuyên gia vọng chẩn Đông y. Hãy quan
 
 HƯỚNG DẪN SOI ẢNH LÂM SÀNG TRỰC QUAN:
 1. "sac_mat":
+   - "trắng nhợt": BẮT BUỘC CHỌN KHI DA MẶT TÁI BỆCH, NHỢT NHẠT, KHUÔN MẶT GẦY HỐC HÁC, SẮC DA VÀ MÔI BỆCH MÀU MẤT SẮC MÁU DO THIẾU MÁU / SUY NHƯỢC.
    - "vàng úa": BẮT BUỘC CHỌN KHI DA MẶT (TRÁN, MÁ, CẰM) BỊ NGẢ MÀU VÀNG HOẶC VÀNG CAM RÕ RỆT (trẻ em/trẻ sơ sinh bị vàng da, bệnh nhân hoàng đản/gan).
-   - "trắng nhợt": BẮT BUỘC CHỌN KHI DA MẶT VÀ BỜ MÔI TÁI BỆCH, NHẠT MÀU MẤT SẮC MÁU, DA TÁI XANH KHÔNG CÓ SỨC SỐNG DO THIẾU MÁU / SUY NHƯỢC DỮ DỘI.
    - "đỏ bừng": Chọn khi da mặt đỏ rực như bốc hỏa, sốt cao.
    - "xanh xao": Chọn khi da ngả màu xanh tím.
    - "sạm tối": Chọn khi da u tối, sạm đen, xám xịt.
-   - "hồng hào bình thường": MẶC ĐỊNH CHỌN KHI DA MẶT ĐỀU MÀU, TƯƠI NHUẬN, BÌNH THƯỜNG (kể cả da người da trắng hay da người Châu Á sáng màu, không bị bệnh lý vàng da hay tái bệch).
+   - "hồng hào bình thường": CHỌN KHI DA MẶT ĐẦY ĐẶN, TƯƠI NHUẬN, HỒNG TƯƠI KHỎE MẠNH (MẶT ĐẦY ĐẶN CÓ SỨC SỐNG, KHÔNG BỊ GẦY HỐC HÁC HOẶC TÁI BỆCH).
 
 2. "quang_tham":
    - HÃY SOI KỸ VÙNG MI MẮT DƯỚI (DƯỚI BỌNG MẮT):
