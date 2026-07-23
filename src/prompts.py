@@ -130,7 +130,7 @@ QUY TẮC:
 - Ánh sáng/nền ấm dễ làm da trông VÀNG: chỉ chọn "vàng úa" khi vàng thật rõ (thường kèm củng mạc mắt
   vàng); nếu chỉ do ánh sáng thì đánh giá theo sắc da thật, KHÔNG chọn "vàng úa".
 - "sac_mat"="trắng nhợt" KHI da mặt NHỢT, TÁI, THIẾU SẮC MÁU HOẶC HỐC HÁC (kể cả người da trắng/châu Âu nếu mặt tái nhạt thiếu sức sống, hốc hác, nhợt nhạt). Chọn "hồng hào bình thường" khi da thực sự tươi nhuận hồng hào tự nhiên. Nếu nghi ngờ nhợt nhẹ hoặc sạm tái -> chọn "trắng nhợt" hoặc "sạm tối".
-- Có son/phấn/kẻ mắt rõ -> "trang_diem": "có" (vì trang điểm che sắc mặt thật).
+- "trang_diem"="có" CHỈ KHI thấy RÕ LỚP PHẤN NỀN (foundation) che phủ da, SON MÔI ĐẬM HOẶC KẺ MẮT/MASCARA TRANG ĐIỂM RÕ RÀNG. Da mặt mộc tự nhiên (kể cả có mụn trứng cá, vết thâm, tàn nhang, nốt ruồi, da khô, da nhờn, môi tự nhiên) -> MẶC ĐỊNH "trang_diem": "không". TUYỆT ĐỐI CẤM (PROHIBITED) đánh giá nhầm mặt mộc có mụn/vết thâm thành "có trang điểm".
 - "go_ma_do"="có" CHỈ KHI thấy RÕ hai MẢNG ĐỎ KHU TRÚ ngay trên hai gò má (ửng đỏ từng vùng nổi bật
   trên nền da nhợt — dấu "lưỡng quyền hồng" của âm hư). Da đều màu / hồng tự nhiên nhẹ / má chỉ hơi ấm /
   đỏ ở QUANH MŨI-MIỆNG-CẰM (mụn, kích ứng, mao mạch) -> KHÔNG phải gò má đỏ -> "không". MẶC ĐỊNH "không"
