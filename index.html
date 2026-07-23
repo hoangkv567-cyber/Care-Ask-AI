@@ -1551,9 +1551,13 @@
 
                     treatments.forEach((treat, treatIdx) => {
                         const pId = `pres_${synIdx}_${treatIdx}`;
+                        const rawBai = String(treat.bai_thuoc || '').trim();
+                        const baiName = (rawBai && rawBai !== 'null' && rawBai !== 'None' && rawBai !== 'undefined')
+                            ? rawBai
+                            : (treat.disease ? `Bài thuốc trị ${treat.disease}` : 'Bài thuốc điều trị');
                         nodes.push({
                             id: pId, level: 2, shape: 'box',
-                            label: `${treat.bai_thuoc}\n(Trị ${treat.disease})`,
+                            label: `${baiName}\n(Trị ${treat.disease})`,
                             color: { background: '#dcfce7', border: '#86efac' },
                             font: { color: '#166534', size: 13, bold: true },
                             margin: 8

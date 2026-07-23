@@ -693,7 +693,7 @@ class TCMQA:
         WHERE toLower(h.name) = toLower($syn)
           AND ($diseases IS NULL OR b.name IN $diseases)
         OPTIONAL MATCH (h)-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(p:BaiThuoc)
-          WHERE p.benh_ly = b.name AND p.hoi_chung = h.name
+          WHERE p.benh_ly = b.name AND toLower(p.hoi_chung) = toLower(h.name)
         OPTIONAL MATCH (p)-[:BAO_GỒM]->(v:ViThuoc)
         RETURN b.name AS disease, p.name AS bai_thuoc, collect(DISTINCT v.name) AS vi_thuoc
         ORDER BY disease
@@ -702,10 +702,29 @@ class TCMQA:
         try:
             with self.driver.session() as session:
                 for rec in session.run(cypher, syn=syndrome, diseases=diseases):
+                    dis = rec["disease"]
+                    bt = rec["bai_thuoc"]
+                    vt = [v for v in (rec["vi_thuoc"] or []) if v]
+
+                    # [CSV FALLBACK KHẮC PHỤC NULL BÀI THUỐC]
+                    if not bt and hasattr(self, "df") and self.df is not None:
+                        try:
+                            df_match = self.df[
+                                (self.df["tên_bệnh"].str.strip().str.lower() == str(dis).strip().lower()) &
+                                (self.df["hội_chứng"].str.strip().str.lower() == str(syndrome).strip().lower())
+                            ]
+                            if not df_match.empty:
+                                bt = str(df_match.iloc[0].get("bài_thuốc", "")).strip()
+                                if not vt and "vị_thuốc" in df_match.columns:
+                                    raw_v = str(df_match.iloc[0].get("vị_thuốc", ""))
+                                    vt = [v.strip() for v in raw_v.split(",") if v.strip()]
+                        except Exception as e_df:
+                            logger.warning(f"CSV fallback error in get_treatments_for_syndrome: {e_df}")
+
                     out.append({
-                        "disease": rec["disease"],
-                        "bai_thuoc": rec["bai_thuoc"],
-                        "vi_thuoc": [v for v in (rec["vi_thuoc"] or []) if v],
+                        "disease": dis,
+                        "bai_thuoc": bt if bt else None,
+                        "vi_thuoc": vt,
                     })
         except Exception as e:
             logger.error(f"Lỗi get_treatments_for_syndrome ('{syndrome}'): {e}")
