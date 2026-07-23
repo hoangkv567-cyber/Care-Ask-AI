@@ -51,14 +51,14 @@ FACE_JSON_PROMPT_VI = """Bạn là chuyên gia vọng chẩn Đông y. Hãy quan
   "trang_diem": "có" | "không" | "không rõ"
 }
 
-HƯỚNG DẪN SOI ẢNH LÂM SÀNG CỤ THỂ:
+HƯỚNG DẪN SOI ẢNH LÂM SÀNG TRỰC QUAN:
 1. "sac_mat":
-   - "trắng nhợt": BẮT BUỘC CHỌN KHI NGƯỜI TRONG ẢNH CÓ DA MẶT TÁI TRẮNG/TÁI BỆCH, KHUÔN MẶT GẦY HỐC HÁC, DA MẶT VÀ MÔI NHẠT MÀU THIẾU TƯƠI NHUẬN / THIẾU MÁU / SUY NHƯỢC (ĐẶC BIỆT KHI THẤY NGƯỜI PHỤ NỮ DA TRẮNG GẦY HỐC HÁC TÓC BÚI HOẶC DA TÁI NHỢT).
-   - "vàng úa": BẮT BUỘC CHỌN KHI DA MẶT CÓ TÔNG MÀU VÀNG HOẶC VÀNG CAM RÕ RỆT (trẻ em/trẻ sơ sinh bị vàng da sơ sinh, bệnh nhân hoàng đản/gan).
-   - "hồng hào bình thường": CHỈ CHỌN KHI DA MẶT ĐẦY ĐẶN, NỞ NANG, TƯƠI TẮN HỒNG THẮM KHỎE MẠNH (mặt đầy đặn tươi nhuận, không bị gầy hốc hác hay da tái).
+   - "vàng úa": BẮT BUỘC CHỌN KHI DA MẶT (TRÁN, MÁ, CẰM) BỊ NGẢ MÀU VÀNG HOẶC VÀNG CAM RÕ RỆT (trẻ em/trẻ sơ sinh bị vàng da, bệnh nhân hoàng đản/gan).
+   - "trắng nhợt": BẮT BUỘC CHỌN KHI DA MẶT VÀ BỜ MÔI TÁI BỆCH, NHẠT MÀU MẤT SẮC MÁU, DA TÁI XANH KHÔNG CÓ SỨC SỐNG DO THIẾU MÁU / SUY NHƯỢC DỮ DỘI.
    - "đỏ bừng": Chọn khi da mặt đỏ rực như bốc hỏa, sốt cao.
    - "xanh xao": Chọn khi da ngả màu xanh tím.
    - "sạm tối": Chọn khi da u tối, sạm đen, xám xịt.
+   - "hồng hào bình thường": MẶC ĐỊNH CHỌN KHI DA MẶT ĐỀU MÀU, TƯƠI NHUẬN, BÌNH THƯỜNG (kể cả da người da trắng hay da người Châu Á sáng màu, không bị bệnh lý vàng da hay tái bệch).
 
 2. "quang_tham":
    - HÃY SOI KỸ VÙNG MI MẮT DƯỚI (DƯỚI BỌNG MẮT):
@@ -66,7 +66,7 @@ HƯỚNG DẪN SOI ẢNH LÂM SÀNG CỤ THỂ:
    - "không": CHỈ CHỌN KHI VÙNG DƯỚI MẮT ĐỀU MÀU PHẲNG MỊN CÙNG TÔNG DA MẶT.
 
 3. "ban_do":
-   - "có": CHỈ CHỌN KHI THẤY MẢNG PHÁT BAN ĐỎ, MẢNG XUẤT HUYẾT DƯỚI DA, HOẶC BAN ĐỎ HÌNH BƯỚM DIỆN RỘNG (ví dụ: ban sởi, xuất huyết, mảng ban Lupus). Nốt mụn nhỏ, nốt ruồi, tàn nhang hoặc vết thâm mụn nhẹ -> MẶC ĐỊNH "không".
+   - "có": CHỈ CHỌN KHI THẤY MẢNG PHÁT BAN ĐỎ, MẢNG XUẤT HUYẾT DƯỚI DA, HOẶC BAN ĐỎ HÌNH BƯỚM DIỆN RỘNG (ban sởi, xuất huyết, Lupus). Nốt mụn nhỏ, nốt ruồi, tàn nhang hoặc vết thâm mụn nhẹ -> MẶC ĐỊNH "không".
    - "không": Khi da mặt bình thường không có mảng phát ban đỏ.
 
 4. "go_ma_do":
