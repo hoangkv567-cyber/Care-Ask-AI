@@ -1934,7 +1934,15 @@ class TCMFusionPipeline:
             if not has_heat_sign:
                 return False
 
-                # [CỔNG AN TOÀN BẾ KINH & BĂNG LẬU]
+                        # [CỔNG AN TOÀN BỆNH LÝ TUYẾN VÚ / BREAST DISEASE SAFETY GATE]
+        # Bệnh tuyến vú (Nhũ tịch, Nhũ ung, Nhũ phích, Nhũ lao, Đoạn nhũ, Thiếu nhũ...) BẮT BUỘC phải có triệu chứng ở VÚ/SỮA.
+        # Tuyệt đối cấm chẩn đoán Nhũ tịch / Nhũ phích cho ca bệnh không khai triệu chứng vú/sữa.
+        if any(b_kw in disease_lower for b_kw in ("nhũ tịch", "nhũ ung", "nhũ phích", "nhũ lao", "đoạn nhũ", "thiếu nhũ", "tắc tia sữa", "viêm tuyến vú")):
+            has_breast_sym = any(b_sym in symptoms_str for b_sym in ("vú", "sữa", "tuyến vú", "tiết sữa", "căng vú", "đau vú", "khối vú", "u vú"))
+            if not has_breast_sym:
+                return False
+
+        # [CỔNG AN TOÀN BẾ KINH & BĂNG LẬU]
         if "bế kinh" in disease_lower:
             is_acute = any(k in symptoms_str for k in ("mới mắc", "1-2 ngày", "1 - 2 ngày", "vài ngày"))
             has_missed_period = any(k in symptoms_str for k in ("mất kinh", "tắt kinh", "không có kinh", "không thấy kinh", "trễ kinh", "chậm kinh"))
