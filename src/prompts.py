@@ -145,6 +145,6 @@ QUY TẮC:
   má-cằm-trán-quanh mũi), tàn nhang, nốt ruồi, sẹo, mao mạch, kích ứng nhỏ -> KHÔNG phải ban -> "không".
   MẶC ĐỊNH "không" trừ khi có ban/phát ban LAN TỎA thật rõ. (Gọi nhầm mụn thành 'ban' sẽ kéo biện luận
   sang huyết nhiệt/tinh huyết hư OAN.)
-- "quang_tham"="có" khi thấy quầng thâm/vùng da tối màu rõ dưới hai mắt hoặc hốc mắt trũng mệt mỏi.
+- "quang_tham"="có" KHI THẤY VÙNG DA TỐI MÀU / THÂM SẪM / SẠM MÀU Ở VÙNG DƯỚI HAI MẮT HOẶC HỐC MẮT (kể cả khi da mặt tươi nhuận hồng hào nhưng hai mi mắt dưới có bóng tối/quầng thâm sẫm màu rõ rệt). TUYỆT ĐỐI KHÔNG BỎ SÓT quầng thâm mắt.
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
