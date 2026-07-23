@@ -15,7 +15,7 @@ qa:
 
 dashscope:
   use_cloud: true
-  model: "qwen3.5-flash"
+  model: "qwen3-max"
   api_key: ""        # Lấy từ DASHSCOPE_API_KEY trong .env
 
 requesty:

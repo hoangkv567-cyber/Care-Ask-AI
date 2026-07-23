@@ -27,11 +27,11 @@ class TCMQA:
         import os
 
         class DashScopeChatClient:
-                """Client TEXT LLM qua DashScope / Alibaba ModelStudio (qwen3.5-flash).
+                """Client TEXT LLM qua DashScope / Alibaba ModelStudio (qwen3-max).
                 Fallback 1 sang Requesty.ai (qwen2.5) khi lỗi/hết quota/timeout.
                 Fallback 2 sang Ollama local nếu Requesty cũng lỗi.
                 """
-                def __init__(self, ds_token: str, ds_model: str = "qwen3.5-flash",
+                def __init__(self, ds_token: str, ds_model: str = "qwen3-max",
                              rq_token: str = None, rq_model: str = "deepinfra/Qwen/Qwen2.5-72B-Instruct",
                              fallback_model: str = None, fallback_host: str = None):
                     self.ds_token = ds_token
@@ -64,7 +64,7 @@ class TCMQA:
                     if temperature == 0.0:
                         temperature = 0.01
 
-                    # 1. Thử gọi DashScope (ModelStudio) với qwen3.5-flash
+                    # 1. Thử gọi DashScope (ModelStudio) với qwen3-max
                     payload_ds = {"model": self.ds_model, "messages": messages, "temperature": temperature, "stream": False}
                     if options and "max_tokens" in options:
                         payload_ds["max_tokens"] = options["max_tokens"]
@@ -120,7 +120,7 @@ class TCMQA:
 
         ds_token = os.environ.get("DASHSCOPE_API_KEY") or dashscope_cfg.get("api_key")
         if ds_token and dashscope_cfg.get("use_cloud", True):
-            ds_model_id = dashscope_cfg.get("model", "qwen3.5-flash")
+            ds_model_id = dashscope_cfg.get("model", "qwen3-max")
             rq_token = os.environ.get("REQUESTY_API_KEY") or requesty_cfg.get("api_key")
             rq_model_id = requesty_cfg.get("model", "deepinfra/Qwen/Qwen2.5-72B-Instruct")
             _fb_model = (requesty_cfg.get("fallback_ollama_model") or self.config.get("llm_model") or "qwen2.5:7b")
