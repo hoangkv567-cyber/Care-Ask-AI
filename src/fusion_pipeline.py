@@ -1934,7 +1934,15 @@ class TCMFusionPipeline:
             if not has_heat_sign:
                 return False
 
-                        # [CỔNG AN TOÀN BỆNH LÝ TUYẾN VÚ / BREAST DISEASE SAFETY GATE]
+                                # [CỔNG AN TOÀN BỆNH SẢN HẬU & MANG THAI / POSTPARTUM & PREGNANCY SAFETY GATE]
+        # Bệnh sản hậu / mang thai (Ác lộ bất tuyệt, Sản hậu phát nhiệt, Sản hậu phúc thống, Tử giản, Động thai, Lưu sản, Thai phù...)
+        # BẮT BUỘC phải có triệu chứng sau sinh hoặc mang thai.
+        if any(p_kw in disease_lower for p_kw in ("ác lộ", "sản hậu", "tử giản", "động thai", "lưu sản", "thai phù", "quỷ thai")):
+            has_preg_sym = any(p_sym in symptoms_str for p_sym in ("sau sinh", "sản hậu", "sản dịch", "ác lộ", "mang thai", "có thai", "đang thai", "sinh con", "đẻ", "sản phụ"))
+            if not has_preg_sym:
+                return False
+
+        # [CỔNG AN TOÀN BỆNH LÝ TUYẾN VÚ / BREAST DISEASE SAFETY GATE]
         # Bệnh tuyến vú (Nhũ tịch, Nhũ ung, Nhũ phích, Nhũ lao, Đoạn nhũ, Thiếu nhũ...) BẮT BUỘC phải có triệu chứng ở VÚ/SỮA.
         # Tuyệt đối cấm chẩn đoán Nhũ tịch / Nhũ phích cho ca bệnh không khai triệu chứng vú/sữa.
         if any(b_kw in disease_lower for b_kw in ("nhũ tịch", "nhũ ung", "nhũ phích", "nhũ lao", "đoạn nhũ", "thiếu nhũ", "tắc tia sữa", "viêm tuyến vú")):
