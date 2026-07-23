@@ -53,9 +53,9 @@ Bạn là chuyên gia Đông y vọng chẩn (xem sắc mặt). Quan sát ảnh 
 }
 QUY TẮC PHÂN BIỆT SẮC MẶT:
 - KHI ĐÁNH GIÁ "sac_mat", HÃY SOI KỸ MÀU SẮC DA TRÊN TRÁN, MÁ, MŨI VÀ CỦNG MẠC MẮT (LÒNG TRẮNG MẮT):
-  * "vàng úa": CHỌN KHI DA MẶT CÓ TÔNG MÀU VÀNG NỔI BẬT, HOẶC CỦNG MẠC MẮT/VÙNG DA MẶT NHUỐM VÀNG (NHƯ Ở TRẺ VÀNG DA SƠ SINH - JAUNDICE, HOÀNG ĐẢN). ĐẶC BIỆT: NẾU KHUÔN MẶT LÀ TRẺ EM/EM BÉ HOẶC NGUỜI CÓ DA MÀU VÀNG RÕ RỆT THÌ BẮT BUỘC CHỌN "vàng úa" (TUYỆT ĐỐI KHÔNG CHỌN "hồng hào bình thường").
+  * "vàng úa": CHỈ CHỌN KHI DA MẶT CÓ TÔNG MÀU VÀNG CHANH/VÀNG NGHỆ RÕ RỆT VÀ CỦNG MẠC MẮT (LÒNG TRẮNG MẮT) NHUỐM VÀNG (BỆNH VÀNG DA BỆNH LÝ - JAUNDICE, HOÀNG ĐẢN Ở TRẺ SƠ SINH HOẶC BỆNH GAN). Trẻ em, thiếu niên hoặc người có da sáng màu, da trắng hồng, hoặc mặc áo màu vàng/xanh KHÔNG BỊ VÀNG DA BỆNH LÝ -> BẮT BUỘC CHỌN "hồng hào bình thường" (TUYỆT ĐỐI KHÔNG CHỌN "vàng úa").
   * "trắng nhợt": CHỈ CHỌN KHI DA MẶT TÁI BỆCH, TRẮNG DÃCH HỐC HÁC NHƯ BỆNH NHÂN THIẾU MÁU NẶNG HOẶC SUY NHƯỢC NẶNG. Da mặt nam/nữ người Châu Á bình thường hoặc sáng da dưới ánh đèn trong phòng KHÔNG ĐƯỢC CHỌN "trắng nhợt" -> BẮT BUỘC CHỌN "hồng hào bình thường".
-  * "hồng hào bình thường": CHỌN KHI DA MẶT HỒNG TƯƠI KHỎE MẠNH, HOẶC DA NAM/NỮ CHÂU Á BÌNH THƯỜNG TRONG ĐIỀU KIỆN ÁNH SÁNG TRONG PHÒNG.
+  * "hồng hào bình thường": CHỌN KHI DA MẶT HỒNG TƯƠI KHỎE MẠNH, HOẶC DA NAM/NỮ/TRẺ EM BÌNH THƯỜNG TRONG ĐIỀU KIỆN ÁNH SÁNG TRONG PHÒNG.
 - "trang_diem"="có" CHỈ KHI thấy RÕ LỚP PHẤN NỀN (foundation) che phủ da, SON MÔI ĐẬM HOẶC KẺ MẮT/MASCARA TRANG ĐIỂM RÕ RÀNG. Da mặt mộc tự nhiên -> MẶC ĐỊNH "trang_diem": "không".
 - "go_ma_do"="có" CHỈ KHI thấy RÕ hai MẢNG ĐỎ KHU TRÚ ngay trên hai gò má (lưỡng quyền hồng của âm hư).
 - "ban_do"="có" CHỈ KHI có BAN/PHÁT BAN THẬT (ban sởi, mề đay, dị ứng lan tỏa). Mụn trứng cá -> "không".
@@ -64,10 +64,10 @@ QUY TẮC PHÂN BIỆT SẮC MẶT:
   * "quang_tham"="không": KHI VÙNG DA DƯỚI MẮT PHẲNG MỊN, SÁNG ĐỀU MÀU CÙNG TÔNG DA MẶT.
 
 MẪU ĐỐI CHIẾU THỰC TẾ:
-1) Ảnh em bé/trẻ em hoặc người có da mặt màu vàng rõ rệt (vàng da sơ sinh/hoàng đản) -> {"sac_mat": "vàng úa", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
+1) Ảnh bệnh nhân mắc bệnh vàng da thực sự (bệnh da & mắt nhuộm vàng chanh/vàng nghệ rõ rệt) -> {"sac_mat": "vàng úa", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
 2) Ảnh nữ da trắng gầy hốc hác, da nhạt bệch, mi mắt dưới phẳng sáng màu -> {"sac_mat": "trắng nhợt", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
 3) Ảnh nam Châu Á da vàng hồng tươi nhuận đầy đặn, mi mắt dưới sạm nâu thâm sẫm -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "có", "trang_diem": "không"}
-4) Ảnh nam/nữ thanh niên Châu Á da bình thường sáng màu dưới ánh đèn phòng -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
+4) Ảnh thiếu niên, trẻ em hoặc bé gái có da mặt trắng hồng, sáng màu tự nhiên -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
 
