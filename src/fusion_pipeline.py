@@ -2899,6 +2899,27 @@ class TCMFusionPipeline:
                     return True
                 if (sl in hcl or hcl in sl) and cls._extra_tokens_are_locators(sl, hcl):
                     return True
+
+        # [GIAO HỘI PHỐI HỢP] Hội chứng kép (Khí âm lưỡng hư, Khí huyết hư, Khí huyết lưỡng hư, Âm dương lưỡng hư):
+        # Grounded nếu thành phần cấu thành (Âm hư, Huyết hư, Khí hư, Dương hư) grounded trong window.
+        _parts = []
+        if "khí âm" in sl or "âm khí" in sl:
+            _parts = ["khí hư", "âm hư"]
+        elif "khí huyết" in sl or "huyết khí" in sl:
+            _parts = ["khí hư", "huyết hư"]
+        elif "âm dương" in sl or "dương âm" in sl:
+            _parts = ["âm hư", "dương hư"]
+
+        if _parts:
+            for p_part in _parts:
+                for m in (window or []):
+                    for hc in m.get("hoi_chung_all", [m.get("hoi_chung", "")]):
+                        hcl = (hc or "").lower().strip()
+                        if not hcl:
+                            continue
+                        if p_part in hcl or hcl in p_part or cls._norm_deficiency_name(p_part) == cls._norm_deficiency_name(hcl):
+                            return True
+
         return False
 
     # Token TÀ BỆNH LÝ / trục hư (dùng chung với các cổng thể-đặc-hiệu). Token NGOÀI tập này coi là
@@ -3442,7 +3463,7 @@ class TCMFusionPipeline:
     # 'khát, thích uống nóng' (dấu HÀN) cũng dính. Thay bằng các cụm ĐÃ NEO, không tự phủ định được.
     _AMHU_HEAT_SIGNS = (
         "sốt", "phát nhiệt", "triều nhiệt", "cốt chưng", "khát nước", "uống nước lạnh", "uống nước mát", "khát nhiều",
-        "khô họng", "họng khô", "khô miệng",
+        "khô họng", "họng khô", "khô miệng", "mồ hôi trộm", "đạo hãn", "đổ mồ hôi trộm",
         "miệng khô", "khô mũi", "lưỡi đỏ", "chất lưỡi đỏ", "đầu lưỡi đỏ", "lưỡi thon đỏ", "ít rêu",
         "không rêu", "rêu vàng", "rêu lưỡi vàng", "gò má đỏ", "má đỏ", "hai gò má đỏ", "bốc hỏa",
         "ngũ tâm phiền nhiệt", "lòng bàn tay nóng", "bàn tay chân nóng", "nóng trong", "phiền nhiệt",
