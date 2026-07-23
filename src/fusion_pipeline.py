@@ -4704,6 +4704,14 @@ class TCMFusionPipeline:
         # (giữ luật phủ lấp 100% triệu chứng) rồi trả Mục 4 về câu chuẩn thuần Hư.
         if hint_has_hu and not hint_has_thuc and body_stripped and not body_says_none:
             prose = re.sub(r"\s+", " ", re.sub(r"^[\s\-\*•]+", "", body, flags=re.MULTILINE)).strip()
+            # [FIX MÂU THUẪN TIÊU THỰC] Nếu Mục 4 thực sự có nội dung phân tích Tiêu Thực / đàm nhiệt / thực chứng
+            # thì NÂNG Bát Cương ở Mục 2 lên 'Bản Hư Tiêu Thực' và GIỮ NGUYÊN Mục 4, KHÔNG dán dính vào Mục 3
+            # rồi chối 'Không có Tiêu Thực' ở Mục 4 làm tự vả nhau.
+            if any(k in prose.lower() for k in ("tiêu thực", "thực chứng", "đàm nhiệt", "đờm nhiệt", "thấp nhiệt", "uất nhiệt", "ngoại cảm", "phong nhiệt", "phong hàn", "đờm dính", "đờm có máu")):
+                logger.info("[ĐỒNG BỘ MỤC 4] Mục 4 có phân tích Tiêu Thực -> nâng Bát Cương thành Bản Hư Tiêu Thực, giữ nguyên Mục 4.")
+                llm_text = re.sub(r"(- \*\*Thuộc chứng:\*\*?\s*)(Lý|Biểu|Biểu - Lý đồng bệnh)?(\s*-\s*)?(Hàn|Nhiệt|Hàn Nhiệt Thác Tạp)?(\s*-\s*)?(Hư)",
+                                  r"\1\2\3\4\5Bản Hư Tiêu Thực", llm_text, count=1)
+                return llm_text
             logger.info("[ĐỒNG BỘ MỤC 4] Bát Cương thuần Hư nhưng Mục 4 có phân tích -> dồn về Mục 3.")
             head = self._append_prose_to_muc3(head, prose)
             return head.rstrip() + "\n\n" + marker + "\n- Không có Tiêu Thực, đây là bệnh lý Hư chứng thuần túy.\n"
@@ -5828,7 +5836,10 @@ class TCMFusionPipeline:
         # VÀ triệu chứng không có cờ hiệu ngoại cảm cấp -> loại bỏ 'Biểu' và 'Biểu - Lý đồng bệnh'.
         _chosen_names_l = " ".join([final_primary] + ([final_concurrent] if final_concurrent else [])).lower()
         _has_bieu_syn = any(k in _chosen_names_l for k in ("biểu", "phong hàn", "phong nhiệt", "mạo biểu"))
-        _has_bieu_sym = any(k in symptoms_lower_all for k in ("sợ gió", "ố phong", "sợ lạnh kèm sốt", "phát nhiệt mạo biểu"))
+        _has_bieu_sym = (
+            any(k in symptoms_lower_all for k in ("sợ gió", "ố phong", "sợ lạnh kèm sốt", "phát nhiệt mạo biểu"))
+            or (any(k in symptoms_lower_all for k in ("sợ lạnh", "ố hàn", "sợ gió")) and any(k in symptoms_lower_all for k in ("sốt", "sốt nhẹ", "phát nhiệt")))
+        )
         if not _has_bieu_syn and not _has_bieu_sym:
             all_bat_cuong.discard("Biểu")
             all_bat_cuong.discard("Biểu - Lý đồng bệnh")
