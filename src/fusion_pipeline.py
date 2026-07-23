@@ -1977,6 +1977,16 @@ class TCMFusionPipeline:
             if not has_bleeding:
                 return False
 
+        # [CỔNG AN TOÀN SUY TUYẾN THƯỢNG THẬN (ADDISON)]
+        # Suy tuyến thượng thận (Addison) BẮT BUỘC phải có triệu chứng nội tiết đặc hiệu (da xám đen/hạ huyết áp/rụng lông...).
+        # Tuyệt đối cấm chẩn đoán Addison cho ca bệnh cảm mạo/hô hấp thông thường.
+        if "addison" in disease_lower or "thượng thận" in disease_lower:
+            has_addison_sym = any(a_sym in symptoms_str for a_sym in (
+                "da đen", "xám đen", "sạm đen", "tuyến thượng thận", "addison", "huyết áp hạ", "huyết áp thấp", "rụng lông", "liệt dương", "bế kinh"
+            ))
+            if not has_addison_sym:
+                return False
+
         # [CỔNG AN TOÀN UNG THƯ / ONCOLOGY SAFETY GATE]
         # Cho phép đi tiếp để không bị mất bài thuốc (Chưa xác định cụ thể / Bài thuốc chưa cập nhật),
         # tên bệnh Tây y ung thư sẽ được quy đổi sang Bệnh danh Đông y truyền thống (Tích tụ, Can ung, Phế ung...)
