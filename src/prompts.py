@@ -65,7 +65,11 @@ HƯỚNG DẪN SOI ẢNH LÂM SÀNG CỤ THỂ:
    - "có": BẮT BUỘC CHỌN KHI VÙNG DA MI MẮT DƯỚI / BỌNG MẮT CÓ BÓNG THÂM, NẾP NHĂN SẠM NÂU, HOẶC THÂM QUỒNG RÕ RỆT.
    - "không": CHỈ CHỌN KHI VÙNG DƯỚI MẮT ĐỀU MÀU PHẲNG MỊN CÙNG TÔNG DA MẶT.
 
-3. "go_ma_do":
+3. "ban_do":
+   - "có": CHỈ CHỌN KHI THẤY MẢNG PHÁT BAN ĐỎ, MẢNG XUẤT HUYẾT DƯỚI DA, HOẶC BAN ĐỎ HÌNH BƯỚM DIỆN RỘNG (ví dụ: ban sởi, xuất huyết, mảng ban Lupus). Nốt mụn nhỏ, nốt ruồi, tàn nhang hoặc vết thâm mụn nhẹ -> MẶC ĐỊNH "không".
+   - "không": Khi da mặt bình thường không có mảng phát ban đỏ.
+
+4. "go_ma_do":
    - "có": CHỈ CHỌN KHI THẤY RÕ 2 MẢNG MÀU ĐỎ HỒNG KHU TRÚ NGAY TRÊN HẠT GÒ MÁ (lưỡng quyền đỏ/hồng của âm hư hỏa vượng, sốt cao). Da mặt bình thường -> MẶC ĐỊNH "không".
    - "không": Khi hai gò má cùng màu với da trán và da mặt.
 
