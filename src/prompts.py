@@ -129,7 +129,9 @@ QUY TẮC:
 - CHỈ dùng đúng các giá trị liệt kê. Không chắc chắn -> "không rõ" (KHÔNG đoán, KHÔNG bịa).
 - Ánh sáng/nền ấm dễ làm da trông VÀNG: chỉ chọn "vàng úa" khi vàng thật rõ (thường kèm củng mạc mắt
   vàng); nếu chỉ do ánh sáng thì đánh giá theo sắc da thật, KHÔNG chọn "vàng úa".
-- "sac_mat": Chọn "hồng hào bình thường" khi da mặt tươi nhuận, sắc da vàng hồng khỏe mạnh tự nhiên của người Châu Á, da đầy đặn tươi sáng có sắc máu. Chọn "trắng nhợt" KHI VÀ CHỈ KHI da mặt thực sự TÁI BỆCH, XANH TÁI, NHỢT MÀU RÕ RỆT HOẶC MẶT HỐC HÁC GẦY GUỘC (thiếu vinh nhuận, không có sắc máu). Tuyệt đối KHÔNG đánh giá da khỏe mạnh hồng hào tự nhiên thành "trắng nhợt".
+- "sac_mat":
+  * Chọn "trắng nhợt" khi sắc da TÁI NHẠT, NHỢT BỆCH, KHÔNG CÓ SẮC MÁU HOẶC KHUÔN MẶT GẦY HỐC HÁC TRŨNG SÂU (như khuôn mặt nữ da trắng/Châu Âu gầy hốc hác, da nhạt màu thiếu tưới nhuận).
+  * Chọn "hồng hào bình thường" khi da mặt tươi nhuận, sắc da vàng hồng hoặc hồng nhạt khỏe mạnh tự nhiên, da đầy đặn tươi sáng có sức sống.
 - "trang_diem"="có" CHỈ KHI thấy RÕ LỚP PHẤN NỀN (foundation) che phủ da, SON MÔI ĐẬM HOẶC KẺ MẮT/MASCARA TRANG ĐIỂM RÕ RÀNG. Da mặt mộc tự nhiên (kể cả có mụn trứng cá, vết thâm, tàn nhang, nốt ruồi, da khô, da nhờn, môi tự nhiên) -> MẶC ĐỊNH "trang_diem": "không". TUYỆT ĐỐI CẤM (PROHIBITED) đánh giá nhầm mặt mộc có mụn/vết thâm thành "có trang điểm".
 - "go_ma_do"="có" CHỈ KHI thấy RÕ hai MẢNG ĐỎ KHU TRÚ ngay trên hai gò má (ửng đỏ từng vùng nổi bật
   trên nền da nhợt — dấu "lưỡng quyền hồng" của âm hư). Da đều màu / hồng tự nhiên nhẹ / má chỉ hơi ấm /
@@ -145,6 +147,13 @@ QUY TẮC:
   má-cằm-trán-quanh mũi), tàn nhang, nốt ruồi, sẹo, mao mạch, kích ứng nhỏ -> KHÔNG phải ban -> "không".
   MẶC ĐỊNH "không" trừ khi có ban/phát ban LAN TỎA thật rõ. (Gọi nhầm mụn thành 'ban' sẽ kéo biện luận
   sang huyết nhiệt/tinh huyết hư OAN.)
-- "quang_tham": BẮT BUỘC CHỌN "có" HOẶC "không" (KHÔNG CHỌN "không rõ"). Chọn "có" khi thấy mảng sạm màu, thâm nâu, thâm tím hoặc bóng thâm tối màu ở vùng mi mắt dưới (bọng mắt/hốc mắt sẫm màu hơn vùng da gò má kế bên). Chọn "không" CHỈ KHI vùng da dưới mi mắt dưới phẳng mịn, sáng đều màu cùng tông da mặt.
+- "quang_tham":
+  * "quang_tham"="có": KHI DƯỚI MẮT CÓ MẢNG DA THÂM NÂU / SẠM TỐI / BÓNG THÂM RÕ RỆT (mi mắt dưới sẫm màu hơn hẳn vùng da gò má kế bên, như ở khuôn mặt nam Châu Á có quầng thâm).
+  * "quang_tham"="không": KHI VÙNG DA DƯỚI MẮT PHẲNG MỊN, SÁNG ĐỀU MÀU CÙNG TÔNG DA MẶT (không có mảng thâm sẫm nào, như ở khuôn mặt nữ da trắng có mi dưới phẳng mịn sáng màu).
+
+MẪU THỰC TẾ ĐỂ ĐỐI CHIẾU (FEW-SHOT ANCHORS):
+1) Ảnh nữ da trắng gầy hốc hác, da nhạt bệch, mi mắt dưới phẳng sáng màu -> {"sac_mat": "trắng nhợt", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
+2) Ảnh nam Châu Á da vàng hồng tươi nhuận đầy đặn, mi mắt dưới sạm nâu thâm sẫm -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "có", "trang_diem": "không"}
+3) Ảnh trẻ em/thiếu niên da hồng tươi nhuận, mi mắt dưới nhẵn mịn -> {"sac_mat": "hồng hào bình thường", "go_ma_do": "không", "phu": "không", "ban_do": "không", "quang_tham": "không", "trang_diem": "không"}
 - Chỉ trả JSON, không thêm chữ nào khác.
 """
