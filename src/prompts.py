@@ -53,12 +53,12 @@ FACE_JSON_PROMPT_VI = """Bạn là chuyên gia vọng chẩn Đông y. Hãy quan
 
 HƯỚNG DẪN ĐÁNH GIÁ TRỰC QUAN:
 1. "sac_mat":
-   - "vàng úa": CHỈ CHỌN KHI DA MẶT BỊ VÀNG DA BỆNH LÝ RÕ RỆT (vàng da sơ sinh, hoàng đản, bệnh gan, da & củng mạc mắt nhuộm vàng chanh/vàng nghệ). Da nam/nữ người Châu Á bình thường chụp dưới ánh đèn phòng ngả vàng nhẹ -> BẮT BUỘC CHỌN "hồng hào bình thường".
-   - "trắng nhợt": CHỌN KHI DA MẶT TÁI BỆCH, NHỢT NHẠT, XANH TÁI, HOẶC DA MẶT GẦY HỐC HÁC NHẠT MÀU THIẾU TƯƠI NHUẬN / THIẾU MÁU / SUY NHƯỢC.
+   - "trắng nhợt": CHỌN KHI DA MẶT TÁI BỆCH, NHỢT NHẠT, GẦY HỐC HÁC, SẮC DA MẮT/MÔI NHẠT MÀU THIẾU TƯƠI NHUẬN (THIẾU MÁU, SUY NHƯỢC, XANH TÁI, KHÍ HUYẾT HƯ - ĐẶC BIỆT NỮ GIỚI/NGƯỜI GẦY).
+   - "vàng úa": CHỈ CHỌN KHI DA MẶT BỊ VÀNG DA BỆNH LÝ RÕ RỆT (vàng da sơ sinh, hoàng đản, bệnh gan, da & củng mạc mắt nhuộm vàng chanh/vàng nghệ).
    - "đỏ bừng": Chọn khi toàn bộ mặt hoặc vùng má/trán đỏ rực như sốt cao.
    - "xanh xao": Chọn khi da ngả màu xanh tím, tái xanh.
    - "sạm tối": Chọn khi da mặt u tối, sạm đen, xám xịt.
-   - "hồng hào bình thường": CHỌN KHI DA MẶT MỌC TƯƠI NHUẬN, HOẶC DA NAM/NỮ CHÂU Á BÌNH THƯỜNG TRONG ĐIỀU KIỆN ÁNH SÁNG PHÒNG.
+   - "hồng hào bình thường": CHỌN KHI DA MẶT ĐẦY ĐẶN, HỒNG TƯƠI TƯƠI NHUẬN KHỎE MẠNH (DA CÓ SỨC SỐNG, KHÔNG BỊ TÁI BỆCH HOẶC GẦY HỐC HÁC).
 
 2. "quang_tham":
    - HÃY SOI KỸ VÙNG MI MẮT DƯỚI (DƯỚI BỌNG MẮT):
