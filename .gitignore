@@ -56,3 +56,9 @@ scratch_*.txt
 
 # Backup CSV do script sinh (split_csv_columns.py...) — không đưa lên repo
 data/*.bak.*.csv
+
+# Reports and Document files - DO NOT PUSH
+Bao_Cao_Tien_Do_TCM_System.docx
+bao_cao_tien_do_tcm_system.md
+tcm_system_architecture.docx
+*.docx
