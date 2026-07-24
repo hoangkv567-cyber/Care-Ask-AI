@@ -131,21 +131,35 @@ def build_docx(target_path):
     while i < len(lines):
         line = lines[i]
         
+        # Check image tags in markdown
+        if line.strip().startswith("![Hình 1"):
+            add_image_figure("images/diagram1_kg_schema.png", "Hình 1: Sơ đồ Mối quan hệ giữa các Thực thể trong Đồ thị Tri thức Đông y", width_inches=4.8)
+            i += 1
+            continue
+        elif line.strip().startswith("![Hình 2"):
+            add_image_figure("images/diagram2_graph_rag_flow.png", "Hình 2: Sơ đồ Luồng Suy luận và Truy xuất Ngữ cảnh Graph RAG", width_inches=6.2)
+            i += 1
+            continue
+        elif line.strip().startswith("![Hình 3"):
+            add_image_figure("images/diagram3_vlm_fallback.png", "Hình 3: Sơ đồ Chuỗi Fallback VLM 3 Tầng Tự động", width_inches=5.2)
+            i += 1
+            continue
+        elif line.strip().startswith("![Hình 4"):
+            add_image_figure("images/diagram4_system_architecture.png", "Hình 4: Sơ đồ Kiến trúc Tổng thể Hệ thống Microservices & AI Engine", width_inches=5.5)
+            i += 1
+            continue
+
         if line.startswith("```"):
             if in_code_block:
                 code_text = "\n".join(code_lines)
-                if "graph TD" in code_text or "CHIA_THÀNH" in code_text:
-                    add_image_figure("images/diagram1_kg_schema.png", "Hình 1: Sơ đồ Mối quan hệ giữa các Thực thể trong Đồ thị Tri thức Đông y", width_inches=4.8)
-                elif "flowchart LR" in code_text or "Subgraph Grounded Context" in code_text:
-                    add_image_figure("images/diagram2_graph_rag_flow.png", "Hình 2: Sơ đồ Luồng Suy luận và Truy xuất Ngữ cảnh Graph RAG", width_inches=6.2)
-                else:
-                    p = doc.add_paragraph()
-                    p.paragraph_format.space_before = Pt(4)
-                    p.paragraph_format.space_after = Pt(8)
-                    run = p.add_run(code_text)
-                    run.font.name = 'Consolas'
-                    run.font.size = Pt(9.5)
-                    run.font.color.rgb = RGBColor(0x1E, 0x29, 0x3B)
+                # Code snippet rendering
+                p = doc.add_paragraph()
+                p.paragraph_format.space_before = Pt(4)
+                p.paragraph_format.space_after = Pt(8)
+                run = p.add_run(code_text)
+                run.font.name = 'Consolas'
+                run.font.size = Pt(9.5)
+                run.font.color.rgb = RGBColor(0x1E, 0x29, 0x3B)
                 code_lines = []
                 in_code_block = False
             else:
@@ -294,36 +308,6 @@ def build_docx(target_path):
             run_div = div.add_run("_________________________________________________________________________________")
             run_div.font.color.rgb = RGBColor(0xCC, 0xFB, 0xF1)
 
-        # Insert Diagram 3 (VLM Fallback) when reaching 4.1 header
-        if "#### 4.1. Chuỗi Fallback VLM Đa tầng" in stripped:
-            p = doc.add_paragraph()
-            p.style = doc.styles['Heading 3']
-            p.paragraph_format.space_before = Pt(10)
-            p.paragraph_format.space_after = Pt(4)
-            run = p.add_run(stripped[5:])
-            run.bold = True
-            run.font.size = Pt(11.5)
-            run.font.color.rgb = RGBColor(0x14, 0xB8, 0xA6)
-            
-            add_image_figure("images/diagram3_vlm_fallback.png", "Hình 3: Sơ đồ Chuỗi Fallback VLM 3 Tầng Tự động", width_inches=5.2)
-            i += 1
-            continue
-        
-        # Insert Diagram 4 (Architecture) when reaching Section II header
-        if "## II. CẤU TRÚC KIẾN TRÚC HỆ THỐNG VÀ THƯ VIỆN CÔNG NGHỆ" in stripped:
-            p = doc.add_paragraph()
-            p.style = doc.styles['Heading 1']
-            p.paragraph_format.space_before = Pt(14)
-            p.paragraph_format.space_after = Pt(6)
-            run = p.add_run(stripped[3:])
-            run.bold = True
-            run.font.size = Pt(15)
-            run.font.color.rgb = RGBColor(0x11, 0x5E, 0x59)
-            
-            add_image_figure("images/diagram4_system_architecture.png", "Hình 4: Sơ đồ Kiến trúc Tổng thể Hệ thống Microservices & AI Engine", width_inches=5.5)
-            i += 1
-            continue
-
         if stripped.startswith('# '):
             p = doc.add_paragraph()
             p.paragraph_format.space_before = Pt(16)
@@ -390,7 +374,7 @@ def build_docx(target_path):
         render_table(table_lines)
 
     doc.save(target_path)
-    print("SUCCESSFULLY CREATED UPDATED DOCX AT:", target_path)
+    print("SUCCESSFULLY REBUILT CLEAN DOCX AT:", target_path)
 
 for path in docx_paths:
     try:
