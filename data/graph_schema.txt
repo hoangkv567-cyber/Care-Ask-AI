@@ -6,12 +6,22 @@ GRAPH SCHEMA FOR TCM KNOWLEDGE GRAPH
 - TrieuChung: Triệu chứng (Ví dụ: "Đau đầu", "Sốt cao")
 - BaiThuoc: Bài thuốc (Ví dụ: "Ma hoàng thang", "Bách hợp cố kim thang")
 - ViThuoc: Vị thuốc (Ví dụ: "Cam thảo", "Ma hoàng")
+- BenhTayY: Bệnh TÂY Y THAM KHẢO (nguồn dịch máy, CHƯA KIỂM DUYỆT — khi trả lời
+  PHẢI nói rõ đây là dữ liệu tham khảo). Thuộc tính: disease_id, name, icd10_code
+  (mã ICD-10, có thể rỗng), khoa, mo_ta, trang_thai
+- TrieuChungTayY: Triệu chứng của bệnh Tây y (dịch máy — KHÔNG thay thế TrieuChung)
 
 ## Relationships (Quan hệ)
 - (BenhLy)-[:CHIA_THÀNH]->(HoiChung): Bệnh chia thành các hội chứng
 - (HoiChung)-[:CÓ_BIỂU_HIỆN]->(TrieuChung): Hội chứng có biểu hiện là triệu chứng
 - (HoiChung)-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(BaiThuoc): Hội chứng được điều trị bằng bài thuốc
 - (BaiThuoc)-[:BAO_GỒM]->(ViThuoc): Bài thuốc bao gồm các vị thuốc
+- (BenhTayY)-[:CÓ_TRIỆU_CHỨNG]->(TrieuChungTayY): Bệnh Tây y có triệu chứng
+- (TrieuChungTayY)-[:TƯƠNG_ĐƯƠNG]->(TrieuChung): Cầu nối triệu chứng Tây y ~ Đông y
+- (BenhLy)-[:TƯƠNG_ỨNG_TÂY_Y]->(BenhTayY): Bệnh danh Đông y ~ bệnh Tây y
+  (r.trang_thai: 'xac_nhan' hoặc 'can_xac_nhan')
+- (BenhLy)-[:LIÊN_QUAN_TRIỆU_CHỨNG]->(BenhTayY): Liên quan do MÁY ĐỀ XUẤT theo
+  triệu chứng chung (r.score, r.so_trieu_chung_chung — chỉ là gợi ý)
 
 ## Example Queries
 1. Tìm bài thuốc cho hội chứng "Tỳ vị hư nhược":
@@ -22,3 +32,17 @@ GRAPH SCHEMA FOR TCM KNOWLEDGE GRAPH
    MATCH (p:BaiThuoc {name: "Ma hoàng thang"})-[:BAO_GỒM]->(v:ViThuoc) RETURN v.name
 4. Tìm bài thuốc điều trị triệu chứng "Đau đầu":
    MATCH (t:TrieuChung {name: "Đau đầu"})<-[:CÓ_BIỂU_HIỆN]-(h:HoiChung)-[:ĐƯỢC_ĐIỀU_TRỊ_BẰNG]->(p:BaiThuoc) RETURN p.name
+5. Tìm bệnh Tây y tương ứng bệnh Đông y "Tâm quý (suy tim)":
+   MATCH (b:BenhLy {name: "Tâm quý (suy tim)"})-[r:TƯƠNG_ỨNG_TÂY_Y]->(w:BenhTayY)
+   RETURN w.name, w.icd10_code, r.trang_thai
+6. Tìm bệnh Đông y liên quan mã ICD-10 "J45" (hen suyễn):
+   MATCH (w:BenhTayY) WHERE w.icd10_code STARTS WITH "J45"
+   OPTIONAL MATCH (b:BenhLy)-[:TƯƠNG_ỨNG_TÂY_Y|LIÊN_QUAN_TRIỆU_CHỨNG]->(w)
+   RETURN w.name, w.icd10_code, collect(DISTINCT b.name) LIMIT 20
+7. Bệnh Tây y chia sẻ triệu chứng với hội chứng "Phong hàn" (qua cầu triệu chứng):
+   MATCH (h:HoiChung {name: "Phong hàn"})-[:CÓ_BIỂU_HIỆN]->(t:TrieuChung)<-[:TƯƠNG_ĐƯƠNG]-(:TrieuChungTayY)<-[:CÓ_TRIỆU_CHỨNG]-(w:BenhTayY)
+   RETURN w.name, w.icd10_code, count(DISTINCT t) AS chung ORDER BY chung DESC LIMIT 10
+
+LƯU Ý QUAN TRỌNG: dữ liệu BenhTayY/TrieuChungTayY là THAM KHẢO dịch máy chưa được
+chuyên gia kiểm duyệt — mọi câu trả lời dùng chúng phải nói rõ điều này, và không
+được coi là chẩn đoán hay tư vấn điều trị Tây y.

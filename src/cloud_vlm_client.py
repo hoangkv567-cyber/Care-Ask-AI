@@ -11,7 +11,19 @@ logger = logging.getLogger("cloud_vlm")
 
 # Cạnh dài tối đa của ảnh gửi lên cloud. Ảnh điện thoại 4000px nén xuống 1280px
 # vẫn thừa chi tiết cho vọng chẩn (LLaVA cũ chỉ nhìn 336px) nhưng payload nhỏ hơn ~10 lần.
+#
+# ⚠ ĐỪNG HẠ XUỐNG ĐỂ "CHỮA LỖI 400". Đã có lần hạ 1280->1024 kèm quality 90->85 với lý do tránh
+# DashScope 400 Bad Request, nhưng ĐO LẠI thì payload KHÔNG phải nguyên nhân: gửi thử ảnh nhiễu
+# (trường hợp nén XẤU NHẤT, ảnh thật nén tốt hơn nhiều) ở 1024/1280/1536/1792/2048 px đều trả
+# HTTP 200, kể cả bản 2048 nặng 2196 KB base64. Lỗi 400 thật đến từ EXIF/chuyển đổi ảnh của máy
+# điện thoại và đã được sửa riêng bằng ImageOps.exif_transpose + bọc try/except ở _encode_image.
+# Cái giá của việc hạ: 1024 mất 36% số điểm ảnh so với 1280, cộng nén mạnh hơn -> LÀM PHẲNG các
+# chuyển sắc da tinh tế. Đo được trên ca thật: CÙNG một ảnh mặt cho 'trắng nhợt' ở cấu hình cũ và
+# 'hồng hào bình thường' ở cấu hình mới — hai nhãn đối lập, chỉ vì ảnh gửi đi đã khác.
+# Chiều trôi dạt cũng đoán được: prompt bắt 'trắng nhợt' phải có bằng chứng MẠNH (tái bệch + gầy
+# hốc hác + môi mất sắc máu), nên khi mất chi tiết là rơi về nhãn còn lại.
 _MAX_IMAGE_EDGE = 1280
+_JPEG_QUALITY = 90
 # Bước phân loại thô (lưỡi/mặt/khác) chỉ cần nhìn tổng thể — ảnh nhỏ giảm mạnh thời gian prefill
 _CLASSIFY_IMAGE_EDGE = 512
 
@@ -62,7 +74,7 @@ class CloudVLMClient:
             "Mặt đen", "Mặt phù", "Mặt có ban"
         ]
 
-    def _encode_image(self, image_path: str, max_edge: int = 1024) -> str:
+    def _encode_image(self, image_path: str, max_edge: int = _MAX_IMAGE_EDGE) -> str:
         """Đọc ảnh, xoay chuẩn EXIF, thu nhỏ nếu quá lớn, trả về data URL base64 JPEG cho API."""
         try:
             import io
@@ -78,7 +90,9 @@ class CloudVLMClient:
             if scale < 1:
                 img = img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
             buf = io.BytesIO()
-            img.save(buf, format="JPEG", quality=85)
+            # quality 90 chứ không phải 85: vọng chẩn đọc CHUYỂN SẮC DA tinh tế (tái bệch vs hồng
+            # hào, rêu mỏng vs dày), đúng thứ bị nén JPEG làm phẳng trước tiên.
+            img.save(buf, format="JPEG", quality=_JPEG_QUALITY)
             data = buf.getvalue()
             mime = "image/jpeg"
         except Exception as e:

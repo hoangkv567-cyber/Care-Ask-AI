@@ -1,0 +1,2361 @@
+{
+  "schema_version": "vn-icd10-tt06-2026.catalog.v1",
+  "system": "VN-ICD10-TT06-2026",
+  "who_release": "ICD-10 2019",
+  "source_page": "https://vanban.chinhphu.vn/?docid=217536&orggroupid=4&pageid=27160",
+  "source_pdf": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/4/06-byt-kem.pdf",
+  "source_sha256": "8639f5eeb77b571363dc841923095895d2498748f9bc6620f50710a6da9159e2",
+  "pages": 1271,
+  "rows": 15844,
+  "unique_codes": 15844,
+  "extractor": "PyMuPDF 1.26.4",
+  "statistics": {
+    "asterisk": 807,
+    "auto_single_code_eligible": 11266,
+    "codable": 13725,
+    "dagger": 111,
+    "morbidity_eligible": 13715,
+    "primary_eligible": 11373,
+    "restriction::discouraged_primary": 221,
+    "restriction::female_only": 931,
+    "restriction::male_only": 143,
+    "restriction::mortality_only": 12,
+    "restriction::not_primary": 2427,
+    "restriction::requires_more_specific": 2119,
+    "source_title_en::known_pdf_text_anomaly": 1,
+    "source_title_en::matches_who": 11236,
+    "source_title_en::national_variant": 6,
+    "source_title_en::tt06_expansion": 4601
+  },
+  "restriction_set_sizes": {
+    "not_primary": 2427,
+    "discouraged_primary": 221,
+    "requires_more_specific": 2119,
+    "mortality_only": 12,
+    "female_only": 931,
+    "male_only": 143
+  },
+  "restriction_occurrences": {
+    "not_primary": 2427,
+    "discouraged_primary": 221,
+    "requires_more_specific": 2119,
+    "mortality_only": 12,
+    "female_only": 933,
+    "male_only": 144
+  },
+  "known_source_anomalies": [
+    {
+      "stt": 15750,
+      "printed": "U13/9",
+      "canonical": "U13.9"
+    }
+  ],
+  "known_pdf_text_title_anomalies": [
+    {
+      "code": "Y83.2",
+      "extracted": "Surgical operation with , bypass or graft",
+      "canonical_who": "Surgical operation with anastomosis, bypass or graft"
+    }
+  ],
+  "who_claml_crosscheck": {
+    "explicit_who_category_codes": 11243,
+    "explicit_who_codes_present_in_tt06": 11243,
+    "who_codes_missing_from_tt06": 0,
+    "tt06_expanded_modifier_codes_not_explicit_in_claml": 4601,
+    "usage": {
+      "aster": 373,
+      "dagger": 66,
+      "none": 10804
+    },
+    "references": 5434,
+    "reference_usage": {
+      "aster": 316,
+      "dagger": 538,
+      "none": 4580
+    },
+    "reference_rubric_kind": {
+      "coding-hint": 16,
+      "exclusion": 4409,
+      "inclusion": 652,
+      "modifierlink": 182,
+      "note": 7,
+      "preferred": 168
+    },
+    "references_with_resource_code": 1656
+  },
+  "hierarchy_canonicalization": {
+    "chapter_en": {
+      "field": "chapter_en",
+      "codes": 22,
+      "canonical_source": "WHO ClaML 2019",
+      "source_variant_codes": 0,
+      "source_differs_from_canonical_codes": 0,
+      "rows_normalized": 0,
+      "source_variants": []
+    },
+    "chapter_vi": {
+      "field": "chapter_vi",
+      "codes": 22,
+      "canonical_source": "TT06 complete-superstring, otherwise modal rendering",
+      "source_variant_codes": 0,
+      "source_differs_from_canonical_codes": 0,
+      "rows_normalized": 0,
+      "source_variants": []
+    },
+    "chapter_range": {
+      "field": "chapter_range",
+      "codes": 22,
+      "canonical_source": "TT06 complete-superstring, otherwise modal rendering",
+      "source_variant_codes": 0,
+      "source_differs_from_canonical_codes": 0,
+      "rows_normalized": 0,
+      "source_variants": []
+    },
+    "block_en": {
+      "field": "block_en",
+      "codes": 211,
+      "canonical_source": "WHO ClaML 2019",
+      "source_variant_codes": 30,
+      "source_differs_from_canonical_codes": 32,
+      "rows_normalized": 730,
+      "source_variants": [
+        {
+          "code": "A50-A64",
+          "canonical": "Infections with a predominantly sexual mode of transmission",
+          "observed": [
+            {
+              "value": "Infections with a predominantly sexual mode of transmission",
+              "rows": 45
+            },
+            {
+              "value": "Infections with a predominantly sexual mode of",
+              "rows": 16
+            }
+          ]
+        },
+        {
+          "code": "A80-A89",
+          "canonical": "Viral infections of the central nervous system",
+          "observed": [
+            {
+              "value": "Viral infections of the central nervous system",
+              "rows": 44
+            },
+            {
+              "value": "Viral infections of the central nervous",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "B90-B94",
+          "canonical": "Sequelae of infectious and parasitic diseases",
+          "observed": [
+            {
+              "value": "Sequelae of infectious and parasitic diseases",
+              "rows": 11
+            },
+            {
+              "value": "Sequelae of infectious and",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "B99-B99",
+          "canonical": "Other infectious diseases",
+          "observed": [
+            {
+              "value": "Other infectious disease",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "F50-F59",
+          "canonical": "Behavioural syndromes associated with physiological disturbances and physical factors",
+          "observed": [
+            {
+              "value": "Behavioural syndromes associated with physiological disturbances and physical factors",
+              "rows": 31
+            },
+            {
+              "value": "Behavioural syndromes associated with physiological disturbances and",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "F90-F98",
+          "canonical": "Behavioural and emotional disorders with onset usually occurring in childhood and adolescence",
+          "observed": [
+            {
+              "value": "Behavioural and emotional disorders with onset usually occurring in childhood and adolescence",
+              "rows": 37
+            },
+            {
+              "value": "Behavioural and emotional disorders with onset usually occurring in childhood and",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "G10-G14",
+          "canonical": "Systemic atrophies primarily affecting the central nervous system",
+          "observed": [
+            {
+              "value": "Systemic atrophies primarily affecting the central nervous system",
+              "rows": 16
+            },
+            {
+              "value": "Systemic atrophies primarily affecting the central nervous",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "G70-G73",
+          "canonical": "Diseases of myoneural junction and muscle",
+          "observed": [
+            {
+              "value": "Diseases of myoneural junction and muscle",
+              "rows": 27
+            },
+            {
+              "value": "Diseases of myoneural junction",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "G80-G83",
+          "canonical": "Cerebral palsy and other paralytic syndromes",
+          "observed": [
+            {
+              "value": "Cerebral palsy and other paralytic syndromes",
+              "rows": 21
+            },
+            {
+              "value": "Cerebral palsy and other paralytic",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "H00-H06",
+          "canonical": "Disorders of eyelid, lacrimal system and orbit",
+          "observed": [
+            {
+              "value": "Disorders of eyelid, lacrimal system and orbit",
+              "rows": 30
+            },
+            {
+              "value": "Disorders of eyelid, lacrimal system and",
+              "rows": 17
+            }
+          ]
+        },
+        {
+          "code": "I26-I28",
+          "canonical": "Pulmonary heart disease and diseases of pulmonary circulation",
+          "observed": [
+            {
+              "value": "Pulmonary heart disease and diseases of pulmonary",
+              "rows": 9
+            },
+            {
+              "value": "Pulmonary heart disease and diseases of pulmonary circulation",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "I70-I79",
+          "canonical": "Diseases of arteries, arterioles and capillaries",
+          "observed": [
+            {
+              "value": "Diseases of arteries, arterioles and capillaries",
+              "rows": 68
+            },
+            {
+              "value": "Diseases of arteries, arterioles and",
+              "rows": 2
+            }
+          ]
+        },
+        {
+          "code": "I80-I89",
+          "canonical": "Diseases of veins, lymphatic vessels and lymph nodes, not elsewhere classified",
+          "observed": [
+            {
+              "value": "Diseases of veins, lymphatic vessels and lymph nodes, not elsewhere",
+              "rows": 24
+            },
+            {
+              "value": "Diseases of veins, lymphatic vessels and lymph nodes, not elsewhere classified",
+              "rows": 22
+            }
+          ]
+        },
+        {
+          "code": "I95-I99",
+          "canonical": "Other and unspecified disorders of the circulatory system",
+          "observed": [
+            {
+              "value": "Other and unspecified disorders of the circulatory system",
+              "rows": 16
+            },
+            {
+              "value": "Other and unspecified disorders of the circulatory",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "J30-J39",
+          "canonical": "Other diseases of upper respiratory tract",
+          "observed": [
+            {
+              "value": "Other diseases of upper respiratory tract",
+              "rows": 50
+            },
+            {
+              "value": "Other diseases of upper respiratory",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "J80-J84",
+          "canonical": "Other respiratory diseases principally affecting the interstitium",
+          "observed": [
+            {
+              "value": "Other respiratory diseases principally affecting the interstitium",
+              "rows": 7
+            },
+            {
+              "value": "Other respiratory diseases principally affecting the",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "J85-J86",
+          "canonical": "Suppurative and necrotic conditions of lower respiratory tract",
+          "observed": [
+            {
+              "value": "Suppurative and necrotic conditions of lower respiratory",
+              "rows": 6
+            },
+            {
+              "value": "Suppurative and necrotic conditions of lower respiratory tract",
+              "rows": 2
+            }
+          ]
+        },
+        {
+          "code": "L55-L59",
+          "canonical": "Radiation-related disorders of the skin and subcutaneous tissue",
+          "observed": [
+            {
+              "value": "Radiation-related disorders of the skin and subcutaneous tissue",
+              "rows": 21
+            },
+            {
+              "value": "Radiation-related disorders of the skin and subcutaneous",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "N70-N77",
+          "canonical": "Inflammatory diseases of female pelvic organs",
+          "observed": [
+            {
+              "value": "Inflammatory diseases of female pelvic organs",
+              "rows": 40
+            },
+            {
+              "value": "Inflammatory diseases of female",
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "code": "O20-O29",
+          "canonical": "Other maternal disorders predominantly related to pregnancy",
+          "observed": [
+            {
+              "value": "Other maternal disorders predominantly related to pregnancy",
+              "rows": 52
+            },
+            {
+              "value": "Other maternal disorders predominantly",
+              "rows": 13
+            }
+          ]
+        },
+        {
+          "code": "O85-O92",
+          "canonical": "Complications predominantly related to the puerperium",
+          "observed": [
+            {
+              "value": "Complications predominantly related to the puerperium",
+              "rows": 45
+            },
+            {
+              "value": "Complications predominantly related to the",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "P80-P83",
+          "canonical": "Conditions involving the integument and temperature regulation of fetus and newborn",
+          "observed": [
+            {
+              "value": "Conditions involving the integument and temperature regulation of fetus and newborn",
+              "rows": 15
+            },
+            {
+              "value": "Conditions involving the integument and temperature regulation of fetus",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "R83-R89",
+          "canonical": "Abnormal findings on examination of other body fluids, substances and tissues, without diagnosis",
+          "observed": [
+            {
+              "value": "Abnormal findings on examination of other body fluids, substances and tissues, without diagnosis",
+              "rows": 58
+            },
+            {
+              "value": "Abnormal findings on examination of other body fluids, substances and tissues, without",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "U00-U49",
+          "canonical": "Provisional assignment of new diseases of uncertain etiology or emergency use",
+          "observed": [
+            {
+              "value": "Provisional assignment of new diseases of uncertain etiology or emergency use (U00-U49)",
+              "rows": 46
+            },
+            {
+              "value": "Provisional assignment of new diseases of uncertain etiology or",
+              "rows": 42
+            },
+            {
+              "value": "Provisional assignment of new diseases of uncertain etiology or emergency use (U00-",
+              "rows": 2
+            }
+          ]
+        },
+        {
+          "code": "Y10-Y34",
+          "canonical": "Event of undetermined intent",
+          "observed": [
+            {
+              "value": "Event of undetermind intent",
+              "rows": 32
+            }
+          ]
+        },
+        {
+          "code": "Y90-Y98",
+          "canonical": "Supplementary factors related to causes of morbidity and mortality classified elsewhere",
+          "observed": [
+            {
+              "value": "Supplementary factors related to causes of morbidity and mortality classified elsewhere",
+              "rows": 17
+            },
+            {
+              "value": "Supplementary factors related to causes of morbidity and mortality",
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "code": "Z00-Z13",
+          "canonical": "Persons encountering health services for examination and investigation",
+          "observed": [
+            {
+              "value": "Persons encountering health services for examination and investigation",
+              "rows": 74
+            },
+            {
+              "value": "Persons encountering health services for examination and",
+              "rows": 30
+            }
+          ]
+        },
+        {
+          "code": "Z20-Z29",
+          "canonical": "Persons with potential health hazards related to communicable diseases",
+          "observed": [
+            {
+              "value": "Persons with potential health hazards related to communicable diseases",
+              "rows": 45
+            },
+            {
+              "value": "Persons with potential health hazards related to communicable",
+              "rows": 23
+            }
+          ]
+        },
+        {
+          "code": "Z30-Z39",
+          "canonical": "Persons encountering health services in circumstances related to reproduction",
+          "observed": [
+            {
+              "value": "Persons encountering health services in circumstances",
+              "rows": 59
+            },
+            {
+              "value": "Persons encountering health services in circumstances related to reproduction",
+              "rows": 9
+            },
+            {
+              "value": "Persons encountering health services in circumstances related to",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "Z40-Z54",
+          "canonical": "Persons encountering health services for specific procedures and health care",
+          "observed": [
+            {
+              "value": "Persons encountering health services for specific procedures and",
+              "rows": 83
+            },
+            {
+              "value": "Persons encountering health services for specific procedures and health care",
+              "rows": 31
+            }
+          ]
+        },
+        {
+          "code": "Z55-Z65",
+          "canonical": "Persons with potential health hazards related to socioeconomic and psychosocial circumstances",
+          "observed": [
+            {
+              "value": "Persons with potential health hazards related to socioeconomic and psychosocial",
+              "rows": 68
+            },
+            {
+              "value": "Persons with potential health hazards related to socioeconomic and psychosocial circumstances",
+              "rows": 38
+            }
+          ]
+        },
+        {
+          "code": "Z80-Z99",
+          "canonical": "Persons with potential health hazards related to family and personal history and certain conditions influencing health status",
+          "observed": [
+            {
+              "value": "Persons with potential health hazards related to family and personal history and certain conditions",
+              "rows": 165
+            },
+            {
+              "value": "Persons with potential health hazards related to family and personal history and certain conditions influencing health status",
+              "rows": 18
+            },
+            {
+              "value": "Persons with potential health hazards related to family and personal history and certain conditions influencing health",
+              "rows": 4
+            }
+          ]
+        }
+      ]
+    },
+    "block_vi": {
+      "field": "block_vi",
+      "codes": 211,
+      "canonical_source": "TT06 complete-superstring, otherwise modal rendering",
+      "source_variant_codes": 10,
+      "source_differs_from_canonical_codes": 10,
+      "rows_normalized": 71,
+      "source_variants": [
+        {
+          "code": "A20-A28",
+          "canonical": "Bệnh nhiễm khuẩn do động vật truyền sang người",
+          "observed": [
+            {
+              "value": "Bệnh nhiễm khuẩn do động vật truyền sang",
+              "rows": 28
+            },
+            {
+              "value": "Bệnh nhiễm khuẩn do động vật truyền sang người",
+              "rows": 27
+            }
+          ]
+        },
+        {
+          "code": "A92-A99",
+          "canonical": "Bệnh sốt virus và sốt xuất huyết virus do tiết túc truyền [virus arbo]",
+          "observed": [
+            {
+              "value": "Bệnh sốt virus và sốt xuất huyết virus do tiết túc truyền [virus arbo]",
+              "rows": 20
+            },
+            {
+              "value": "Bệnh sốt virus và sốt xuất huyết virus do tiết túc truyền [virus",
+              "rows": 19
+            }
+          ]
+        },
+        {
+          "code": "B90-B94",
+          "canonical": "Di chứng của bệnh truyền nhiễm và ký sinh trùng",
+          "observed": [
+            {
+              "value": "Di chứng của bệnh truyền nhiễm và ký sinh trùng",
+              "rows": 11
+            },
+            {
+              "value": "Di chứng của bệnh truyền nhiễm và ký",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "D80-D89",
+          "canonical": "Một số rối loạn liên quan đến cơ chế miễn dịch",
+          "observed": [
+            {
+              "value": "Một số rối loạn liên quan đến cơ chế miễn dịch",
+              "rows": 54
+            },
+            {
+              "value": "Một số rối loạn liên quan cơ chế miễn dịch",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "F00-F09",
+          "canonical": "Rối loạn tâm thần thực tổn bao gồm rối loạn tâm thần triệu chứng",
+          "observed": [
+            {
+              "value": "Rối loạn tâm thần thực tổn bao gồm rối loạn tâm thần triệu chứng",
+              "rows": 41
+            },
+            {
+              "value": "Rối loạn tâm thần thực tổn bao gồm rối loạn tâm thần triệu",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "F20-F29",
+          "canonical": "Tâm thần phân liệt, rối loạn loại phân liệt và rối loạn hoang tưởng",
+          "observed": [
+            {
+              "value": "Tâm thần phân liệt, rối loạn loại phân liệt và rối loạn hoang tưởng",
+              "rows": 28
+            },
+            {
+              "value": "Tâm thần phân liệt, rối loạn loại phân liệt và rối loạn hoang",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "I70-I79",
+          "canonical": "Bệnh động mạch, tiểu động mạch và mao mạch",
+          "observed": [
+            {
+              "value": "Bệnh động mạch, tiểu động mạch và mao mạch",
+              "rows": 68
+            },
+            {
+              "value": "Bệnh động mạch, tiểu động mạch và mao",
+              "rows": 2
+            }
+          ]
+        },
+        {
+          "code": "J20-J22",
+          "canonical": "Nhiễm trùng đường hô hấp dưới cấp tính khác",
+          "observed": [
+            {
+              "value": "Nhiễm trùng đường hô hấp dưới cấp tính khác",
+              "rows": 13
+            },
+            {
+              "value": "Nhiễm trùng đường hô hấp dưới cấp tính",
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "code": "K50-K52",
+          "canonical": "Viêm ruột non và đại tràng không do nhiễm trùng",
+          "observed": [
+            {
+              "value": "Viêm ruột non và đại tràng không do nhiễm trùng",
+              "rows": 13
+            },
+            {
+              "value": "Viêm ruột non và đại tràng không do nhiễm",
+              "rows": 7
+            }
+          ]
+        },
+        {
+          "code": "O10-O16",
+          "canonical": "Rối loạn phù, protein niệu và tăng huyết áp trong thai kỳ, sinh đẻ và thời kỳ sau đẻ",
+          "observed": [
+            {
+              "value": "Rối loạn phù, protein niệu và tăng huyết áp trong thai kỳ, sinh đẻ và thời kỳ sau đẻ",
+              "rows": 23
+            },
+            {
+              "value": "Phù, protein niệu và tăng huyết áp trong thai kỳ, khi đẻ và sau đẻ",
+              "rows": 1
+            }
+          ]
+        }
+      ]
+    },
+    "subdivision1_en": {
+      "field": "subdivision1_en",
+      "codes": 26,
+      "canonical_source": "WHO ClaML 2019",
+      "source_variant_codes": 0,
+      "source_differs_from_canonical_codes": 0,
+      "rows_normalized": 0,
+      "source_variants": []
+    },
+    "subdivision1_vi": {
+      "field": "subdivision1_vi",
+      "codes": 26,
+      "canonical_source": "TT06 complete-superstring, otherwise modal rendering",
+      "source_variant_codes": 1,
+      "source_differs_from_canonical_codes": 1,
+      "rows_normalized": 20,
+      "source_variants": [
+        {
+          "code": "W00-X59",
+          "canonical": "Thương tích vì tai nạn do nguyên nhân bên ngoài khác",
+          "observed": [
+            {
+              "value": "Thương tích vì tai nạn do nguyên nhân bên ngoài khác",
+              "rows": 141
+            },
+            {
+              "value": "Nguyên nhân bên ngoài khác gây tổn thương do tai nạn",
+              "rows": 20
+            }
+          ]
+        }
+      ]
+    },
+    "subdivision2_en": {
+      "field": "subdivision2_en",
+      "codes": 37,
+      "canonical_source": "WHO ClaML 2019",
+      "source_variant_codes": 0,
+      "source_differs_from_canonical_codes": 0,
+      "rows_normalized": 0,
+      "source_variants": []
+    },
+    "subdivision2_vi": {
+      "field": "subdivision2_vi",
+      "codes": 37,
+      "canonical_source": "TT06 complete-superstring, otherwise modal rendering",
+      "source_variant_codes": 1,
+      "source_differs_from_canonical_codes": 1,
+      "rows_normalized": 26,
+      "source_variants": [
+        {
+          "code": "V80-V89",
+          "canonical": "Tai nạn giao thông khác trên mặt đất",
+          "observed": [
+            {
+              "value": "Tai nạn giao thông khác trên mặt đất",
+              "rows": 75
+            },
+            {
+              "value": "Tai nạn giao thông mặt đất khác",
+              "rows": 26
+            }
+          ]
+        }
+      ]
+    },
+    "category_en": {
+      "field": "category_en",
+      "codes": 2090,
+      "canonical_source": "WHO ClaML 2019",
+      "source_variant_codes": 41,
+      "source_differs_from_canonical_codes": 47,
+      "rows_normalized": 79,
+      "source_variants": [
+        {
+          "code": "A99",
+          "canonical": "Unspecified viral haemorrhagic fever",
+          "observed": [
+            {
+              "value": "Unspecified viral haemorrhagic Fever",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "C84",
+          "canonical": "Mature T/NK-cell lymphomas",
+          "observed": [
+            {
+              "value": "Mature T/NK-cell lymphomas",
+              "rows": 8
+            },
+            {
+              "value": "Peripheral and cutaneous T-cell lymphomas",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "D76",
+          "canonical": "Other specified diseases with participation of lymphoreticular and reticulohistiocytic tissue",
+          "observed": [
+            {
+              "value": "Certain diseases involving lymphoreticular tissue and reticulohistiocytic system",
+              "rows": 3
+            },
+            {
+              "value": "Other specified diseases with participation of lymphoreticular and reticulohistiocytic tissue",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "F00",
+          "canonical": "Dementia in Alzheimer disease",
+          "observed": [
+            {
+              "value": "Dementia in Alzheimer disease (G30.-†)",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "G46",
+          "canonical": "Vascular syndromes of brain in cerebrovascular diseases",
+          "observed": [
+            {
+              "value": "Vascular syndromes of brain in cerebrovascular diseases (I60-I67†)",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "I79",
+          "canonical": "Disorders of arteries, arterioles and capillaries in diseases classified elsewhere",
+          "observed": [
+            {
+              "value": "Disorders of arteries, arterioles and capillaries in diseases classified elsewhere",
+              "rows": 4
+            },
+            {
+              "value": "Phlebitis and thrombophlebitis",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "N18",
+          "canonical": "Chronic kidney disease",
+          "observed": [
+            {
+              "value": "Chronic renal failure",
+              "rows": 6
+            },
+            {
+              "value": "Chronic kidney disease",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "P75",
+          "canonical": "Meconium ileus in cystic fibrosis",
+          "observed": [
+            {
+              "value": "Meconium ileus in cystic fibrosis (E84.1†)",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U13",
+          "canonical": "Emergency use of U13",
+          "observed": [
+            {
+              "value": "Emergency use of U13.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U13",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U14",
+          "canonical": "Emergency use of U14",
+          "observed": [
+            {
+              "value": "Emergency use of U14.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U14",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U15",
+          "canonical": "Emergency use of U15",
+          "observed": [
+            {
+              "value": "Emergency use of U15.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U15",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U16",
+          "canonical": "Emergency use of U16",
+          "observed": [
+            {
+              "value": "Emergency use of U16.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U16",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U17",
+          "canonical": "Emergency use of U17",
+          "observed": [
+            {
+              "value": "Emergency use of U17.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U17",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U18",
+          "canonical": "Emergency use of U18",
+          "observed": [
+            {
+              "value": "Emergency use of U18.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U18",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U19",
+          "canonical": "Emergency use of U19",
+          "observed": [
+            {
+              "value": "Emergency use of U19.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U19",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U20",
+          "canonical": "Emergency use of U20",
+          "observed": [
+            {
+              "value": "Emergency use of U20.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U20",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U21",
+          "canonical": "Emergency use of U21",
+          "observed": [
+            {
+              "value": "Emergency use of U21.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U21",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U22",
+          "canonical": "Emergency use of U22",
+          "observed": [
+            {
+              "value": "Emergency use of U22.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U22",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U23",
+          "canonical": "Emergency use of U23",
+          "observed": [
+            {
+              "value": "Emergency use of U23.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U23",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U24",
+          "canonical": "Emergency use of U24",
+          "observed": [
+            {
+              "value": "Emergency use of U24.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U24",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U25",
+          "canonical": "Emergency use of U25",
+          "observed": [
+            {
+              "value": "Emergency use of U25.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U25",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U26",
+          "canonical": "Emergency use of U26",
+          "observed": [
+            {
+              "value": "Emergency use of U26.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U26",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U27",
+          "canonical": "Emergency use of U27",
+          "observed": [
+            {
+              "value": "Emergency use of U27.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U27",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U28",
+          "canonical": "Emergency use of U28",
+          "observed": [
+            {
+              "value": "Emergency use of U28.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U28",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U29",
+          "canonical": "Emergency use of U29",
+          "observed": [
+            {
+              "value": "Emergency use of U29.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U29",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U30",
+          "canonical": "Emergency use of U30",
+          "observed": [
+            {
+              "value": "Emergency use of U30.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U30",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U31",
+          "canonical": "Emergency use of U31",
+          "observed": [
+            {
+              "value": "Emergency use of U31.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U31",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U32",
+          "canonical": "Emergency use of U32",
+          "observed": [
+            {
+              "value": "Emergency use of U32.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U32",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U33",
+          "canonical": "Emergency use of U33",
+          "observed": [
+            {
+              "value": "Emergency use of U33.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U33",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U34",
+          "canonical": "Emergency use of U34",
+          "observed": [
+            {
+              "value": "Emergency use of U34.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U34",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U35",
+          "canonical": "Emergency use of U35",
+          "observed": [
+            {
+              "value": "Emergency use of U35.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U35",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U36",
+          "canonical": "Emergency use of U36",
+          "observed": [
+            {
+              "value": "Emergency use of U36.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U36",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U37",
+          "canonical": "Emergency use of U37",
+          "observed": [
+            {
+              "value": "Emergency use of U37.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U37",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U38",
+          "canonical": "Emergency use of U38",
+          "observed": [
+            {
+              "value": "Emergency use of U38.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U38",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U39",
+          "canonical": "Emergency use of U39",
+          "observed": [
+            {
+              "value": "Emergency use of U39.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U39",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U40",
+          "canonical": "Emergency use of U40",
+          "observed": [
+            {
+              "value": "Emergency use of U40.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U40",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U41",
+          "canonical": "Emergency use of U41",
+          "observed": [
+            {
+              "value": "Emergency use of U41.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U41",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U42",
+          "canonical": "Emergency use of U42",
+          "observed": [
+            {
+              "value": "Emergency use of U42.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U42",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U43",
+          "canonical": "Emergency use of U43",
+          "observed": [
+            {
+              "value": "Emergency use of U43.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U43",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U44",
+          "canonical": "Emergency use of U44",
+          "observed": [
+            {
+              "value": "Emergency use of U44.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U44",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U45",
+          "canonical": "Emergency use of U45",
+          "observed": [
+            {
+              "value": "Emergency use of U45.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U45",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U46",
+          "canonical": "Emergency use of U46",
+          "observed": [
+            {
+              "value": "Emergency use of U46.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U46",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U47",
+          "canonical": "Emergency use of U47",
+          "observed": [
+            {
+              "value": "Emergency use of U47.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U47",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U48",
+          "canonical": "Emergency use of U48",
+          "observed": [
+            {
+              "value": "Emergency use of U48.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U48",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U49",
+          "canonical": "Emergency use of U49",
+          "observed": [
+            {
+              "value": "Emergency use of U49.9",
+              "rows": 1
+            },
+            {
+              "value": "Emergency use of U49",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "X88",
+          "canonical": "Assault by gases and vapours",
+          "observed": [
+            {
+              "value": "Assault by carbon monoxide and other gases and vapours",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "Z64",
+          "canonical": "Problems related to certain psychosocial circumstances",
+          "observed": [
+            {
+              "value": "Problems related to other psychosocial circumstances",
+              "rows": 6
+            }
+          ]
+        }
+      ]
+    },
+    "category_vi": {
+      "field": "category_vi",
+      "codes": 2090,
+      "canonical_source": "TT06 isolated three-character title_vi cell",
+      "source_variant_codes": 18,
+      "source_differs_from_canonical_codes": 82,
+      "rows_normalized": 601,
+      "source_variants": [
+        {
+          "code": "A09",
+          "canonical": "Viêm dạ dày - ruột và/hoặc đại tràng do nhiễm trùng và/hoặc không xác định căn nguyên",
+          "observed": [
+            {
+              "value": "Viêm dạ dày-ruột và/hoặc đại tràng do nhiễm trùng và/hoặc không xác định căn nguyên",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "A55",
+          "canonical": "Viêm hạch lympho do Chlamydia (bệnh hột xoài)",
+          "observed": [
+            {
+              "value": "Viêm hạch lympho do Chlamydia (Bệnh hột xoài)",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "B37",
+          "canonical": "Bệnh do nhiễm nấm candida",
+          "observed": [
+            {
+              "value": "Bệnh do nấm candida",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "B47",
+          "canonical": "Bệnh u bướu do nhiễm nấm",
+          "observed": [
+            {
+              "value": "Bệnh u bướu do nấm",
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "code": "C05",
+          "canonical": "U ác tính ở khẩu cái [vòm miệng]",
+          "observed": [
+            {
+              "value": "U ác tính ở khẩu cái",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "C10",
+          "canonical": "U ác tính ở miệng - hầu",
+          "observed": [
+            {
+              "value": "U ác tính ở miệng-hầu",
+              "rows": 5
+            },
+            {
+              "value": "U ác tính ở miệng - hầu",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "C11",
+          "canonical": "U ác tính ở mũi - hầu",
+          "observed": [
+            {
+              "value": "U ác tính ở mũi-hầu",
+              "rows": 7
+            }
+          ]
+        },
+        {
+          "code": "D07",
+          "canonical": "Ung thư biểu mô tại chỗ ở cơ quan sinh dục khác và/hoặc không xác định",
+          "observed": [
+            {
+              "value": "Ung thư biểu mô tại chỗ khác và/hoặc không xác định ở cơ quan sinh dục",
+              "rows": 7
+            },
+            {
+              "value": "Ung thư biểu mô tại chỗ ở cơ quan sinh dục khác và/hoặc không xác định",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "D32",
+          "canonical": "Khối u lành tính ở màng não",
+          "observed": [
+            {
+              "value": "U lành ở màng não",
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "code": "E25",
+          "canonical": "Rối loạn thượng thận - sinh dục",
+          "observed": [
+            {
+              "value": "Rối loạn thượng thận-sinh dục",
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "code": "E42",
+          "canonical": "Suy dinh dưỡng thể hỗn hợp marasmus-kwashiorkor",
+          "observed": [
+            {
+              "value": "Suy dinh dưỡng thể hỗn hợp marasmus - kwashiorkor",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "E46",
+          "canonical": "Suy dinh dưỡng do thiếu protein - năng lượng không xác định",
+          "observed": [
+            {
+              "value": "Suy dinh dưỡng do thiếu protein-năng lượng không xác định",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "F62",
+          "canonical": "Thay đổi nhân cách kéo dài, không thể quy cho một tổn thương hoặc bệnh não",
+          "observed": [
+            {
+              "value": "Biến đổi nhân cách kéo dài, không thể quy cho một tổn thương hay bệnh não",
+              "rows": 4
+            },
+            {
+              "value": "Thay đổi nhân cách kéo dài, không thể quy cho một tổn thương hoặc bệnh não",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "F66",
+          "canonical": "Rối loạn tâm lý và/hoặc hành vi liên quan với sự phát triển và/hoặc khuynh hướng tình dục",
+          "observed": [
+            {
+              "value": "Rối loạn tâm lý và/hoặc hành vi kết hợp với sự phát triển và/hoặc khuynh hướng tình dục",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "G04",
+          "canonical": "Bệnh viêm não, viêm tủy và/hoặc viêm não - tủy",
+          "observed": [
+            {
+              "value": "Bệnh viêm não, viêm tủy và/hoặc viêm não-tủy",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "G05",
+          "canonical": "Viêm não, viêm tủy và/hoặc viêm não - tủy do bệnh phân loại mục khác",
+          "observed": [
+            {
+              "value": "Viêm não, viêm tủy và/hoặc viêm não-tủy do bệnh phân loại mục khác",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "G21",
+          "canonical": "Hội chứng Parkinson thứ phát",
+          "observed": [
+            {
+              "value": "Hội chứng parkinson thứ phát",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "G22",
+          "canonical": "Hội chứng Parkinson do bệnh phân loại mục khác",
+          "observed": [
+            {
+              "value": "Hội chứng parkinson do bệnh phân loại mục khác",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "G70",
+          "canonical": "Nhược cơ và/hoặc rối loạn thần kinh - cơ khác",
+          "observed": [
+            {
+              "value": "Nhược cơ và/hoặc rối loạn thần kinh-cơ khác",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "G73",
+          "canonical": "Bệnh khớp thần kinh - cơ và/hoặc cơ do bệnh phân loại mục khác",
+          "observed": [
+            {
+              "value": "Bệnh khớp thần kinh-cơ và/hoặc cơ do bệnh phân loại mục khác",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "H20",
+          "canonical": "Bệnh viêm mống mắt thể mi",
+          "observed": [
+            {
+              "value": "Viêm mống mắt thể mi",
+              "rows": 5
+            },
+            {
+              "value": "Bệnh viêm mống mắt thể mi",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "I71",
+          "canonical": "Phình và/hoặc tách thành động mạch chủ",
+          "observed": [
+            {
+              "value": "Phình và tách thành động mạch chủ",
+              "rows": 9
+            },
+            {
+              "value": "Phình và/hoặc tách thành động mạch chủ",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "I88",
+          "canonical": "Viêm hạch bạch huyết không xác định cụ thể",
+          "observed": [
+            {
+              "value": "Viêm hạch bạch huyết không xác định cụ thể",
+              "rows": 4
+            },
+            {
+              "value": "Viêm hạch bạch huyết nguyên phát [vô căn]",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "J20",
+          "canonical": "Viêm phế quản cấp tính",
+          "observed": [
+            {
+              "value": "Viêm phế quản cấp tính",
+              "rows": 10
+            },
+            {
+              "value": "Viêm phế quản cấp",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "J66",
+          "canonical": "Bệnh đường thở do bụi hữu cơ cụ thể",
+          "observed": [
+            {
+              "value": "Bệnh đường thở do bụi hữu cơ cụ thể khác",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "J96",
+          "canonical": "Suy hô hấp [tiến triển], không phân loại mục khác",
+          "observed": [
+            {
+              "value": "Suy hô hấp, không phân loại mục khác",
+              "rows": 13
+            }
+          ]
+        },
+        {
+          "code": "K21",
+          "canonical": "Bệnh trào ngược dạ dày - thực quản",
+          "observed": [
+            {
+              "value": "Bệnh trào ngược dạ dày-thực quản",
+              "rows": 3
+            }
+          ]
+        },
+        {
+          "code": "K27",
+          "canonical": "Loét dạ dày - tá tràng, vị trí không xác định",
+          "observed": [
+            {
+              "value": "Loét dạ dày-tá tràng, vị trí không xác định",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "K28",
+          "canonical": "Loét dạ dày - hỗng tràng",
+          "observed": [
+            {
+              "value": "Loét dạ dày-hỗng tràng",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "K52",
+          "canonical": "Viêm dạ dày - ruột và/hoặc viêm đại tràng khác không do nhiễm trùng",
+          "observed": [
+            {
+              "value": "Viêm dạ dày-ruột và/hoặc viêm đại tràng khác không do nhiễm trùng",
+              "rows": 7
+            }
+          ]
+        },
+        {
+          "code": "M18",
+          "canonical": "Thoái hóa khớp cổ tay - khớp gốc ngón tay cái",
+          "observed": [
+            {
+              "value": "Thoái hóa khớp cổ tay-khớp gốc ngón tay cái",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "M31",
+          "canonical": "Bệnh lý mạch máu hoại tử khác",
+          "observed": [
+            {
+              "value": "Bệnh lý mạch máu hoại tử khác",
+              "rows": 9
+            },
+            {
+              "value": "Bệnh mạch máu hoại tử khác",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "M48",
+          "canonical": "Bệnh lý đốt sống khác",
+          "observed": [
+            {
+              "value": "Bệnh lý đốt sống khác",
+              "rows": 78
+            },
+            {
+              "value": "Bệnh đốt sống khác",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "M73",
+          "canonical": "Rối loạn mô mềm do bệnh phân loại mục khác",
+          "observed": [
+            {
+              "value": "Rối loạn mô mềm do bệnh phân loại mục khác",
+              "rows": 33
+            },
+            {
+              "value": "Rối loạn mô mềm trong bệnh phân loại mục khác",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "M77",
+          "canonical": "Bệnh lý điểm bám gân - dây chằng khác",
+          "observed": [
+            {
+              "value": "Bệnh lý điểm bám gân-dây chằng khác",
+              "rows": 32
+            }
+          ]
+        },
+        {
+          "code": "M99",
+          "canonical": "Tổn thương sinh - cơ học, không phân loại mục khác",
+          "observed": [
+            {
+              "value": "Tổn thương sinh - cơ học, không phân loại mục khác",
+              "rows": 75
+            },
+            {
+              "value": "Tổn thương sinh-cơ học, không phân loại mục khác",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "N31",
+          "canonical": "Rối loạn chức năng thần kinh - cơ bàng quang, không phân loại mục khác",
+          "observed": [
+            {
+              "value": "Rối loạn chức năng thần kinh-cơ bàng quang, không phân loại mục khác",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "O23",
+          "canonical": "Nhiễm trùng đường tiết niệu - sinh dục trong thai kỳ",
+          "observed": [
+            {
+              "value": "Nhiễm trùng đường tiết niệu-sinh dục trong thai kỳ",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "Q71",
+          "canonical": "Dị tật bẩm sinh thiếu hụt chi trên",
+          "observed": [
+            {
+              "value": "Dị tật bẩm sinh thiếu hụt chi trên",
+              "rows": 5
+            },
+            {
+              "value": "Khuyết tật thiếu hụt của chi trên",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "Q72",
+          "canonical": "Dị tật bẩm sinh thiếu hụt chi dưới",
+          "observed": [
+            {
+              "value": "Dị tật bẩm sinh thiếu hụt chi dưới",
+              "rows": 6
+            },
+            {
+              "value": "Khuyết tật thiếu hụt của chi dưới",
+              "rows": 5
+            }
+          ]
+        },
+        {
+          "code": "R46",
+          "canonical": "Triệu chứng và/hoặc dấu hiệu liên quan đến diện mạo bên ngoài và/hoặc hành vi",
+          "observed": [
+            {
+              "value": "Triệu chứng và/hoặc dấu hiệu khác liên quan đến diện mạo bên ngoài và/hoặc hành vi",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "S25",
+          "canonical": "Tổn thương mạch máu ở ngực",
+          "observed": [
+            {
+              "value": "Tổn thương mạch máu của ngực",
+              "rows": 9
+            },
+            {
+              "value": "Tổn thương mạch máu ở ngực",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "S80",
+          "canonical": "Tổn thương nông tại cẳng chân",
+          "observed": [
+            {
+              "value": "Tổn thương nông tại cẳng chân",
+              "rows": 4
+            },
+            {
+              "value": "Tổn thương nông ở cẳng chân",
+              "rows": 2
+            }
+          ]
+        },
+        {
+          "code": "T20",
+          "canonical": "Bỏng và/hoặc ăn mòn vùng đầu và/hoặc cổ",
+          "observed": [
+            {
+              "value": "Bỏng và/hoặc ăn mòn ở đầu và/hoặc cổ",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "T24",
+          "canonical": "Bỏng và/hoặc ăn mòn tại háng và/hoặc chi dưới, trừ cổ chân và/hoặc bàn chân",
+          "observed": [
+            {
+              "value": "Bỏng và/hoặc ăn mòn tại hông và/hoặc chi dưới, trừ cổ chân và bàn chân",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "T26",
+          "canonical": "Bỏng và/hoặc ăn mòn giới hạn tại mắt và/hoặc phần phụ của mắt",
+          "observed": [
+            {
+              "value": "Bỏng và/hoặc ăn mòn giới hạn tại mắt và/hoặc cấu trúc phụ cận của mắt",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "T30",
+          "canonical": "Bỏng và/hoặc ăn mòn, không xác định vùng cơ thể",
+          "observed": [
+            {
+              "value": "Bỏng và/hoặc ăn mòn, vùng cơ thể không xác định",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "T49",
+          "canonical": "Ngộ độc tác nhân dùng tại chỗ tác động chủ yếu trên da và/hoặc niêm mạc và/hoặc do thuốc mắt, tai - mũi - họng và/hoặc nha khoa",
+          "observed": [
+            {
+              "value": "Ngộ độc tác nhân dùng tại chỗ tác động chủ yếu trên da và/hoặc niêm mạc và/hoặc do thuốc mắt, tai-mũi - họng và/hoặc nha khoa",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "T71",
+          "canonical": "Ngạt thở do chấn thương",
+          "observed": [
+            {
+              "value": "Ngạt thở",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "U49",
+          "canonical": "Sử dụng mã U49 trong tình huống khẩn cấp",
+          "observed": [
+            {
+              "value": "Sử dụng mã U49 trong trường hợp khẩn cấp",
+              "rows": 1
+            },
+            {
+              "value": "Sử dụng mã U49 trong tình huống khẩn cấp",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "V20",
+          "canonical": "Người đi xe máy 2 bánh bị thương do va chạm với người đi bộ hoặc động vật",
+          "observed": [
+            {
+              "value": "Người đi xe máy 2 bánh bị thương do va chạm với người đi bộ hoặc va chạm với động vật",
+              "rows": 8
+            }
+          ]
+        },
+        {
+          "code": "V32",
+          "canonical": "Người đi xe máy 3 bánh bị thương do va chạm với xe máy 2 hoặc 3 bánh",
+          "observed": [
+            {
+              "value": "Người đi xe máy 3 bánh bị thương do va chạm với xe máy 2 bánh hoặc xe máy 3 bánh",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "V59",
+          "canonical": "Người đi xe bán tải hoặc xe tải nhỏ bị thương tai nạn giao thông vận tải khác và/hoặc không xác định",
+          "observed": [
+            {
+              "value": "Người đi xe bán tải hoặc xe tải nhỏ bị thương tai nạn giao thông vận tải khác và/hoặc không xác định",
+              "rows": 6
+            },
+            {
+              "value": "Người đi xe bán tải hoặc xe tải van bị thương tai nạn giao thông vận tải khác và/hoặc không xác định",
+              "rows": 4
+            }
+          ]
+        },
+        {
+          "code": "V81",
+          "canonical": "Người đi tàu hỏa hoặc phương tiện đường sắt bị thương trong tai nạn giao thông vận tải",
+          "observed": [
+            {
+              "value": "Người đi tàu hỏa hoặc phương tiện đường sắt bị thương trong tai nạn giao thông",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "V82",
+          "canonical": "Người đi xe điện bị thương trong tai nạn giao thông vận tải",
+          "observed": [
+            {
+              "value": "Người đi xe điện bị thương trong tai nạn giao thông",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "V84",
+          "canonical": "Người đi xe chuyên dùng sử dụng chủ yếu trong nông nghiệp bị thương trong tai nạn giao thông vận tải",
+          "observed": [
+            {
+              "value": "Người đi xe chuyên dùng sử dụng chủ yếu trong nông nghiệp bị thương trong tai nạn giao thông",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "V86",
+          "canonical": "Người đi xe chuyên dùng mọi địa hình hoặc xe máy khác được thiết kế chủ yếu cho sử dụng ngoài quốc lộ, bị thương trong tai nạn giao thông",
+          "observed": [
+            {
+              "value": "Người đi xe chuyên dùng mọi địa hình hoặc xe mô tô khác được thiết kế chủ yếu cho sử dụng ngoài quốc lộ, bị thương trong tai nạn giao thông",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "V88",
+          "canonical": "Tai nạn xác định không do giao thông nhưng không rõ phương tiện vận tải của nạn nhân",
+          "observed": [
+            {
+              "value": "Tai nạn xác định không liên quan đến giao thông nhưng không rõ phương tiện vận tải của nạn nhân",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "V90",
+          "canonical": "Tai nạn phương tiện đường thủy gây đuối nước và/hoặc chìm tàu",
+          "observed": [
+            {
+              "value": "Tai nạn tàu thủy gây đuối nước và/hoặc chìm tàu",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "W74",
+          "canonical": "Đuối nước và/hoặc ngập nước không xác định",
+          "observed": [
+            {
+              "value": "Đuối nước và/hoặc ngập nước xác định khác",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "Y32",
+          "canonical": "Bị xe máy đâm, không rõ mục đích",
+          "observed": [
+            {
+              "value": "Bị xe mô tô đâm, không rõ mục đích",
+              "rows": 1
+            }
+          ]
+        },
+        {
+          "code": "Y40",
+          "canonical": "Tác động bất lợi của kháng sinh toàn thân sử dụng cho mục đích điều trị",
+          "observed": [
+            {
+              "value": "Kháng sinh toàn thân",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y41",
+          "canonical": "Tác động bất lợi của thuốc chống nhiễm trùng và/hoặc chống ký sinh trùng toàn thân khác",
+          "observed": [
+            {
+              "value": "Thuốc chống nhiễm trùng và/hoặc chống ký sinh trùng toàn thân khác",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "Y42",
+          "canonical": "Tác động bất lợi của nội tiệt tố [hormon] và/hoặc chất thay thế tổng hợp và/hoặc chất đối kháng, không phân loại mục khác",
+          "observed": [
+            {
+              "value": "Nội tiệt tố [hormon] và/hoặc chất thay thế tổng hợp và/hoặc chất đối kháng, không phân loại mục khác",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y43",
+          "canonical": "Tác động bất lợi của tác nhân tác dụng toàn thân chủ yếu",
+          "observed": [
+            {
+              "value": "Tác nhân tác dụng toàn thân chủ yếu",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "Y44",
+          "canonical": "Tác động bất lợi của chất tác dụng chủ yếu lên các thành phần của máu",
+          "observed": [
+            {
+              "value": "Chất tác dụng chủ yếu lên các thành phần của máu",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "Y45",
+          "canonical": "Tác động bất lợi của thuốc giảm đau, thuốc hạ sốt và/hoặc thuốc chống viêm",
+          "observed": [
+            {
+              "value": "Thuốc giảm đau, thuốc hạ sốt và/hoặc thuốc chống viêm",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "Y46",
+          "canonical": "Tác động bất lợi của thuốc chống động kinh và/hoặc parkinson",
+          "observed": [
+            {
+              "value": "Thuốc chống động kinh và/hoặc parkinson",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "Y47",
+          "canonical": "Tác động bất lợi của thuốc an thần, thuốc ngủ và/hoặc thuốc chống lo lắng",
+          "observed": [
+            {
+              "value": "Thuốc an thần, thuốc ngủ và/hoặc thuốc chống lo lắng",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "Y48",
+          "canonical": "Tác động bất lợi của thuốc mê và/hoặc khí điều trị",
+          "observed": [
+            {
+              "value": "Thuốc mê và/hoặc khí điều trị",
+              "rows": 7
+            }
+          ]
+        },
+        {
+          "code": "Y49",
+          "canonical": "Tác động bất lợi của thuốc hướng thần, không phân loại mục khác",
+          "observed": [
+            {
+              "value": "Thuốc hướng thần, không phân loại mục khác",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y50",
+          "canonical": "Tác động bất lợi của thuốc kích thích hệ thần kinh trung ương, không phân loại mục khác",
+          "observed": [
+            {
+              "value": "Thuốc kích thích hệ thần kinh trung ương, không phân loại mục khác",
+              "rows": 6
+            }
+          ]
+        },
+        {
+          "code": "Y51",
+          "canonical": "Tác động bất lợi của thuốc tác dụng chủ yếu trên hệ thần kinh tự động",
+          "observed": [
+            {
+              "value": "Thuốc tác dụng chủ yếu trên hệ thần kinh tự động",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y52",
+          "canonical": "Tác động bất lợi của thuốc tác dụng chủ yếu lên hệ tim mạch",
+          "observed": [
+            {
+              "value": "Các thuốc tác dụng chủ yếu lên hệ tim mạch",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y53",
+          "canonical": "Tác động bất lợi của thuốc tác dụng chủ yếu đến hệ tiêu hóa",
+          "observed": [
+            {
+              "value": "Thuốc tác dụng chủ yếu đến hệ tiêu hóa",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y54",
+          "canonical": "Tác động bất lợi của thuốc chủ yếu ảnh hưởng tới cân bằng nước và/hoặc chuyển hóa acid và hoặc khoáng chất",
+          "observed": [
+            {
+              "value": "Các thuốc chủ yếu ảnh hưởng tới cân bằng nước và/hoặc chuyển hoá acid và hoặc khoáng chất",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y55",
+          "canonical": "Tác động bất lợi của tác nhân chủ yếu tác động lên cơ trơn, cơ xương và/hoặc hệ hô hấp",
+          "observed": [
+            {
+              "value": "Tác nhân chủ yếu tác động lên cơ trơn, cơ xương và/hoặc hệ hô hấp",
+              "rows": 9
+            }
+          ]
+        },
+        {
+          "code": "Y56",
+          "canonical": "Tác động bất lợi của tác nhân dùng tại chỗ chủ yếu ảnh hưởng đến da, màng nhầy và/hoặc các loại thuốc nhãn khoa, tai mũi họng và/hoặc nha khoa",
+          "observed": [
+            {
+              "value": "Tác nhân dùng tại chỗ chủ yếu ảnh hưởng đến da, màng nhầy và/hoặc các loại thuốc nhãn khoa, tai mũi họng và/hoặc nha khoa",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y57",
+          "canonical": "Tác động bất lợi của dược chất và/hoặc thuốc điều trị khác và/hoặc không xác định",
+          "observed": [
+            {
+              "value": "Dược chất và/hoặc thuốc điều trị khác và/hoặc không xác định",
+              "rows": 11
+            }
+          ]
+        },
+        {
+          "code": "Y58",
+          "canonical": "Tác động bất lợi của vắc xin chống vi khuẩn",
+          "observed": [
+            {
+              "value": "Vắc xin chống vi khuẩn",
+              "rows": 10
+            }
+          ]
+        },
+        {
+          "code": "Y59",
+          "canonical": "Tác động bất lợi của vắc xin và sinh phẩm khác và/hoặc không xác định",
+          "observed": [
+            {
+              "value": "Vắc xin và sinh phẩm khác và/hoặc không xác định",
+              "rows": 7
+            }
+          ]
+        },
+        {
+          "code": "Y70",
+          "canonical": "Thiết bị gây mê có liên quan đến biến cố bất lợi",
+          "observed": [
+            {
+              "value": "Dụng cụ gây mê kết hợp với tai biến",
+              "rows": 5
+            },
+            {
+              "value": "Thiết bị gây mê có liên quan đến biến cố bất lợi",
+              "rows": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "invariants": {
+    "stt_contiguous_1_to_15844": true,
+    "code_nodot_valid": true,
+    "codes_unique": true,
+    "english_title_nonempty": true,
+    "vietnamese_title_nonempty": true,
+    "restriction_codes_exist_in_catalog": true,
+    "every_non_root_code_has_parent": true,
+    "requires_more_specific_equals_has_children": true,
+    "asterisk_codes_are_not_primary": true,
+    "dagger_and_asterisk_disjoint": true,
+    "female_and_male_sets_disjoint": true,
+    "who_usage_matches_pdf_markers": true,
+    "who_superclass_matches_pdf_hierarchy": true,
+    "who_preferred_titles_crosschecked": true,
+    "who_references_preserved": true,
+    "hierarchy_code_titles_unique_after_canonicalization": true
+  },
+  "note": "Catalog trích từ phụ lục chính thức. Không dùng riêng metadata này như phần mềm mã hóa lâm sàng; quyết định cuối cần xét hướng dẫn bao gồm/loại trừ và chuyên gia duyệt.",
+  "who_claml_url": "https://icdcdn.who.int/icd10/claml/icd102019en.xml.zip",
+  "who_claml_sha256": "344c571aa9aed3b9ad1c80261b7828c45cfb5fc0b1a5da64aecef354dff5b3d9",
+  "catalog_sha256": "e79a61fd521ab132d7f03c12a1824177505c24fad055d50ebc06625c5ef74604"
+}

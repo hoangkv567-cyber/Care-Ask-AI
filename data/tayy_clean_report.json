@@ -1,0 +1,47 @@
+{
+  "nguồn": {
+    "file": "data/TayY.csv",
+    "số_dòng": 8900,
+    "số_cột": 18
+  },
+  "kết_quả": {
+    "TayY_clean.csv": {
+      "số_dòng": 8724,
+      "số_cột": 25
+    },
+    "TayY_quarantine.csv": {
+      "số_dòng": 176
+    }
+  },
+  "thống_kê": {
+    "cờ::danh_sach_chua_tach": 78,
+    "cờ::list_cat_cut": 1542,
+    "cờ::phong_tranh_lan_dieu_tri": 650,
+    "cờ::thuoc_khong_tach": 196,
+    "cờ::trung_ten_khac_noi_dung": 958,
+    "dòng_placeholder_giữa_văn_xóa": 23,
+    "loại_bản_trùng": 167,
+    "loại_tên_rác": 9,
+    "parse_ok::bệnh_đi_kèm": 8445,
+    "parse_ok::không_nên_ăn_thực_phẩm_chứa": 5505,
+    "parse_ok::kiểm_tra": 8720,
+    "parse_ok::loại_bệnh": 8685,
+    "parse_ok::nên_ăn_thực_phẩm_chứa": 5505,
+    "parse_ok::thuốc_phổ_biến": 7568,
+    "parse_ok::triệu_chứng": 8682,
+    "parse_ok::đề_xuất_món_ăn": 5505,
+    "parse_ok::đề_xuất_thuốc": 7555,
+    "trùng_tên_chưa_phân_xử_giữ": 958,
+    "tỉ_lệ_không_parse_được": 899,
+    "ô_placeholder_xóa": 13769,
+    "đối_tượng_cắt_tiền_tố_giữ_đuôi": 24,
+    "đối_tượng_placeholder_xóa": 5223
+  },
+  "ghi_chú": [
+    "tỉ_lệ_chữa_khỏi/đề_xuất_thuốc/thuốc_phổ_biến/thông_tin_thuốc: CHỈ tham khảo nội bộ, CẤM đưa vào câu trả lời bệnh nhân (chưa kiểm duyệt, nguồn dịch máy).",
+    "tên_bệnh KHÔNG duy nhất tuyệt đối: dòng cờ trung_ten_khac_noi_dung là nhóm trùng tên CHƯA PHÂN XỬ — có thể là các bệnh khác nhau bị dịch máy phá tên, hoặc 2 bản dịch quá lệch của cùng một bài; ưu tiên phân xử khi ánh xạ ICD.",
+    "cờ danh_sach_chua_tach: ô danh sách còn phần tử dính nhiều mục (nguồn quá bẩn để tách an toàn) — downstream không nên coi phần tử đó là nguyên tử.",
+    "disease_id gán theo thứ tự file nguồn — chạy lại trên cùng TayY.csv cho cùng id.",
+    "Bước tiếp theo: ánh xạ icd10_code + trạng_thái_kiểm_duyệt bởi chuyên gia."
+  ]
+}

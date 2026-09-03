@@ -1,0 +1,100 @@
+{
+  "counts": {
+    "candidate_count_distribution": {
+      "5": 8724
+    },
+    "decision_reasons": {
+      "duplicate_name_unresolved": 958,
+      "exact_code_not_auto_single_code_eligible": 74,
+      "exact_name_lead_conflict": 4,
+      "lead_not_exact": 8395,
+      "low_information": 192,
+      "name_not_exact": 8459,
+      "quality_flags_present": 2942,
+      "tcm_or_classical_reference": 65,
+      "tier_a_exact_consensus_requires_human_review": 45,
+      "ui_or_template_row": 46
+    },
+    "duplicate_name_unresolved": 958,
+    "exact_conflict": 4,
+    "lead_exact_any": 329,
+    "lead_exact_unique": 329,
+    "low_info_gate": 192,
+    "name_exact_any": 265,
+    "name_exact_unique": 265,
+    "name_lead_same_unique_code": 153,
+    "proposals": 8724,
+    "quality_flagged": 2942,
+    "review_queue_rows": 8724,
+    "rows_in_scope": 8724,
+    "tcm_gate": 65,
+    "tier_a_provisional": 45,
+    "ui_gate": 46,
+    "without_candidates": 0
+  },
+  "inputs": {
+    "catalog": {
+      "meta_path": "data/icd10/vn_icd10_tt06_2026.meta.json",
+      "path": "data/icd10/vn_icd10_tt06_2026.jsonl",
+      "rows": 15844,
+      "sha256": "e79a61fd521ab132d7f03c12a1824177505c24fad055d50ebc06625c5ef74604",
+      "source_sha256": "8639f5eeb77b571363dc841923095895d2498748f9bc6620f50710a6da9159e2",
+      "system": "VN-ICD10-TT06-2026",
+      "who_release": "ICD-10 2019"
+    },
+    "tayy_csv": {
+      "columns": 25,
+      "duplicate_name_flagged_groups": 423,
+      "duplicate_name_flagged_rows": 958,
+      "duplicate_name_group_size_distribution": {
+        "11": 1,
+        "15": 1,
+        "2": 369,
+        "20": 1,
+        "3": 38,
+        "4": 6,
+        "5": 6,
+        "6": 1
+      },
+      "path": "data/TayY_clean.csv",
+      "rows": 8724,
+      "sha256": "20904cddeeb8555b2883d51c8ced264845c9a35813d63836f4ea5978259184f1"
+    }
+  },
+  "invariants": {
+    "all_proposals_require_human_review": true,
+    "bm25_is_candidate_only": true,
+    "candidate_codes_unique_catalog_members_top5": true,
+    "catalog_codes_unique_and_structurally_valid": true,
+    "catalog_eligibility_fields_recomputed": true,
+    "catalog_sha256_matches_meta": true,
+    "duplicate_name_flag_never_provisional": true,
+    "one_proposal_per_scoped_row_in_input_order": true,
+    "provisional_is_tier_a_exact_consensus_only": true,
+    "row_sha256_excludes_exactly_code_and_review_status": true,
+    "tayy_ids_unique_contiguous_and_ordered": true,
+    "tayy_json_array_columns_valid": true
+  },
+  "mapper_version": "1.0.0",
+  "method": {
+    "candidate_retrieval": "accent-folded multi-field sparse BM25, deterministic top-5",
+    "catalog_exact_variants": [
+      "title_vi",
+      "title_vi with bracketed clarifier removed (bracket text is never an alias)"
+    ],
+    "exact": "NFKC + casefold + punctuation/whitespace normalization; accents retained",
+    "provisional_rule": "Tier A only: name_exact == lead_exact == same unique code; catalog auto_single_code_eligible; no quality flag/UI/TCM/low-info; exact conflict is a hard gate",
+    "review_queue_order": "priority, then normalized disease name, then disease_id; all duplicate-name rows are P0_duplicate_name",
+    "row_fingerprint": "sha256(utf8(json-object-of-raw-row;exclude=icd10_code,trạng_thái_kiểm_duyệt;ensure_ascii=false;sort_keys=true;separators=(',',':')))",
+    "warning": "Candidates and provisional codes still require expert review."
+  },
+  "mode": "write",
+  "outputs": {
+    "proposals": "data/icd10/tayy_icd10_proposals.jsonl",
+    "report": "data/tayy_icd10_report.json",
+    "review_queue": "data/icd10/tayy_icd10_review_queue.csv",
+    "written": true
+  },
+  "schema_version": "tayy-icd10-report-v1",
+  "scope": "all"
+}

@@ -1,2225 +1,2277 @@
 {
-  "version": 1,
-  "description": "Cổng an toàn bệnh danh (data-hóa từ _validate_disease_safety). names: khớp tên bệnh (substring); names_regex: khớp tên theo ranh giới từ; requires: lời khai phải có >=1 từ (rỗng = luôn loại — bệnh Tây y thuần); kw_wb: khớp requires theo ranh giới từ. Sinh bởi scripts/build_disease_gates.py.",
-  "gates": [
-    {
-      "names": [
-        "xuất hãn",
-        "tự hãn",
-        "đạo hãn",
-        "mồ hôi",
-        "hãn chứng"
-      ],
-      "requires": [
-        "mồ hôi",
-        "hãn",
-        "đổ mồ hôi",
-        "ra mồ hôi",
-        "vã mồ hôi",
-        "ướt đẫm"
-      ]
-    },
-    {
-      "names": [
-        "cuồng",
-        "điên",
-        "thao cuồng"
-      ],
-      "requires": [
-        "kích động",
-        "la hét",
-        "hưng phấn",
-        "nói nhảm",
-        "hoang tưởng",
-        "đập phá",
-        "cuồng",
-        "điên",
-        "mất ngủ",
-        "loạn thần",
-        "rối loạn tâm thần"
-      ]
-    },
-    {
-      "names": [
-        "ách nghịch",
-        "nấc"
-      ],
-      "requires": [
-        "nấc",
-        "ách nghịch"
-      ]
-    },
-    {
-      "names": [
-        "động kinh",
-        "giản chứng",
-        "kinh phong",
-        "phong giật",
-        "co giật"
-      ],
-      "requires": [
-        "co giật",
-        "động kinh",
-        "giật",
-        "kinh phong",
-        "sùi bọt mép",
-        "ngã lăn",
-        "mất ý thức",
-        "hôn mê",
-        "cứng người"
-      ]
-    },
-    {
-      "names": [
-        "bất mị",
-        "thất miên",
-        "mất ngủ"
-      ],
-      "requires": [
-        "mất ngủ",
-        "khó ngủ",
-        "không ngủ",
-        "ngủ không",
-        "thất miên",
-        "khó vào giấc",
-        "dễ tỉnh",
-        "trằn trọc",
-        "ngủ kém",
-        "ngủ chập chờn",
-        "chập chờn",
-        "tỉnh giấc",
-        "thức giấc",
-        "mộng nhiều",
-        "mơ nhiều",
-        "hay mơ",
-        "ngủ hay mơ",
-        "khó đi vào giấc",
-        "khó vào giấc ngủ"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "đầu thống"
-      ],
-      "requires": [
-        "đau đầu",
-        "nhức đầu",
-        "đầu thống",
-        "đau nửa đầu"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "huyễn vựng"
-      ],
-      "requires": [
-        "chóng mặt",
-        "hoa mắt",
-        "choáng váng",
-        "váng đầu",
-        "huyễn vựng",
-        "xây xẩm"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "phúc thống"
-      ],
-      "requires": [
-        "đau bụng",
-        "bụng đau",
-        "phúc thống",
-        "đau quặn bụng",
-        "đau vùng bụng",
-        "bụng dưới đau"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "vị quản thống"
-      ],
-      "requires": [
-        "đau thượng vị",
-        "đau vùng thượng vị",
-        "đau dạ dày",
-        "đau bao tử",
-        "đau bụng",
-        "vị quản thống",
-        "bụng đau"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tiết tả",
-        "tiêu chảy"
-      ],
-      "requires": [
-        "tiêu chảy",
-        "đại tiện lỏng",
-        "phân lỏng",
-        "phân nát",
-        "ỉa chảy",
-        "đi lỏng",
-        "tiết tả"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "ẩu thổ",
-        "nôn mửa"
-      ],
-      "requires": [
-        "nôn",
-        "buồn nôn",
-        "ói",
-        "ẩu thổ"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "táo bón",
-        "tiện bí"
-      ],
-      "requires": [
-        "táo bón",
-        "đại tiện táo",
-        "khó đại tiện",
-        "phân khô",
-        "tiện bí"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "hiếp thống",
-        "hiếp gian"
-      ],
-      "requires": [
-        "đau sườn",
-        "đau hạ sườn",
-        "đau mạng sườn",
-        "tức sườn",
-        "đau hông sườn",
-        "sườn trướng",
-        "đau liên sườn",
-        "hiếp thống"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "yêu thống"
-      ],
-      "requires": [
-        "đau lưng",
-        "mỏi lưng",
-        "đau thắt lưng",
-        "yêu thống"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "khái thấu",
-        "khái suyễn"
-      ],
-      "requires": [
-        "ho",
-        "khái thấu"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "bách nhật khái",
-        "ho gà"
-      ],
-      "requires": [
-        "ho cơn",
-        "cơn ho",
-        "ho từng cơn",
-        "ho thành cơn",
-        "ho rũ rượi",
-        "ho liên tục",
-        "ho dồn dập",
-        "ho sặc sụa",
-        "tiếng rít",
-        "rít khi ho",
-        "ho gà",
-        "bách nhật khái",
-        "ho kéo dài",
-        "ho dai dẳng",
-        "nôn sau ho",
-        "nôn ra đờm"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "khái huyết"
-      ],
-      "requires": [
-        "máu",
-        "khái huyết",
-        "ho ra máu",
-        "khạc ra máu",
-        "khạc máu",
-        "đờm máu",
-        "đờm có máu",
-        "đờm lẫn máu",
-        "ho khạc máu",
-        "máu tươi",
-        "huyết ra"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "khẩu nhãn oa tà",
-        "liệt mặt",
-        "liệt thần kinh mặt",
-        "liệt dây thần kinh"
-      ],
-      "requires": [
-        "méo",
-        "méo miệng",
-        "miệng méo",
-        "mặt méo",
-        "méo lệch",
-        "liệt mặt",
-        "liệt nửa mặt",
-        "mắt nhắm không kín",
-        "mắt không nhắm",
-        "không nhắm được mắt",
-        "nhắm không kín",
-        "mặt lệch",
-        "nhân trung lệch",
-        "khẩu nhãn oa tà"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "anh lựu",
-        "bướu cổ",
-        "khí anh",
-        "nhục anh"
-      ],
-      "requires": [
-        "tuyến giáp",
-        "bướu",
-        "bướu cổ",
-        "khối u",
-        "u vùng cổ",
-        "cổ to",
-        "sưng cổ",
-        "cổ sưng",
-        "cục ở cổ",
-        "khối ở cổ",
-        "anh lựu"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "viêm sai",
-        "quai bị"
-      ],
-      "requires": [
-        "mang tai",
-        "má sưng",
-        "sưng má",
-        "vùng má",
-        "quai bị",
-        "khó há miệng",
-        "quai hàm",
-        "tuyến nước bọt",
-        "viêm sai"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "đởm kết thạch",
-        "sỏi mật",
-        "sỏi đường mật",
-        "sỏi túi mật"
-      ],
-      "requires": [
-        "đau sườn",
-        "hạ sườn",
-        "sườn phải",
-        "hông phải",
-        "đau hông",
-        "hông đau",
-        "mạng sườn",
-        "vùng gan",
-        "vàng da",
-        "da vàng",
-        "vàng mắt",
-        "mắt vàng",
-        "hoàng đản",
-        "miệng đắng",
-        "sỏi mật",
-        "sỏi đường mật",
-        "sỏi túi mật",
-        "đau xoắn",
-        "quặn",
-        "túi mật"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "hầu ngứa"
-      ],
-      "requires": [
-        "ngứa họng",
-        "họng ngứa",
-        "ngứa cổ họng",
-        "cổ họng ngứa",
-        "ngứa trong họng",
-        "ngứa cổ",
-        "ngứa hầu",
-        "hầu ngứa",
-        "yết hầu đau và ngứa",
-        "ngứa thì ho",
-        "ngứa rát họng"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "hư lao"
-      ],
-      "requires": [
-        "gầy sút",
-        "sụt cân",
-        "sút cân",
-        "gầy mòn",
-        "gầy yếu",
-        "hao gầy",
-        "người gầy",
-        "suy nhược",
-        "suy kiệt",
-        "người yếu",
-        "hư lao",
-        "lao lực",
-        "bệnh lâu ngày",
-        "lâu ngày",
-        "mạn tính",
-        "di tinh",
-        "mộng tinh",
-        "hoạt tinh",
-        "liệt dương",
-        "dương nuy",
-        "tảo tiết",
-        "ho khan",
-        "ho máu",
-        "ho ra máu",
-        "khạc ra máu",
-        "khàn giọng",
-        "lưng gối nhức mỏi",
-        "lưng gối mỏi",
-        "đau lưng mỏi gối",
-        "triều nhiệt",
-        "cốt chưng",
-        "sốt về chiều"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "cổ trướng"
-      ],
-      "requires": [
-        "bụng to",
-        "bụng căng",
-        "bụng trướng to",
-        "báng bụng",
-        "cổ trướng"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "xơ gan",
-        "viêm gan",
-        "gan nhiễm mỡ"
-      ],
-      "requires": [
-        "vùng gan",
-        "gan to",
-        "men gan",
-        "viêm gan",
-        "xơ gan",
-        "vàng da",
-        "da vàng",
-        "mắt vàng",
-        "vàng mắt",
-        "cổ trướng",
-        "bụng to",
-        "bụng căng",
-        "đau sườn",
-        "hạ sườn",
-        "tức sườn",
-        "sườn đau",
-        "nôn ra máu",
-        "chảy máu cam"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "huyết áp thấp",
-        "huyết áp cao",
-        "cao huyết áp",
-        "tăng huyết áp"
-      ],
-      "requires": [
-        "huyết áp",
-        "tụt huyết áp",
-        "hạ áp",
-        "tụt áp",
-        "tăng áp"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "lao phổi",
-        "phế lao"
-      ],
-      "requires": [
-        "ho",
-        "ho ra máu",
-        "sốt về chiều",
-        "gầy sút",
-        "lao phổi",
-        "phế lao"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "cao chỉ huyết",
-        "cao huyết chỉ",
-        "chỉ huyết cao"
-      ],
-      "requires": [
-        "cholesterol",
-        "mỡ máu",
-        "máu nhiễm mỡ",
-        "lipid"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "uất chứng"
-      ],
-      "requires": [
-        "căng thẳng",
-        "uất ức",
-        "buồn phiền",
-        "trầm cảm",
-        "lo âu",
-        "stress",
-        "tinh thần không",
-        "hay thở dài",
-        "cáu gắt",
-        "tức giận"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tào tạp",
-        "thôn toan"
-      ],
-      "requires": [
-        "cồn cào",
-        "ợ chua",
-        "nóng rát",
-        "thôn toan",
-        "tào tạp"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "sán khí",
-        "hàn sán",
-        "hồ sán",
-        "khí sán",
-        "thoát vị"
-      ],
-      "requires": [
-        "bẹn",
-        "bìu",
-        "tinh hoàn",
-        "thoát vị",
-        "sa ruột",
-        "khối phồng",
-        "sán khí",
-        "đau bụng dưới",
-        "bụng dưới đau"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "động mạch viêm tắc",
-        "viêm tắc động mạch",
-        "thoát thư",
-        "tắc động mạch"
-      ],
-      "requires": [
-        "đau chi",
-        "đau chân",
-        "đau tay",
-        "đau cách hồi",
-        "đi đau nghỉ đỡ",
-        "đi đau",
-        "chuột rút",
-        "khập khiễng",
-        "tím đầu chi",
-        "đầu chi tím",
-        "đầu ngón tím",
-        "hoại tử",
-        "vết loét",
-        "sưng loét",
-        "loét không lành",
-        "đau kịch liệt",
-        "tê chi",
-        "tê chân",
-        "tê tay"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tĩnh mạch viêm tắc",
-        "viêm tắc tĩnh mạch",
-        "tĩnh mạch viêm",
-        "giãn tĩnh mạch"
-      ],
-      "requires": [
-        "chân",
-        "bắp chân",
-        "cẳng chân",
-        "chi dưới",
-        "bắp đùi",
-        "gân xanh",
-        "nổi gân",
-        "giãn tĩnh mạch",
-        "sợi mạch",
-        "tĩnh mạch",
-        "phù chân",
-        "sưng chân",
-        "đau chân"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "long bế"
-      ],
-      "requires": [
-        "bí tiểu",
-        "tiểu bí",
-        "bí đái",
-        "bí tiểu tiện",
-        "tiểu không thông",
-        "đái không thông",
-        "tiểu không được",
-        "không tiểu được",
-        "không đi tiểu được",
-        "không đái được",
-        "tiểu tắc",
-        "tắc tiểu",
-        "tiểu khó",
-        "đái khó",
-        "tiểu nhỏ giọt",
-        "đái nhỏ giọt",
-        "nhỏ giọt không thông",
-        "nhỏ giọt",
-        "bí không đi được",
-        "vô niệu"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "trưng hà",
-        "trưng tích",
-        "hà tích",
-        "trưng khối"
-      ],
-      "requires": [
-        "khối u",
-        "u cục",
-        "khối",
-        "cục",
-        "hòn",
-        "báng",
-        "u xơ",
-        "khối rắn",
-        "sờ được khối",
-        "hòn cục",
-        "tích khối",
-        "khối cứng",
-        "nổi cục"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "hoàng đản",
-        "vàng da"
-      ],
-      "requires": [
-        "vàng da",
-        "da vàng",
-        "vàng mắt",
-        "mắt vàng",
-        "củng mạc vàng",
-        "vàng củng mạc",
-        "vàng bủng",
-        "vàng tươi",
-        "vàng đậm",
-        "vàng xỉn",
-        "vàng như",
-        "sắc vàng",
-        "hoàng đản"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tê bì",
-        "ma mộc",
-        "tê tay",
-        "tê chân",
-        "tê dại"
-      ],
-      "requires": [
-        "tê",
-        "ma mộc",
-        "châm chích",
-        "kiến bò",
-        "mất cảm giác"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "thủy thũng",
-        "phù thũng",
-        "phù nề"
-      ],
-      "requires": [
-        "phù",
-        "thũng",
-        "sưng phù",
-        "phù nề",
-        "ấn lõm",
-        "mọng nước",
-        "mắt húp",
-        "húp mặt"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "ẩn chẩn",
-        "mề đay",
-        "mày đay",
-        "phong chẩn"
-      ],
-      "requires": [
-        "mề đay",
-        "mày đay",
-        "mẩn",
-        "ngứa",
-        "sẩn",
-        "ban đỏ",
-        "nổi ban",
-        "phát ban",
-        "ẩn chẩn"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tử cung hạ sa",
-        "sa tử cung",
-        "âm đĩnh",
-        "thoát giang",
-        "sa trực tràng",
-        "sa dạ dày",
-        "vị hạ thùy",
-        "vị hạ sa",
-        "hạ sa"
-      ],
-      "requires": [
-        "sa tử cung",
-        "tử cung sa",
-        "khối sa",
-        "sa xuống",
-        "trằn nặng",
-        "sa dạ con",
-        "âm đĩnh",
-        "lòi dom",
-        "thoát giang",
-        "sa trực tràng",
-        "sa nội tạng",
-        "sa dạ dày",
-        "dạ dày sa"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tiêu khát",
-        "đái tháo"
-      ],
-      "requires": [
-        "khát nước",
-        "khát nhiều",
-        "uống nhiều",
-        "uống nước nhiều",
-        "đa niệu",
-        "tiểu nhiều",
-        "đái nhiều",
-        "tiểu tiện nhiều",
-        "ăn nhiều",
-        "mau đói",
-        "chóng đói",
-        "đói nhanh",
-        "gầy sút",
-        "sụt cân",
-        "sút cân",
-        "gầy nhiều",
-        "tiêu khát",
-        "đường huyết",
-        "tiểu đường",
-        "đái tháo"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "mạch vành",
-        "động mạch vành",
-        "nhồi máu",
-        "thiếu máu cơ tim",
-        "xơ cứng động mạch",
-        "xơ vữa",
-        "tâm luật bất tề",
-        "loạn nhịp",
-        "rối loạn nhịp",
-        "rung nhĩ",
-        "tâm quý",
-        "tim đập"
-      ],
-      "requires": [
-        "đau ngực",
-        "đau thắt ngực",
-        "tức ngực",
-        "đau vùng tim",
-        "đau trước tim",
-        "vùng tim",
-        "ngực",
-        "vùng ngực",
-        "nghẹt thở",
-        "hồi hộp",
-        "trống ngực",
-        "đánh trống ngực",
-        "tâm quý",
-        "khó thở",
-        "đau lan",
-        "mạch vành",
-        "nhồi máu",
-        "loạn nhịp",
-        "tim đập",
-        "đập nhanh",
-        "tim nhanh",
-        "hụt hơi"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tỵ cứu",
-        "tỵ uyên",
-        "tỵ tắc",
-        "viêm mũi",
-        "viêm xoang",
-        "viêm mũi xoang"
-      ],
-      "requires": [
-        "mũi",
-        "hắt hơi",
-        "sổ mũi",
-        "chảy nước mũi",
-        "chảy mũi",
-        "ngạt mũi",
-        "nghẹt mũi",
-        "ngứa mũi",
-        "tắc mũi",
-        "nước mũi",
-        "dịch mũi",
-        "tỵ cứu",
-        "tỵ uyên",
-        "đau nhức vùng mặt",
-        "nhức vùng mặt",
-        "đau vùng má",
-        "đau trán"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tỵ nục",
-        "nục huyết",
-        "chảy máu cam",
-        "chảy máu mũi"
-      ],
-      "requires": [
-        "chảy máu cam",
-        "chảy máu mũi",
-        "máu cam",
-        "máu mũi",
-        "chảy máu",
-        "xuất huyết",
-        "nục huyết",
-        "tỵ nục",
-        "ra máu",
-        "huyết ra",
-        "ra đằng mũi",
-        "đằng mũi",
-        "sắc huyết"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "bạo manh",
-        "thanh manh",
-        "dạ manh",
-        "sắc manh"
-      ],
-      "requires": [
-        "mù",
-        "lòa",
-        "quáng gà",
-        "mù màu",
-        "mù lòa",
-        "mất thị lực",
-        "giảm thị lực",
-        "thị lực giảm",
-        "thị lực",
-        "không nhìn thấy",
-        "màu sắc",
-        "nhận biết màu",
-        "sắc giác",
-        "mắt có màng",
-        "màng nổi",
-        "đáy mắt",
-        "mắt đau",
-        "mắt tức",
-        "bạo manh",
-        "thanh manh",
-        "dạ manh",
-        "sắc manh"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "cước căn thống",
-        "cước căn"
-      ],
-      "requires": [
-        "gót chân",
-        "đau gót",
-        "gót",
-        "cước căn",
-        "đau bàn chân",
-        "đau chân"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "nuy chứng"
-      ],
-      "requires": [
-        "teo cơ",
-        "teo",
-        "liệt",
-        "yếu chi",
-        "chi yếu",
-        "tay chân yếu",
-        "chân tay yếu",
-        "yếu hai chân",
-        "yếu cơ",
-        "nhược cơ",
-        "bại liệt",
-        "đi lại khó",
-        "đi đứng khó",
-        "mềm nhũn",
-        "mềm yếu",
-        "không cử động",
-        "yếu liệt",
-        "nuy chứng"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "dương nuy"
-      ],
-      "requires": [
-        "liệt dương",
-        "dương nuy",
-        "rối loạn cương",
-        "yếu sinh lý",
-        "bất lực",
-        "xuất tinh",
-        "di tinh",
-        "tinh trùng"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "mất tiếng",
-        "thất âm",
-        "khản tiếng",
-        "khàn tiếng"
-      ],
-      "requires": [
-        "mất tiếng",
-        "khàn",
-        "khản",
-        "tắt tiếng",
-        "nói không ra",
-        "không nói được",
-        "nói khó",
-        "tiếng nói nặng",
-        "tiếng nặng",
-        "giọng",
-        "thất âm",
-        "mất giọng"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "yếm thực",
-        "biếng ăn",
-        "chán ăn"
-      ],
-      "requires": [
-        "ăn kém",
-        "biếng ăn",
-        "chán ăn",
-        "không muốn ăn",
-        "ăn ít",
-        "ăn uống kém",
-        "yếm thực",
-        "không thèm ăn",
-        "nhìn thức ăn",
-        "không thiết ăn",
-        "bỏ ăn",
-        "lười ăn"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "tam thoa",
-        "thần kinh tam thoa"
-      ],
-      "requires": [
-        "đau mặt",
-        "mặt đau",
-        "đau nửa mặt",
-        "đau vùng mặt",
-        "một bên mặt",
-        "bên mặt",
-        "đau nửa đầu",
-        "một bên đầu",
-        "đau như điện giật",
-        "từng cơn",
-        "co giật",
-        "đau dây thần kinh",
-        "tam thoa",
-        "đau hàm",
-        "đau má",
-        "đau trán",
-        "da mặt xám"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "béo phì"
-      ],
-      "requires": [
-        "béo",
-        "mập",
-        "thừa cân",
-        "tăng cân",
-        "quá cân",
-        "phát phì",
-        "béo phì",
-        "bụng to"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "châm nhãn",
-        "lẹo",
-        "chắp",
-        "kết mạc",
-        "cam nhãn",
-        "mạch nhãn",
-        "cận thị"
-      ],
-      "requires": [
-        "mắt đỏ",
-        "đỏ mắt",
-        "mắt sưng",
-        "sưng mắt",
-        "đau mắt",
-        "mắt đau",
-        "nhức mắt",
-        "cộm mắt",
-        "ngứa mắt",
-        "mắt ngứa",
-        "chảy nước mắt",
-        "mờ mắt",
-        "mắt mờ",
-        "khô mắt",
-        "mỏi mắt",
-        "mi mắt",
-        "mí mắt",
-        "bờ mi",
-        "lẹo",
-        "chắp",
-        "kết mạc",
-        "giác mạc",
-        "nhặm",
-        "ghèn",
-        "nhìn mờ",
-        "nhìn không rõ",
-        "giảm thị lực",
-        "con ngươi",
-        "đồng tử",
-        "tròng mắt"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "canh niên",
-        "mãn kinh",
-        "tiền mãn kinh",
-        "tuyệt kinh"
-      ],
-      "requires": [
-        "mãn kinh",
-        "tắt kinh",
-        "tuyệt kinh",
-        "hết kinh",
-        "sắp hết kinh",
-        "kinh nguyệt",
-        "rối loạn kinh",
-        "kinh không đều",
-        "hành kinh",
-        "bốc hỏa",
-        "cơn nóng bừng",
-        "nóng bừng mặt",
-        "trung niên",
-        "đứng tuổi",
-        "canh niên"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "khẩu sang",
-        "sang miệng"
-      ],
-      "requires": [
-        "loét miệng",
-        "lở miệng",
-        "nhiệt miệng",
-        "miệng lở",
-        "miệng lưỡi",
-        "loét lưỡi",
-        "vết loét",
-        "nhiệt lưỡi",
-        "khẩu sang",
-        "sang miệng",
-        "lở loét miệng",
-        "tưa",
-        "tưa lưỡi",
-        "tưa miệng",
-        "mảng trắng",
-        "màng trắng",
-        "mảng tưa",
-        "đẹn"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "nùng bào sang",
-        "chốc lở"
-      ],
-      "requires": [
-        "tổn thương da",
-        "mụn nước",
-        "mụn mủ",
-        "bọng mủ",
-        "bọng nước",
-        "nốt mủ",
-        "chốc",
-        "chốc lở",
-        "lở loét",
-        "da lở",
-        "phỏng da",
-        "mụn phỏng",
-        "nùng bào",
-        "ghẻ",
-        "loét da"
-      ],
-      "kw_wb": true
-    },
-    {
-      "names": [
-        "âm hộ"
-      ],
-      "requires": [
-        "âm hộ",
-        "âm đạo",
-        "vùng kín"
-      ]
-    },
-    {
-      "names": [
-        "âm đạo"
-      ],
-      "requires": [
-        "âm đạo",
-        "âm hộ",
-        "vùng kín"
-      ]
-    },
-    {
-      "names": [
-        "tử cung"
-      ],
-      "requires": [
-        "tử cung",
-        "dạ con"
-      ]
-    },
-    {
-      "names": [
-        "buồng trứng"
-      ],
-      "requires": [
-        "buồng trứng"
-      ]
-    },
-    {
-      "names": [
-        "tinh hoàn"
-      ],
-      "requires": [
-        "tinh hoàn",
-        "bìu"
-      ]
-    },
-    {
-      "names": [
-        "dương vật"
-      ],
-      "requires": [
-        "dương vật"
-      ]
-    },
-    {
-      "names": [
-        "hậu môn"
-      ],
-      "requires": [
-        "hậu môn",
-        "lòi dom",
-        "trĩ",
-        "thoát giang"
-      ]
-    },
-    {
-      "names": [
-        "trực tràng"
-      ],
-      "requires": [
-        "trực tràng",
-        "hậu môn",
-        "lòi dom"
-      ]
-    },
-    {
-      "names": [
-        "bàng quang"
-      ],
-      "requires": [
-        "bàng quang",
-        "tiểu buốt",
-        "tiểu rắt",
-        "tiểu khó",
-        "bí tiểu",
-        "tiểu ra máu",
-        "tiểu nhiều lần"
-      ]
-    },
-    {
-      "names": [
-        "niệu đạo"
-      ],
-      "requires": [
-        "niệu đạo",
-        "tiểu buốt",
-        "tiểu rắt"
-      ]
-    },
-    {
-      "names": [
-        "trĩ"
-      ],
-      "requires": [
-        "trĩ",
-        "hậu môn",
-        "đại tiện ra máu",
-        "tiêu ra máu",
-        "đi ngoài ra máu",
-        "ỉa ra máu",
-        "sa búi",
-        "búi trĩ"
-      ]
-    },
-    {
-      "names": [
-        "chấn thương sọ não"
-      ],
-      "requires": [
-        "chấn thương",
-        "va đập",
-        "tai nạn",
-        "ngã đầu",
-        "đập đầu",
-        "ngoại thương",
-        "bị thương"
-      ]
-    },
-    {
-      "names": [
-        "phế quản",
-        "viêm đường hô hấp"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "ho",
-        "đờm",
-        "đàm",
-        "khạc",
-        "họng",
-        "cổ họng",
-        "phế quản",
-        "sổ mũi",
-        "ngạt mũi",
-        "hắt hơi",
-        "khó thở",
-        "khò khè",
-        "suyễn",
-        "đoản khí",
-        "hụt hơi",
-        "tức ngực"
-      ]
-    },
-    {
-      "names": [
-        "suyễn chứng",
-        "hen phế quản",
-        "hen suyễn",
-        "háo suyễn",
-        "háo chứng"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "suyễn",
-        "khò khè",
-        "thở khò khè",
-        "thở rít",
-        "khó thở",
-        "khí suyễn",
-        "hen",
-        "cơn hen",
-        "thở gấp",
-        "thở dốc",
-        "hụt hơi",
-        "đoản khí",
-        "tức ngực"
-      ]
-    },
-    {
-      "names": [
-        "viêm họng",
-        "yết hầu",
-        "hầu tý",
-        "hầu phong",
-        "nhũ nga",
-        "khàn tiếng",
-        "thất âm"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "họng",
-        "hầu",
-        "amidan",
-        "khàn",
-        "nuốt đau",
-        "nuốt vướng",
-        "rát cổ",
-        "đau cổ",
-        "mất tiếng",
-        "ho"
-      ]
-    },
-    {
-      "names": [
-        "xoang"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "xoang",
-        "đau nhức vùng mặt",
-        "nhức vùng mặt",
-        "đau vùng mặt",
-        "đau vùng má",
-        "đau má",
-        "đau gò má",
-        "đau trán",
-        "nhức trán",
-        "đau vùng trán",
-        "đau đầu vùng trán",
-        "nặng mặt",
-        "nặng đầu",
-        "chảy mủ",
-        "dịch mủ",
-        "chảy dịch mủ",
-        "nước mũi vàng",
-        "nước mũi xanh",
-        "mũi vàng",
-        "mũi đặc",
-        "nước mũi đặc",
-        "đau nhức xoang",
-        "nhức xoang",
-        "ê ẩm vùng mặt"
-      ]
-    },
-    {
-      "names": [
-        "trúng phong",
-        "tai biến",
-        "đột quỵ"
-      ],
-      "requires": [
-        "liệt",
-        "méo miệng",
-        "bán thân bất toại",
-        "tê bại",
-        "khó nói",
-        "mất ngôn ngữ",
-        "trúng phong",
-        "tai biến"
-      ]
-    },
-    {
-      "names": [
-        "basedow",
-        "eczema",
-        "gout",
-        "suy tim",
-        "loãng xương",
-        "bệnh bạch huyết",
-        "leukemia",
-        "lymphoma",
-        "lupus",
-        "sclerosis",
-        "parathyroid",
-        "cushing",
-        "hashimoto",
-        "hodgkin"
-      ],
-      "requires": []
-    },
-    {
-      "names": [
-        "bạch huyết",
-        "bạch cầu",
-        "ung thư máu",
-        "huyết hữu",
-        "xuất huyết giảm tiểu cầu"
-      ],
-      "requires": [
-        "xuất huyết",
-        "bầm tím tự phát",
-        "chảy máu",
-        "hạch",
-        "gan lách to",
-        "tiểu cầu"
-      ]
-    },
-    {
-      "names": [
-        "lưu sản",
-        "sảy thai",
-        "băng lậu",
-        "đới hạ",
-        "vô sinh",
-        "bế kinh",
-        "thống kinh",
-        "sản hậu",
-        "nhau thai",
-        "thai chết",
-        "động thai",
-        "an thai",
-        "thai lậu",
-        "hoạt thai",
-        "nguyệt kinh",
-        "kinh nguyệt",
-        "kinh hành",
-        "khí hư"
-      ],
-      "requires": [
-        "kinh nguyệt",
-        "kinh",
-        "thai",
-        "sản",
-        "âm đạo",
-        "huyết trắng",
-        "đới hạ",
-        "băng",
-        "lậu",
-        "tử cung",
-        "phụ nữ",
-        "mang thai",
-        "có thai",
-        "khí hư"
-      ]
-    },
-    {
-      "names": [
-        "nhĩ minh",
-        "nhĩ lung",
-        "điếc",
-        "ù tai",
-        "viêm tai"
-      ],
-      "requires": [
-        "ù tai",
-        "tai",
-        "điếc",
-        "nghe kém",
-        "nhĩ minh",
-        "nhĩ lung"
-      ]
-    },
-    {
-      "names": [
-        "thanh manh",
-        "nhược thị",
-        "mắt mờ",
-        "quáng gà",
-        "đục thủy tinh",
-        "nội chướng",
-        "ngoại chướng"
-      ],
-      "requires": [
-        "mắt mờ",
-        "nhìn mờ",
-        "thị lực",
-        "quáng gà",
-        "mắt đau",
-        "mắt sưng"
-      ]
-    },
-    {
-      "names": [
-        "mề đay",
-        "chàm",
-        "ghẻ",
-        "hắc lào",
-        "vẩy nến",
-        "mụn nhọt",
-        "ung nhọt",
-        "ngân tiết",
-        "bạch bì",
-        "tùng bì tiễn",
-        "vảy nến",
-        "bạch tiển"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "ngứa da",
-        "ngứa ngoài da",
-        "da ngứa",
-        "mẩn",
-        "ban",
-        "mụn",
-        "ghẻ",
-        "da",
-        "phát ban",
-        "mề đay",
-        "nổi mề",
-        "vảy",
-        "bong vảy",
-        "tổn thương da",
-        "mảng",
-        "sẩn",
-        "lở",
-        "loét da"
-      ]
-    },
-    {
-      "names": [
-        "đái dầm",
-        "di niệu",
-        "sỏi thận",
-        "sỏi tiết niệu",
-        "viêm bàng quang"
-      ],
-      "requires": [
-        "tiểu",
-        "đái",
-        "niệu",
-        "bàng quang",
-        "sỏi",
-        "tiểu đêm",
-        "tiểu gắt"
-      ]
-    },
-    {
-      "names": [
-        "viêm cầu thận",
-        "suy thận",
-        "thận hư hội chứng",
-        "viêm thận",
-        "hội chứng thận hư"
-      ],
-      "requires": [
-        "phù",
-        "tiểu ít",
-        "tiểu đục",
-        "tiểu ra máu",
-        "phù mặt",
-        "phù chân",
-        "albumin",
-        "protein niệu",
-        "thận"
-      ]
-    },
-    {
-      "names": [
-        "ung thư",
-        "u ác",
-        "khối u",
-        "nhục lựu"
-      ],
-      "names_regex": [
-        "ái"
-      ],
-      "requires": [
-        "khối u",
-        "sụt cân",
-        "nuốt nghẹn",
-        "ho ra máu",
-        "u bướu",
-        "sưng hạch",
-        "di căn",
-        "ung thư",
-        "gan",
-        "vùng gan",
-        "phúc thủy",
-        "vàng da"
-      ]
-    },
-    {
-      "names": [
-        "thực quản",
-        "vị quản",
-        "loét dạ dày",
-        "viêm dạ dày"
-      ],
-      "requires": [
-        "đau bụng",
-        "đau dạ dày",
-        "ợ chua",
-        "ợ hơi",
-        "buồn nôn",
-        "nôn",
-        "nuốt nghẹn",
-        "trào ngược",
-        "thượng vị"
-      ]
-    },
-    {
-      "names": [
-        "dương nuy",
-        "liệt dương",
-        "di tinh",
-        "tảo tiết",
-        "hoạt tinh",
-        "dương sự",
-        "mộng tinh",
-        "âm hành",
-        "cao hoàn",
-        "âm nang"
-      ],
-      "requires": [
-        "liệt dương",
-        "dương nuy",
-        "di tinh",
-        "mộng tinh",
-        "tảo tiết",
-        "hoạt tinh",
-        "xuất tinh",
-        "dương vật",
-        "rối loạn cương",
-        "cương dương",
-        "yếu sinh lý",
-        "sinh lý",
-        "tình dục",
-        "âm hành",
-        "cao hoàn",
-        "âm nang",
-        "bìu"
-      ]
-    },
-    {
-      "names": [
-        "hung tý",
-        "hung tí",
-        "chân tâm thống",
-        "tâm thống",
-        "tâm giảo thống",
-        "nhồi máu",
-        "tâm nhồi máu"
-      ],
-      "requires": [
-        "đau ngực",
-        "tức ngực",
-        "ngực đau",
-        "đau vùng ngực",
-        "đau thắt ngực",
-        "ngực đầy",
-        "đầy tức ngực",
-        "đau trước tim",
-        "đau tim",
-        "đau thắt tim",
-        "hung tý",
-        "hồi hộp",
-        "trống ngực",
-        "tim đập"
-      ]
-    },
-    {
-      "names": [
-        "quỷ thai",
-        "chửa trứng",
-        "thai trứng",
-        "chửa trâu"
-      ],
-      "requires": [
-        "có thai",
-        "mang thai",
-        "thai nghén",
-        "thai động",
-        "que thử thai",
-        "chửa",
-        "ốm nghén",
-        "thai lưu"
-      ]
-    },
-    {
-      "names": [
-        "nhâm thần",
-        "ố trở",
-        "tử giản",
-        "sản giật"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "mang thai",
-        "có thai",
-        "thai",
-        "nghén",
-        "ốm nghén",
-        "thai nghén",
-        "thai phụ",
-        "sản phụ",
-        "mang bầu",
-        "que thử thai",
-        "chửa",
-        "có bầu",
-        "thai máy",
-        "thai động",
-        "bụng bầu"
-      ]
-    },
-    {
-      "names": [
-        "thiên đầu thống",
-        "đầu thống",
-        "đau nửa đầu"
-      ],
-      "requires": [
-        "đau đầu",
-        "nhức đầu",
-        "đau nửa đầu",
-        "nặng đầu",
-        "đầu đau",
-        "váng đầu",
-        "đau vùng đầu",
-        "đau nhức đầu"
-      ]
-    },
-    {
-      "names": [
-        "tâm quý",
-        "chinh xung",
-        "kinh quý",
-        "tâm quí",
-        "đánh trống ngực"
-      ],
-      "requires": [
-        "hồi hộp",
-        "trống ngực",
-        "tim đập",
-        "đánh trống ngực",
-        "tim hồi hộp",
-        "loạn nhịp",
-        "tim đập nhanh",
-        "kinh sợ",
-        "hoảng sợ",
-        "dễ giật mình",
-        "tâm quý"
-      ]
-    },
-    {
-      "names": [
-        "ma chẩn",
-        "phong chẩn",
-        "thủy đậu",
-        "thuỷ đậu",
-        "ban chẩn",
-        "đơn độc",
-        "phong ngứa"
-      ],
-      "requires": [
-        "ban",
-        "phát ban",
-        "nổi ban",
-        "mọc ban",
-        "mụn nước",
-        "nốt",
-        "hồng ban",
-        "sởi",
-        "phỏng",
-        "ngứa",
-        "mẩn"
-      ]
-    },
-    {
-      "names": [
-        "nhũ ung",
-        "nhũ nham",
-        "nhũ phích",
-        "nhũ lạc",
-        "viêm tuyến vú",
-        "nhũ tuyến"
-      ],
-      "requires": [
-        "vú",
-        "tuyến vú",
-        "đau vú",
-        "sưng vú",
-        "cục ở vú",
-        "núm vú",
-        "tắc sữa",
-        "áp xe vú"
-      ],
-      "_ghi_chu": "Đã gỡ 'nhũ' TRẦN: nó khớp chuỗi con nên bắt cả 'Nhũ nga' (乳蛾 = amidan, chữ 'nhũ' ở đây là hình con tằm, KHÔNG phải vú) -> viêm amidan bị cổng bệnh VÚ loại oan, rơi khỏi cả top-3. Các tên cụ thể (nhũ ung/nhũ nham/nhũ phích/nhũ lạc/nhũ tuyến/viêm tuyến vú) đã phủ đủ, 'nhũ' trần không thêm độ phủ."
-    },
-    {
-      "names": [
-        "áp xe phế",
-        "phế ung",
-        "áp xe phổi"
-      ],
-      "requires": [
-        "ho ra mủ",
-        "khạc mủ",
-        "ho ra máu",
-        "đờm mủ",
-        "đờm tanh",
-        "đau ngực",
-        "mủ tanh",
-        "sốt cao rét run",
-        "khạc ra máu"
-      ]
-    },
-    {
-      "names": [
-        "phát nhiệt",
-        "phát sốt"
-      ],
-      "requires": [
-        "sốt",
-        "phát nhiệt",
-        "phát sốt",
-        "triều nhiệt",
-        "cốt chưng",
-        "ngũ tâm phiền nhiệt",
-        "nóng trong",
-        "sốt về chiều",
-        "hâm hấp",
-        "nóng về chiều",
-        "sốt nhẹ",
-        "hầm hập",
-        "nhiệt độ"
-      ]
-    },
-    {
-      "names": [
-        "tắc nghẽn phế",
-        "phổi tắc nghẽn",
-        "mạn tính tắc nghẽn"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "ho",
-        "khò khè",
-        "thở khò khè",
-        "thở rít",
-        "khạc đờm",
-        "khạc đàm",
-        "khạc",
-        "suyễn",
-        "khó thở gắng sức",
-        "khó thở khi gắng sức",
-        "hen phế quản"
-      ]
-    },
-    {
-      "names": [
-        "hung thống"
-      ],
-      "requires": [
-        "đau ngực",
-        "tức ngực",
-        "ngực đau",
-        "đau vùng ngực",
-        "xương ức",
-        "sau xương ức",
-        "đau thắt ngực",
-        "ngực đầy",
-        "đau lan",
-        "hồi hộp",
-        "trống ngực",
-        "vai"
-      ]
-    },
-    {
-      "names": [
-        "hầu ung",
-        "hạnh đào"
-      ],
-      "kw_wb": true,
-      "requires": [
-        "họng",
-        "hầu",
-        "amidan",
-        "hạnh đào",
-        "nuốt",
-        "rát cổ",
-        "đau cổ",
-        "sưng họng",
-        "họng đau",
-        "họng sưng",
-        "ho"
-      ]
-    },
-    {
-      "names": [
-        "đại tràng",
-        "trường ung",
-        "ruột thừa"
-      ],
-      "requires": [
-        "đau bụng",
-        "bụng đau",
-        "bụng dưới",
-        "quanh rốn",
-        "tiêu chảy",
-        "đại tiện",
-        "phân",
-        "đi ngoài",
-        "đi lỏng",
-        "ỉa",
-        "táo bón",
-        "sôi bụng",
-        "đầy bụng",
-        "ruột",
-        "cự án"
-      ]
-    },
-    {
-      "names": [
-        "áp xe gan"
-      ],
-      "requires": [
-        "hạ sườn",
-        "sườn phải",
-        "hông phải",
-        "hông sườn",
-        "vùng gan",
-        "gan",
-        "sốt",
-        "nóng lạnh",
-        "vàng da",
-        "áp xe",
-        "mủ",
-        "đau sườn"
-      ]
-    },
-    {
-      "names": [
-        "thận vu viêm",
-        "bể thận",
-        "thận quặn"
-      ],
-      "requires": [
-        "thận",
-        "tiểu",
-        "đái",
-        "niệu",
-        "đau lưng",
-        "thắt lưng",
-        "đau quặn",
-        "sỏi",
-        "hông",
-        "phù",
-        "sốt",
-        "vùng thận"
-      ]
-    },
-    {
-      "names": [
-        "khớp dạng thấp",
-        "viêm khớp",
-        "cốt lao",
-        "lao xương"
-      ],
-      "requires": [
-        "khớp",
-        "đau khớp",
-        "sưng khớp",
-        "cứng khớp",
-        "viêm khớp",
-        "xương khớp",
-        "đau xương",
-        "nhức xương",
-        "khớp xương",
-        "teo cơ",
-        "biến dạng",
-        "đau nhức",
-        "sưng đau"
-      ]
-    },
-    {
-      "names": [
-        "bắp chân xung đau"
-      ],
-      "requires": [
-        "bắp chân",
-        "chân",
-        "chi dưới",
-        "cẳng chân",
-        "sưng chân",
-        "đau chân",
-        "tĩnh mạch",
-        "sợi mạch",
-        "gân"
-      ]
-    },
-    {
-      "names": [
-        "bạch biến",
-        "ngoan tiển"
-      ],
-      "requires": [
-        "da",
-        "vết trắng",
-        "đốm trắng",
-        "mất sắc tố",
-        "bạch biến",
-        "ngứa",
-        "tổn thương da",
-        "sẩn",
-        "da dày",
-        "mảng da",
-        "vảy"
-      ]
-    },
-    {
-      "names": [
-        "nhiễm mỡ xơ mạch"
-      ],
-      "requires": [
-        "mỡ máu",
-        "cholesterol",
-        "máu nhiễm mỡ",
-        "lipid",
-        "xơ vữa",
-        "xơ mạch",
-        "xơ cứng động mạch",
-        "xơ cứng mạch",
-        "mảng xơ",
-        "huyết áp",
-        "tức ngực",
-        "đau ngực",
-        "đau vùng tim",
-        "đau tim",
-        "đau thắt ngực",
-        "đau trước tim"
-      ]
-    },
-    {
-      "names": [
-        "suy nhược thần kinh"
-      ],
-      "requires": [
-        "mất ngủ",
-        "ít ngủ",
-        "khó ngủ",
-        "ngủ ít",
-        "hay mơ",
-        "mơ nhiều",
-        "ngủ hay mơ",
-        "hồi hộp",
-        "trống ngực",
-        "tim đập nhanh",
-        "đánh trống ngực",
-        "hay quên",
-        "giảm trí nhớ",
-        "trí nhớ giảm",
-        "trí nhớ kém",
-        "kém tập trung",
-        "hay quên hay lú",
-        "nhức đầu",
-        "đau đầu",
-        "hoa mắt",
-        "chóng mặt",
-        "ù tai",
-        "váng đầu",
-        "lo âu",
-        "bứt rứt",
-        "dễ hoảng sợ",
-        "hoảng sợ",
-        "phiền muộn",
-        "uất ức",
-        "tinh thần uất",
-        "dễ cáu",
-        "dễ tức giận",
-        "cáu gắt",
-        "hay xúc động",
-        "vui buồn thất thường",
-        "tinh thần uể oải",
-        "di tinh",
-        "liệt dương",
-        "hay thở dài",
-        "thở dài"
-      ],
-      "kw_wb": true,
-      "_note": "Suy nhược thần kinh (神经衰弱) đòi >=1 dấu THẦN KINH/TÂM THẦN/GIẤC NGỦ đặc trưng; mọi thể CSV đều có (mất ngủ/hồi hộp/hay quên/nhức đầu/phiền muộn/di tinh). Chặn over-match ca THUẦN TIÊU HÓA (đại tiện lỏng+đầy bụng+ăn kém+mệt mỏi) khớp qua 'đầy bụng trướng/ăn kém' của thể Can-tâm-khí-uất-kết. KHÔNG dùng 'mệt mỏi' trần làm marker."
-    },
-    {
-      "names": [
-        "si ngốc",
-        "alzheimer"
-      ],
-      "requires": [
-        "trí nhớ",
-        "chậm chạp",
-        "quên",
-        "si ngốc",
-        "chóng mặt",
-        "mất trí",
-        "lẫn",
-        "tê",
-        "run",
-        "co rút"
-      ]
-    },
-    {
-      "names": [
-        "chiến chứng",
-        "parkinson"
-      ],
-      "requires": [
-        "run",
-        "rung",
-        "co giật",
-        "cứng",
-        "tê",
-        "chiến chứng",
-        "parkinson",
-        "chậm chạp"
-      ]
-    },
-    {
-      "names": [
-        "suy tuyến thượng thận",
-        "addison",
-        "tuyến thượng thận"
-      ],
-      "requires": [
-        "đen",
-        "sạm",
-        "xám đen",
-        "thượng thận",
-        "addison",
-        "huyết áp",
-        "rụng lông",
-        "liệt dương",
-        "bế kinh"
-      ]
-    }
-  ]
+ "version": 1,
+ "description": "Cổng an toàn bệnh danh (data-hóa từ _validate_disease_safety). names: khớp tên bệnh (substring); names_regex: khớp tên theo ranh giới từ; requires: lời khai phải có >=1 từ (rỗng = luôn loại — bệnh Tây y thuần); kw_wb: khớp requires theo ranh giới từ. Sinh bởi scripts/build_disease_gates.py.",
+ "gates": [
+  {
+   "names": [
+    "xuất hãn",
+    "tự hãn",
+    "đạo hãn",
+    "mồ hôi",
+    "hãn chứng"
+   ],
+   "requires": [
+    "mồ hôi",
+    "hãn",
+    "đổ mồ hôi",
+    "ra mồ hôi",
+    "vã mồ hôi",
+    "ướt đẫm"
+   ]
+  },
+  {
+   "names": [
+    "cuồng",
+    "điên",
+    "thao cuồng"
+   ],
+   "requires": [
+    "kích động",
+    "la hét",
+    "hưng phấn",
+    "nói nhảm",
+    "hoang tưởng",
+    "đập phá",
+    "cuồng",
+    "điên",
+    "mất ngủ",
+    "loạn thần",
+    "rối loạn tâm thần"
+   ]
+  },
+  {
+   "names": [
+    "ách nghịch",
+    "nấc"
+   ],
+   "requires": [
+    "nấc",
+    "ách nghịch"
+   ]
+  },
+  {
+   "names": [
+    "động kinh",
+    "giản chứng",
+    "kinh phong",
+    "phong giật",
+    "co giật"
+   ],
+   "requires": [
+    "co giật",
+    "động kinh",
+    "giật",
+    "kinh phong",
+    "sùi bọt mép",
+    "ngã lăn",
+    "mất ý thức",
+    "hôn mê",
+    "cứng người"
+   ]
+  },
+  {
+   "names": [
+    "bất mị",
+    "thất miên",
+    "mất ngủ"
+   ],
+   "requires": [
+    "mất ngủ",
+    "khó ngủ",
+    "không ngủ",
+    "ngủ không",
+    "thất miên",
+    "khó vào giấc",
+    "dễ tỉnh",
+    "trằn trọc",
+    "ngủ kém",
+    "ngủ chập chờn",
+    "chập chờn",
+    "tỉnh giấc",
+    "thức giấc",
+    "mộng nhiều",
+    "mơ nhiều",
+    "hay mơ",
+    "ngủ hay mơ",
+    "khó đi vào giấc",
+    "khó vào giấc ngủ"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "đầu thống"
+   ],
+   "requires": [
+    "đau đầu",
+    "nhức đầu",
+    "đầu thống",
+    "đau nửa đầu"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "huyễn vựng"
+   ],
+   "requires": [
+    "chóng mặt",
+    "hoa mắt",
+    "choáng váng",
+    "váng đầu",
+    "huyễn vựng",
+    "xây xẩm"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "phúc thống"
+   ],
+   "requires": [
+    "đau bụng",
+    "bụng đau",
+    "phúc thống",
+    "đau quặn bụng",
+    "đau vùng bụng",
+    "bụng dưới đau"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "vị quản thống"
+   ],
+   "requires": [
+    "đau thượng vị",
+    "đau vùng thượng vị",
+    "đau dạ dày",
+    "đau bao tử",
+    "đau bụng",
+    "vị quản thống",
+    "bụng đau",
+    "vị quản",
+    "tâm hạ",
+    "bụng trên",
+    "quản phúc",
+    "trung quản",
+    "đầy tức",
+    "đầy trướng",
+    "bĩ mãn",
+    "đầy đau",
+    "ăn không ngon",
+    "ăn không thấy ngon"
+   ],
+   "kw_wb": true,
+   "_ghi_chu": "Cổng CHẶN CHÍNH BỆNH NÓ BẢO VỆ vì lệch TỪ VỰNG: dòng 'Vị quản thống × Hàn thấp' (L218) ghi 'Vị quản đầy đau khó chịu, ăn không thấy ngon, miệng dính nhớt, đầu mình nặng nề' — không khớp chuỗi nào trong requires cũ ('đau thượng vị'/'đau dạ dày'/'đau bụng'). Ca thật: lời khai chép nguyên văn dòng này (khớp 1.00, dòng nhì chỉ 0.50) vẫn ra 'Chưa xác định cụ thể' và Mục 5 trắng, dù cốt lõi 'Hàn thấp' đã chọn ĐÚNG. Nạp thêm từ vựng KB thật dùng."
+  },
+  {
+   "names": [
+    "tiết tả",
+    "tiêu chảy"
+   ],
+   "requires": [
+    "tiêu chảy",
+    "đại tiện lỏng",
+    "phân lỏng",
+    "phân nát",
+    "ỉa chảy",
+    "đi lỏng",
+    "tiết tả"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "ẩu thổ",
+    "nôn mửa"
+   ],
+   "requires": [
+    "nôn",
+    "buồn nôn",
+    "ói",
+    "ẩu thổ"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "táo bón",
+    "tiện bí"
+   ],
+   "requires": [
+    "táo bón",
+    "đại tiện táo",
+    "khó đại tiện",
+    "phân khô",
+    "tiện bí"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "hiếp thống",
+    "hiếp gian"
+   ],
+   "requires": [
+    "đau sườn",
+    "đau hạ sườn",
+    "đau mạng sườn",
+    "tức sườn",
+    "đau hông sườn",
+    "sườn trướng",
+    "đau liên sườn",
+    "hiếp thống"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "yêu thống"
+   ],
+   "requires": [
+    "đau lưng",
+    "mỏi lưng",
+    "đau thắt lưng",
+    "yêu thống"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "khái thấu",
+    "khái suyễn"
+   ],
+   "requires": [
+    "ho",
+    "khái thấu"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "bách nhật khái",
+    "ho gà"
+   ],
+   "requires": [
+    "ho cơn",
+    "cơn ho",
+    "ho từng cơn",
+    "ho thành cơn",
+    "ho rũ rượi",
+    "ho liên tục",
+    "ho dồn dập",
+    "ho sặc sụa",
+    "tiếng rít",
+    "rít khi ho",
+    "ho gà",
+    "bách nhật khái",
+    "ho kéo dài",
+    "ho dai dẳng",
+    "nôn sau ho",
+    "nôn ra đờm"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "khái huyết"
+   ],
+   "requires": [
+    "máu",
+    "khái huyết",
+    "ho ra máu",
+    "khạc ra máu",
+    "khạc máu",
+    "đờm máu",
+    "đờm có máu",
+    "đờm lẫn máu",
+    "ho khạc máu",
+    "máu tươi",
+    "huyết ra"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "khẩu nhãn oa tà",
+    "liệt mặt",
+    "liệt thần kinh mặt",
+    "liệt dây thần kinh"
+   ],
+   "requires": [
+    "méo",
+    "méo miệng",
+    "miệng méo",
+    "mặt méo",
+    "méo lệch",
+    "liệt mặt",
+    "liệt nửa mặt",
+    "mắt nhắm không kín",
+    "mắt không nhắm",
+    "không nhắm được mắt",
+    "nhắm không kín",
+    "mặt lệch",
+    "nhân trung lệch",
+    "khẩu nhãn oa tà"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "anh lựu",
+    "bướu cổ",
+    "khí anh",
+    "nhục anh"
+   ],
+   "requires": [
+    "tuyến giáp",
+    "bướu",
+    "bướu cổ",
+    "khối u",
+    "u vùng cổ",
+    "cổ to",
+    "sưng cổ",
+    "cổ sưng",
+    "cục ở cổ",
+    "khối ở cổ",
+    "anh lựu"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "viêm sai",
+    "quai bị"
+   ],
+   "requires": [
+    "mang tai",
+    "má sưng",
+    "sưng má",
+    "vùng má",
+    "quai bị",
+    "khó há miệng",
+    "quai hàm",
+    "tuyến nước bọt",
+    "viêm sai"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "đởm kết thạch",
+    "sỏi mật",
+    "sỏi đường mật",
+    "sỏi túi mật"
+   ],
+   "requires": [
+    "đau sườn",
+    "hạ sườn",
+    "sườn phải",
+    "hông phải",
+    "đau hông",
+    "hông đau",
+    "mạng sườn",
+    "vùng gan",
+    "vàng da",
+    "da vàng",
+    "vàng mắt",
+    "mắt vàng",
+    "hoàng đản",
+    "miệng đắng",
+    "sỏi mật",
+    "sỏi đường mật",
+    "sỏi túi mật",
+    "đau xoắn",
+    "quặn",
+    "túi mật"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "hầu ngứa"
+   ],
+   "requires": [
+    "ngứa họng",
+    "họng ngứa",
+    "ngứa cổ họng",
+    "cổ họng ngứa",
+    "ngứa trong họng",
+    "ngứa cổ",
+    "ngứa hầu",
+    "hầu ngứa",
+    "yết hầu đau và ngứa",
+    "ngứa thì ho",
+    "ngứa rát họng"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "hư lao"
+   ],
+   "requires": [
+    "gầy sút",
+    "sụt cân",
+    "sút cân",
+    "gầy mòn",
+    "gầy yếu",
+    "hao gầy",
+    "người gầy",
+    "suy nhược",
+    "suy kiệt",
+    "người yếu",
+    "hư lao",
+    "lao lực",
+    "bệnh lâu ngày",
+    "lâu ngày",
+    "mạn tính",
+    "di tinh",
+    "mộng tinh",
+    "hoạt tinh",
+    "liệt dương",
+    "dương nuy",
+    "tảo tiết",
+    "ho khan",
+    "ho máu",
+    "ho ra máu",
+    "khạc ra máu",
+    "khàn giọng",
+    "lưng gối nhức mỏi",
+    "lưng gối mỏi",
+    "đau lưng mỏi gối",
+    "triều nhiệt",
+    "cốt chưng",
+    "sốt về chiều"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "cổ trướng"
+   ],
+   "requires": [
+    "bụng to",
+    "bụng căng",
+    "bụng trướng to",
+    "báng bụng",
+    "cổ trướng"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "xơ gan",
+    "viêm gan",
+    "gan nhiễm mỡ"
+   ],
+   "requires": [
+    "vùng gan",
+    "gan to",
+    "men gan",
+    "viêm gan",
+    "xơ gan",
+    "vàng da",
+    "da vàng",
+    "mắt vàng",
+    "vàng mắt",
+    "cổ trướng",
+    "bụng to",
+    "bụng căng",
+    "đau sườn",
+    "hạ sườn",
+    "tức sườn",
+    "sườn đau",
+    "nôn ra máu",
+    "chảy máu cam"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "huyết áp thấp",
+    "huyết áp cao",
+    "cao huyết áp",
+    "tăng huyết áp"
+   ],
+   "requires": [
+    "huyết áp",
+    "tụt huyết áp",
+    "hạ áp",
+    "tụt áp",
+    "tăng áp"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "lao phổi",
+    "phế lao"
+   ],
+   "requires": [
+    "ho",
+    "ho ra máu",
+    "sốt về chiều",
+    "gầy sút",
+    "lao phổi",
+    "phế lao"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "cao chỉ huyết",
+    "cao huyết chỉ",
+    "chỉ huyết cao"
+   ],
+   "requires": [
+    "cholesterol",
+    "mỡ máu",
+    "máu nhiễm mỡ",
+    "lipid"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "uất chứng"
+   ],
+   "requires": [
+    "căng thẳng",
+    "uất ức",
+    "buồn phiền",
+    "trầm cảm",
+    "lo âu",
+    "stress",
+    "tinh thần không",
+    "hay thở dài",
+    "cáu gắt",
+    "tức giận"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tào tạp",
+    "thôn toan"
+   ],
+   "requires": [
+    "cồn cào",
+    "ợ chua",
+    "nóng rát",
+    "thôn toan",
+    "tào tạp"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "sán khí",
+    "hàn sán",
+    "hồ sán",
+    "khí sán",
+    "thoát vị"
+   ],
+   "requires": [
+    "bẹn",
+    "bìu",
+    "tinh hoàn",
+    "thoát vị",
+    "sa ruột",
+    "khối phồng",
+    "sán khí",
+    "đau bụng dưới",
+    "bụng dưới đau"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "động mạch viêm tắc",
+    "viêm tắc động mạch",
+    "thoát thư",
+    "tắc động mạch"
+   ],
+   "requires": [
+    "đau chi",
+    "đau chân",
+    "đau tay",
+    "đau cách hồi",
+    "đi đau nghỉ đỡ",
+    "đi đau",
+    "chuột rút",
+    "khập khiễng",
+    "tím đầu chi",
+    "đầu chi tím",
+    "đầu ngón tím",
+    "hoại tử",
+    "vết loét",
+    "sưng loét",
+    "loét không lành",
+    "đau kịch liệt",
+    "tê chi",
+    "tê chân",
+    "tê tay"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tĩnh mạch viêm tắc",
+    "viêm tắc tĩnh mạch",
+    "tĩnh mạch viêm",
+    "giãn tĩnh mạch"
+   ],
+   "requires": [
+    "chân",
+    "bắp chân",
+    "cẳng chân",
+    "chi dưới",
+    "bắp đùi",
+    "gân xanh",
+    "nổi gân",
+    "giãn tĩnh mạch",
+    "sợi mạch",
+    "tĩnh mạch",
+    "phù chân",
+    "sưng chân",
+    "đau chân"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "long bế"
+   ],
+   "requires": [
+    "bí tiểu",
+    "tiểu bí",
+    "bí đái",
+    "bí tiểu tiện",
+    "tiểu không thông",
+    "đái không thông",
+    "tiểu không được",
+    "không tiểu được",
+    "không đi tiểu được",
+    "không đái được",
+    "tiểu tắc",
+    "tắc tiểu",
+    "tiểu khó",
+    "đái khó",
+    "tiểu nhỏ giọt",
+    "đái nhỏ giọt",
+    "nhỏ giọt không thông",
+    "nhỏ giọt",
+    "bí không đi được",
+    "vô niệu"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "trưng hà",
+    "trưng tích",
+    "hà tích",
+    "trưng khối"
+   ],
+   "requires": [
+    "khối u",
+    "u cục",
+    "khối",
+    "cục",
+    "hòn",
+    "báng",
+    "u xơ",
+    "khối rắn",
+    "sờ được khối",
+    "hòn cục",
+    "tích khối",
+    "khối cứng",
+    "nổi cục"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "hoàng đản",
+    "vàng da"
+   ],
+   "requires": [
+    "vàng da",
+    "da vàng",
+    "vàng mắt",
+    "mắt vàng",
+    "củng mạc vàng",
+    "vàng củng mạc",
+    "vàng bủng",
+    "vàng tươi",
+    "vàng đậm",
+    "vàng xỉn",
+    "vàng như",
+    "sắc vàng",
+    "hoàng đản"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tê bì",
+    "ma mộc",
+    "tê tay",
+    "tê chân",
+    "tê dại"
+   ],
+   "requires": [
+    "tê",
+    "ma mộc",
+    "châm chích",
+    "kiến bò",
+    "mất cảm giác"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "thủy thũng",
+    "phù thũng",
+    "phù nề"
+   ],
+   "requires": [
+    "phù",
+    "thũng",
+    "sưng phù",
+    "phù nề",
+    "ấn lõm",
+    "mọng nước",
+    "mắt húp",
+    "húp mặt"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "ẩn chẩn",
+    "mề đay",
+    "mày đay",
+    "phong chẩn"
+   ],
+   "requires": [
+    "mề đay",
+    "mày đay",
+    "mẩn",
+    "ngứa",
+    "sẩn",
+    "ban đỏ",
+    "nổi ban",
+    "phát ban",
+    "ẩn chẩn"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tử cung hạ sa",
+    "sa tử cung",
+    "âm đĩnh",
+    "thoát giang",
+    "sa trực tràng",
+    "sa dạ dày",
+    "vị hạ thùy",
+    "vị hạ sa",
+    "hạ sa"
+   ],
+   "requires": [
+    "sa tử cung",
+    "tử cung sa",
+    "khối sa",
+    "sa xuống",
+    "trằn nặng",
+    "sa dạ con",
+    "âm đĩnh",
+    "lòi dom",
+    "thoát giang",
+    "sa trực tràng",
+    "sa nội tạng",
+    "sa dạ dày",
+    "dạ dày sa"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tiêu khát",
+    "đái tháo"
+   ],
+   "requires": [
+    "khát nước",
+    "khát nhiều",
+    "uống nhiều",
+    "uống nước nhiều",
+    "đa niệu",
+    "tiểu nhiều",
+    "đái nhiều",
+    "tiểu tiện nhiều",
+    "ăn nhiều",
+    "mau đói",
+    "chóng đói",
+    "đói nhanh",
+    "gầy sút",
+    "sụt cân",
+    "sút cân",
+    "gầy nhiều",
+    "tiêu khát",
+    "đường huyết",
+    "tiểu đường",
+    "đái tháo"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "mạch vành",
+    "động mạch vành",
+    "nhồi máu",
+    "thiếu máu cơ tim",
+    "xơ cứng động mạch",
+    "xơ vữa",
+    "tâm luật bất tề",
+    "loạn nhịp",
+    "rối loạn nhịp",
+    "rung nhĩ",
+    "tâm quý",
+    "tim đập"
+   ],
+   "requires": [
+    "đau ngực",
+    "đau thắt ngực",
+    "tức ngực",
+    "đau vùng tim",
+    "đau trước tim",
+    "vùng tim",
+    "ngực",
+    "vùng ngực",
+    "nghẹt thở",
+    "hồi hộp",
+    "trống ngực",
+    "đánh trống ngực",
+    "tâm quý",
+    "khó thở",
+    "đau lan",
+    "mạch vành",
+    "nhồi máu",
+    "loạn nhịp",
+    "tim đập",
+    "đập nhanh",
+    "tim nhanh",
+    "hụt hơi"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tỵ cứu",
+    "tỵ uyên",
+    "tỵ tắc",
+    "viêm mũi",
+    "viêm xoang",
+    "viêm mũi xoang"
+   ],
+   "requires": [
+    "mũi",
+    "hắt hơi",
+    "sổ mũi",
+    "chảy nước mũi",
+    "chảy mũi",
+    "ngạt mũi",
+    "nghẹt mũi",
+    "ngứa mũi",
+    "tắc mũi",
+    "nước mũi",
+    "dịch mũi",
+    "tỵ cứu",
+    "tỵ uyên",
+    "đau nhức vùng mặt",
+    "nhức vùng mặt",
+    "đau vùng má",
+    "đau trán"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tỵ nục",
+    "nục huyết",
+    "chảy máu cam",
+    "chảy máu mũi"
+   ],
+   "requires": [
+    "chảy máu cam",
+    "chảy máu mũi",
+    "máu cam",
+    "máu mũi",
+    "chảy máu",
+    "xuất huyết",
+    "nục huyết",
+    "tỵ nục",
+    "ra máu",
+    "huyết ra",
+    "ra đằng mũi",
+    "đằng mũi",
+    "sắc huyết"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "bạo manh",
+    "thanh manh",
+    "dạ manh",
+    "sắc manh"
+   ],
+   "requires": [
+    "mù",
+    "lòa",
+    "quáng gà",
+    "mù màu",
+    "mù lòa",
+    "mất thị lực",
+    "giảm thị lực",
+    "thị lực giảm",
+    "thị lực",
+    "không nhìn thấy",
+    "màu sắc",
+    "nhận biết màu",
+    "sắc giác",
+    "mắt có màng",
+    "màng nổi",
+    "đáy mắt",
+    "mắt đau",
+    "mắt tức",
+    "bạo manh",
+    "thanh manh",
+    "dạ manh",
+    "sắc manh"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "cước căn thống",
+    "cước căn"
+   ],
+   "requires": [
+    "gót chân",
+    "đau gót",
+    "gót",
+    "cước căn",
+    "đau bàn chân",
+    "đau chân"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "nuy chứng"
+   ],
+   "requires": [
+    "teo cơ",
+    "teo",
+    "liệt",
+    "yếu chi",
+    "chi yếu",
+    "tay chân yếu",
+    "chân tay yếu",
+    "yếu hai chân",
+    "yếu cơ",
+    "nhược cơ",
+    "bại liệt",
+    "đi lại khó",
+    "đi đứng khó",
+    "mềm nhũn",
+    "mềm yếu",
+    "không cử động",
+    "yếu liệt",
+    "nuy chứng"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "dương nuy"
+   ],
+   "requires": [
+    "liệt dương",
+    "dương nuy",
+    "rối loạn cương",
+    "yếu sinh lý",
+    "bất lực",
+    "xuất tinh",
+    "di tinh",
+    "tinh trùng"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "mất tiếng",
+    "thất âm",
+    "khản tiếng",
+    "khàn tiếng"
+   ],
+   "requires": [
+    "mất tiếng",
+    "khàn",
+    "khản",
+    "tắt tiếng",
+    "nói không ra",
+    "không nói được",
+    "nói khó",
+    "tiếng nói nặng",
+    "tiếng nặng",
+    "giọng",
+    "thất âm",
+    "mất giọng"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "yếm thực",
+    "biếng ăn",
+    "chán ăn"
+   ],
+   "requires": [
+    "ăn kém",
+    "biếng ăn",
+    "chán ăn",
+    "không muốn ăn",
+    "ăn ít",
+    "ăn uống kém",
+    "yếm thực",
+    "không thèm ăn",
+    "nhìn thức ăn",
+    "không thiết ăn",
+    "bỏ ăn",
+    "lười ăn"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "tam thoa",
+    "thần kinh tam thoa"
+   ],
+   "requires": [
+    "đau mặt",
+    "mặt đau",
+    "đau nửa mặt",
+    "đau vùng mặt",
+    "một bên mặt",
+    "bên mặt",
+    "đau nửa đầu",
+    "một bên đầu",
+    "đau như điện giật",
+    "từng cơn",
+    "co giật",
+    "đau dây thần kinh",
+    "tam thoa",
+    "đau hàm",
+    "đau má",
+    "đau trán",
+    "da mặt xám"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "béo phì"
+   ],
+   "requires": [
+    "béo",
+    "mập",
+    "thừa cân",
+    "tăng cân",
+    "quá cân",
+    "phát phì",
+    "béo phì",
+    "bụng to"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "châm nhãn",
+    "lẹo",
+    "chắp",
+    "kết mạc",
+    "cam nhãn",
+    "mạch nhãn",
+    "cận thị"
+   ],
+   "requires": [
+    "mắt đỏ",
+    "đỏ mắt",
+    "mắt sưng",
+    "sưng mắt",
+    "đau mắt",
+    "mắt đau",
+    "nhức mắt",
+    "cộm mắt",
+    "ngứa mắt",
+    "mắt ngứa",
+    "chảy nước mắt",
+    "mờ mắt",
+    "mắt mờ",
+    "khô mắt",
+    "mỏi mắt",
+    "mi mắt",
+    "mí mắt",
+    "bờ mi",
+    "lẹo",
+    "chắp",
+    "kết mạc",
+    "giác mạc",
+    "nhặm",
+    "ghèn",
+    "nhìn mờ",
+    "nhìn không rõ",
+    "giảm thị lực",
+    "con ngươi",
+    "đồng tử",
+    "tròng mắt"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "canh niên",
+    "mãn kinh",
+    "tiền mãn kinh",
+    "tuyệt kinh"
+   ],
+   "requires": [
+    "mãn kinh",
+    "tắt kinh",
+    "tuyệt kinh",
+    "hết kinh",
+    "sắp hết kinh",
+    "kinh nguyệt",
+    "rối loạn kinh",
+    "kinh không đều",
+    "hành kinh",
+    "bốc hỏa",
+    "cơn nóng bừng",
+    "nóng bừng mặt",
+    "trung niên",
+    "đứng tuổi",
+    "canh niên"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "khẩu sang",
+    "sang miệng"
+   ],
+   "requires": [
+    "loét miệng",
+    "lở miệng",
+    "nhiệt miệng",
+    "miệng lở",
+    "miệng lưỡi",
+    "loét lưỡi",
+    "vết loét",
+    "nhiệt lưỡi",
+    "khẩu sang",
+    "sang miệng",
+    "lở loét miệng",
+    "tưa",
+    "tưa lưỡi",
+    "tưa miệng",
+    "mảng trắng",
+    "màng trắng",
+    "mảng tưa",
+    "đẹn"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "nùng bào sang",
+    "chốc lở"
+   ],
+   "requires": [
+    "tổn thương da",
+    "mụn nước",
+    "mụn mủ",
+    "bọng mủ",
+    "bọng nước",
+    "nốt mủ",
+    "chốc",
+    "chốc lở",
+    "lở loét",
+    "da lở",
+    "phỏng da",
+    "mụn phỏng",
+    "nùng bào",
+    "ghẻ",
+    "loét da"
+   ],
+   "kw_wb": true
+  },
+  {
+   "names": [
+    "âm hộ"
+   ],
+   "requires": [
+    "âm hộ",
+    "âm đạo",
+    "vùng kín"
+   ]
+  },
+  {
+   "names": [
+    "âm đạo"
+   ],
+   "requires": [
+    "âm đạo",
+    "âm hộ",
+    "vùng kín"
+   ]
+  },
+  {
+   "names": [
+    "tử cung"
+   ],
+   "requires": [
+    "tử cung",
+    "dạ con"
+   ]
+  },
+  {
+   "names": [
+    "buồng trứng"
+   ],
+   "requires": [
+    "buồng trứng"
+   ]
+  },
+  {
+   "names": [
+    "tinh hoàn"
+   ],
+   "requires": [
+    "tinh hoàn",
+    "bìu"
+   ]
+  },
+  {
+   "names": [
+    "dương vật"
+   ],
+   "requires": [
+    "dương vật"
+   ]
+  },
+  {
+   "names": [
+    "hậu môn"
+   ],
+   "requires": [
+    "hậu môn",
+    "lòi dom",
+    "trĩ",
+    "thoát giang"
+   ]
+  },
+  {
+   "names": [
+    "trực tràng"
+   ],
+   "requires": [
+    "trực tràng",
+    "hậu môn",
+    "lòi dom"
+   ]
+  },
+  {
+   "names": [
+    "bàng quang"
+   ],
+   "requires": [
+    "bàng quang",
+    "tiểu buốt",
+    "tiểu rắt",
+    "tiểu khó",
+    "bí tiểu",
+    "tiểu ra máu",
+    "tiểu nhiều lần",
+    "tiểu gắt",
+    "tiểu giắt",
+    "tiểu dắt",
+    "đái rắt",
+    "đái gắt",
+    "đái buốt",
+    "đái giắt",
+    "tiểu són",
+    "tiểu dầm",
+    "tiểu bí",
+    "tiểu đục",
+    "đái đục",
+    "đái khó"
+   ],
+   "_ghi_chu": "Cổng CHẶN CHÍNH BỆNH NÓ BẢO VỆ vì lệch CHÍNH TẢ: KB dùng 'tiểu gắt' (14 lần) và 'tiểu giắt' còn cổng chỉ có 'tiểu rắt' (8 lần); KB viết 'tiểu nhiều' còn cổng đòi 'tiểu nhiều LẦN'. Ca thật: lời khai viêm bàng quang mạn (tiểu nhiều, tiểu giắt, hạ vị đau) bị chẩn thành 'Yêu thống' (đau lưng) — chỉ vì khớp đúng một triệu chứng 'đau lưng mỏi'. Đã nạp biến thể chính tả KB thật dùng."
+  },
+  {
+   "names": [
+    "niệu đạo"
+   ],
+   "requires": [
+    "niệu đạo",
+    "tiểu buốt",
+    "tiểu rắt"
+   ]
+  },
+  {
+   "names": [
+    "trĩ"
+   ],
+   "requires": [
+    "trĩ",
+    "hậu môn",
+    "đại tiện ra máu",
+    "tiêu ra máu",
+    "đi ngoài ra máu",
+    "ỉa ra máu",
+    "sa búi",
+    "búi trĩ"
+   ]
+  },
+  {
+   "names": [
+    "chấn thương sọ não"
+   ],
+   "requires": [
+    "chấn thương",
+    "va đập",
+    "tai nạn",
+    "ngã đầu",
+    "đập đầu",
+    "ngoại thương",
+    "bị thương"
+   ]
+  },
+  {
+   "names": [
+    "phế quản",
+    "viêm đường hô hấp"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "ho",
+    "đờm",
+    "đàm",
+    "khạc",
+    "họng",
+    "cổ họng",
+    "phế quản",
+    "sổ mũi",
+    "ngạt mũi",
+    "hắt hơi",
+    "khó thở",
+    "khò khè",
+    "suyễn",
+    "đoản khí",
+    "hụt hơi",
+    "tức ngực"
+   ]
+  },
+  {
+   "names": [
+    "suyễn chứng",
+    "hen phế quản",
+    "hen suyễn",
+    "háo suyễn",
+    "háo chứng"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "suyễn",
+    "khò khè",
+    "thở khò khè",
+    "thở rít",
+    "khó thở",
+    "khí suyễn",
+    "hen",
+    "cơn hen",
+    "thở gấp",
+    "thở dốc",
+    "hụt hơi",
+    "đoản khí",
+    "tức ngực"
+   ]
+  },
+  {
+   "names": [
+    "viêm họng",
+    "yết hầu",
+    "hầu tý",
+    "hầu phong",
+    "nhũ nga",
+    "khàn tiếng",
+    "thất âm"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "họng",
+    "hầu",
+    "amidan",
+    "khàn",
+    "nuốt đau",
+    "nuốt vướng",
+    "rát cổ",
+    "đau cổ",
+    "mất tiếng",
+    "ho"
+   ]
+  },
+  {
+   "names": [
+    "xoang"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "xoang",
+    "đau nhức vùng mặt",
+    "nhức vùng mặt",
+    "đau vùng mặt",
+    "đau vùng má",
+    "đau má",
+    "đau gò má",
+    "đau trán",
+    "nhức trán",
+    "đau vùng trán",
+    "đau đầu vùng trán",
+    "nặng mặt",
+    "nặng đầu",
+    "chảy mủ",
+    "dịch mủ",
+    "chảy dịch mủ",
+    "nước mũi vàng",
+    "nước mũi xanh",
+    "mũi vàng",
+    "mũi đặc",
+    "nước mũi đặc",
+    "đau nhức xoang",
+    "nhức xoang",
+    "ê ẩm vùng mặt"
+   ]
+  },
+  {
+   "names": [
+    "trúng phong",
+    "tai biến",
+    "đột quỵ"
+   ],
+   "requires": [
+    "liệt",
+    "méo miệng",
+    "bán thân bất toại",
+    "tê bại",
+    "khó nói",
+    "mất ngôn ngữ",
+    "trúng phong",
+    "tai biến"
+   ]
+  },
+  {
+   "names": [
+    "gout",
+    "loãng xương",
+    "bệnh bạch huyết",
+    "leukemia",
+    "lymphoma",
+    "lupus",
+    "sclerosis",
+    "parathyroid",
+    "cushing",
+    "hashimoto",
+    "hodgkin"
+   ],
+   "requires": [],
+   "_ghi_chu": "Cổng chặn VÔ ĐIỀU KIỆN (requires rỗng) cho tên bệnh TÂY Y THUẦN. Đã gỡ basedow/eczema/suy tim vì đợt đổi bệnh danh đưa chúng thành 'Cường giáp (Basedow)', 'Chàm (Eczema)', 'Tâm quý (suy tim)' — tên Tây y nay nằm TRONG NGOẶC nhưng cổng khớp chuỗi con nên vẫn dính, khiến 16 dòng KB không bao giờ chẩn được. alzheimer/addison/parkinson đã được gỡ từ trước cùng lý do. GIỮ các tên chưa có bệnh danh Đông y (gout, loãng xương, bệnh bạch huyết, lupus...) — chẩn các bệnh này cần xét nghiệm hiện đại."
+  },
+  {
+   "names": [
+    "bạch huyết",
+    "bạch cầu",
+    "ung thư máu",
+    "huyết hữu",
+    "xuất huyết giảm tiểu cầu"
+   ],
+   "requires": [
+    "xuất huyết",
+    "bầm tím tự phát",
+    "chảy máu",
+    "hạch",
+    "gan lách to",
+    "tiểu cầu"
+   ]
+  },
+  {
+   "names": [
+    "lưu sản",
+    "sảy thai",
+    "băng lậu",
+    "đới hạ",
+    "vô sinh",
+    "bế kinh",
+    "thống kinh",
+    "sản hậu",
+    "nhau thai",
+    "thai chết",
+    "động thai",
+    "an thai",
+    "thai lậu",
+    "hoạt thai",
+    "nguyệt kinh",
+    "kinh nguyệt",
+    "kinh hành",
+    "khí hư"
+   ],
+   "requires": [
+    "kinh nguyệt",
+    "kinh",
+    "thai",
+    "sản",
+    "âm đạo",
+    "huyết trắng",
+    "đới hạ",
+    "băng",
+    "lậu",
+    "tử cung",
+    "phụ nữ",
+    "mang thai",
+    "có thai",
+    "khí hư"
+   ]
+  },
+  {
+   "names": [
+    "nhĩ minh",
+    "nhĩ lung",
+    "điếc",
+    "ù tai",
+    "viêm tai"
+   ],
+   "requires": [
+    "ù tai",
+    "tai",
+    "điếc",
+    "nghe kém",
+    "nhĩ minh",
+    "nhĩ lung"
+   ]
+  },
+  {
+   "names": [
+    "thanh manh",
+    "nhược thị",
+    "mắt mờ",
+    "quáng gà",
+    "đục thủy tinh",
+    "nội chướng",
+    "ngoại chướng"
+   ],
+   "requires": [
+    "mắt mờ",
+    "nhìn mờ",
+    "thị lực",
+    "quáng gà",
+    "mắt đau",
+    "mắt sưng"
+   ]
+  },
+  {
+   "names": [
+    "mề đay",
+    "chàm",
+    "ghẻ",
+    "hắc lào",
+    "vẩy nến",
+    "mụn nhọt",
+    "ung nhọt",
+    "ngân tiết",
+    "bạch bì",
+    "tùng bì tiễn",
+    "vảy nến",
+    "bạch tiển"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "ngứa da",
+    "ngứa ngoài da",
+    "da ngứa",
+    "mẩn",
+    "ban",
+    "mụn",
+    "ghẻ",
+    "da",
+    "phát ban",
+    "mề đay",
+    "nổi mề",
+    "vảy",
+    "bong vảy",
+    "tổn thương da",
+    "mảng",
+    "sẩn",
+    "lở",
+    "loét da"
+   ]
+  },
+  {
+   "names": [
+    "đái dầm",
+    "di niệu",
+    "sỏi thận",
+    "sỏi tiết niệu",
+    "viêm bàng quang"
+   ],
+   "requires": [
+    "tiểu",
+    "đái",
+    "niệu",
+    "bàng quang",
+    "sỏi",
+    "tiểu đêm",
+    "tiểu gắt"
+   ]
+  },
+  {
+   "names": [
+    "viêm cầu thận",
+    "suy thận",
+    "thận hư hội chứng",
+    "viêm thận",
+    "hội chứng thận hư"
+   ],
+   "requires": [
+    "phù",
+    "tiểu ít",
+    "tiểu đục",
+    "tiểu ra máu",
+    "phù mặt",
+    "phù chân",
+    "albumin",
+    "protein niệu",
+    "thận"
+   ]
+  },
+  {
+   "names": [
+    "ung thư",
+    "u ác",
+    "khối u",
+    "nhục lựu"
+   ],
+   "names_regex": [
+    "ái"
+   ],
+   "requires": [
+    "khối u",
+    "sụt cân",
+    "nuốt nghẹn",
+    "ho ra máu",
+    "u bướu",
+    "sưng hạch",
+    "di căn",
+    "ung thư",
+    "gan",
+    "vùng gan",
+    "phúc thủy",
+    "vàng da"
+   ]
+  },
+  {
+   "names": [
+    "thực quản",
+    "vị quản",
+    "loét dạ dày",
+    "viêm dạ dày"
+   ],
+   "requires": [
+    "đau bụng",
+    "đau dạ dày",
+    "ợ chua",
+    "ợ hơi",
+    "buồn nôn",
+    "nôn",
+    "nuốt nghẹn",
+    "trào ngược",
+    "thượng vị",
+    "vị quản",
+    "tâm hạ",
+    "bụng trên",
+    "quản phúc",
+    "trung quản",
+    "đầy tức",
+    "đầy trướng",
+    "bĩ mãn",
+    "đầy đau",
+    "ăn không ngon",
+    "ăn không thấy ngon"
+   ],
+   "_ghi_chu": "Cổng CHẶN CHÍNH BỆNH NÓ BẢO VỆ vì lệch TỪ VỰNG: dòng 'Vị quản thống × Hàn thấp' (L218) ghi 'Vị quản đầy đau khó chịu, ăn không thấy ngon, miệng dính nhớt, đầu mình nặng nề' — không khớp chuỗi nào trong requires cũ ('đau thượng vị'/'đau dạ dày'/'đau bụng'). Ca thật: lời khai chép nguyên văn dòng này (khớp 1.00, dòng nhì chỉ 0.50) vẫn ra 'Chưa xác định cụ thể' và Mục 5 trắng, dù cốt lõi 'Hàn thấp' đã chọn ĐÚNG. Nạp thêm từ vựng KB thật dùng."
+  },
+  {
+   "names": [
+    "dương nuy",
+    "liệt dương",
+    "di tinh",
+    "tảo tiết",
+    "hoạt tinh",
+    "dương sự",
+    "mộng tinh",
+    "âm hành",
+    "cao hoàn",
+    "âm nang"
+   ],
+   "requires": [
+    "liệt dương",
+    "dương nuy",
+    "di tinh",
+    "mộng tinh",
+    "tảo tiết",
+    "hoạt tinh",
+    "xuất tinh",
+    "dương vật",
+    "rối loạn cương",
+    "cương dương",
+    "yếu sinh lý",
+    "sinh lý",
+    "tình dục",
+    "âm hành",
+    "cao hoàn",
+    "âm nang",
+    "bìu"
+   ]
+  },
+  {
+   "names": [
+    "hung tý",
+    "hung tí",
+    "chân tâm thống",
+    "tâm thống",
+    "tâm giảo thống",
+    "nhồi máu",
+    "tâm nhồi máu"
+   ],
+   "requires": [
+    "đau ngực",
+    "tức ngực",
+    "ngực đau",
+    "đau vùng ngực",
+    "đau thắt ngực",
+    "ngực đầy",
+    "đầy tức ngực",
+    "đau trước tim",
+    "đau tim",
+    "đau thắt tim",
+    "hung tý",
+    "hồi hộp",
+    "trống ngực",
+    "tim đập"
+   ]
+  },
+  {
+   "names": [
+    "quỷ thai",
+    "chửa trứng",
+    "thai trứng",
+    "chửa trâu"
+   ],
+   "requires": [
+    "ra huyết",
+    "ra máu",
+    "xuất huyết",
+    "chảy máu",
+    "bụng to khác thường",
+    "bụng to bất thường",
+    "tử cung to hơn tuổi thai",
+    "không thấy thai động",
+    "không nghe tim thai",
+    "không có tim thai",
+    "mất tim thai",
+    "thai lưu",
+    "chửa trứng",
+    "thai trứng",
+    "chửa trâu"
+   ],
+   "_ghi_chu": "Cổng ĐÒI DẤU ĐẶC HIỆU, không đòi 'đang có thai'. Trước đây requires là token thai TRẦN ('có thai','ốm nghén','que thử thai'...) nên MỌI thai phụ đều lọt: đã tái hiện sống một ca thai 4 tháng ốm nghén bình thường -> bệnh danh Quỷ thai -> kê bài có chữ HẠ THAI (Ngưu tất, Ích mẫu). Dấu lấy nguyên văn từ cột triệu_chứng L510-513."
+  },
+  {
+   "names": [
+    "nhâm thần",
+    "ố trở",
+    "tử giản",
+    "sản giật"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "mang thai",
+    "có thai",
+    "thai",
+    "nghén",
+    "ốm nghén",
+    "thai nghén",
+    "thai phụ",
+    "sản phụ",
+    "mang bầu",
+    "que thử thai",
+    "chửa",
+    "có bầu",
+    "thai máy",
+    "thai động",
+    "bụng bầu"
+   ]
+  },
+  {
+   "names": [
+    "thiên đầu thống",
+    "đầu thống",
+    "đau nửa đầu"
+   ],
+   "requires": [
+    "đau đầu",
+    "nhức đầu",
+    "đau nửa đầu",
+    "nặng đầu",
+    "đầu đau",
+    "váng đầu",
+    "đau vùng đầu",
+    "đau nhức đầu"
+   ]
+  },
+  {
+   "names": [
+    "tâm quý",
+    "chinh xung",
+    "kinh quý",
+    "tâm quí",
+    "đánh trống ngực"
+   ],
+   "requires": [
+    "hồi hộp",
+    "trống ngực",
+    "tim đập",
+    "đánh trống ngực",
+    "tim hồi hộp",
+    "loạn nhịp",
+    "tim đập nhanh",
+    "kinh sợ",
+    "hoảng sợ",
+    "dễ giật mình",
+    "tâm quý"
+   ]
+  },
+  {
+   "names": [
+    "ma chẩn",
+    "phong chẩn",
+    "thủy đậu",
+    "thuỷ đậu",
+    "ban chẩn",
+    "đơn độc",
+    "phong ngứa"
+   ],
+   "requires": [
+    "ban",
+    "phát ban",
+    "nổi ban",
+    "mọc ban",
+    "mụn nước",
+    "nốt",
+    "hồng ban",
+    "sởi",
+    "phỏng",
+    "ngứa",
+    "mẩn"
+   ]
+  },
+  {
+   "names": [
+    "nhũ ung",
+    "nhũ nham",
+    "nhũ phích",
+    "nhũ lạc",
+    "viêm tuyến vú",
+    "nhũ tuyến"
+   ],
+   "requires": [
+    "vú",
+    "tuyến vú",
+    "đau vú",
+    "sưng vú",
+    "cục ở vú",
+    "núm vú",
+    "tắc sữa",
+    "áp xe vú"
+   ],
+   "_ghi_chu": "Đã gỡ 'nhũ' TRẦN: nó khớp chuỗi con nên bắt cả 'Nhũ nga' (乳蛾 = amidan, chữ 'nhũ' ở đây là hình con tằm, KHÔNG phải vú) -> viêm amidan bị cổng bệnh VÚ loại oan, rơi khỏi cả top-3. Các tên cụ thể (nhũ ung/nhũ nham/nhũ phích/nhũ lạc/nhũ tuyến/viêm tuyến vú) đã phủ đủ, 'nhũ' trần không thêm độ phủ."
+  },
+  {
+   "names": [
+    "áp xe phế",
+    "phế ung",
+    "áp xe phổi"
+   ],
+   "requires": [
+    "ho ra mủ",
+    "khạc mủ",
+    "ho ra máu",
+    "đờm mủ",
+    "đờm tanh",
+    "đau ngực",
+    "mủ tanh",
+    "sốt cao rét run",
+    "khạc ra máu",
+    "mủ máu",
+    "tanh hôi",
+    "đờm tanh hôi",
+    "như nước cơm",
+    "ngực đau",
+    "đau tức ngực",
+    "tức ngực"
+   ],
+   "_ghi_chu": "Cổng ĐÃ CHẶN CHÍNH BỆNH NÓ BẢO VỆ: dòng KB 'Phế ung × Giai đoạn vỡ mủ' ghi 'ho ói ra mủ máu hoặc như nước cơm, mùi tanh hôi, ngực đầy đau tức' — không khớp chuỗi nào trong requires cũ ('ho ra mủ' bị chữ ÓI chen giữa; 'đờm tanh' khác 'mùi tanh hôi'; 'đau ngực' đảo trật tự so với 'ngực đầy đau tức'). Ca thật: lời khai áp xe phổi vỡ mủ bị chẩn thành 'Hầu tý (viêm yết hầu)'. Nạp thêm đúng từ vựng KB dùng."
+  },
+  {
+   "names": [
+    "phát nhiệt",
+    "phát sốt"
+   ],
+   "requires": [
+    "sốt",
+    "phát nhiệt",
+    "phát sốt",
+    "triều nhiệt",
+    "cốt chưng",
+    "ngũ tâm phiền nhiệt",
+    "nóng trong",
+    "sốt về chiều",
+    "hâm hấp",
+    "nóng về chiều",
+    "sốt nhẹ",
+    "hầm hập",
+    "nhiệt độ"
+   ]
+  },
+  {
+   "names": [
+    "tắc nghẽn phế",
+    "phổi tắc nghẽn",
+    "mạn tính tắc nghẽn"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "ho",
+    "khò khè",
+    "thở khò khè",
+    "thở rít",
+    "khạc đờm",
+    "khạc đàm",
+    "khạc",
+    "suyễn",
+    "khó thở gắng sức",
+    "khó thở khi gắng sức",
+    "hen phế quản"
+   ]
+  },
+  {
+   "names": [
+    "hung thống"
+   ],
+   "requires": [
+    "đau ngực",
+    "tức ngực",
+    "ngực đau",
+    "đau vùng ngực",
+    "xương ức",
+    "sau xương ức",
+    "đau thắt ngực",
+    "ngực đầy",
+    "đau lan",
+    "hồi hộp",
+    "trống ngực",
+    "vai"
+   ]
+  },
+  {
+   "names": [
+    "hầu ung",
+    "hạnh đào"
+   ],
+   "kw_wb": true,
+   "requires": [
+    "họng",
+    "hầu",
+    "amidan",
+    "hạnh đào",
+    "nuốt",
+    "rát cổ",
+    "đau cổ",
+    "sưng họng",
+    "họng đau",
+    "họng sưng",
+    "ho"
+   ]
+  },
+  {
+   "names": [
+    "đại tràng",
+    "trường ung",
+    "ruột thừa"
+   ],
+   "requires": [
+    "đau bụng",
+    "bụng đau",
+    "bụng dưới",
+    "quanh rốn",
+    "tiêu chảy",
+    "đại tiện",
+    "phân",
+    "đi ngoài",
+    "đi lỏng",
+    "ỉa",
+    "táo bón",
+    "sôi bụng",
+    "đầy bụng",
+    "ruột",
+    "cự án"
+   ]
+  },
+  {
+   "names": [
+    "áp xe gan"
+   ],
+   "requires": [
+    "hạ sườn",
+    "sườn phải",
+    "hông phải",
+    "hông sườn",
+    "vùng gan",
+    "gan",
+    "sốt",
+    "nóng lạnh",
+    "vàng da",
+    "áp xe",
+    "mủ",
+    "đau sườn"
+   ]
+  },
+  {
+   "names": [
+    "thận vu viêm",
+    "bể thận",
+    "thận quặn"
+   ],
+   "requires": [
+    "thận",
+    "tiểu",
+    "đái",
+    "niệu",
+    "đau lưng",
+    "thắt lưng",
+    "đau quặn",
+    "sỏi",
+    "hông",
+    "phù",
+    "sốt",
+    "vùng thận"
+   ]
+  },
+  {
+   "names": [
+    "khớp dạng thấp",
+    "viêm khớp",
+    "cốt lao",
+    "lao xương"
+   ],
+   "requires": [
+    "khớp",
+    "đau khớp",
+    "sưng khớp",
+    "cứng khớp",
+    "viêm khớp",
+    "xương khớp",
+    "đau xương",
+    "nhức xương",
+    "khớp xương",
+    "teo cơ",
+    "biến dạng",
+    "đau nhức",
+    "sưng đau"
+   ]
+  },
+  {
+   "names": [
+    "bắp chân xung đau"
+   ],
+   "requires": [
+    "bắp chân",
+    "chân",
+    "chi dưới",
+    "cẳng chân",
+    "sưng chân",
+    "đau chân",
+    "tĩnh mạch",
+    "sợi mạch",
+    "gân"
+   ]
+  },
+  {
+   "names": [
+    "bạch biến",
+    "ngoan tiển"
+   ],
+   "requires": [
+    "da",
+    "vết trắng",
+    "đốm trắng",
+    "mất sắc tố",
+    "bạch biến",
+    "ngứa",
+    "tổn thương da",
+    "sẩn",
+    "da dày",
+    "mảng da",
+    "vảy"
+   ]
+  },
+  {
+   "names": [
+    "nhiễm mỡ xơ mạch"
+   ],
+   "requires": [
+    "mỡ máu",
+    "cholesterol",
+    "máu nhiễm mỡ",
+    "lipid",
+    "xơ vữa",
+    "xơ mạch",
+    "xơ cứng động mạch",
+    "xơ cứng mạch",
+    "mảng xơ",
+    "huyết áp",
+    "tức ngực",
+    "đau ngực",
+    "đau vùng tim",
+    "đau tim",
+    "đau thắt ngực",
+    "đau trước tim"
+   ]
+  },
+  {
+   "names": [
+    "suy nhược thần kinh"
+   ],
+   "requires": [
+    "mất ngủ",
+    "ít ngủ",
+    "khó ngủ",
+    "ngủ ít",
+    "hay mơ",
+    "mơ nhiều",
+    "ngủ hay mơ",
+    "hồi hộp",
+    "trống ngực",
+    "tim đập nhanh",
+    "đánh trống ngực",
+    "hay quên",
+    "giảm trí nhớ",
+    "trí nhớ giảm",
+    "trí nhớ kém",
+    "kém tập trung",
+    "hay quên hay lú",
+    "nhức đầu",
+    "đau đầu",
+    "hoa mắt",
+    "chóng mặt",
+    "ù tai",
+    "váng đầu",
+    "lo âu",
+    "bứt rứt",
+    "dễ hoảng sợ",
+    "hoảng sợ",
+    "phiền muộn",
+    "uất ức",
+    "tinh thần uất",
+    "dễ cáu",
+    "dễ tức giận",
+    "cáu gắt",
+    "hay xúc động",
+    "vui buồn thất thường",
+    "tinh thần uể oải",
+    "di tinh",
+    "liệt dương",
+    "hay thở dài",
+    "thở dài"
+   ],
+   "kw_wb": true,
+   "_note": "Suy nhược thần kinh (神经衰弱) đòi >=1 dấu THẦN KINH/TÂM THẦN/GIẤC NGỦ đặc trưng; mọi thể CSV đều có (mất ngủ/hồi hộp/hay quên/nhức đầu/phiền muộn/di tinh). Chặn over-match ca THUẦN TIÊU HÓA (đại tiện lỏng+đầy bụng+ăn kém+mệt mỏi) khớp qua 'đầy bụng trướng/ăn kém' của thể Can-tâm-khí-uất-kết. KHÔNG dùng 'mệt mỏi' trần làm marker."
+  },
+  {
+   "names": [
+    "si ngốc",
+    "alzheimer"
+   ],
+   "requires": [
+    "trí nhớ",
+    "chậm chạp",
+    "quên",
+    "si ngốc",
+    "chóng mặt",
+    "mất trí",
+    "lẫn",
+    "tê",
+    "run",
+    "co rút"
+   ]
+  },
+  {
+   "names": [
+    "chiến chứng",
+    "parkinson"
+   ],
+   "requires": [
+    "run",
+    "rung",
+    "co giật",
+    "cứng",
+    "tê",
+    "chiến chứng",
+    "parkinson",
+    "chậm chạp"
+   ]
+  },
+  {
+   "names": [
+    "suy tuyến thượng thận",
+    "addison",
+    "tuyến thượng thận"
+   ],
+   "requires": [
+    "đen",
+    "sạm",
+    "xám đen",
+    "thượng thận",
+    "addison",
+    "huyết áp",
+    "rụng lông",
+    "liệt dương",
+    "bế kinh"
+   ]
+  }
+ ]
 }

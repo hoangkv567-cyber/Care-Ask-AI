@@ -1,0 +1,25 @@
+{
+  "schema_version": "tayy-dup-adjudication-v1",
+  "nguồn": {
+    "clean": "data/TayY_clean.csv",
+    "số_nhóm_trùng_tên": 423
+  },
+  "đã_phân_xử": 423,
+  "verdict": {
+    "different_disease": 130,
+    "mixed": 27,
+    "no_consensus": 7,
+    "same_disease": 259
+  },
+  "chạy_lần_này": {
+    "different_disease": 2,
+    "mixed": 2,
+    "no_consensus": 1,
+    "same_disease": 5
+  },
+  "ghi_chú": [
+    "Sidecar là GỢI Ý máy — không phải phán quyết chuyên gia; consumer phải đối chiếu row_sha256, lệch là bỏ qua record.",
+    "KHÔNG sửa TayY_clean.csv theo sidecar này (phá lineage proposal/review ICD); materialize thật là quy trình expert-gated re-clean trong tương lai."
+  ],
+  "cập_nhật": "2026-08-17T08:40:42+00:00"
+}

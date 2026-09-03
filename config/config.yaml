@@ -15,7 +15,16 @@ qa:
 
 dashscope:
   use_cloud: true
-  model: "qwen3-max"
+  # TEXT LLM. Đã đo trên khoá hiện tại (cùng một lượt gọi thử):
+  #   qwen3-max-2026-01-23  -> HTTP 200, ~1.4s   (đang dùng)
+  #   qwen-max              -> HTTP 200, ~0.4s   (dự phòng nếu bản dated hết hạn mức)
+  #   qwen3-max             -> HTTP 403 "The free quota has been exhausted"  ← KHÔNG dùng
+  # Bản KHÔNG hậu tố ngày ('qwen3-max') tính hạn mức riêng và đã cạn; bản dated vẫn còn. Nếu về sau
+  # bản dated cũng 403 thì đổi về 'qwen-max' — đừng quay lại 'qwen3-max'.
+  # Hỏng model này KHÔNG chết hệ (tự rơi xuống Requesty rồi Ollama) nhưng đo được một lần chờ tới
+  # 2 PHÚT timeout ở nhánh dự phòng, nên vẫn phải giữ đường chính sống.
+  # KHÔNG đụng model VISION — 'qwen3-vl-32b-thinking' vẫn 200 OK, cấu hình ở src/cloud_vlm_client.py.
+  model: "qwen3-max-2026-01-23"
   api_key: ""        # Lấy từ DASHSCOPE_API_KEY trong .env
 
 requesty:

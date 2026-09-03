@@ -174,6 +174,80 @@ async def me(user: dict = Depends(get_current_user)):
     return {"status": "success", "data": user}
 
 
+_VISION_SAMPLE_DIR = os.path.join("data", "vision_samples")
+
+
+def _save_vision_sample(face_path, tongue_path, result):
+    """Chép ảnh vọng chẩn + JSON mô hình đọc được vào bộ mẫu, để ĐO ĐƯỢC tầng đọc ảnh.
+
+    Mỗi ca một thư mục con đặt tên theo dấu thời gian, chứa:
+        face.jpg / tongue.jpg   — ảnh gốc người dùng vừa tải lên
+        vision.json             — đúng những gì VLM trả về (structured + mô tả tiếng Việt)
+        nhan.json               — CHỖ TRỐNG để người có chuyên môn điền nhãn ĐÚNG
+
+    'nhan.json' mới là thứ biến đống ảnh thành bộ đo: so vision.json với nhan.json ra được tỉ lệ
+    đọc đúng từng dấu, và mỗi lần sửa prompt đều trả lời được "tốt lên ở dấu nào, xấu đi ở dấu nào"
+    thay vì sửa rồi đoán.
+
+    KHÔNG lưu lời khai, tuổi, giới hay bất cứ trường vấn chẩn nào — bộ này chỉ để đo tầng ẢNH.
+    """
+    # json/shutil import CỤC BỘ: api.py không import json ở cấp module (các chỗ khác cũng import
+    # trong hàm), nên dùng thẳng sẽ NameError lúc chạy thật — đã dính đúng lỗi này khi kiểm.
+    import json
+    import shutil
+    from datetime import datetime
+    vd = ((result or {}).get("vision_details") or {}) if isinstance(result, dict) else {}
+    if not vd and not (face_path or tongue_path):
+        return
+    d = os.path.join(_VISION_SAMPLE_DIR, datetime.now().strftime("%Y%m%d-%H%M%S-%f")[:-3])
+    os.makedirs(d, exist_ok=True)
+    for src, ten in ((face_path, "face"), (tongue_path, "tongue")):
+        if src and os.path.exists(src):
+            shutil.copy2(src, os.path.join(d, ten + os.path.splitext(src)[1].lower()))
+    with open(os.path.join(d, "vision.json"), "w", encoding="utf-8") as f:
+        json.dump(vd, f, ensure_ascii=False, indent=1)
+    # Khuôn nhãn để điền tay — để sẵn các khóa đúng bằng schema thì người điền không phải nhớ.
+    khuon = {"_huong_dan": "Điền nhãn ĐÚNG do người có chuyên môn xem ảnh; để trống nghĩa là chưa gán nhãn.",
+             "tongue": {k: "" for k in ("than_luoi", "reu_mau", "reu_day", "reu_chat",
+                                        "dau_rang", "vet_nut", "luoi_beu")},
+             "face": {k: "" for k in ("sac_mat", "go_ma_do", "phu", "ban_do",
+                                      "quang_tham", "trang_diem")}}
+    p_nhan = os.path.join(d, "nhan.json")
+    if not os.path.exists(p_nhan):
+        with open(p_nhan, "w", encoding="utf-8") as f:
+            json.dump(khuon, f, ensure_ascii=False, indent=1)
+    logger.info(f"[BỘ MẪU VỌNG CHẨN] Đã lưu mẫu vào {d}")
+
+
+TAYY_KHUYEN_CAO = ("Đây là gợi ý đối chiếu Tây y (ICD-10) tự động, KHÔNG phải chẩn đoán. "
+                   "Vui lòng đến cơ sở y tế để được thăm khám xác định.")
+
+
+def _reduce_tayy_reference(tr) -> dict | None:
+    """[PHÂN QUYỀN] Bản RÚT GỌN khối Tây y cho role thường (quyết định user 2026-08-19):
+    CHỈ bệnh đã kiểm duyệt (mã máy-đọc trang_thai == 'da_kiem_duyet'), mỗi item ALLOW-LIST
+    đúng {ten_benh, icd10_code, trang_thai_label} — field mới thêm sau này mặc định KHÔNG
+    lọt — kèm khuyen_cao đi khám. TUYỆT ĐỐI không thuốc Tây/mô tả dịch máy/độ khớp/khoa/
+    bệnh Đông y tương ứng. History cũ (item thiếu mã 'trang_thai') -> mọi item bị loại
+    -> trả None -> key biến mất (an toàn mặc định, hành vi y hệt trước thay đổi)."""
+    if not isinstance(tr, dict) or not tr.get("show"):
+        return None
+    approved = [
+        it for it in (tr.get("items") or [])
+        if isinstance(it, dict) and it.get("trang_thai") == "da_kiem_duyet"
+    ]
+    if not approved:
+        return None
+    return {
+        "show": True,
+        "khuyen_cao": TAYY_KHUYEN_CAO,
+        "items": [
+            {k: it.get(k) or "" for k in ("ten_benh", "icd10_code", "trang_thai_label")}
+            for it in approved[:5]
+        ],
+    }
+
+
 def _strip_clinical_internals(result: dict) -> dict:
     """[PHÂN QUYỀN] Người dùng thường chỉ nhận PHẦN KẾT LUẬN đọc được. Các trường kỹ thuật
     (ứng viên bệnh + ratio, phổ hội chứng, dữ liệu KG thô, mô tả vọng chẩn nội bộ) chỉ dành cho
@@ -188,11 +262,18 @@ def _strip_clinical_internals(result: dict) -> dict:
       2) Đó là đường DUY NHẤT để bệnh nhân phát hiện mô hình đọc nhầm ảnh của mình (đã có tiền lệ
          chế độ JSON vọng chẩn bịa dấu âm-hư). Mất nó thì lỗi vọng chẩn chỉ bác sĩ mới bắt được.
     Vẫn cắt 'analysis'/'detected_symptoms' (chuỗi triệu chứng đã chuẩn hóa — nội bộ),
-    'structured' (JSON thô của VLM), 'input_fusion' và 'has_makeup'."""
+    'structured' (JSON thô của VLM), 'input_fusion' và 'has_makeup'.
+
+    'tayy_reference' bản ĐẦY ĐỦ (độ khớp, mô tả dịch máy, khoa, bệnh Đông y tương ứng,
+    THUỐC Tây y tham khảo) CHỈ dành cho bác sĩ; role thường nhận bản RÚT GỌN qua
+    _reduce_tayy_reference (bệnh đã kiểm duyệt + mã ICD + khuyến cáo đi khám)."""
     if not isinstance(result, dict):
         return result
     safe = {k: v for k, v in result.items()
-            if k not in ("vision_details", "input_fusion", "has_makeup")}
+            if k not in ("vision_details", "input_fusion", "has_makeup", "tayy_reference")}
+    reduced = _reduce_tayy_reference(result.get("tayy_reference"))
+    if reduced:
+        safe["tayy_reference"] = reduced
     vd = result.get("vision_details")
     if isinstance(vd, dict):
         # Danh sách CHO PHÉP, không phải danh sách chặn: khóa mới thêm vào vision_details sau này
@@ -327,6 +408,19 @@ async def diagnose(
         logger.exception("Lỗi khi xử lý chẩn đoán")
         raise HTTPException(status_code=500, detail="Đã xảy ra lỗi nội bộ khi xử lý yêu cầu. Vui lòng thử lại sau.")
     finally:
+        # [BỘ MẪU VỌNG CHẨN] Giữ lại ảnh + JSON mô hình đọc được, TRƯỚC khi xóa file tạm.
+        # Vì sao cần: không có bộ mẫu thì KHÔNG đo được tầng đọc ảnh. Mọi tầng khác đều khóa được
+        # bằng test và chứng minh được bằng đột biến; riêng vọng chẩn thì mỗi ca chạy đúng một lần
+        # rồi ảnh bị xóa, nên sửa prompt xong chỉ có thể đoán là tốt lên hay xấu đi.
+        # MẶC ĐỊNH TẮT. Bật bằng TCM_SAVE_VISION_SAMPLES=1 — đây là ảnh KHUÔN MẶT người bệnh, dữ
+        # liệu định danh được, nên phải là lựa chọn tường minh của chủ hệ thống chứ không bật sẵn.
+        # Thư mục đích đã bị .gitignore chặn (data/vision_samples/) để không có cửa nào lên GitHub.
+        try:
+            if os.getenv("TCM_SAVE_VISION_SAMPLES", "").strip().lower() in ("1", "true", "yes"):
+                _save_vision_sample(face_path, tongue_path, locals().get("result"))
+        except Exception as e:
+            logger.warning(f"Không lưu được mẫu vọng chẩn: {e}")
+
         # Xóa các file tạm sau khi đã xử lý xong
         for path in [face_path, tongue_path]:
             if path and os.path.exists(path):

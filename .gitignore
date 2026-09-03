@@ -57,8 +57,29 @@ scratch_*.txt
 # Backup CSV do script sinh (split_csv_columns.py...) — không đưa lên repo
 data/*.bak.*.csv
 
+# Dữ liệu bệnh Tây y thô + bản làm sạch (65MB, chưa kiểm duyệt) — chỉ giữ local.
+# Script sinh: scripts/clean_tayy_csv.py; báo cáo nhỏ tayy_clean_report.json vẫn commit được.
+data/TayY.csv
+data/TayY_clean.csv
+data/TayY_quarantine.csv
+# File dẫn xuất từ TayY (index app, link Đông-Tây, thuốc tham khảo) — cùng lý do không commit
+data/tayy_reference_index.json
+data/dongtay_links.json
+data/tayy_drugs.json
+data/tayy_dup_adjudication.jsonl
+
+# Snapshot PDF + catalog máy trích từ TT 06/2026/TT-BYT (22MB / dữ liệu dẫn xuất lớn).
+# Giữ script + báo cáo kiểm định nhỏ trong git; tải và dựng lại bằng
+# scripts/build_icd10_vn_catalog.py.
+data/icd10/
+
 # Reports and Document files - DO NOT PUSH
 Bao_Cao_Tien_Do_TCM_System.docx
 bao_cao_tien_do_tcm_system.md
 tcm_system_architecture.docx
 *.docx
+
+# [DỮ LIỆU NHẠY CẢM] Bộ mẫu vọng chẩn: ảnh MẶT/LƯỠI người bệnh + JSON mô hình đọc được.
+# Dùng để đo prompt vọng chẩn (không có bộ này thì mọi thay đổi prompt chỉ là sửa rồi đoán).
+# TUYỆT ĐỐI không commit — ảnh khuôn mặt là dữ liệu định danh được.
+data/vision_samples/

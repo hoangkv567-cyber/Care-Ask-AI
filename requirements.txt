@@ -11,3 +11,6 @@ PyJWT
 # BẮT BUỘC cho RS256 (kiểm chữ ký token Firebase). Thiếu nó thì PyJWT chỉ có HS*/none,
 # jwt.decode(algorithms=["RS256"]) luôn ném lỗi -> mọi đăng nhập Firebase bị từ chối.
 cryptography
+
+# Trích bảng 29 cột trong phụ lục ICD-10 của TT 06/2026/TT-BYT theo tọa độ PDF.
+PyMuPDF==1.26.4

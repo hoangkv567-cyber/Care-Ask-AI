@@ -27,11 +27,16 @@ class TCMQA:
         import os
 
         class DashScopeChatClient:
-                """Client TEXT LLM qua DashScope / Alibaba ModelStudio (qwen3-max).
+                """Client TEXT LLM qua DashScope / Alibaba ModelStudio (qwen3-max-2026-01-23).
                 Fallback 1 sang Requesty.ai (qwen2.5) khi lỗi/hết quota/timeout.
                 Fallback 2 sang Ollama local nếu Requesty cũng lỗi.
+
+                Mặc định là 'qwen3-max-2026-01-23' chứ KHÔNG phải 'qwen3-max' (bản không hậu tố ngày): qwen3-max trả 403 "free quota
+                has been exhausted" trên khoá đang dùng, khiến mọi lượt văn bản rơi xuống Requesty
+                (đo được một lần chờ 2 PHÚT timeout rồi mới xuống Ollama). Đây chỉ là giá trị mặc
+                định phòng khi config thiếu khoá — nguồn thật là config/config.yaml: dashscope.model.
                 """
-                def __init__(self, ds_token: str, ds_model: str = "qwen3-max",
+                def __init__(self, ds_token: str, ds_model: str = "qwen3-max-2026-01-23",
                              rq_token: str = None, rq_model: str = "deepinfra/Qwen/Qwen2.5-72B-Instruct",
                              fallback_model: str = None, fallback_host: str = None):
                     self.ds_token = ds_token
@@ -120,7 +125,7 @@ class TCMQA:
 
         ds_token = os.environ.get("DASHSCOPE_API_KEY") or dashscope_cfg.get("api_key")
         if ds_token and dashscope_cfg.get("use_cloud", True):
-            ds_model_id = dashscope_cfg.get("model", "qwen3-max")
+            ds_model_id = dashscope_cfg.get("model", "qwen3-max-2026-01-23")
             rq_token = os.environ.get("REQUESTY_API_KEY") or requesty_cfg.get("api_key")
             rq_model_id = requesty_cfg.get("model", "deepinfra/Qwen/Qwen2.5-72B-Instruct")
             _fb_model = (requesty_cfg.get("fallback_ollama_model") or self.config.get("llm_model") or "qwen2.5:7b")
@@ -508,9 +513,13 @@ class TCMQA:
         self.db_schema = self.schema
         logger.info(f"Đã tải schema từ data/graph_schema.txt")
 
-        # Danh sách nhãn và quan hệ để LLM biết
-        self.node_labels = ["BenhLy", "HoiChung", "TrieuChung", "BaiThuoc", "ViThuoc"]
-        self.rel_types = ["CHIA_THÀNH", "CÓ_BIỂU_HIỆN", "ĐƯỢC_ĐIỀU_TRỊ_BẰNG", "BAO_GỒM"]
+        # Danh sách nhãn và quan hệ để LLM biết (BenhTayY/TrieuChungTayY: dữ liệu
+        # Tây y THAM KHẢO dịch máy — schema file đã dặn LLM phải kèm nhãn khi trả lời)
+        self.node_labels = ["BenhLy", "HoiChung", "TrieuChung", "BaiThuoc", "ViThuoc",
+                            "BenhTayY", "TrieuChungTayY"]
+        self.rel_types = ["CHIA_THÀNH", "CÓ_BIỂU_HIỆN", "ĐƯỢC_ĐIỀU_TRỊ_BẰNG", "BAO_GỒM",
+                          "CÓ_TRIỆU_CHỨNG", "TƯƠNG_ĐƯƠNG", "TƯƠNG_ỨNG_TÂY_Y",
+                          "LIÊN_QUAN_TRIỆU_CHỨNG"]
 
     def close(self):
         self.driver.close()
@@ -688,6 +697,11 @@ class TCMQA:
             cypher = cypher.replace("BAO GỒM", "BAO_GỒM")
             cypher = cypher.replace("BAO GÔM", "BAO_GỒM")
             cypher = cypher.replace("BAO_GÔM", "BAO_GỒM")
+            cypher = cypher.replace("CÓ TRIỆU CHỨNG", "CÓ_TRIỆU_CHỨNG")
+            cypher = cypher.replace("TƯƠNG ĐƯƠNG", "TƯƠNG_ĐƯƠNG")
+            cypher = cypher.replace("TƯƠNG ỨNG TÂY Y", "TƯƠNG_ỨNG_TÂY_Y")
+            cypher = cypher.replace("TƯƠNG_ỨNG TÂY Y", "TƯƠNG_ỨNG_TÂY_Y")
+            cypher = cypher.replace("LIÊN QUAN TRIỆU CHỨNG", "LIÊN_QUAN_TRIỆU_CHỨNG")
             
             return cypher
         except Exception as e:

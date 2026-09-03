@@ -1317,12 +1317,76 @@
                                 <span class="inline-block bg-teal-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded mr-1 align-middle">BÁC SĨ</span>
                                 <strong>Chuỗi triệu chứng đã gộp:</strong> ${escapeHtml(data.input_fusion)}
                             </div>` : "";
+
+                        // [TÂY Y THAM KHẢO] Backend quyết định nội dung theo role: bác sĩ nhận bản
+                        // ĐẦY ĐỦ (độ khớp, khoa, bệnh Đông y tương ứng, 💊 thuốc tham khảo); role
+                        // thường nhận bản RÚT GỌN (bệnh đã kiểm duyệt + ICD + khuyen_cao đi khám —
+                        // api._reduce_tayy_reference). UI chỉ render theo field có mặt, KHÔNG check
+                        // role ở frontend. Khối tĩnh, không handler.
+                        let tayYRefHTML = "";
+                        const tr = data.tayy_reference;
+                        if (tr && tr.show && Array.isArray(tr.items) && tr.items.length) {
+                            const isReduced = !!tr.khuyen_cao;
+                            if (isReduced) {
+                                const rows = tr.items.map(it => `
+                                    <tr class="border-b border-sky-100 last:border-0">
+                                        <td class="py-1.5 pr-3 font-medium text-slate-800">${escapeHtml(it.ten_benh)}</td>
+                                        <td class="py-1.5 pr-3 font-mono text-sky-800">${escapeHtml(it.icd10_code || '—')}</td>
+                                        <td class="py-1.5 text-slate-500">${escapeHtml(it.trang_thai_label)}</td>
+                                    </tr>`).join("");
+                                tayYRefHTML = `
+                                    <div id="tayYRefSection" class="mt-6 p-5 bg-sky-50 border border-sky-200 rounded-2xl shadow-sm">
+                                        <h4 class="text-sky-900 font-bold text-sm mb-1 flex items-center gap-2">🩺 <span>Tham khảo Tây y (ICD-10)</span></h4>
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-xs mt-2">
+                                                <thead><tr class="text-left text-[11px] uppercase tracking-wide text-sky-800 border-b border-sky-200">
+                                                    <th class="py-1 pr-3">Bệnh Tây y gần triệu chứng</th><th class="py-1 pr-3">Mã ICD-10</th><th class="py-1">Kiểm duyệt</th>
+                                                </tr></thead>
+                                                <tbody>${rows}</tbody>
+                                            </table>
+                                        </div>
+                                        <p class="text-xs font-bold text-sky-900 mt-2">${escapeHtml(tr.khuyen_cao)}</p>
+                                    </div>`;
+                            } else {
+                                const rows = tr.items.map(it => {
+                                    const dy = (it.benh_dong_y_tuong_ung || []).map(l =>
+                                        `${escapeHtml(l.benh_ly)}${l.trang_thai === 'xac_nhan' ? '' : (l.trang_thai === 'may_de_xuat' ? ' <span title="Máy đề xuất theo triệu chứng chung">≈</span>' : ' <span title="Cần chuyên gia xác nhận">?</span>')}`
+                                    ).join(", ");
+                                    const thuoc = (it.thuoc_tay_tham_khao || []).map(t => escapeHtml(t)).join(", ");
+                                    return `
+                                    <tr class="border-b border-sky-100 last:border-0">
+                                        <td class="py-1.5 pr-3 font-medium text-slate-800">${escapeHtml(it.ten_benh)}${it.ten_may ? ' <span title="Tên phân biệt do máy đề xuất (nhóm trùng tên)">*</span>' : ''}${thuoc ? `<div class="text-[11px] font-normal text-indigo-700 mt-0.5">💊 ${thuoc}</div>` : ''}</td>
+                                        <td class="py-1.5 pr-3 font-mono text-sky-800">${escapeHtml(it.icd10_code || '—')}</td>
+                                        <td class="py-1.5 pr-3 text-slate-600">${escapeHtml(it.khoa || '—')}</td>
+                                        <td class="py-1.5 pr-3 text-emerald-800">${dy || '—'}</td>
+                                        <td class="py-1.5 text-slate-500">${escapeHtml(it.trang_thai_label)}</td>
+                                    </tr>`;
+                                }).join("");
+                                tayYRefHTML = `
+                                    <div id="tayYRefSection" class="mt-6 p-5 bg-sky-50 border border-sky-200 rounded-2xl shadow-sm">
+                                        <h4 class="text-sky-900 font-bold text-sm mb-1 flex items-center gap-2">
+                                            <span class="inline-block bg-teal-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded align-middle">BÁC SĨ</span>
+                                            🩺 <span>Tây y tham khảo (ICD-10)</span>
+                                        </h4>
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-xs mt-2">
+                                                <thead><tr class="text-left text-[11px] uppercase tracking-wide text-sky-800 border-b border-sky-200">
+                                                    <th class="py-1 pr-3">Bệnh Tây y gần triệu chứng</th><th class="py-1 pr-3">Mã ICD-10</th><th class="py-1 pr-3">Khoa</th><th class="py-1 pr-3">Bệnh Đông y tương ứng</th><th class="py-1">Kiểm duyệt</th>
+                                                </tr></thead>
+                                                <tbody>${rows}</tbody>
+                                            </table>
+                                        </div>
+                                        <p class="text-[11px] text-sky-700 opacity-80 mt-2">Tham khảo Tây y (ICD-10) — dữ liệu dịch máy, KHÔNG phải chẩn đoán; mã chưa kiểm duyệt chỉ mang tính gợi ý đối chiếu. Tên thuốc 💊 (nếu có) là hoạt chất/chế phẩm tham khảo từ nguồn dịch máy, chưa kiểm duyệt — KHÔNG phải đơn thuốc, không tự ý sử dụng.</p>
+                                    </div>`;
+                            }
+                        }
                         textResult.innerHTML = `
                             ${warningHTML}
                             ${fusionHTML}
                             <div>
                                 ${formattedHTML}
                             </div>
+                            ${tayYRefHTML}
                             ${deepInquiryHTML}
                             ${questionsHTML}
                         `;

@@ -49,7 +49,13 @@ def build():
         (("huyễn vựng",), ("chóng mặt", "hoa mắt", "choáng váng", "váng đầu", "huyễn vựng", "xây xẩm")),
         (("phúc thống",), ("đau bụng", "bụng đau", "phúc thống", "đau quặn bụng", "đau vùng bụng", "bụng dưới đau")),
         (("vị quản thống",),
-         ("đau thượng vị", "đau vùng thượng vị", "đau dạ dày", "đau bao tử", "đau bụng", "vị quản thống", "bụng đau")),
+         # ⚠ PHẢI PHỦ TỪ VỰNG KB DÙNG, không phải cách ta quen nói. Dòng "Vị quản thống ×
+         # Hàn thấp" ghi "Vị quản ĐẦY ĐAU khó chịu, ăn không thấy ngon" — không khớp chuỗi
+         # nào trong requires cũ, nên bệnh bị loại dù lời khai khớp dòng đó 1.00.
+         ("đau thượng vị", "đau vùng thượng vị", "đau dạ dày", "đau bao tử", "đau bụng",
+          "vị quản thống", "bụng đau", "vị quản", "tâm hạ", "bụng trên", "quản phúc",
+          "trung quản", "đầy tức", "đầy trướng", "bĩ mãn", "đầy đau", "ăn không ngon",
+          "ăn không thấy ngon")),
         (("tiết tả", "tiêu chảy"), ("tiêu chảy", "đại tiện lỏng", "phân lỏng", "phân nát", "ỉa chảy", "đi lỏng", "tiết tả")),
         (("ẩu thổ", "nôn mửa"), ("nôn", "buồn nôn", "ói", "ẩu thổ")),
         (("táo bón", "tiện bí"), ("táo bón", "đại tiện táo", "khó đại tiện", "phân khô", "tiện bí")),
@@ -229,7 +235,14 @@ def build():
         "dương vật": ["dương vật"],
         "hậu môn": ["hậu môn", "lòi dom", "trĩ", "thoát giang"],
         "trực tràng": ["trực tràng", "hậu môn", "lòi dom"],
-        "bàng quang": ["bàng quang", "tiểu buốt", "tiểu rắt", "tiểu khó", "bí tiểu", "tiểu ra máu", "tiểu nhiều lần"],
+        # ⚠ PHẢI PHỦ BIẾN THỂ CHÍNH TẢ KB DÙNG. Bản cũ chỉ có 'tiểu rắt' (KB dùng 8 lần) mà thiếu
+        # 'tiểu gắt' (14 lần) và 'tiểu giắt'; đòi 'tiểu nhiều LẦN' trong khi KB viết 'tiểu nhiều'.
+        # Hệ quả đo trên ca thật: lời khai viêm bàng quang mạn (tiểu nhiều, tiểu giắt, hạ vị đau ê
+        # ẩm) trượt cổng -> bị chẩn thành 'Yêu thống' (đau lưng), chỉ vì khớp đúng một triệu chứng.
+        "bàng quang": ["bàng quang", "tiểu buốt", "tiểu rắt", "tiểu khó", "bí tiểu", "tiểu ra máu",
+                       "tiểu nhiều lần", "tiểu gắt", "tiểu giắt", "tiểu dắt", "đái rắt", "đái gắt",
+                       "đái buốt", "đái giắt", "tiểu són", "tiểu dầm", "tiểu bí", "tiểu đục",
+                       "đái đục", "đái khó"],
         "niệu đạo": ["niệu đạo", "tiểu buốt", "tiểu rắt"],
     }
     for loc, syns in locus.items():
@@ -250,8 +263,17 @@ def build():
         {"names": ["xoang"], "requires": ["xoang", "mũi", "ngạt mũi", "chảy nước mũi", "sổ mũi", "tịt mũi"]},
         {"names": ["trúng phong", "tai biến", "đột quỵ"],
          "requires": ["liệt", "méo miệng", "bán thân bất toại", "tê bại", "khó nói", "mất ngôn ngữ", "trúng phong", "tai biến"]},
-        {"names": ["addison", "alzheimer", "basedow", "parkinson", "eczema", "gout",
-                   "tuyến thượng thận", "suy tim", "loãng xương",
+        # [CHẶN VÔ ĐIỀU KIỆN] requires rỗng -> any() trên rỗng = False -> luôn loại. CHỈ dành cho tên
+        # TÂY Y THUẦN (chẩn được các bệnh này cần xét nghiệm hiện đại, không nên đoán bằng vọng-vấn).
+        # ⚠ ĐÃ GỠ addison/alzheimer/basedow/parkinson/eczema/suy tim/tuyến thượng thận: đợt đổi bệnh
+        # danh biến chúng thành 'Si ngốc (Alzheimer)', 'Cường giáp (Basedow)', 'Chàm (Eczema)',
+        # 'Tâm quý (suy tim)', 'Chiến chứng (Parkinson)', 'Suy tuyến thượng thận (Addison)' — tên Tây y
+        # nay nằm TRONG NGOẶC, nhưng cổng khớp CHUỖI CON nên vẫn dính và chặn luôn bệnh danh Đông y.
+        # Đo được 47 dòng KB bị chặn vĩnh viễn vì lý do này (Cường giáp 6, Si ngốc 11, Addison 12,
+        # Parkinson 8, Tâm quý 7, Chàm 3) — bệnh nhân khai đúng bệnh cảnh vẫn bị chẩn sang bệnh khác.
+        # Bệnh nào có bệnh danh Đông y riêng thì phải dùng cổng RIÊNG đòi dấu đặc hiệu (xem cổng
+        # 'si ngốc' đòi dấu nhận thức), KHÔNG dùng cổng chặn vô điều kiện này.
+        {"names": ["gout", "loãng xương",
                    "bệnh bạch huyết", "leukemia", "lymphoma", "lupus", "sclerosis",
                    "parathyroid", "cushing", "hashimoto", "hodgkin"],
          "requires": []},   # bệnh Tây y thuần -> luôn loại nếu khớp tên
@@ -292,7 +314,13 @@ def build():
         {"names": ["ung thư", "u ác", "khối u", "nhục lựu"], "names_regex": ["ái"],
          "requires": ["khối u", "sụt cân", "nuốt nghẹn", "ho ra máu", "u bướu", "sưng hạch", "di căn", "ung thư"]},
         {"names": ["thực quản", "vị quản", "loét dạ dày", "viêm dạ dày"],
-         "requires": ["đau bụng", "đau dạ dày", "ợ chua", "ợ hơi", "buồn nôn", "nôn", "nuốt nghẹn", "trào ngược", "thượng vị"]},
+         # ⚠ PHẢI PHỦ TỪ VỰNG KB DÙNG, không phải cách ta quen nói. Dòng "Vị quản thống ×
+         # Hàn thấp" ghi "Vị quản ĐẦY ĐAU khó chịu, ăn không thấy ngon" — không khớp chuỗi
+         # nào trong requires cũ, nên bệnh bị loại dù lời khai khớp dòng đó 1.00.
+         "requires": ["đau bụng", "đau dạ dày", "ợ chua", "ợ hơi", "buồn nôn", "nôn",
+                      "nuốt nghẹn", "trào ngược", "thượng vị", "vị quản", "tâm hạ",
+                      "bụng trên", "quản phúc", "trung quản", "đầy tức", "đầy trướng",
+                      "bĩ mãn", "đầy đau", "ăn không ngon", "ăn không thấy ngon"]},
         {"names": ["dương nuy", "liệt dương", "di tinh", "tảo tiết", "hoạt tinh", "dương sự",
                    "mộng tinh", "âm hành", "cao hoàn", "âm nang"],
          "requires": ["liệt dương", "dương nuy", "di tinh", "mộng tinh", "tảo tiết", "hoạt tinh",
@@ -302,8 +330,19 @@ def build():
          "requires": ["đau ngực", "tức ngực", "ngực đau", "đau vùng ngực", "đau thắt ngực",
                       "ngực đầy", "đầy tức ngực", "đau trước tim", "đau tim", "đau thắt tim", "hung tý",
                       "hồi hộp", "trống ngực", "tim đập"]},
+        # [AN TOÀN THAI KỲ — ĐỌC TRƯỚC KHI SỬA] Cổng này PHẢI đòi DẤU ĐẶC HIỆU của chửa trứng,
+        # TUYỆT ĐỐI KHÔNG đòi token thai TRẦN ("có thai", "ốm nghén", "que thử thai"...).
+        # Lý do, đã tái hiện SỐNG: với requires cũ, lời khai "thai 4 tháng, ốm nghén, buồn nôn, ăn
+        # không tiêu" -> bệnh danh Quỷ thai -> kê bài "Ích khí dưỡng huyết hoạt huyết HẠ THAI" (Ngưu
+        # tất, Ích mẫu), KHÔNG một chữ cảnh báo. Mọi thai phụ bình thường đều thoả requires cũ, nên
+        # cổng mất sạch tác dụng lọc. Đây là đường gây hại nặng nhất của hệ: dọa mất thai.
+        # KB không sai — Quỷ thai là chửa trứng, hạ thai đúng là pháp trị; cái sai là TẦNG KHỚP lấy
+        # "đang có thai" làm đủ điều kiện. Dấu dưới đây lấy nguyên văn cột triệu_chứng L510-513.
         {"names": ["quỷ thai", "chửa trứng", "thai trứng", "chửa trâu"],
-         "requires": ["có thai", "mang thai", "thai nghén", "thai động", "que thử thai", "chửa", "ốm nghén", "thai lưu"]},
+         "requires": ["ra huyết", "ra máu", "xuất huyết", "chảy máu",
+                      "bụng to khác thường", "bụng to bất thường", "tử cung to hơn tuổi thai",
+                      "không thấy thai động", "không nghe tim thai", "không có tim thai",
+                      "mất tim thai", "thai lưu", "chửa trứng", "thai trứng", "chửa trâu"]},
         {"names": ["thiên đầu thống", "đầu thống", "đau nửa đầu"],
          "requires": ["đau đầu", "nhức đầu", "đau nửa đầu", "nặng đầu", "đầu đau", "váng đầu", "đau vùng đầu", "đau nhức đầu"]},
         {"names": ["tâm quý", "chinh xung", "kinh quý", "tâm quí", "đánh trống ngực"],
@@ -317,7 +356,15 @@ def build():
          # top-3. Sáu tên cụ thể ở trên đã phủ đủ; "nhũ" trần chỉ thêm dương tính giả.
          "requires": ["vú", "tuyến vú", "đau vú", "sưng vú", "cục ở vú", "núm vú", "tắc sữa", "áp xe vú"]},
         {"names": ["áp xe phế", "phế ung", "áp xe phổi"],
-         "requires": ["ho ra mủ", "khạc mủ", "ho ra máu", "đờm mủ", "đờm tanh", "đau ngực", "mủ tanh", "sốt cao rét run", "khạc ra máu"]},
+         # ⚠ TỪ VỰNG PHẢI KHỚP KB, KHÔNG PHẢI KHỚP CÁCH TA QUEN NÓI. Bản cũ chặn CHÍNH Phế ung:
+         # dòng 'Phế ung × Giai đoạn vỡ mủ' ghi "ho ói ra mủ máu hoặc như nước cơm, mùi tanh hôi,
+         # ngực đầy đau tức" — 'ho ra mủ' bị chữ ÓI chen giữa, 'đờm tanh' khác 'mùi tanh hôi',
+         # 'đau ngực' đảo trật tự so với 'ngực đầy đau tức' -> 0/9 chuỗi khớp -> loại Phế ung ->
+         # ca áp xe phổi vỡ mủ bị chẩn thành 'Hầu tý (viêm yết hầu)'. Đã tái hiện trên app thật.
+         "requires": ["ho ra mủ", "khạc mủ", "ho ra máu", "đờm mủ", "đờm tanh", "đau ngực",
+                      "mủ tanh", "sốt cao rét run", "khạc ra máu",
+                      "mủ máu", "tanh hôi", "đờm tanh hôi", "như nước cơm",
+                      "ngực đau", "đau tức ngực", "tức ngực"]},
         {"names": ["phát nhiệt", "phát sốt"],
          "requires": ["sốt", "phát nhiệt", "phát sốt", "triều nhiệt", "cốt chưng", "ngũ tâm phiền nhiệt",
                       "nóng trong", "sốt về chiều", "hâm hấp", "nóng về chiều", "sốt nhẹ", "hầm hập", "nhiệt độ"]},

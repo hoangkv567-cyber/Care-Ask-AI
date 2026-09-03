@@ -1307,7 +1307,8 @@ class TCMFusionPipeline:
             return 0.0, None
         admit = getattr(self, "_cc_admit_set", None)
         if admit is None:
-            admit = set(self._SEX_MARK_MALE) | set(self._SEX_MARK_FEMALE) | set(self._CARDINAL_MARK_EXTRA)
+            admit = (set(self._SEX_MARK_MALE) | set(self._SEX_MARK_FEMALE)
+                     | set(self._CARDINAL_MARK_EXTRA) | set(self._ALARM_MARK))
             # [MỞ RỘNG: CHỦ CHỨNG ĐỊNH VỊ] Nạp thêm chủ chứng mang TỪ ĐỊNH VỊ GIẢI PHẪU và đủ đặc
             # hiệu (df thấp). Vì sao cần: khai 'đau mắt, sưng đỏ mắt' trước ra 'Tý chứng, Kiên tý,
             # NHA THỐNG', và 'vú sưng đau, cục cứng ở vú, sốt nhẹ' (viêm tuyến vú kinh điển) ra
@@ -1418,6 +1419,176 @@ class TCMFusionPipeline:
         cache[t] = hit
         return hit
 
+    def _get_tayy_reference_index(self) -> dict:
+        """[TÂY Y THAM KHẢO] Nạp data/tayy_reference_index.json (dựng bởi
+        scripts/build_tayy_reference_index.py) -> {items, idf, vocab}. Cache trên instance,
+        env override TCM_TAYY_INDEX_PATH; thiếu file -> rỗng (khối tham khảo tự tắt,
+        không ảnh hưởng chẩn đoán Đông y). Dòng an=true (bản trùng thua) bị loại khỏi matcher."""
+        cached = getattr(self, "_tayy_ref_index", None)
+        if cached is not None:
+            return cached
+        import json
+        import math
+        import os
+        out = {"items": [], "idf": {}, "vocab": []}
+        path = os.getenv("TCM_TAYY_INDEX_PATH", "data/tayy_reference_index.json")
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                items = [
+                    it for it in data.get("items", [])
+                    if not it.get("an") and it.get("tc")
+                ]
+                # [LIÊN KẾT ĐÔNG-TÂY] File dẫn xuất từ graph (kg_import_tayy.py
+                # --export-links) — optional, thiếu thì khối tham khảo chỉ mất cột
+                # 'Bệnh Đông y tương ứng', không ảnh hưởng gì khác.
+                links = {}
+                links_path = os.getenv("TCM_DONGTAY_LINKS_PATH", "data/dongtay_links.json")
+                try:
+                    if os.path.exists(links_path):
+                        with open(links_path, "r", encoding="utf-8") as lf:
+                            links = json.load(lf).get("links", {}) or {}
+                        logger.info(f"Đã nạp liên kết Đông-Tây cho {len(links)} bệnh từ {links_path}")
+                except Exception as le:
+                    logger.warning(f"Bỏ qua liên kết Đông-Tây ({links_path}): {le}")
+                    links = {}
+                # [THUỐC TÂY Y THAM KHẢO — CHỈ BÁC SĨ] data/tayy_drugs.json (dựng bởi
+                # scripts/build_tayy_drugs.py, chỉ cột thuốc phổ biến đã lọc rác) —
+                # optional, thiếu thì khối bác sĩ chỉ mất dòng thuốc. Role thường KHÔNG
+                # bao giờ nhận (api._strip_clinical_internals rút gọn payload).
+                drugs = {}
+                drugs_path = os.getenv("TCM_TAYY_DRUGS_PATH", "data/tayy_drugs.json")
+                try:
+                    if os.path.exists(drugs_path):
+                        with open(drugs_path, "r", encoding="utf-8") as df_:
+                            drugs = json.load(df_).get("drugs", {}) or {}
+                        logger.info(f"Đã nạp thuốc Tây y tham khảo cho {len(drugs)} bệnh từ {drugs_path}")
+                except Exception as de:
+                    logger.warning(f"Bỏ qua thuốc Tây y tham khảo ({drugs_path}): {de}")
+                    drugs = {}
+                n = max(len(items), 1)
+                df = {}
+                for it in items:
+                    it["_tc"] = frozenset(it.get("tc") or ())
+                    if links:
+                        it["_dy"] = links.get(it.get("id") or "") or []
+                    if drugs:
+                        it["_thuoc"] = drugs.get(it.get("id") or "") or []
+                    for s in it["_tc"]:
+                        df[s] = df.get(s, 0) + 1
+                # log(N/df): triệu chứng phổ quát ('mệt mỏi') idf ~0 -> không kéo điểm oan.
+                idf = {s: math.log(n / c) for s, c in df.items()}
+                out = {"items": items, "idf": idf, "vocab": sorted(idf)}
+                logger.info(f"Đã nạp {len(items)} bệnh Tây y tham khảo từ {path}")
+            else:
+                logger.warning(f"Không thấy {path} — khối Tây y tham khảo tắt.")
+        except Exception as e:
+            logger.error(f"Lỗi nạp index Tây y tham khảo: {e}")
+            out = {"items": [], "idf": {}, "vocab": []}
+        self._tayy_ref_index = out
+        return out
+
+    def _compute_tayy_reference(self, symptoms_arr: list, raw_text: str = "") -> dict:
+        """[TÂY Y THAM KHẢO] Khớp triệu chứng bệnh nhân với corpus bệnh Tây y (ICD-10)
+        -> {show, items}. Bản ĐẦY ĐỦ (gồm thuốc tham khảo) chỉ role bác sĩ nhận;
+        api._strip_clinical_internals RÚT GỌN cho role thường (chỉ tên bệnh đã kiểm
+        duyệt + mã ICD + nhãn + khuyến cáo đi khám — KHÔNG thuốc/mô tả/độ khớp).
+        Deterministic, KHÔNG đụng Neo4j, KHÔNG đụng _find_matching_diseases,
+        KHÔNG bao giờ vào prompt LLM (luật 1/7 sẽ ép LLM biện luận Tây y bằng y lý Đông y).
+        Dữ liệu nguồn dịch máy chưa kiểm duyệt -> mọi item mang nhãn trạng thái."""
+        try:
+            index = self._get_tayy_reference_index()
+            items, idf = index["items"], index["idf"]
+            if not items:
+                return {"show": False, "items": []}
+            terms = []
+            for t in symptoms_arr or []:
+                t = str(t or "").strip().casefold()
+                if t and t not in terms:
+                    terms.append(t)
+            if len(terms) < 2:
+                return {"show": False, "items": []}
+
+            # memo term -> tập chuỗi triệu chứng Tây y khớp (term lặp giữa các request)
+            memo = getattr(self, "_tayy_term_memo", None)
+            if memo is None:
+                memo = self._tayy_term_memo = {}
+            matched: dict = {}
+            for t in terms:
+                hit = memo.get(t)
+                if hit is None:
+                    found = set()
+                    for v in index["vocab"]:
+                        # bằng nhau, hoặc chuỗi này chứa chuỗi kia (>=4 ký tự mới cho
+                        # substring — tránh 'ho' khớp oan 'họng khô')
+                        if t == v or (len(t) >= 4 and t in v) or (len(v) >= 4 and v in t):
+                            found.add(v)
+                    hit = memo[t] = frozenset(found)
+                if hit:
+                    matched[t] = hit
+            if len(matched) < 2:
+                return {"show": False, "items": []}
+            denom = sum(max(idf.get(v, 0.0) for v in hits) for hits in matched.values())
+            if denom <= 0:
+                return {"show": False, "items": []}
+
+            scored = []
+            for it in items:
+                tc = it["_tc"]
+                got, n_match = 0.0, 0
+                for hits in matched.values():
+                    inter = hits & tc
+                    if inter:
+                        n_match += 1
+                        got += max(idf.get(v, 0.0) for v in inter)
+                if n_match >= 2:
+                    score = got / denom
+                    if score >= 0.35:
+                        scored.append((score, n_match, it))
+            scored.sort(key=lambda x: (-x[0], -x[1], x[2]["id"]))
+            top = scored[:5]
+            if top:
+                cutoff = top[0][0] * 0.6
+                top = [x for x in top if x[0] >= cutoff]
+
+            status_labels = {
+                "da_kiem_duyet": "Đã kiểm duyệt",
+                "chua_kiem_duyet": "(chưa kiểm duyệt — chỉ tham khảo)",
+                "khong_anh_xa": "(không ánh xạ được mã — chỉ tham khảo)",
+            }
+            out_items = []
+            for score, _n, it in top:
+                out_items.append({
+                    "ten_benh": it.get("ten") or "",
+                    "icd10_code": it.get("icd") or "",
+                    "khoa": it.get("khoa") or "",
+                    "mo_ta_ngan": it.get("mo_ta") or "",
+                    "do_khop": round(score, 3),
+                    "trang_thai_label": status_labels.get(
+                        it.get("tt"), "(chưa kiểm duyệt — chỉ tham khảo)"
+                    ),
+                    # Mã trạng thái MÁY-ĐỌC — tầng phân quyền (api.py) lọc theo mã này,
+                    # không theo nhãn hiển thị (nhãn có thể đổi chữ).
+                    "trang_thai": (it.get("tt") or "chua_kiem_duyet").strip(),
+                    # Thuốc Tây y THAM KHẢO (hoạt chất/chế phẩm, nguồn dịch máy, không
+                    # liều lượng) — CHỈ role bác sĩ nhận; role thường bị strip.
+                    "thuoc_tay_tham_khao": [str(x) for x in (it.get("_thuoc") or [])[:6]],
+                    "ten_may": bool(it.get("ten_may")),
+                    # Bệnh Đông y tương ứng (từ graph, dẫn xuất qua dongtay_links.json):
+                    # trang_thai 'xac_nhan'/'can_xac_nhan' = link kiểm duyệt tên;
+                    # 'may_de_xuat' = máy tính theo triệu chứng chung, chỉ gợi ý.
+                    "benh_dong_y_tuong_ung": [
+                        {"benh_ly": l.get("benh_ly") or "",
+                         "trang_thai": l.get("trang_thai") or ""}
+                        for l in (it.get("_dy") or [])[:3]
+                    ],
+                })
+            return {"show": bool(out_items), "items": out_items}
+        except Exception as e:
+            logger.error(f"Lỗi tính khối Tây y tham khảo: {e}")
+            return {"show": False, "items": []}
+
     def _get_disease_sex(self) -> dict:
         """Nạp data/disease_sex.json -> {tên_bệnh_chuẩn_hoá: 'nam'|'nu'}. Cache trên instance.
         Rỗng nếu thiếu file (an toàn: không lọc oan). Bệnh không có trong map = cả 2 giới."""
@@ -1475,6 +1646,24 @@ class TCMFusionPipeline:
     # cảm mạo -> dễ soán ngôi oan. Mở rộng tập này PHẢI đo lại eval_gold recall trước/sau. [[chu-chung-cardinal-matching]]
     _CARDINAL_MARK_EXTRA = ("ngứa mũi", "đau lưng", "mỏi lưng", "đau thắt lưng")
 
+    # [CHỦ CHỨNG BÁO ĐỘNG] Dấu XUẤT HUYẾT / HAO MÒN / NUỐT NGHẸN / CO GIẬT — nhóm định danh bệnh
+    # mạnh nhất và cũng là nhóm NGUY HIỂM nhất khi gọi sai tên bệnh.
+    # Vì sao phải nạp riêng: _cc_admit_set trước chỉ nhận dấu ĐẶC THÙ GIỚI và dấu ĐỊNH VỊ GIẢI PHẪU,
+    # nên "ho ra máu" bị bỏ qua dù nó nằm NGUYÊN VĂN trong chủ_chứng của bệnh 'Khái huyết' (咳血).
+    # Ca thật: người bệnh gõ đúng chữ "ho ra máu", KB có hẳn bệnh 'Khái huyết' × 'Phong Hàn Phạm Phế'
+    # -> Kim Phất Thảo Tán, nhưng 'Khái huyết' KHÔNG hề lọt vào danh sách ứng viên; hệ chẩn
+    # 'Khái thấu (viêm phế quản)' — bệnh ho thường — cho một ca ho ra máu kéo dài vài tuần.
+    # An toàn khi nạp, đã đo df (số bệnh sở hữu, ngưỡng hiện hành _CC_ADMIT_DF_MAX = 8):
+    #   ho ra máu 8 | tiểu ra máu 6 | nuốt nghẹn 6 | sụt cân 7 | co giật 2 | hôn mê 2
+    #   khạc ra máu 1 | ho ra mủ 1 | đi ngoài ra máu 1 | gầy sút 1
+    # Tất cả đều <= 8 và mọi bệnh sở hữu đều đúng họ bệnh (ho ra máu -> Khái huyết, Phế ung,
+    # Thực quản ái). KHÔNG nạp dấu chung ('mệt mỏi', 'ăn kém') — đã đo là làm tụt recall 75%.
+    _ALARM_MARK = (
+        "ho ra máu", "khạc ra máu", "ho ra mủ", "nôn ra máu", "thổ huyết",
+        "đi ngoài ra máu", "đại tiện ra máu", "tiểu ra máu", "đái ra máu",
+        "nuốt nghẹn", "nuốt khó", "sụt cân", "gầy sút", "co giật", "hôn mê",
+    )
+
     @classmethod
     def _infer_sex(cls, text: str):
         """Suy giới từ text lời khai: (1) cụm form 'nam giới'/'nữ giới' (ưu tiên), (2) dấu giới ĐẶC
@@ -1501,6 +1690,24 @@ class TCMFusionPipeline:
         t = (text or "").lower()
         if re.search(r'\d{1,3}\s*tháng\s*tuổi', t):
             return 0
+        # [BỔ SUNG NHŨ NHI] Trước đây CHỈ hiểu dạng có chữ 'tuổi', nên đúng nhóm bệnh nhân NHỎ NHẤT
+        # lại KHÔNG có bảo vệ nào: 'trẻ sơ sinh', 'nhũ nhi' đều trả None -> cổng an toàn nhi im lặng.
+        # Mọi cổng tuổi kiểm 'is not None' nên trả 0 an toàn (đã kiểm: không chỗ nào dùng `if age`).
+        #
+        # ⚠ CHỈ NHẬN CỤM ĐỊNH DANH KHÔNG THỂ NHẦM. Bản đầu tôi viết rộng hơn (bắt cả 'trẻ|bé|cháu|
+        # con' + 'N tháng') và ĐÃ ĐO ĐƯỢC LÀ SAI NẶNG, vì tiếng Việt không có ranh giới từ theo
+        # khoảng trắng như regex giả định:
+        #     'bé'  khớp bên trong 'BÉo phì'      -> 'béo phì 6 tháng rồi'      -> 0
+        #     'con' khớp trong 'sinh CON'         -> 'nữ 32 tuổi, sinh con 6 tháng trước' -> 0 (!)
+        # Ca cuối nguy hiểm nhất: sản phụ 32 tuổi bị gán 0 tuổi dù '32 tuổi' nằm ngay trong câu ->
+        # cổng nhi ẩn oan đơn thuốc của chính sản phụ. Đổi một lỗ hổng lấy một lỗi nặng hơn.
+        # Nên: BỎ HẲN suy luận theo số tháng, chỉ giữ cụm định danh tuổi nhũ nhi + chặn bối cảnh
+        # HẬU SẢN (mẹ cho con bú là NGƯỜI LỚN, không phải trẻ bú mẹ).
+        if not re.search(r'(sau\s+sinh|hậu\s+sản|sinh\s+con|đẻ\s+xong|cho\s+con\s+bú|ít\s+sữa|tắc\s+tia\s+sữa)', t) \
+                and re.search(r'(trẻ\s+sơ\s+sinh|\bsơ\s+sinh\b|nhũ\s+nhi|trẻ\s+còn\s+bú|trẻ\s+bú\s+mẹ)', t):
+            return 0
+        # 'N tháng tuổi' đã bắt ở nhánh đầu. 'N tháng' TRẦN cố ý KHÔNG suy: trong lời khai tiếng
+        # Việt nó gần như luôn là THỜI GIAN MẮC BỆNH ('đau dạ dày 3 tháng nay', 'mất ngủ 6 tháng').
         m = re.search(r'(\d{1,3})\s*tuổi', t)
         if m:
             try:
@@ -1929,6 +2136,30 @@ class TCMFusionPipeline:
         except Exception:
             logger.exception("Lỗi tính vấn chẩn chuyên sâu")
             return {"show": False, "factors": []}
+
+    def _syndrome_owner_diseases(self, syndrome: str) -> list:
+        """Các BỆNH sở hữu hội chứng này theo CSV (khớp TOÀN PHẦN tên hội chứng).
+
+        Dùng cho [CỔNG BỆNH-CHỦ]: một hội chứng chỉ chính đáng nếu ÍT NHẤT một bệnh sở hữu nó qua
+        được cổng an toàn. Đo trên KB: 416/533 hội chứng (78%) chỉ thuộc ĐÚNG MỘT bệnh, nên phần
+        lớn trường hợp quan hệ sở hữu là xác định.
+
+        Khớp TOÀN PHẦN chứ KHÔNG chuỗi con: 'Khí hư' là chuỗi con của 'Khí hư huyết ứ' và của 21
+        tên khác — khớp chuỗi con sẽ kéo về gần như mọi bệnh, làm cổng mất tác dụng lọc.
+        Trả [] khi không tra được -> caller GIỮ hội chứng (thà lọt còn hơn bóp nhầm ở tầng cốt lõi).
+        """
+        _cache = getattr(self, "_syn_owner_cache", None)
+        if _cache is None:
+            _cache = {}
+            for _r in (getattr(self, "csv_rows", None) or []):
+                _h = (_r.get("hoi_chung") or "").strip().lower()
+                _b = (_r.get("benh_ly") or "").strip()
+                if _h and _b:
+                    _cache.setdefault(_h, [])
+                    if _b not in _cache[_h]:
+                        _cache[_h].append(_b)
+            self._syn_owner_cache = _cache
+        return list(_cache.get((syndrome or "").strip().lower(), ()))
 
     def _validate_disease_safety(self, disease_name: str, patient_symptoms: list, raw_user_text: str) -> bool:
         """Bộ lọc an toàn lâm sàng (DATA-HÓA): loại bệnh danh chuyên khoa nếu lời khai không có triệu
@@ -3182,6 +3413,53 @@ class TCMFusionPipeline:
     # (thanh nhiệt lợi thấp); 'Ma hoàng căn' là RỄ, thu sáp CHỈ hãn — NGƯỢC cực với ma hoàng.
     _TOXIC_LOOKALIKE = ("địa phụ tử", "ma hoàng căn")
 
+    # ĐỘC MẠNH — liều rất nhỏ theo đơn, cấm uống kéo dài. CỐ Ý KHÔNG in nhãn "đại độc": theo phân
+    # hạng 大毒/有毒/小毒 thì chu sa, nguyên hoa, cam toại, đại kích, lưu hoàng là 有毒, chỉ ba đậu/
+    # mã tiền/thạch tín mới là 大毒 — gọi cả cụm là "đại độc" là sai phân hạng, mà nhãn sai làm
+    # thầy thuốc mất tin ở cả chỗ đúng.
+    # Đo trên KB: chu sa 9 dòng (sulfua thuỷ ngân HgS — độc TÍCH LUỸ), nguyên hoa 3, cam toại 2,
+    # đại kích 2, ba đậu 2, mã tiền 1, lưu hoàng 1. L27 và L298 (Thập Táo Thang) chứa CÙNG LÚC
+    # cam toại + nguyên hoa + đại kích mà trước nay hoàn toàn im lặng.
+    _TOXIC_MAJOR = ("chu sa", "châu sa", "thần sa", "khinh phấn", "hùng hoàng", "thạch tín",
+                    "ba đậu", "mã tiền", "nguyên hoa", "cam toại", "đại kích", "lưu hoàng")
+    # CÓ ĐỘC — chốt an toàn là DẠNG BÀO CHẾ.
+    # ⚠ CỐ Ý KHÔNG có "bán hạ" TRẦN: 143 dòng = 14% KB, mà KB có 0 token "sinh bán hạ"/"bán hạ
+    # sống" — bán hạ trần trong thang thuốc Việt mặc định là dạng đã chế. Thêm vào sẽ đẩy mật độ
+    # cảnh báo lên ~27% và biến cảnh báo thành nhiễu nền, khiến người dùng bỏ qua cả lúc đúng.
+    # ⚠ CỐ Ý KHÔNG có "nam tinh" TRẦN: 37 dòng, trong đó 14 dòng là "đởm nam tinh" (chế mật, an
+    # toàn) — đúng cái bẫy của bán hạ. Chỉ bắt dạng SỐNG.
+    _TOXIC_MINOR = ("toàn yết", "ngô công", "sinh bán hạ", "bán hạ sống", "sinh nam tinh")
+    # CÓ ĐỘC nhưng chốt an toàn là LIỀU, KHÔNG phải bào chế — tách riêng khỏi _TOXIC_MINOR vì cả
+    # 26 token tế tân trong KB đều là dạng TRẦN và Asarum KHÔNG có phép bào chế giải độc; in
+    # "phải dùng dạng đã bào chế" lên 26 dòng là lời dặn RỖNG.
+    _TOXIC_DOSE = ("tế tân",)
+    # ĐỘC THẬN — axit aristolochic, IARC nhóm 1, suy thận KHÔNG hồi phục.
+    # ⚠ TUYỆT ĐỐI KHÔNG mở sang "mộc thông": 64 dòng, nhập nhằng loài Akebia/Clematis (an toàn) vs
+    # Aristolochia manshuriensis — gắn cờ 64 dòng trên một định danh còn tranh cãi là gây mệt cảnh
+    # báo chứ không phải tăng an toàn.
+    _TOXIC_NEPHRO = ("thanh mộc hương",)
+    # CẤM THAI — phá huyết / thông khiếu mạnh (không nhất thiết "có độc"): xạ hương 9, thuỷ điệt 5,
+    # manh trùng 2. Hạng mục RIÊNG vì rủi ro phụ thuộc BỐI CẢNH (có thai) chứ không phải liều.
+    _TOXIC_GRAVID = ("xạ hương", "thuỷ điệt", "thủy điệt", "manh trùng")
+
+    # THẬP BÁT PHẢN / THẬP CỬU ÚY — cặp KỴ trong CÙNG một thang. Bộ dò theo-TỪNG-VỊ không bao giờ
+    # bắt được loại nguy này vì mỗi vị riêng lẻ đều hợp lệ.
+    # CHỈ CẢNH BÁO, TUYỆT ĐỐI KHÔNG tự gỡ vị: "Hải Tảo Ngọc Hồ Thang" dùng Cam thảo + Hải tảo CỐ Ý
+    # (相反相成 — biệt lệ kinh điển trị anh lựu). Tự gỡ vị là sửa sai cổ phương.
+    _INCOMPATIBLE_PAIRS = (
+        (_TOXIC_ACONITE, ("bán hạ",), "Ô đầu/Phụ tử phản Bán hạ"),
+        (_TOXIC_ACONITE, ("qua lâu", "thiên hoa phấn"), "Ô đầu/Phụ tử phản Qua lâu/Thiên hoa phấn"),
+        (_TOXIC_ACONITE, ("bối mẫu",), "Ô đầu/Phụ tử phản Bối mẫu"),
+        (_TOXIC_ACONITE, ("bạch cập", "bạch liễm"), "Ô đầu/Phụ tử phản Bạch cập/Bạch liễm"),
+        (("cam thảo",), ("cam toại", "đại kích", "nguyên hoa", "hải tảo"),
+         "Cam thảo phản Cam toại/Đại kích/Nguyên hoa/Hải tảo"),
+        (("đinh hương",), ("uất kim",), "Đinh hương uý Uất kim"),
+    )
+    # GIẢ DANH RIÊNG cho luật cặp kỵ — KHÁC CHI thực vật nên KHÔNG thuộc 十八反:
+    #   'thổ bối mẫu' Bolbostemma paniculatum ≠ Fritillaria (bối mẫu thật)
+    #   'cam thảo đất' / 'cam thảo nam' Scoparia dulcis ≠ Glycyrrhiza
+    _PAIR_LOOKALIKE = ("thổ bối mẫu", "cam thảo đất", "cam thảo nam", "địa phụ tử", "ma hoàng căn")
+
     # Dòng in vị thuốc ở Mục 5 (mọi nhánh dựng bài đều dùng đúng khuôn này).
     _VI_THUOC_LINE_RE = re.compile(r'^(\s*-\s*\*Vị thuốc:\*\s*)(.+?)\s*$', re.M)
 
@@ -3241,16 +3519,56 @@ class TCMFusionPipeline:
             _flags = self._herb_safety_flags(_m.group(2))
             _aco = _flags.get("aconite") or []
             _eph = [] if _skip_ephedra else (_flags.get("ephedra") or [])
-            if not (_aco or _eph):
+            _extra = self._herb_safety_extra_sentences(_flags)
+            if not (_aco or _eph or _extra):
                 continue
-            _tail = md[_m.end():_m.end() + 200]
-            if "An toàn dược" in _tail.split("\n- ")[0]:
+            # Cửa sổ idempotent: cắt tới BIÊN KHỐI thật ('\n- ' ở cột 0 = bài kế tiếp) thay vì một
+            # số ký tự cố định. Đo được: cửa sổ 200 ký tự CHÈN LẶP trên nhánh inline (ghi chú inline
+            # dài 211 ký tự đẩy chuỗi neo ra ngoài), còn 600 vẫn lặp trên dòng nhiều hạng mục.
+            _tail = md[_m.end():].split("\n- ")[0]
+            if "An toàn dược" in _tail:
                 continue                      # đã có cảnh báo inline -> không nhân đôi
             _out.append(md[_pos:_m.end()])
-            _out.append("\n  - *⚠️ An toàn dược: bài chứa "
-                        + self._herb_safety_sentence(_aco, _eph) + "*")
+            if _aco or _eph:
+                _out.append("\n  - *⚠️ An toàn dược: bài chứa "
+                            + self._herb_safety_sentence(_aco, _eph) + "*")
+            for _s in _extra:
+                _out.append("\n  - *⚠️ An toàn dược: " + _s + "*")
             _pos = _m.end()
         return ("".join(_out) + md[_pos:]) if _out else md
+
+    @classmethod
+    def _herb_safety_extra_sentences(cls, flags: dict) -> list:
+        """Câu cảnh báo cho các hạng mục ngoài họ Ô đầu / Ma hoàng.
+
+        Mỗi hạng mục MỘT câu riêng, KHÔNG gộp: rủi ro khác nhau thì lời dặn phải khác nhau, gộp
+        lại thành một câu chung sẽ dạy sai (liều ≠ bào chế ≠ bối cảnh thai kỳ ≠ tích luỹ kim loại).
+        """
+        _out = []
+        if flags.get("major"):
+            _v = ", ".join(flags["major"])
+            _hg = any(_x in ("Chu sa", "Châu sa", "Thần sa", "Khinh phấn") for _x in flags["major"])
+            _out.append(
+                f"bài chứa **{_v}** — vị ĐỘC MẠNH, chỉ dùng liều rất nhỏ theo đơn thầy thuốc, "
+                + ("**tuyệt đối không uống kéo dài** (hợp chất thuỷ ngân/asen gây độc TÍCH LUỸ, "
+                   "không đào thải hết giữa các đợt)" if _hg
+                   else "**không tự ý tăng liều hay dùng dài ngày**"))
+        if flags.get("minor"):
+            _out.append(f"bài chứa **{', '.join(flags['minor'])}** — vị có độc, "
+                        "PHẢI dùng dạng đã bào chế đúng phép, không dùng sống")
+        if flags.get("dose"):
+            _out.append(f"bài chứa **{', '.join(flags['dose'])}** — có độc, an toàn phụ thuộc "
+                        "LIỀU (không có phép bào chế giải độc); giữ đúng liều thầy thuốc kê")
+        if flags.get("nephro"):
+            _out.append(f"bài chứa **{', '.join(flags['nephro'])}** — chứa axit aristolochic, "
+                        "gây SUY THẬN không hồi phục; không dùng kéo dài, cân nhắc vị thay thế")
+        if flags.get("gravid"):
+            _out.append(f"bài chứa **{', '.join(flags['gravid'])}** — hoạt huyết/thông khiếu mạnh, "
+                        "**chống chỉ định khi có thai**")
+        for _p in (flags.get("pairs") or []):
+            _out.append(f"**tương kỵ {_p}** (thập bát phản / thập cửu uý) — một số cổ phương dùng "
+                        "cặp này CÓ CHỦ ĐÍCH, nhưng phải do thầy thuốc quyết định, không tự phối")
+        return _out
 
     @classmethod
     def _herb_safety_flags(cls, vi_thuoc: str) -> dict:
@@ -3268,15 +3586,32 @@ class TCMFusionPipeline:
         Tách riêng khỏi chỗ dùng để test gọi được MÃ THẬT — bản sao trong file test vẫn xanh kể cả
         khi bộ dò ở đây bị gỡ sạch, tức không khóa được gì (đã đo đúng như vậy một lần).
         """
-        found = {"aconite": [], "ephedra": []}
+        found = {"aconite": [], "ephedra": [], "major": [], "minor": [], "dose": [],
+                 "nephro": [], "gravid": [], "pairs": []}
+        _seen_all = []
         for _h in re.split(r'[,;]', vi_thuoc or ""):
             _hl = re.sub(r'\([^)]*\)', '', _h).strip().lower()
             if not _hl or any(_x in _hl for _x in cls._TOXIC_LOOKALIKE):
                 continue
-            for _cat, _kws in (("aconite", cls._TOXIC_ACONITE), ("ephedra", cls._CAUTION_EPHEDRA)):
+            _seen_all.append(_hl)
+            for _cat, _kws in (("aconite", cls._TOXIC_ACONITE), ("ephedra", cls._CAUTION_EPHEDRA),
+                               ("major", cls._TOXIC_MAJOR), ("minor", cls._TOXIC_MINOR),
+                               ("dose", cls._TOXIC_DOSE), ("nephro", cls._TOXIC_NEPHRO),
+                               ("gravid", cls._TOXIC_GRAVID)):
                 for _k in _kws:
                     if _k in _hl and _k.capitalize() not in found[_cat]:
                         found[_cat].append(_k.capitalize())
+
+        # [CẶP KỴ 十八反/十九畏] Phải xét trên CẢ THANG, không theo từng vị: mỗi vị riêng lẻ đều hợp
+        # lệ, nguy chỉ sinh ra khi chúng đứng cùng nhau. Dùng danh sách giả danh RIÊNG vì bẫy ở đây
+        # khác bẫy của tầng vị ('thổ bối mẫu' khác chi với 'bối mẫu' thật).
+        for _a_kws, _b_kws, _nhan in cls._INCOMPATIBLE_PAIRS:
+            _hit_a = any(_k in _h for _h in _seen_all for _k in _a_kws
+                         if not any(_x in _h for _x in cls._PAIR_LOOKALIKE))
+            _hit_b = any(_k in _h for _h in _seen_all for _k in _b_kws
+                         if not any(_x in _h for _x in cls._PAIR_LOOKALIKE))
+            if _hit_a and _hit_b and _nhan not in found["pairs"]:
+                found["pairs"].append(_nhan)
         return found
 
     @staticmethod
@@ -3893,9 +4228,32 @@ class TCMFusionPipeline:
                     for fs in filtered:
                         matched_cand = None
                         fs_l = fs.lower().strip()
-                        
+
+                        # Bước 0 [CHỐNG ĐẢO CỰC]: TÊN TRÙNG KHÍT thì GIỮ NGUYÊN, không remap.
+                        # Bước 1 xét `or self._are_syndromes_related(...)` TRƯỚC khi có bất kỳ lần
+                        # thử khớp chính xác toàn cục nào -> một tên đã chuẩn vẫn thua một tên "liên
+                        # quan mờ" chỉ vì tên kia thuộc bệnh đã khớp. Đo trên ca thật:
+                        #   _are_syndromes_related("Tỳ thận dương hư",
+                        #                          "Can dương thượng cang / Can hỏa vượng") = True
+                        # -> thể HƯ HÀN (tỳ thận) bị thay bằng thể THỰC NHIỆT (can): đảo cả cực
+                        # hàn/nhiệt lẫn tạng. Bẫy gộp nhóm của _are_syndromes_related (chung chữ
+                        # 'dương'). Audit sống 40 ca còn cho thấy hệ quả thứ hai: core ngoại lai
+                        # 'Can dương thượng cang' không thuộc bệnh -> Mục 5 KHÔNG tra được bài
+                        # (4/7 ca 'Mục 5 trắng' có đúng core này).
+                        #
+                        # BẤT BIẾN ĐÃ ĐO: filtered ⊆ sorted_cands LUÔN ĐÚNG — _filter_syndromes_with_llm
+                        # chỉ append phần tử của candidate_syndromes ở cả 3 đường ra, và chỗ gọi
+                        # truyền chính sorted_cands. Nên Bước 0 luôn khớp và Bước 1/2/3 bên dưới
+                        # thành MÃ CHẾT. Nói thẳng: đây là VÔ HIỆU HOÁ cơ chế "ưu tiên hội chứng
+                        # thuộc bệnh danh", không phải làm yếu nó. Giữ Bước 1/2/3 chỉ để phòng khi
+                        # sau này _filter_syndromes_with_llm được nới cho trả text LLM thô.
+                        for cand in sorted_cands:
+                            if cand.lower().strip() == fs_l:
+                                matched_cand = cand
+                                break
+
                         # Bước 1: Ưu tiên tìm trong các hội chứng thuộc bệnh lý đã khớp
-                        if disease_syndromes:
+                        if not matched_cand and disease_syndromes:
                             for cand in sorted_cands:
                                 if cand in disease_syndromes:
                                     cand_l = cand.lower().strip()
@@ -4562,6 +4920,19 @@ class TCMFusionPipeline:
         "chi lạnh", "lưng lạnh", "lạnh bụng", "bụng lạnh", "tiểu đêm", "ngũ canh",
         "phân sống", "liệt dương", "lưng gối lạnh", "sợ gió",
         "tay chân mát", "chân tay mát", "tứ chi mát", "chi mát", "da mát", "mát lạnh",
+        # DẤU LƯỠI / MẠCH / NƯỚC TIỂU — bản trước CHỈ có cảm giác thân, không một dấu lưỡi hay mạch
+        # nào, dù 'lưỡi nhợt' (舌淡) mới là dấu lưỡi KINH ĐIỂN của dương hư và mạch trầm trì (沉遲)
+        # là mạch kinh điển của hàn. Thiếu chúng thì ca dương hư có bằng chứng nằm ở LƯỠI/MẠCH bị
+        # cổng coi là "không có dấu hàn" và hạ bậc.
+        # Ca thật đã tái hiện: 'Anh lựu (Khí anh) × Thận dương hư tổn' — bộ chấm điểm cho hội chứng
+        # đúng 10.134 điểm (6 khớp) so với 'Thận âm hư' 2.134 (2 khớp), tức thắng gấp 5 lần, nhưng
+        # cổng hoán vị vì lời khai chỉ mang dấu hàn ở lưỡi ('lưỡi sắc nhợt ít rêu') -> Bát Cương ra
+        # 'Lý-NHIỆT-Hư' cho một ca dương hư, và Mục 3 biện luận 'âm hư hỏa vượng' trong khi Mục 5
+        # kê Thỏ ti tử/Nhục thung dung/Bổ cốt chi (toàn vị ÔN bổ dương) — văn bản tự chọi nhau.
+        # Đo bẫy trước khi nạp: 'lưỡi nhợt' 34 dòng phi-nhiệt so với 3 dòng nhiệt; 'chất lưỡi nhợt',
+        # 'mạch trầm trì', 'tiểu trong dài' đều 0 dòng nhiệt -> không kéo cực ngược.
+        "lưỡi nhợt", "chất lưỡi nhợt", "lưỡi sắc nhợt", "lưỡi đạm", "thân lưỡi nhợt",
+        "mạch trầm trì", "mạch trầm nhược", "mạch trầm tế", "tiểu trong dài", "tiểu trong",
     )
 
     def _strip_thuc_cold_stagnation_in_pure_hu(self, llm_text: str, bat_cuong_hint: str,
@@ -4919,6 +5290,10 @@ class TCMFusionPipeline:
                         "Theo dữ kiện đã khai thác, chưa đủ căn cứ chốt phần Tiêu: Bệnh cảnh hiện thiên về Hư chứng.", _b, count=1)
         new_body = _b + _note
         logger.info("[ONSET CẤP] Gắn cảnh báo thực trệ: bệnh mới phát nhưng cốt lõi là thể hư mạn.")
+        # Đặt CỜ để tầng sau nối cảnh báo sang Mục 5. KHÔNG chèn thẳng ở đây được: hàm này chạy trên
+        # `llm_explanation` (Mục 1-4) tại L6435, còn Mục 5 mãi L6487 mới ghép vào — lúc này Mục 5
+        # CHƯA TỒN TẠI. (Đã thử chèn thẳng và đo được là không có tác dụng.)
+        self._acute_onset_warned = True
         return md[:m4.start(2)] + new_body + md[m4.end(2):]
 
     def _build_tieu_thuc_prose(self, symptoms_str: str, has_hu: bool) -> str:
@@ -5157,7 +5532,21 @@ class TCMFusionPipeline:
             not has_phong_nhiet_sign and
             not any(x in symptoms_lower for x in ["bệnh lâu ngày", "mãn tính", "lâu ngày", "đau lưng mỏi gối",
                                                   "mạch vi nhược", "tiểu đêm", "đoản khí", "hụt hơi",
-                                                  "hay cảm", "dễ cảm", "tái phát", "gầy sút", "tự hãn"])
+                                                  "hay cảm", "dễ cảm", "tái phát", "gầy sút", "tự hãn"]) and
+            # [LOẠI TRỪ DẤU BÁO ĐỘNG] Ngoại cảm phong hàn là bệnh CẤP, NÔNG, ở BIỂU và TUYỆT ĐỐI
+            # không gây ho ra máu hay khạc mủ. Nhánh này đặt overridden=True nên nó ĐÈ LÊN MỌI tầng
+            # phía sau — kể cả bộ chấm điểm grounded và các cổng an toàn — vì vậy nó phải tự loại
+            # mình khi gặp dấu vượt quá phạm vi ngoại cảm biểu.
+            # Ca thật: nam 23 tuổi, ho ra máu + đờm nhiều đặc + sốt + bệnh VÀI TUẦN. Bộ chấm điểm
+            # đã chọn ĐÚNG 'Đờm nhiệt ủng phế' (4.75 điểm, cao nhất) nhưng nhánh này đè thành
+            # 'Phong hàn phạm biểu', kéo Bát Cương ra 'Biểu - Hàn - Thực' cho một ca áp xe phổi, và
+            # Mục 4 phải đi giải thích trôi chỗ ho ra máu thành hệ quả phụ của ho.
+            # Ở Việt Nam, ho ra máu kéo dài nhiều tuần phải nghĩ tới LAO trước tiên — dán nhãn cảm
+            # lạnh cho bệnh cảnh đó là chậm trễ chẩn đoán.
+            not any(x in symptoms_lower for x in [
+                "ho ra máu", "khạc ra máu", "ho ộc máu", "đờm máu", "mủ máu", "máu tươi",
+                "ho ra mủ", "khạc mủ", "đờm mủ", "mủ tanh", "tanh hôi", "nôn ra máu",
+                "vài tuần", "nhiều tuần", "vài tháng", "sút cân", "gầy sút cân", "ra mồ hôi trộm"])
         )
         
         if is_an_duong_case:
@@ -5222,6 +5611,67 @@ class TCMFusionPipeline:
                     ]
         # Các Guard rules đặc biệt - Khởi tạo sớm để tránh lỗi UnboundLocalError
         overridden = False
+        # [CỔNG BỆNH-CHỦ CHO CỐT LÕI] Hội chứng mà MỌI bệnh sở hữu nó đều bị cổng an toàn loại thì
+        # KHÔNG được làm cốt lõi.
+        #
+        # Vì sao cần: tầng BỆNH DANH có cổng (_validate_disease_safety), tầng HỘI CHỨNG thì không —
+        # nên hội chứng rò ra từ đúng bệnh vừa bị chặn. Ca thật đã tái hiện:
+        #   lời khai "hông sườn đầy đau tức, không muốn nói, dễ tức giận, tâm phiền, uất ức"
+        #   -> cổng loại 'Si ngốc' ĐÚNG (gate đòi dấu nhận thức: trí nhớ/quên/lẫn/chậm chạp — lời
+        #      khai không có dấu nào; chẩn sa sút trí tuệ ở đây là sai lâm sàng)
+        #   -> nhưng cốt lõi vẫn ra 'Can khí uất kết kèm đờm trệ', hội chứng CHỈ thuộc Si ngốc
+        #   -> cặp (bệnh đã chốt, cốt lõi) không tồn tại -> Mục 5 TRẮNG, và hệ tự in ra mâu thuẫn
+        #      "chưa có bài thuốc ... ở bệnh danh Suy nhược thần kinh" rồi dừng.
+        # Sau cổng này, ca trên rơi về 'Can tâm khí uất kết' của chính Suy nhược thần kinh -> bài
+        # Tiêu Dao Thang gia vị, đúng bài kinh điển cho can khí uất kết.
+        #
+        # CHIỀU VÁ CÓ CHỦ Ý: KHÔNG đổi bệnh danh theo hội chứng (đã cân nhắc và LOẠI) — làm vậy sẽ
+        # đi vòng qua chính cổng an toàn vừa chặn đúng, và kéo theo cả cổng giới/tuổi/thai kỳ. Ở đây
+        # ta bỏ HỘI CHỨNG mồ côi, giữ nguyên bệnh danh đã qua cổng.
+        # BẢO THỦ: chỉ loại khi hội chứng có chủ sở hữu rõ trong CSV VÀ mọi chủ đều trượt cổng; hội
+        # chứng không tra được chủ (chỉ có trên graph, không có trong CSV) thì GIỮ — thà lọt còn hơn
+        # bóp nhầm, vì đây là tầng cốt lõi.
+        if len(all_syndromes) > 1:
+            _keep, _drop = [], []
+            for _s in all_syndromes:
+                _owners = self._syndrome_owner_diseases(_s)
+                if _owners and not any(
+                        self._validate_disease_safety(_d, detected_symptoms or [], user_symptoms or "")
+                        for _d in _owners):
+                    _drop.append(_s)
+                else:
+                    _keep.append(_s)
+            if _drop and _keep:
+                logger.info(f"[CỔNG BỆNH-CHỦ] Loại hội chứng mồ côi (mọi bệnh sở hữu đều bị cổng "
+                            f"an toàn loại): {_drop} -> cốt lõi '{_keep[0]}'")
+                all_syndromes = _keep
+
+            # [ƯU TIÊN CÙNG BỆNH] Trong số hội chứng còn lại, đẩy lên trước những hội chứng THUỘC
+            # một bệnh ứng viên. Đây là phần trả lời cho "triệu chứng khớp với data thì lấy hội
+            # chứng CỦA BỆNH": cốt lõi và bệnh danh phải cùng một dòng KB, nếu không thì Mục 5
+            # không tra được bài và người dùng nhận về một trang biện luận không có phương thuốc.
+            # Đo trên ca thật: 11/30 ca (37%) có cốt lõi không thuộc bệnh đã chốt.
+            #
+            # ĐẢO THỨ TỰ chứ KHÔNG lọc bỏ: nếu không hội chứng nào thuộc bệnh ứng viên thì giữ
+            # nguyên xếp hạng grounded, thà cốt lõi lệch còn hơn rỗng.
+            # Neo theo _find_matching_diseases (thuần triệu chứng, ĐÃ qua cổng an toàn) chứ KHÔNG
+            # theo disease_names về sau — disease_names được lọc qua chính valid_syndromes nên
+            # dùng nó sẽ thành vòng tự-hợp-thức (cùng cái bẫy đã ghi ở _gate_concurrent_by_disease).
+            try:
+                _cand = {(_m.get("benh_ly") or "").strip().lower()
+                         for _m in (self._find_matching_diseases(
+                             detected_symptoms or [], raw_user_text=user_symptoms or "") or [])
+                         if isinstance(_m, dict)}
+            except Exception:
+                _cand = set()
+            if _cand:
+                _in = [s for s in all_syndromes
+                       if any(d.lower() in _cand for d in self._syndrome_owner_diseases(s))]
+                _out = [s for s in all_syndromes if s not in _in]
+                if _in and _out and all_syndromes[0] in _out:
+                    logger.info(f"[ƯU TIÊN CÙNG BỆNH] cốt lõi '{all_syndromes[0]}' không thuộc bệnh "
+                                f"ứng viên -> đổi sang '{_in[0]}' (cùng bệnh, tra được bài)")
+                    all_syndromes = _in + _out
         final_primary = all_syndromes[0] if all_syndromes else "Chưa rõ"
         # [KHỬ KÈM-THEO TRÙNG Ý] Bỏ qua ứng viên kèm theo mà tên CHỨA hoặc BỊ CHỨA trong tên cốt
         # lõi (cha-con/đồng nghĩa mở rộng: 'Thận dương hư' + 'Tỳ thận dương hư', 'Phế khí hư' +
@@ -5353,6 +5803,31 @@ class TCMFusionPipeline:
                         f"- **Bệnh danh (tham khảo — khớp theo triệu chứng, chưa trùng hội chứng cốt lõi):** "
                         f"{', '.join(disease_names)}\n"
                     )
+                # [BỆNH ĐẶC THÙ TUỔI MÀ CHƯA BIẾT TUỔI] Cổng tuổi chỉ lọc được khi người bệnh ĐÃ
+                # khai tuổi (_age_conflict trả False khi patient_age is None — cố ý, để không chặn
+                # mù). Nhưng khi bệnh vừa gọi tên CHỈ gặp ở một nhóm tuổi, im lặng là gây hiểu nhầm.
+                # Ca thật: lời khai "ho liên tục ngày nhẹ đêm nặng, chảy nước mũi, ngạt mũi" KHÔNG
+                # có tuổi -> ra 'Bách nhật khái' (ho gà — bệnh NHI) mà không một chữ nào nói đó là
+                # bệnh trẻ em; cùng lời khai đó thêm "44 tuổi" thì hệ tự chuyển sang 'Khái thấu'.
+                # Người lớn đọc kết quả sẽ tưởng mình mắc ho gà.
+                # ⚠ PHẢI ĐẶT SAU TRỌN VẸN if/else TRÊN. Bản đầu tôi chèn khối này vào GIỮA nhánh
+                # if và nhánh else, khiến `else` bị gắn sang chính câu if của khối này — hệ quả:
+                # khi người bệnh CÓ khai tuổi thì nhánh else bắn, in THÊM dòng "Bệnh danh (tham
+                # khảo — chưa trùng hội chứng cốt lõi)" bên dưới dòng bệnh danh đã chốt. Cùng một
+                # bệnh hiện hai lần với hai nhãn mâu thuẫn. Python không báo lỗi vì cú pháp vẫn hợp lệ.
+                if getattr(self, "_patient_age", None) is None:
+                    _NHOM = {"pediatric": "chủ yếu gặp ở TRẺ EM",
+                             "adult": "chủ yếu gặp ở NGƯỜI LỚN",
+                             "mature": "chủ yếu gặp ở tuổi trung niên trở lên"}
+                    _tuoi_note = []
+                    for _d in disease_names:
+                        _g = self._get_disease_age().get(self._norm_disease_name(_d))
+                        if _g in _NHOM:
+                            _tuoi_note.append(f"**{_d}** {_NHOM[_g]}")
+                    if _tuoi_note:
+                        final_markdown += (
+                            f"  - *⚠️ Chưa rõ tuổi người bệnh, trong khi {'; '.join(_tuoi_note)}. "
+                            f"Vui lòng nhập tuổi ở phần Vấn chẩn chi tiết để loại trừ bệnh sai nhóm tuổi.*\n")
             else:
                 final_markdown += f"- **Bệnh danh:** Chưa xác định cụ thể\n"
         else:
@@ -6834,6 +7309,24 @@ class TCMFusionPipeline:
         final_markdown = self._annotate_hemostatic_herb_lines(final_markdown, symptoms_str)
         final_markdown = self._annotate_toxic_herb_lines(final_markdown, final_primary)
 
+        # [NỐI CẢNH BÁO ONSET CẤP SANG MỤC 5] Mục 4 cảnh báo "cân nhắc trước khi dùng bài thuốc BỔ
+        # ĐẬM" rồi Mục 5 đưa ra đúng một bài bổ đậm mà không nhắc lại — người đọc lướt thẳng xuống
+        # lấy đơn thuốc sẽ KHÔNG thấy cảnh báo nào, vì nó nằm ở mục trước đó.
+        # Ca thật: nam 22 tuổi, bệnh 1-2 ngày, mọi trục vấn chẩn khác đều bình thường -> cốt lõi
+        # 'Khí huyết hư' (thể mạn), Mục 4 cảnh báo 'bổ sớm lưu tà', Mục 5 vẫn kê Bát Trân Thang
+        # gia giảm (18 vị bổ khí huyết).
+        # Đặt Ở ĐÂY vì đây là chỗ đầu tiên final_markdown đã CÓ ĐỦ Mục 5 (cùng lý do
+        # _annotate_toxic_herb_lines phải chạy ở đây). Chỉ CHÈN CHỮ, KHÔNG đổi bài: chọn bài là
+        # quyết định lâm sàng của thầy thuốc, còn đây là nghĩa vụ nói rõ mâu thuẫn ngay chỗ người
+        # đọc sẽ hành động.
+        if getattr(self, "_acute_onset_warned", False):
+            _m5 = re.search(r"### 5\.[^\n]*\n(.*?)(?=\n### |\n---|\Z)", final_markdown, re.DOTALL)
+            if _m5 and "bổ sớm" not in _m5.group(1) and "*Vị thuốc:*" in _m5.group(1):
+                _canh = ("\n  - *⚠️ Thận trọng: người bệnh khai bệnh MỚI PHÁT nhưng bài trên là bài BỔ. "
+                         "Theo nguyên tắc 'bổ sớm lưu tà', nên xác định nguyên nhân cấp tính trước "
+                         "khi dùng — xem lưu ý ở Mục 4.*")
+                final_markdown = final_markdown[:_m5.end(1)] + _canh + final_markdown[_m5.end(1):]
+
         return final_markdown
 
 
@@ -6872,12 +7365,15 @@ class TCMFusionPipeline:
         r"cứng gáy",
         r"đau đầu dữ dội",
         # --- Xuất huyết / chảy máu ---
-        r"ho ra máu",
-        r"khạc[^,.;\n]{0,8}máu",                              # khạc máu / khạc ra máu
+        # Khớp theo KHOẢNG CÁCH trong CÙNG MỆNH ĐỀ, không phải chuỗi cứng: bản cũ ghi rời
+        # "ho ra máu"/"khạc...máu"/"ộc máu"/"nôn ra máu" nên MỘT chữ chen vào là trượt —
+        # "ho ÓI ra MỦ máu hoặc như nước cơm" (nguyên văn dòng KB Phế ung × Giai đoạn vỡ mủ,
+        # tức bệnh cảnh áp xe phổi vỡ mủ) KHÔNG bật cảnh báo nào. Đã đo trên ca thật.
+        # Gap [^,.;\n] chặn ở dấu phẩy nên KHÔNG nuốt "ho, đại tiện ra máu" hay "ho, chảy máu cam"
+        # (đo: 7/7 ca ho ra máu thật bật, 0/10 ca lành báo động giả).
+        r"\b(ho|khạc|ộc|ói|nôn)[^,.;\n]{0,16}máu",
         r"đờm[^,.;\n]{0,14}máu",                              # đờm có lẫn máu tươi / đờm dính máu
         r"máu[^,.;\n]{0,14}đờm",                              # máu trong đờm
-        r"ộc máu",
-        r"nôn ra máu",
         r"đi ngoài ra máu",
         r"(?<!ban )(?<!nốt )(?<!chấm )(?<!điểm )xuất huyết",  # chặn dấu hiệu da liễu từ VLM
         r"chảy máu không cầm",
@@ -6894,9 +7390,12 @@ class TCMFusionPipeline:
         red_flag_block = ""
         if any(rx.search(text_lower) for rx in self._RED_FLAG_PATTERNS):
             red_flag_block = (
-                "\n\n> 🚨 **CẢNH BÁO KHẨN CẤP:** Một số triệu chứng bạn mô tả có thể là dấu hiệu nguy hiểm "
-                "cần cấp cứu (đột quỵ, nhồi máu cơ tim, xuất huyết, chấn thương...). "
+                "> 🚨 **CẢNH BÁO KHẨN CẤP — ĐỌC TRƯỚC:** Một số triệu chứng bạn mô tả có thể là dấu hiệu "
+                "nguy hiểm cần cấp cứu (đột quỵ, nhồi máu cơ tim, xuất huyết, chấn thương...). "
                 "**Hãy gọi 115 hoặc đến cơ sở y tế gần nhất NGAY**, KHÔNG tự điều trị bằng thuốc Đông y.\n"
+                ">\n"
+                "> Phần biện luận bên dưới chỉ để tham khảo sau khi đã được cấp cứu — **đừng dùng nó "
+                "thay cho việc đi viện**.\n\n"
             )
 
         disclaimer = (
@@ -6907,7 +7406,12 @@ class TCMFusionPipeline:
             "thuốc Đông y có độc tính hoặc chống chỉ định với thai phụ, người có bệnh nền hoặc gây tương "
             "tác thuốc. Hãy tham khảo thầy thuốc Đông y / bác sĩ có chứng chỉ hành nghề trước khi áp dụng.\n"
         )
-        return markdown + red_flag_block + disclaimer
+        # [AN TOÀN] Cảnh báo cấp cứu đặt TRƯỚC phần biện luận, KHÔNG phải sau.
+        # Bản cũ ghép `markdown + red_flag_block + disclaimer`, nên với ca đột quỵ, đơn thuốc nằm ở
+        # ký tự ~2025 còn dòng "gọi 115" nằm ở ~2361 — người đọc gặp bài thuốc TRƯỚC lời khuyên đi
+        # cấp cứu. Nghịch lý nặng hơn: ba cảnh báo NHẸ hơn (mâu thuẫn giới, lời khai mỏng, hàn-nhiệt
+        # lẫn) đều đã được chèn lên ĐẦU trang, riêng cảnh báo nguy hiểm tính mạng thì bị đẩy xuống đáy.
+        return red_flag_block + markdown + disclaimer
 
     def answer_question(self, question: str) -> dict:
         """Hỏi-đáp tự do trên Knowledge Graph cho luồng web.
@@ -6982,6 +7486,9 @@ class TCMFusionPipeline:
         # [CỔNG AN TOÀN NHI] Tuổi lấy từ lời khai đã gộp ('N tuổi' — form Vấn chẩn ghép vào). Trẻ em
         # (<16) -> chặn khuyên bài ôn Thận mạnh/có độc (Phụ tử/Ô đầu). Đặt lại mỗi lần chạy (tránh dính ca trước).
         self._patient_age = self._infer_age(user_symptoms)
+        # Cờ cảnh báo onset cấp — ĐẶT LẠI mỗi lượt, nếu không ca sau sẽ dính cảnh báo của ca trước
+        # (pipeline là đối tượng dùng lại giữa các request).
+        self._acute_onset_warned = False
 
         if face_img_path or tongue_img_path:
             logger.info("Bắt đầu phân tích hình ảnh qua mô hình vision...")
@@ -7249,7 +7756,12 @@ class TCMFusionPipeline:
         #       biện chứng không giải thích sai đạo hãn bằng cơ chế dương hư/thủy thấp.
         _amduong_names = ["âm dương lưỡng hư", "âm dương đều hư", "âm dương câu hư"]
         has_dao_han = any(kw in symptoms_lower_all for kw in ["mồ hôi trộm", "đạo hãn"])
-        has_duong_hu_sign = has_cold_indicator or any(
+        # Dùng CHUNG _DUONGHU_COLD_KWS thay vì một danh sách chép tay riêng: bản cũ chép rời và
+        # thiếu hết dấu LƯỠI/MẠCH ('lưỡi nhợt', 'mạch trầm trì'), nên ca dương hư có bằng chứng nằm
+        # ở lưỡi bị coi là "không có dấu dương hư" -> lật sang âm hư. Sửa một nơi mà quên nơi kia
+        # thì lỗi vẫn còn: đã đo đúng như vậy (cổng ở _demote_duonghu chạy đúng rồi mà chỗ này vẫn lật).
+        has_duong_hu_sign = has_cold_indicator or self._kw_hit_clean(
+            symptoms_lower_all, list(self._DUONGHU_COLD_KWS)) or any(
             kw in symptoms_lower_all
             for kw in ["tay chân lạnh", "chân tay lạnh", "chi lãnh", "lưng lạnh", "tiểu đêm",
                        "đại tiện lỏng", "phân sống", "phân lỏng nát", "liệt dương"]
@@ -7262,8 +7774,19 @@ class TCMFusionPipeline:
             top = final_syndromes[0]
             if "dương hư" in top.lower():
                 # Thận dương hư -> Thận âm hư (giữ đúng tạng, đổi âm/dương cho khớp đạo hãn)
+                # ⚠ TÊN TỔNG HỢP PHẢI CÓ THẬT TRONG KB. Bản cũ thay chuỗi rồi dùng luôn, nên
+                # 'Thận dương hư TỔN' thành 'Thận âm hư TỔN' — một hội chứng KHÔNG TỒN TẠI (KB chỉ
+                # có 'Thận âm hư'). Tên ma không có chủ sở hữu, không có bài thuốc, không có node
+                # Neo4j -> Mục 5 buộc phải rơi về fallback, và mọi cổng cùng-bệnh phía sau đều mù.
+                # Đã tái hiện: ca 'Anh lựu × Thận dương hư tổn' (bộ chấm điểm cho 10.134 điểm, gấp
+                # 5 lần á quân) bị thay bằng 'Thận âm hư tổn' rồi biến mất khỏi mọi tầng tra cứu.
                 am_hu = re.sub(r'(?i)dương hư', 'âm hư', top)
-                final_syndromes = [am_hu] + [s for s in final_syndromes if s != top]
+                if not self._syndrome_owner_diseases(am_hu):
+                    # Không có tên tương ứng -> lùi về dạng rút gọn hợp lệ, cuối cùng mới bỏ qua.
+                    _rut = re.sub(r'\s*(tổn|tổn thương|suy tổn|khuy tổn)\s*$', '', am_hu).strip()
+                    am_hu = _rut if self._syndrome_owner_diseases(_rut) else None
+                if am_hu:
+                    final_syndromes = [am_hu] + [s for s in final_syndromes if s != top]
             elif not any("âm hư" in s.lower() for s in final_syndromes):
                 # Chưa có hội chứng âm hư nào để giải thích đạo hãn -> bổ sung Thận âm hư
                 final_syndromes.insert(0, "Thận âm hư")
@@ -7547,6 +8070,11 @@ class TCMFusionPipeline:
         # bệnh nghi) để người dùng chọn -> frontend gộp vào lời khai + tự phân tích lại tinh chỉnh.
         deep_inquiry = self._compute_deep_inquiry(user_symptoms, all_symptoms_list, all_symptoms_list)
 
+        # [TÂY Y THAM KHẢO — CHỈ BÁC SĨ] Khối tham khảo bệnh Tây y (ICD-10) khớp theo
+        # triệu chứng. Tính SAU _generate_explainable_answer nên KHÔNG thể lọt vào
+        # prompt LLM/answer markdown; api.py cắt key này khỏi payload role thường.
+        tayy_reference = self._compute_tayy_reference(all_symptoms_list, user_symptoms)
+
         # [ĐÃ BỎ] Cơ chế sinh câu hỏi hỏi bệnh động (Dynamic Fallback) đã được gỡ theo yêu cầu:
         # hệ thống LUÔN trả kết quả chẩn đoán trực tiếp, không hỏi thêm lâm sàng (bỏ 1 lượt gọi LLM
         # ~30s và luồng pending_questions). Giữ 2 khóa status/questions (rỗng) để tương thích ngược frontend.
@@ -7560,6 +8088,7 @@ class TCMFusionPipeline:
                 "data": detailed_kg_data
             },
             "deep_inquiry": deep_inquiry,
+            "tayy_reference": tayy_reference,
             "status": "completed",
             "questions": []
         }
